@@ -10,7 +10,7 @@ loaded = false;
 var CODE_SITE_NAME = 'BES Support' ; 
 function loadScript (siteName, callback) {
 loaded = false;
-var relevanceQuery ='( value of it) of (mime fields of (bes fixlets whose ( name of it = "Parameterized Fixlet Library" and  name of site of it = \"' + siteName + '\" ))) whose (name of it = "vrt_utils.js")'
+var relevanceQuery ='unique value of values of mime fields whose (name of it = "vrt_utils.js") of fixlets whose ( task flag of it AND "Parameterized Fixlet Library" = name of it ) of bes sites whose( \"' + siteName + '\" = name of it )'
 var code = EvaluateRelevance(relevanceQuery);
 var head = document.getElementsByTagName("head")[0]; 
 var script   = document.createElement("script");
@@ -26,7 +26,7 @@ loaded = true;
 /*
 * Pleas Note: The following code will be moved to library with next publish of lib and user will have to only call method 	
 */
-var relQuery = "(messages of it) of bes fixlets whose (name of it = \"Parameterized Fixlet Library\" and ((name of it ) of site of it = \"" + CODE_SITE_NAME +"\" ))";
+var relQuery = '(messages of it) of fixlets whose ( task flag of it AND "Parameterized Fixlet Library" = name of it ) of bes sites whose( \"' + CODE_SITE_NAME + '\" = name of it )';
 var messages = EvaluateRelevance(relQuery);
 var regex = /\s*<DIV id=globalizationMessageDiv  style="display:none;">([\x00-\x7F]+)\s*<\/Div>/i;
 var matches = regex.exec(messages);
