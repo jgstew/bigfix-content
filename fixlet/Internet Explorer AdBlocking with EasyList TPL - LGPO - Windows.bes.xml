@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Internet Explorer AdBlocking with EasyList TPL - LGPO - Windows</Title>
+		<Description><![CDATA[<P>This is meant to be taken as a policy action targeted dynamically to a computer group or `All Computers`.</P>
+<P>This should only need to run on a computer once even though it is per-user policy because it uses Local GPO to affect all users that login from that point forward.</P>
+<P>This task is only relevant on computers with at least 1 user logged in. This is only for the sake of faster relevance and validating that the user settings are changed, but a user being logged in is not actually required. </P>
+<P>&nbsp;</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists (current users;logged on users)</Relevance>
+		<Relevance>/* check for a current user that is missing easylist */ exists it whose(not exists values "UrL" whose("http://easylist-msie.adblockplus.org/easylist.tpl" = it as string) of keys of keys "SOFTWARE\Microsoft\Internet Explorer\Safety\PrivacIE\Lists" of it) of keys whose(name of it is contained by set of unique values of component strings of sids of users of (logged on users;current users) ) of keys "HKEY_USERS" of registries</Relevance>
+		<Category>Configuration</Category>
+		<DownloadSize>626964</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2016-10-21</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Mon, 24 Oct 2016 22:12:42 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+parameter "numMissingBefore" = "{ number of it whose(not exists values "UrL" whose("http://easylist-msie.adblockplus.org/easylist.tpl" = it as string) of keys of keys "SOFTWARE\Microsoft\Internet Explorer\Safety\PrivacIE\Lists" of it) of keys whose(name of it is contained by set of unique values of component strings of sids of users of (logged on users;current users) ) of keys "HKEY_USERS" of registries }"
+
+prefetch LGPO.zip sha1:4335992dfb3f6592eb37d39e521d0e9459112cb3 size:626964 https://msdnshared.blob.core.windows.net/media/TNBlogsFS/prod.evol.blogs.technet.com/telligent.evolution.components.attachments/01/4062/00/00/03/65/94/11/LGPO.zip sha256:c7623ad8b2d6b50f030d63b87c9864b1ec5221e2c0a4c2aac87e91426f294d97
+// Download UnZip utility
+prefetch unzip.exe sha1:e1652b058195db3f5f754b7ab430652ae04a50b8 size:167936 http://software.bigfix.com/download/redist/unzip-5.52.exe sha256:8d9b5190aace52a1db1ac73a65ee9999c329157c8e88f61a772433323d6b7a4a
+// Add unzip.exe to the client utility cache
+utility __Download\unzip.exe
+
+waithidden __Download\unzip.exe -o "{pathname of client folder of current site}\__Download\LGPO.zip" -d "{pathname of client folder of current site}\__Download"
+
+// Create LGPO file to be applied to the system
+delete __createfile
+delete __Download\LGPOtoApply.txt
+createfile until __END_OF_FILE__
+; -------------------------------------------------------------------------
+; These Local Group Policy settings force IE to use the EasyList TPL
+;   NOTE: the open brackets are escaped in actionscript, but not the resulting file
+; -------------------------------------------------------------------------
+
+User
+Software\Microsoft\Internet Explorer\Safety\PrivacIE
+FilteringMode
+DWORD:0
+
+User
+Software\Microsoft\Internet Explorer\Safety\PrivacIE\Lists\{{7C998372-3B89-46E6-9546-1945C711CD0C}
+Enabled
+DWORD:1
+
+User
+Software\Microsoft\Internet Explorer\Safety\PrivacIE\Lists\{{7C998372-3B89-46E6-9546-1945C711CD0C}
+Name
+SZ:EasyList
+
+User
+Software\Microsoft\Internet Explorer\Safety\PrivacIE\Lists\{{7C998372-3B89-46E6-9546-1945C711CD0C}
+Path
+SZ:%AppDataDir%\Local\Microsoft\Internet Explorer\Tracking Protection\{{7C998372-3B89-46E6-9546-1945C711CD0C}.tpl
+
+User
+Software\Microsoft\Internet Explorer\Safety\PrivacIE\Lists\{{7C998372-3B89-46E6-9546-1945C711CD0C}
+Url
+SZ:http://easylist-msie.adblockplus.org/easylist.tpl
+
+__END_OF_FILE__
+
+move __createfile "{pathname of client folder of current site}\__Download\LGPOtoApply.txt"
+
+waithidden "{pathname of client folder of current site}\__Download\LGPO.exe" /t __Download\LGPOtoApply.txt
+
+override wait
+hidden=true
+runas=currentuser
+wait CMD /C echo n | gpupdate /target:user /wait:60
+
+parameter "numMissingAfter" = "{ number of it whose(not exists values "UrL" whose("http://easylist-msie.adblockplus.org/easylist.tpl" = it as string) of keys of keys "SOFTWARE\Microsoft\Internet Explorer\Safety\PrivacIE\Lists" of it) of keys whose(name of it is contained by set of unique values of component strings of sids of users of (logged on users;current users) ) of keys "HKEY_USERS" of registries }"
+
+// Check that changes happened: (NOTE: failure on this line is not a perfect indicator of failure)
+continue if{ 2 = number of unique values of (it as integer) of (parameter "numMissingAfter";parameter "numMissingBefore") }
+
+// This will only take effect for the current user right away, otherwise logoff/login or restart required
+//??  action may require restart
+
+// ------ END OF ACTION ------
+
+// https://decentsecurity.com/adblocking-for-internet-explorer-deployment/
+// https://decentsecurity.com/ublock-for-firefox-deployment/
+// https://decentsecurity.com/ublock-for-google-chrome-deployment/
+
+// Related:
+//  - https://blogs.technet.microsoft.com/secguide/2016/01/21/lgpo-exe-local-group-policy-object-utility-v1-0/
+//  - https://blogs.technet.microsoft.com/secguide/2016/09/23/lgpo-exe-v2-0-pre-release-support-for-mlgpo-and-reg_qword/
+//  - https://bigfix.me/fixlet/details/4015
+//  - https://bigfix.me/relevance/details/3018524
+//  - https://forum.bigfix.com/t/no-unique-values-inspector-for-users-or-sids/18973/2?u=jgstew
+//  - https://developer.bigfix.com/relevance/reference/wmi.html#rsop-user-wmi-security-identifier-wmi
+//  - http://www.ibm.com/support/knowledgecenter/SS6MCG_9.5.0/com.ibm.bigfix.doc/Platform/Action/c_override.html
+//  - https://bigfix.me/fixlet/details/3741
+//  - https://bigfix.me/fixlet/details/3827
+//  - https://bigfix.me/fixlet/details/3747
+//  - https://www.bigfix.me/fixlet/details/21707
+//  - http://answers.microsoft.com/en-us/ie/forum/ie9-windows_7/how-do-i-create-my-own-personal-tracking/70e747e6-18dc-4213-9c4d-7610e140850c?page=3&auth=1
+//  - https://social.technet.microsoft.com/Forums/windowsserver/en-US/4fb40d7b-5512-4c72-be4e-552bf097f1f6/how-to-stop-gpupdate-force-from-asking-press-y-n-to-restart-computer-in-cmd?forum=winserverGP
+//  - https://deployhappiness.com/gpupdate-or-gpupdate-force/
+//  - https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Tivoli%20Endpoint%20Manager/page/Client%20Refresh%20and%20Reset
+]]></ActionScript>
+			<Settings>
+				<PreActionShowUI>false</PreActionShowUI>
+				<HasRunningMessage>false</HasRunningMessage>
+				<HasTimeRange>false</HasTimeRange>
+				<HasStartTime>false</HasStartTime>
+				<HasEndTime>false</HasEndTime>
+				<HasDayOfWeekConstraint>false</HasDayOfWeekConstraint>
+				<UseUTCTime>false</UseUTCTime>
+				<ActiveUserRequirement>NoRequirement</ActiveUserRequirement>
+				<ActiveUserType>AllUsers</ActiveUserType>
+				<HasWhose>false</HasWhose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>true</Reapply>
+				<HasReapplyLimit>true</HasReapplyLimit>
+				<ReapplyLimit>3</ReapplyLimit>
+				<HasReapplyInterval>true</HasReapplyInterval>
+				<ReapplyInterval>P1D</ReapplyInterval>
+				<HasRetry>true</HasRetry>
+				<RetryCount>3</RetryCount>
+				<RetryWait Behavior="WaitForReboot">PT1H</RetryWait>
+				<HasTemporalDistribution>false</HasTemporalDistribution>
+				<ContinueOnErrors>true</ContinueOnErrors>
+				<PostActionBehavior Behavior="Nothing"></PostActionBehavior>
+				<IsOffer>false</IsOffer>
+			</Settings>
+			<SettingsLocks>
+				<ActionUITitle>false</ActionUITitle>
+				<PreActionShowUI>false</PreActionShowUI>
+				<PreAction>
+					<Text>false</Text>
+					<AskToSaveWork>false</AskToSaveWork>
+					<ShowActionButton>false</ShowActionButton>
+					<ShowCancelButton>false</ShowCancelButton>
+					<DeadlineBehavior>false</DeadlineBehavior>
+					<ShowConfirmation>false</ShowConfirmation>
+				</PreAction>
+				<HasRunningMessage>false</HasRunningMessage>
+				<RunningMessage>
+					<Text>false</Text>
+				</RunningMessage>
+				<TimeRange>false</TimeRange>
+				<StartDateTimeOffset>false</StartDateTimeOffset>
+				<EndDateTimeOffset>false</EndDateTimeOffset>
+				<DayOfWeekConstraint>false</DayOfWeekConstraint>
+				<ActiveUserRequirement>false</ActiveUserRequirement>
+				<ActiveUserType>false</ActiveUserType>
+				<Whose>false</Whose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>false</Reapply>
+				<ReapplyLimit>false</ReapplyLimit>
+				<RetryCount>false</RetryCount>
+				<RetryWait>false</RetryWait>
+				<TemporalDistribution>false</TemporalDistribution>
+				<ContinueOnErrors>false</ContinueOnErrors>
+				<PostActionBehavior>
+					<Behavior>false</Behavior>
+					<AllowCancel>false</AllowCancel>
+					<Deadline>false</Deadline>
+					<Title>false</Title>
+					<Text>false</Text>
+				</PostActionBehavior>
+				<IsOffer>false</IsOffer>
+				<AnnounceOffer>false</AnnounceOffer>
+				<OfferCategory>false</OfferCategory>
+				<OfferDescriptionHTML>false</OfferDescriptionHTML>
+			</SettingsLocks>
+		</DefaultAction>
+	</Task>
+</BES>
