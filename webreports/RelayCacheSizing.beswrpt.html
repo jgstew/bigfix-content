@@ -2,12 +2,12 @@ There are <?Relevance number of (it, (it as integer * 1024 * 1024) of (preceding
 Relays with caches that are too small.
 <br/>
 All relays should have a cache size larger than:
-<?Relevance (it as string & " Bytes") of sums of (it as trimmed string as integer) of following texts of positions 1 of (preceding texts of first " " of following texts of firsts "size" of it) of (it & " ") of unique values of ((preceding text of first " url=" of it | it) of preceding texts of firsts " http" of substrings separated by "sha1" of it) whose(it contains "size") of unique values whose(it contains "prefetch" AND it contains "sha1") of (it as lowercase) of action scripts of bes actions whose("Open" = state of it) ?>
+<?Relevance (if (0<(it / (1024*1024*1024*1024))) then (it / (1024*1024*1024*1024)) as string & " TB" else if (0<(it / (1024*1024*1024))) then (it / (1024*1024*1024)) as string & " GB" else if (0<(it / (1024*1024))) then (it / (1024*1024)) as string & " MB" else if (0<(it / (1024))) then (it / (1024)) as string & " KB" else (it as string & " B")) of  sums of (it as trimmed string as integer) of following texts of positions 1 of (preceding texts of first " " of following texts of firsts "size" of it) of (it & " ") of unique values of ((preceding text of first " url=" of it | it) of preceding texts of firsts " http" of substrings separated by "sha1" of it) whose(it contains "size") of unique values whose(it contains "prefetch" AND it contains "sha1") of (it as lowercase) of action scripts of bes actions whose("Open" = state of it) ?>
 , which is the size of the downloads in all open actions.
 <br/>
 The root and/or top level relays should have a cache size at least double the minimum cache size, and generally 300 GB or larger. 
 <br/><br/>
-<?Relevance (name of it, (it as integer * 1024 * 1024) of (preceding text of first " MB" of it) of values of results from (bes properties "BES Relay Cache Size") of it) of bes computers whose(relay server flag of it) ?>
+<?Relevance (name of it, (if (0<(it / (1024*1024*1024*1024))) then (it / (1024*1024*1024*1024)) as string & " TB" else if (0<(it / (1024*1024*1024))) then (it / (1024*1024*1024)) as string & " GB" else if (0<(it / (1024*1024))) then (it / (1024*1024)) as string & " MB" else if (0<(it / (1024))) then (it / (1024)) as string & " KB" else (it as string & " B")) of (it as integer * 1024 * 1024) of (preceding text of first " MB" of it) of values of results from (bes properties "BES Relay Cache Size") of it) of bes computers whose(relay server flag of it) ?>
 
 <br/><br/><br/>
 <h3>References:</h3>
