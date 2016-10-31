@@ -82,7 +82,23 @@ loadScript(CODE_SITE_NAME, scriptLoaded);
         "Required":"1",
         "DataType" : "Text",
         "ValueType": "relevance",
-        "Values": "unique values of (\"iTunes\";\"iTunes\")"
+        "Values": "unique values of (\"iTunes\";\"Skype\")"
+	},
+	{
+	    "Name": "Publisher",
+	    "Title": "Publisher:",
+	    "Description": "The Application Publisher.",
+	    "UIType": "Select",
+        "Required":"1",
+        "DataType" : "Text",
+        "ValueType": "specified",
+        "Parent": "Application",
+        "Disabled": "true",
+        "Values": [
+            {"key":"Microsoft", "value": "Microsoft" , "parentValue":"Skype"},
+            {"key":"Mozilla", "value": "Mozilla" , "parentValue":"Firefox"},
+            {"key":"Apple", "value": "Apple" , "parentValue":"iTunes"}
+        ]
 	}
     ]
 },
