@@ -71,7 +71,7 @@ loadScript(CODE_SITE_NAME, scriptLoaded);
         "Required":"1",
         "DataType" : "Text",
         "ValueType": "relevance",
-        "Values": "unique values of ("Windows";"Windows")"
+        "Values": "unique values of (\"Windows\";\"Windows\")"
 	},
 	{
 	    "Name": "Application",
@@ -81,7 +81,7 @@ loadScript(CODE_SITE_NAME, scriptLoaded);
         "Required":"1",
         "DataType" : "Text",
         "ValueType": "relevance",
-        "Values": "unique values of ("iTunes";"iTunes")"
+        "Values": "unique values of (\"iTunes\";\"iTunes\")"
 	}
     ]
 },
