@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Test sections for REST API autopatching - parameterized fixlet - Universal</Title>
+		<Description><![CDATA[
+<DIV id=fixletMessage2 class=FixletMessage>
+<DIV id = paramFixletDescription>
+	<P>
+	This is sample Fixlet which will show to read library from embeded Fixlet
+	Enter the required information below and click on take action. 
+	</P>
+</DIV>
+<script>
+loaded = false;
+var CODE_SITE_NAME = 'BES Support' ; 
+function loadScript (siteName, callback) {
+loaded = false;
+var relevanceQuery ='unique value of values of mime fields whose (name of it = "vrt_utils.js") of fixlets whose ( task flag of it AND "Parameterized Fixlet Library" = name of it ) of bes sites whose( \"' + siteName + '\" = name of it )'
+var code = EvaluateRelevance(relevanceQuery);
+var head = document.getElementsByTagName("head")[0]; 
+var script   = document.createElement("script");
+script.type  = "text/javascript";
+script.text = code;
+head.appendChild(script);
+callback();
+}
+function scriptLoaded(){
+if (!loaded){ 	
+if ( typeof FixletUtils !== 'undefined') {
+loaded = true;
+/*
+* Pleas Note: The following code will be moved to library with next publish of lib and user will have to only call method 	
+*/
+var relQuery = '(messages of it) of fixlets whose ( task flag of it AND "Parameterized Fixlet Library" = name of it ) of bes sites whose( \"' + CODE_SITE_NAME + '\" = name of it )';
+var messages = EvaluateRelevance(relQuery);
+var regex = /\s*<DIV id=globalizationMessageDiv  style="display:none;">([\x00-\x7F]+)\s*<\/Div>/i;
+var matches = regex.exec(messages);
+matches[1]=matches[1].replace(/<br>/gi,"");
+eval(matches[1]);
+FixletUtils.initFixletRender();
+} } } 	
+loadScript(CODE_SITE_NAME, scriptLoaded);
+</script> 
+<DIV class=FixletProperty></DIV></DIV>
+        ]]></Description>
+		<Relevance>FALSE</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2016-10-19</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 19 Oct 2016 21:50:45 +0000</Value>
+        </MIMEField>
+        <MIMEField>
+            <Name>parametermetadatatag</Name>
+            <Value><![CDATA[
+{
+"SectionServerInfo":{
+    "Values":[
+	{
+	    "Name": "currentConsoleUser",
+	    "Title": "Console User Name:",
+	    "Description": "Your console operator user name.",
+	    "UIType": "Select",
+        "Required":"1",
+        "DataType" : "Text",
+        "ValueType": "relevance",
+        "Values": "unique values of names of current console users",
+        "Disabled": "true"
+	},
+	{
+	    "Name": "realpassword",
+	    "Title": "Console Password:",
+	    "Description": "Enter your console operator password.",
+	    "UIType": "Textbox",
+        "Required":"1",
+        "Encrypt":"true",
+        "SubUIType":"Password"
+	},
+	{
+	    "Name": "verifypassword",
+	    "Title": "Verify Password:",
+	    "Description": "Enter your console operator password.",
+	    "UIType": "Textbox",
+        "Required": "1",
+        "Encrypt": "true",
+        "SubUIType": "Password",
+        "Parent": "realpassword",
+        "CustomValidator": "validatePassword"
+	},
+	{
+	    "Name": "currentSiteName",
+	    "Title": "Site Name:",
+	    "Description": "Site Name where content will be created.",
+	    "UIType": "Select",
+        "Required": "1",
+        "DataType" : "Text",
+        "ValueType": "relevance",
+        "Values": "unique values of names of sites of current fixlets",
+        "Disabled": "true"
+	},
+	{
+	    "Name": "currentSiteType",
+	    "Title": "Site Type:",
+	    "Description": "Site Type of the site above.",
+	    "UIType": "Select",
+        "Required": "1",
+        "DataType" : "Text",
+        "ValueType": "relevance",
+        "Values": "unique values of ( (if (operator site flag of it) then \"operator\" else if (custom site flag of it) then \"custom\" else ERROR \"none\") of sites of current fixlets )",
+        "Disabled": "true"
+	},
+	{
+	    "Name": "RootServerURL",
+	    "Title": "Root Server:",
+	    "Description": "Root Server with Port",
+	    "UIType": "Select",
+        "Required": "1",
+        "ValueType": "relevance",
+        "Values": "unique values of following texts of firsts \"//\" of urls of current bes servers",
+        "Disabled": "true"
+	}]
+}
+}
+        ]]></Value>
+		</MIMEField>
+        <MIMEField>
+            <Name>ParameterValidatorTag</Name>
+            <Value><![CDATA[
+            {
+                validatePassword : function (validationObj, metadataObj) {
+                    var currentValue = validationObj["currentValue"];
+                    var parentValue = FixletUtils.getElementText('realpassword', metadataObj);
+                    if ( currentValue !== parentValue )
+                        return "The passwords entered do not match!";
+                }
+            }
+         ]]></Value>
+        </MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+            // This is just a test for now
+            </ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
