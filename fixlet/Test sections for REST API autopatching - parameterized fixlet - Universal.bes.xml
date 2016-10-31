@@ -59,6 +59,32 @@ loadScript(CODE_SITE_NAME, scriptLoaded);
             <Name>parametermetadatatag</Name>
             <Value><![CDATA[
 {
+"SectionAutopatchInfo":{
+    "Title": "Autopatch Selection",
+    "UIType": "accordion",
+    "Values":[
+	{
+	    "Name": "TargetOS",
+	    "Title": "Target Operating System:",
+	    "Description": "Select the target operating system.",
+	    "UIType": "Select",
+        "Required":"1",
+        "DataType" : "Text",
+        "ValueType": "relevance",
+        "Values": "unique values of ("Windows";"Windows")"
+	},
+	{
+	    "Name": "Application",
+	    "Title": "Application:",
+	    "Description": "Enter your console operator password.",
+	    "UIType": "Select",
+        "Required":"1",
+        "DataType" : "Text",
+        "ValueType": "relevance",
+        "Values": "unique values of ("iTunes";"iTunes")"
+	}
+    ]
+},
 "SectionServerInfo":{
     "Title": "Root Server Info",
     "UIType": "accordion",
