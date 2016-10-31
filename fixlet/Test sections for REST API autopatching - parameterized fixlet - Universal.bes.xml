@@ -60,6 +60,9 @@ loadScript(CODE_SITE_NAME, scriptLoaded);
             <Value><![CDATA[
 {
 "SectionServerInfo":{
+    "Name": "SectionServerInfo",
+    "Title": "Root Server Info",
+    "UIType": "accordion",
     "Values":[
 	{
 	    "Name": "currentConsoleUser",
