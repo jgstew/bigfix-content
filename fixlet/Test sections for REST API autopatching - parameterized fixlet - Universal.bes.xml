@@ -77,7 +77,7 @@ loadScript(CODE_SITE_NAME, scriptLoaded);
 	{
 	    "Name": "Application",
 	    "Title": "Application:",
-	    "Description": "Enter your console operator password.",
+	    "Description": "Select the Application to patch.",
 	    "UIType": "Select",
         "Required":"1",
         "DataType" : "Text",
