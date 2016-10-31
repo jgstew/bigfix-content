@@ -60,6 +60,7 @@ loadScript(CODE_SITE_NAME, scriptLoaded);
             <Value><![CDATA[
 {
 "SectionAutopatchInfo":{
+    "Name": "SectionAutopatchInfo",
     "Title": "Autopatch Selection",
     "UIType": "accordion",
     "Values":[
@@ -86,6 +87,7 @@ loadScript(CODE_SITE_NAME, scriptLoaded);
     ]
 },
 "SectionServerInfo":{
+    "Name": "SectionServerInfo",
     "Title": "Root Server Info",
     "UIType": "accordion",
     "Values":[
