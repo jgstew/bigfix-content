@@ -6,10 +6,11 @@
 <DIV id=fixletMessage2 class=FixletMessage>
 <DIV id = paramFixletDescription>
 	<P>
-	This is sample Fixlet which will show to read library from embeded Fixlet
+	This is sample Fixlet which will NOT encrypt passwords, use a fake password! <BR/>
 	Enter the required information below and click on take action. 
 	</P>
 </DIV>
+<DIV class=FixletProperty></DIV></DIV>
 <script>
 loaded = false;
 var CODE_SITE_NAME = 'BES Support' ; 
@@ -41,7 +42,6 @@ FixletUtils.initFixletRender();
 } } } 	
 loadScript(CODE_SITE_NAME, scriptLoaded);
 </script> 
-<DIV class=FixletProperty></DIV></DIV>
         ]]></Description>
 		<Relevance>FALSE</Relevance>
 		<Category></Category>
@@ -139,7 +139,7 @@ loadScript(CODE_SITE_NAME, scriptLoaded);
 	    "Description": "Enter your console operator password.",
 	    "UIType": "Textbox",
         "Required":"1",
-        "Encrypt":"true",
+        "Encrypt":"false",
         "SubUIType":"Password"
 	},
 	{
@@ -148,7 +148,7 @@ loadScript(CODE_SITE_NAME, scriptLoaded);
 	    "Description": "Enter your console operator password.",
 	    "UIType": "Textbox",
         "Required": "1",
-        "Encrypt": "true",
+        "Encrypt": "false",
         "SubUIType": "Password",
         "Parent": "realpassword",
         "CustomValidator": "validatePassword"
