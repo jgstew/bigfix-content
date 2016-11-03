@@ -209,9 +209,15 @@ loadScript(CODE_SITE_NAME, scriptLoaded);
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
-            // This is just a test for now
-            </ActionScript>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+    // This is just a test for now
+    parameter "SessionRelevanceiTunes" = "( if ( exists it whose(item 0 of it = item 1 of it) of ( it, (sets of (ids of source fixlets of components of component groups of it)) of bes baselines whose(name of it as lowercase contains %22itunes%22 AND name of it as lowercase contains %22windows%22) ) of ( sets of ids of fixlets whose(name of it contains %22iTunes%22 AND name of it does not contain %22 (Superseded)%22 AND name of it contains %22Win%22 AND visible flag of it) of bes sites whose(%22Updates for Windows Applications%22 = name of it) ) ) then ERROR %22DuplicateExists%22 else ( fixlets whose(name of it contains %22iTunes%22 AND name of it does not contain %22 (Superseded)%22 AND name of it contains %22Win%22 AND visible flag of it) of bes sites whose(%22Updates for Windows Applications%22 = name of it) ) )"
+    parameter "SessionRelevanceTest" = "{ parameter ("SessionRelevance" & "iTunes") }"
+    
+    // parameters to help with cross platform use:
+    parameter "PathSeparator" = "{ if (windows of operating system) then "\" else "/" }"
+    parameter "OSshell" = "{ if (windows of operating system) then "cmd /C " else "bash -c " }"
+            ]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>
