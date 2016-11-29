@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
 <BES>
   <Wizard>
     <Title>JGStew - Relay Cache Sizing</Title>
