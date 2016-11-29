@@ -4,4 +4,4 @@
 *.bes linguist-language=XProc
 *.ojo linguist-language=XProc
 *.beswrpt linguist-language=HTML
-bigfix-content/fixlet/Tasks[[:space:]]-[[:space:]]Uninstall[[:space:]]MSI[[:space:]]Applications[[:space:]]-[[:space:]]Windows.bes linguist-vendored
+bigfix-content/fixlet/Tasks%20-%20Uninstall%20MSI%20Applications%20-%20Windows.bes linguist-vendored
