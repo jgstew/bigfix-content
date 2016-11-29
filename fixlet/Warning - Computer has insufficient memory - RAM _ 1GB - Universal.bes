@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: set syntax=xml: -->
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title><![CDATA[Warning - Computer has insufficient memory - RAM < 1GB - Universal]]></Title>
@@ -39,8 +40,6 @@
 //   - https://github.com/github/linguist#using-emacs-or-vim-modelines
 //   - http://stackoverflow.com/questions/7600860/getting-vim-to-recognize-xml
 
-// The following line will force XML syntax highlighting: 
-// vim: set syntax=xml:
 </ActionScript>
 			<SuccessCriteria Option="CustomRelevance">FALSE</SuccessCriteria>
 			<Settings>
