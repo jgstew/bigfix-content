@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Remap Capslock to Rshift - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layout" of registries</Relevance>
+		<Relevance>not exists values "Scancode Map" of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layout" of registries</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2016-11-24</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 24 Nov 2016 20:34:17 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// https://www.experts-exchange.com/articles/2155/Keyboard-Remapping-CAPSLOCK-to-Ctrl-and-Beyond.html
+
+regset "[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layout]" "Scancode Map"=hex:00,00,00,00,00,00,00,00,02,00,00,00,36,00,3a,00,00,00,00,00
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
