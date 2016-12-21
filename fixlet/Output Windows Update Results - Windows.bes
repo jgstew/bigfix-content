@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Output Windows Update Results - Windows TODO</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2016-12-21</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 21 Dec 2016 23:40:02 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+// https://github.com/jgstew/tools/blob/master/VBS/WUA_Search.vbs
+delete __createfile
+createfile until _END_OF_FILE_
+
+' This script determines what updates are applicable on a Windows machine using the WUA api.
+' Usage: cscript WUA_Search.vbs //Nologo //B > WindowsUpdates.ini
+' Source: https://msdn.microsoft.com/en-us/library/windows/desktop/aa387102(v=vs.85).aspx
+' Modifications by @jgstew in 2016 - Public Domain
+
+Set updateSession = CreateObject("Microsoft.Update.Session")
+updateSession.ClientApplicationID = "Check for Windows Updates"
+
+Set updateSearcher = updateSession.CreateUpdateSearcher()
+
+' Method: https://msdn.microsoft.com/en-us/library/windows/desktop/aa386526(v=vs.85).aspx
+Set searchResult = updateSearcher.Search("IsInstalled=0")
+
+WScript.Echo "[Windows Updates]" & vbCRLF & "Number= " & searchResult.Updates.Count
+
+numHidden   = 0
+numSoftware = 0
+numDriver   = 0
+
+For I = 0 To searchResult.Updates.Count-1
+' IUpdate interface: https://msdn.microsoft.com/en-us/library/windows/desktop/aa386099(v=vs.85).aspx
+    Set update = searchResult.Updates.Item(I)
+    
+    ' Update Type Enum: https://msdn.microsoft.com/en-us/library/windows/desktop/aa387284(v=vs.85).aspx
+    updateTypeStr = "Unknown"
+    If 1=update.Type Then
+        updateTypeStr = "Software"
+        numSoftware   = numSoftware + 1
+    ElseIf 2=update.Type Then
+        updateTypeStr = "Driver"
+        numDriver     = numDriver + 1
+    End If
+    
+    WScript.Echo updateTypeStr & I + 1 & "= " & update.Title
+    
+    If update.IsHidden Then
+        numHidden = numHidden + 1
+    End If
+Next
+
+WScript.Echo "Hidden= " & numHidden
+WScript.Echo "Software= " & numSoftware
+WScript.Echo "Driver= " & numDriver
+' Related: https://thwack.solarwinds.com/community/application-and-server_tht/patchzone/blog/2012/10/05/how-the-windows-update-agent-determines-the-status-of-an-update
+
+_END_OF_FILE_
+
+delete "{ download path "WUA_Search.vbs" }"
+move __createfile "{ download path "WUA_Search.vbs" }"
+
+waithidden cmd /c cscript __Download\WUA_Search.vbs //Nologo > __Download\WindowsUpdates.ini
+
+delete "{pathnames of folders "__Global\Logs" of data folders of client}\WindowsUpdates.ini"
+move __Download\WindowsUpdates.ini "{pathnames of folders "__Global\Logs" of data folders of client}\WindowsUpdates.ini"
+]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
