@@ -2,19 +2,22 @@
 <!-- vim: set syntax=xml: -->
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Output Windows Update Results - Windows TODO</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Title>Output Windows Update Results - Windows</Title>
+		<Description><![CDATA[<P>read results with this analysis: <A href="https://github.com/jgstew/bigfix-content/blob/master/analyses/Windows%20Update%20check%20results%20-%20Windows.bes">https://github.com/jgstew/bigfix-content/blob/master/analyses/Windows%20Update%20check%20results%20-%20Windows.bes</A></P>
+<P>&nbsp;</P>]]></Description>
 		<Relevance>windows of operating system</Relevance>
+		<Relevance><![CDATA[not exists files "results_WindowsUpdates.ini" whose(now - modification time of it < 7*day AND exists lines containing "Hidden=" of it) of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
 		<Category></Category>
+		<DownloadSize>0</DownloadSize>
 		<Source>Internal</Source>
-		<SourceID></SourceID>
+		<SourceID>jgstew</SourceID>
 		<SourceReleaseDate>2016-12-21</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Wed, 21 Dec 2016 23:40:02 +0000</Value>
+			<Value>Fri, 23 Dec 2016 23:36:10 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -29,9 +32,11 @@ delete __createfile
 createfile until _END_OF_FILE_
 
 ' This script determines what updates are applicable on a Windows machine using the WUA api.
-' Usage: cscript WUA_Search.vbs //Nologo //B > WindowsUpdates.ini
+' Usage: cscript WUA_Search.vbs //Nologo > WindowsUpdates.ini
 ' Source: https://msdn.microsoft.com/en-us/library/windows/desktop/aa387102(v=vs.85).aspx
 ' Modifications by @jgstew in 2016 - Public Domain
+
+' It is possible to do this "offline": https://msdn.microsoft.com/en-us/library/windows/desktop/aa387290(v=vs.85).aspx
 
 Set updateSession = CreateObject("Microsoft.Update.Session")
 updateSession.ClientApplicationID = "Check for Windows Updates"
@@ -40,6 +45,7 @@ Set updateSearcher = updateSession.CreateUpdateSearcher()
 
 ' Method: https://msdn.microsoft.com/en-us/library/windows/desktop/aa386526(v=vs.85).aspx
 Set searchResult = updateSearcher.Search("IsInstalled=0")
+' also works as a single line: Set searchResult = CreateObject("Microsoft.Update.Session").CreateUpdateSearcher().Search("IsInstalled=0")
 
 WScript.Echo "[Windows Updates]" & vbCRLF & "Number= " & searchResult.Updates.Count
 
@@ -71,18 +77,88 @@ Next
 WScript.Echo "Hidden= " & numHidden
 WScript.Echo "Software= " & numSoftware
 WScript.Echo "Driver= " & numDriver
-' Related: https://thwack.solarwinds.com/community/application-and-server_tht/patchzone/blog/2012/10/05/how-the-windows-update-agent-determines-the-status-of-an-update
+
+' Related:
+'     - https://thwack.solarwinds.com/community/application-and-server_tht/patchzone/blog/2012/10/05/how-the-windows-update-agent-determines-the-status-of-an-update
+'     - https://bigfix.me/fixlet/details/23096
+'     - https://github.com/jgstew/bigfix-content/blob/master/fixlet/Output%20Windows%20Update%20Results%20-%20Windows.bes
 
 _END_OF_FILE_
 
 delete "{ download path "WUA_Search.vbs" }"
 move __createfile "{ download path "WUA_Search.vbs" }"
 
-waithidden cmd /c cscript __Download\WUA_Search.vbs //Nologo > __Download\WindowsUpdates.ini
+waithidden cmd /c cscript __Download\WUA_Search.vbs //Nologo > __Download\results_WindowsUpdates.ini
 
-delete "{pathnames of folders "__Global\Logs" of data folders of client}\WindowsUpdates.ini"
-move __Download\WindowsUpdates.ini "{pathnames of folders "__Global\Logs" of data folders of client}\WindowsUpdates.ini"
+delete "{pathnames of folders "__Global\Logs" of data folders of client}\results_WindowsUpdates.ini"
+move __Download\results_WindowsUpdates.ini "{pathnames of folders "__Global\Logs" of data folders of client}\results_WindowsUpdates.ini"
 ]]></ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+			<Settings>
+				<PreActionShowUI>false</PreActionShowUI>
+				<HasRunningMessage>false</HasRunningMessage>
+				<HasTimeRange>false</HasTimeRange>
+				<HasStartTime>false</HasStartTime>
+				<HasEndTime>false</HasEndTime>
+				<HasDayOfWeekConstraint>false</HasDayOfWeekConstraint>
+				<UseUTCTime>false</UseUTCTime>
+				<ActiveUserRequirement>NoRequirement</ActiveUserRequirement>
+				<ActiveUserType>AllUsers</ActiveUserType>
+				<HasWhose>false</HasWhose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>true</Reapply>
+				<HasReapplyLimit>false</HasReapplyLimit>
+				<HasReapplyInterval>true</HasReapplyInterval>
+				<ReapplyInterval>P5D</ReapplyInterval>
+				<HasRetry>true</HasRetry>
+				<RetryCount>10</RetryCount>
+				<RetryWait Behavior="WaitForReboot">PT1H</RetryWait>
+				<HasTemporalDistribution>false</HasTemporalDistribution>
+				<ContinueOnErrors>true</ContinueOnErrors>
+				<PostActionBehavior Behavior="Nothing"></PostActionBehavior>
+				<IsOffer>false</IsOffer>
+			</Settings>
+			<SettingsLocks>
+				<ActionUITitle>false</ActionUITitle>
+				<PreActionShowUI>false</PreActionShowUI>
+				<PreAction>
+					<Text>false</Text>
+					<AskToSaveWork>false</AskToSaveWork>
+					<ShowActionButton>false</ShowActionButton>
+					<ShowCancelButton>false</ShowCancelButton>
+					<DeadlineBehavior>false</DeadlineBehavior>
+					<ShowConfirmation>false</ShowConfirmation>
+				</PreAction>
+				<HasRunningMessage>false</HasRunningMessage>
+				<RunningMessage>
+					<Text>false</Text>
+				</RunningMessage>
+				<TimeRange>false</TimeRange>
+				<StartDateTimeOffset>false</StartDateTimeOffset>
+				<EndDateTimeOffset>false</EndDateTimeOffset>
+				<DayOfWeekConstraint>false</DayOfWeekConstraint>
+				<ActiveUserRequirement>false</ActiveUserRequirement>
+				<ActiveUserType>false</ActiveUserType>
+				<Whose>false</Whose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>false</Reapply>
+				<ReapplyLimit>false</ReapplyLimit>
+				<RetryCount>false</RetryCount>
+				<RetryWait>false</RetryWait>
+				<TemporalDistribution>false</TemporalDistribution>
+				<ContinueOnErrors>false</ContinueOnErrors>
+				<PostActionBehavior>
+					<Behavior>false</Behavior>
+					<AllowCancel>false</AllowCancel>
+					<Deadline>false</Deadline>
+					<Title>false</Title>
+					<Text>false</Text>
+				</PostActionBehavior>
+				<IsOffer>false</IsOffer>
+				<AnnounceOffer>false</AnnounceOffer>
+				<OfferCategory>false</OfferCategory>
+				<OfferDescriptionHTML>false</OfferDescriptionHTML>
+			</SettingsLocks>
 		</DefaultAction>
 	</Task>
 </BES>
