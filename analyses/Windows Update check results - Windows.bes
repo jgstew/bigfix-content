@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: set syntax=xml: -->
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Windows Update check results - Windows</Title>
+		<Description><![CDATA[<P>This analysis reads the results from this action: <A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Output%20Windows%20Update%20Results%20-%20Windows.bes">https://github.com/jgstew/bigfix-content/blob/master/fixlet/Output%20Windows%20Update%20Results%20-%20Windows.bes</A></P>
+<P>&nbsp;</P>]]></Description>
+		<Relevance>exists files "results_WindowsUpdates.ini" of folders "Logs" of folders "__Global" of data folders of client</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2016-12-23</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 23 Dec 2016 23:28:50 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="numUpdates" ID="2" EvaluationPeriod="PT12H">(it as integer) of keys "Software" of sections "Windows Updates" of files "results_WindowsUpdates.ini" of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="numDrivers" ID="3" EvaluationPeriod="PT12H">(it as integer) of keys "Driver" of sections "Windows Updates" of files "results_WindowsUpdates.ini" of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="numTotal" ID="4" EvaluationPeriod="PT12H">(it as integer) of keys "Number" of sections "Windows Updates" of files "results_WindowsUpdates.ini" of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="numHidden" ID="6" EvaluationPeriod="PT12H">(it as integer) of keys "Hidden" of sections "Windows Updates" of files "results_WindowsUpdates.ini" of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="last check for updates" ID="7" EvaluationPeriod="PT12H">modification times of files "results_WindowsUpdates.ini" of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="list of updates" ID="8" EvaluationPeriod="P2D">unique values of (it as trimmed string) of following texts of firsts "=" of variables whose(it starts with "[Windows Updates].Software" AND it does not start with "[Windows Updates].Software=" AND it does not contain "=Definition Update for Windows Defender" AND it does not contain "=Microsoft Silverlight (") of files "results_WindowsUpdates.ini" of folders "Logs" of folders "__Global" of data folders of client</Property>
+	</Analysis>
+</BES>
