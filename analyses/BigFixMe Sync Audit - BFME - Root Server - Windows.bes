@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>BigFixMe Sync Audit - BFME - Root Server - Windows</Title>
+		<Description><![CDATA[<P>&nbsp;</P>
+<P>&nbsp;- <A href="https://bigfix.me/fixlet/details/20433">https://bigfix.me/fixlet/details/20433</A></P>
+<P>&nbsp;</P>]]></Description>
+		<Relevance>exists main gather service</Relevance>
+		<Relevance>exists folders "Applications\bigfixMeSync" of (it; parent folders of it) of (folders it) of (preceding texts of lasts "\" of it) of values of settings whose(it as string contains "BES Server") of clients</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2017-01-04</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 04 Jan 2017 21:25:58 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="Version of installed BFME sync plugin" ID="1" EvaluationPeriod="PT6H">unique values of versions of files whose(name of it as lowercase starts with "bigfixme" AND name of it ends with ".exe") of (folders it) of unique values of pathnames of folders "Applications\bigfixMeSync" of (it; parent folders of it) of (folders it) of (preceding texts of lasts "\" of it) of values of settings whose(it as string contains "BES Server") of clients</Property>
+		<Property Name="number of BFME Synch logs" ID="2" EvaluationPeriod="PT6H">number of files whose(name of it ends with "_Synch.xml") of (folders it) of unique values of pathnames of folders "Applications\bigfixMeSync" of (it; parent folders of it) of (folders it) of (preceding texts of lasts "\" of it) of values of settings whose(it as string contains "BES Server") of clients</Property>
+		<Property Name="number of BFME Synch logs with errors" ID="3" EvaluationPeriod="PT6H"><![CDATA[number of files whose(name of it ends with "_Synch.xml" AND exists lines containing "<errorstate>True</errorstate>" of it) of (folders it) of unique values of pathnames of folders "Applications\bigfixMeSync" of (it; parent folders of it) of (folders it) of (preceding texts of lasts "\" of it) of values of settings whose(it as string contains "BES Server") of clients]]></Property>
+		<Property Name="name of newest BFME Synch log" ID="4" EvaluationPeriod="PT6H">unique values of names of items 1 of (maxima of creation times of files whose(name of it ends with "_Synch.xml") of it, files whose(name of it ends with "_Synch.xml") of it) whose(item 0 of it = creation time of item 1 of it) of (folders it) of unique values of pathnames of folders "Applications\bigfixMeSync" of (it; parent folders of it) of (folders it) of (preceding texts of lasts "\" of it) of values of settings whose(it as string contains "BES Server") of clients</Property>
+	</Analysis>
+</BES>
