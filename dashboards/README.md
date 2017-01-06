@@ -16,6 +16,11 @@
 - The other part that is needed is that the Client UI Dashboard would be powered by **client relevance** while the Dashboard or WebReport would have to rely on **Session Relevance** from **Properties** that use the same underlying **client relevance** behind the scenes.
 - The computer summary view within the BigFix Console is effectively an example of a single computer view "Dashboard" or "WebReport" that could just as easily also be a **Client UI Dashboard**. Similar can be said of the similar views within **Bricks** or the **Computer Browser**.
 
+**What about the BigFix Console? How is it similar to the above?**
+
+- The Windows BigFix Console is a mix of native views and HTML views wrapped up in a complicated application.
+- It can almost be thought of as a Dashboard of Dashboards.
+
 ### Two options for using these:
 
 - Put the dashboard files in a folder, then load dynamically using the Console's `Load Wizard` option in the Debug Menu.
