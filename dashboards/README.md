@@ -14,4 +14,4 @@
 ### References:
 
 - http://stackoverflow.com/a/9400432/861745
-
+- http://stackoverflow.com/questions/5257923/how-to-load-local-script-files-as-fallback-in-cases-where-cdn-are-blocked-unavai
