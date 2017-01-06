@@ -7,6 +7,13 @@
 **How are they different than a Custom Web Report?**
 
 - They are all basically the exact same thing. The main difference is that a Wizard is expected to have multiple "Pages" and "Steps" that are separate HTML documents internally. Dashboards and Custom Web Reports are expected to be a single HTML document, but through use of JavaScript, that single HTML document could have a wizard within it, or some other method for emulating multiple "Steps", though it could also be anything else.
+- a Custom Web Report is within a WebReports context, while Dashboards & Wizards are within a slightly different BigFix Console context. This means there are a few things that work in one and not the other.
+
+**How are all of the above different than a Client UI Dashboard?**
+
+- The most significant difference about a Client UI Dashboard vs the others is that the Client UI Dashboard can only work with the single computer that it is running on, and cannot use Session Relevance. While the others (Dashboard/Wizard/WebReport) can provide summary results from multiple computers, they don't have to, which means if you have one that displays data from a single computer, then it is nearly identical to a Client UI Dashboard. The real power of Dashboards/Wizards/WebReports is that they can work with results across multiple computers, so using them for a single computer is a very simplified use case, but that doesn't change the fact that you could have a single unified view of a single computer across all of them, including a Client UI Dashboard.
+- In order for this to really be the same, the Dashboard or WebReport would have to provide a way to pick a single computer to view the data, while the Client UI Dashboard would only work with the computer it is on.
+- The other part that is needed is that the Client UI Dashboard would be powered by **client relevance** while the Dashboard or WebReport would have to rely on **Session Relevance Properties** that use the same underlying **client relevance** behind the scenes.
 
 ### Two options for using these:
 
