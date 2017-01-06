@@ -1,4 +1,4 @@
-## This folder contains Dashboards / Wizards meant to be used in the BigFix console.
+## This folder contains Dashboards / Wizards for the BigFix Console.
 
 **What is a Dashboard?**
 
