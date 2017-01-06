@@ -1,10 +1,10 @@
 ## Dashboards / Wizards meant to be used in the BigFix console.
 
-What is a Dashboard?
+**What is a Dashboard?**
 
-What is a Wizard?
+**What is a Wizard?**
 
-How are they different than a Custom Web Report?
+**How are they different than a Custom Web Report?**
 
 - They are all basically the exact same thing. The main difference is that a Wizard is expected to have multiple "Pages" and "Steps" that are separate HTML documents internally. Dashboards and Custom Web Reports are expected to be a single HTML document, but through use of JavaScript, that single HTML document could have a wizard within it, or some other method for emulating multiple "Steps", though it could also be anything else.
 
