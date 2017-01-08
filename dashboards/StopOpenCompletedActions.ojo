@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<BES>
+  <Wizard>
+    <Title>Actions - Stop Open Completed Actions</Title>
+    <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+    <DefaultPage>StopOpenCompletedActions</DefaultPage>
+   <Page Name="StopOpenCompletedActions" DocType="HTML 4.01 Transitional" > 
+   <Title>Actions - Stop Open Completed Actions</Title>
+      <HTML><![CDATA[
+  <head>
+<style>
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+}
+</style>
+  </head>
+  <body>
+<?Relevance (h2 of ("Open Completed Actions: " & number of elements of it as string) & concatenation of ps of elements of it) of sets of items 3 of (ids of it, number of elements of reported computer sets of it, number of elements of targeted computer sets of it, names of it) whose(item 1 of it = item 2 of it) of bes actions whose( (targeted by list flag of it OR targeted by id flag of it) AND not reapply flag of it AND not group member flag of it AND "Open"=state of it AND (now - time issued of it) > 8 * day ) ?>
+  </body>
+      ]]></HTML>
+     </Page>
+   </Wizard>
+</BES>
