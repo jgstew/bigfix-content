@@ -9,15 +9,6 @@
    <Title>Actions - Stop Open Completed Actions</Title>
       <HTML><![CDATA[
   <head>
-<style>
-table, th, td {
-    border: 1px solid black;
-    border-collapse: collapse;
-}
-th, td {
-    padding: 5px;
-}
-</style>
 <script language="javascript">
     function apiBigfixActionStop(actionid) {
         var URL = "action/" + actionid + "/stop";
