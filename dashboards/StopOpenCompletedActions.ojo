@@ -14,13 +14,21 @@
         var URL = "action/" + actionid + "/stop";
         API.Post(URL, function(error, status, body) {
             if(status == 200){
-                alert(body);
+                //alert(body);
                 // this is a heavy handed option: TODO-ajaxify  http://www.w3schools.com/jsref/met_loc_reload.asp
-                location.reload(true);
+                // location.reload(true);
+                // history.go(0);
             }else{
                 alert(error);
             }
         });
+    }
+    
+    function apiBigfixActionStopMany(actionids) {
+        for (i=0; i<actionids.length; i++) {
+            apiBigfixActionStop( actionids[i] );
+        }
+        location.reload(true);
     }
 </script>
   </head>
