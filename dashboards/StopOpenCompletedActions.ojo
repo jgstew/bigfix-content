@@ -39,7 +39,7 @@
     <hr />
     <br />
     <p>
-        <?Relevance (html tag ("button", attr lists of ("onclick", "apiBigfixActionStopMany( ['" & concatenation "', '" of elements of it & "'] )"), "Stop All Actions") ) of set of (it as string) of items 0 of (ids of it, number of elements of reported computer sets of it, number of elements of targeted computer sets of it, names of it) whose(item 1 of it = item 2 of it) of bes actions whose( ( (exists master flags whose(TRUE = it) of current console users) OR (current console user = issuer of it) ) AND (targeted by list flag of it OR targeted by id flag of it) AND not reapply flag of it AND not group member flag of it AND "Open"=state of it AND (now - time issued of it) >= 8 * day ) ?>
+        <?Relevance (if it as string does not contain "apiBigfixActionStopMany( [''] )" then it else NOTHING) of (html tag ("button", attr lists of ("onclick", "apiBigfixActionStopMany( ['" & concatenation "', '" of elements of it & "'] )"), "Stop All Actions") ) of set of (it as string) of items 0 of (ids of it, number of elements of reported computer sets of it, number of elements of targeted computer sets of it, names of it) whose(item 1 of it = item 2 of it) of bes actions whose( ( (exists master flags whose(TRUE = it) of current console users) OR (current console user = issuer of it) ) AND (targeted by list flag of it OR targeted by id flag of it) AND not reapply flag of it AND not group member flag of it AND "Open"=state of it AND (now - time issued of it) >= 8 * day ) ?>
     </p>
   </body>
       ]]></HTML>
