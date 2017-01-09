@@ -24,8 +24,8 @@ th, td {
         API.Post(URL, function(error, status, body) {
             if(status == 200){
                 alert(body);
-                // this is a heavy handed option: TODO-ajaxify
-                location.reload();
+                // this is a heavy handed option: TODO-ajaxify  http://www.w3schools.com/jsref/met_loc_reload.asp
+                location.reload(true);
             }else{
                 alert(error);
             }
