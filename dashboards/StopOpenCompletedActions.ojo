@@ -49,6 +49,8 @@
     <p>
         <?Relevance (if it as string does not contain "thisDashboardActionStopMany( [''] )" then it else NOTHING) of (html tag ("button", attr lists of ("onclick", "thisDashboardActionStopMany( ['" & concatenation "', '" of elements of it & "'] )"), "Stop All Actions") ) of set of (it as string) of items 0 of (ids of it, number of elements of reported computer sets of it, number of elements of targeted computer sets of it, names of it) whose(item 1 of it = item 2 of it) of bes actions whose( ( (exists master flags whose(TRUE = it) of current console users) OR (current console user = issuer of it) ) AND (targeted by list flag of it OR targeted by id flag of it) AND not reapply flag of it AND not group member flag of it AND "Open"=state of it AND (now - time issued of it) >= 0 * day ) ?>
     </p>
+    <p>In the context of this dashboard, an "Open Completed Action" is one that is in the Open state that doesn't reapply and that was targeted at specific computers and all of those computers have run it, and the action is more than a week old.</p>
+    <p>Generally this means that an "Open Completed Action" will never do anything more and can be stopped without consequence to free up server resources.</p>
   </body>
       ]]></HTML>
      </Page>
