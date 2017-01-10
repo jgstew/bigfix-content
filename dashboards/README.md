@@ -21,11 +21,17 @@
 - The Windows BigFix Console is a mix of native views and HTML views wrapped up in a complicated application.
 - It can almost be thought of as a Dashboard of Dashboards.
 
-### Two options for using these:
+## Options for using Dashboards:
 
 - Put the dashboard files in a folder, then load dynamically using the Console's `Load Wizard` option in the Debug Menu.
  - Placing the files in a folder before loading with the console is important, because the console will copy the entire contents of the folder.
 - Add the dashboard files to a custom site. 
+
+### Important files for Dashboards:
+
+- C:\Users\*\AppData\Local\BigFix\Enterprise Console\*\*\Sites\BES Support\OJOShared.js
+- C:\Program Files (x86)\BigFix Enterprise\BES Console\Reference\wizards.js
+- C:\Program Files (x86)\BigFix Enterprise\BES Console\Reference\BESOJO.xsd
 
 ### Load javascript libraries from CDN with fallback:
 
