@@ -10,7 +10,7 @@
       <HTML><![CDATA[
   <head>
 <script language="javascript">
-    function apiBigfixActionStop(actionid) {
+    function apiBigfixActionStopRest(actionid) {
         var URL = "action/" + actionid + "/stop";
         API.Post(URL, function(error, status, body) {
             if(status == 200){
@@ -24,22 +24,30 @@
         });
     }
     
-    function apiBigfixActionStopMany(actionids) {
+    function thisDashboardActionStopMany(actionids) {
+        apiBigfixActionStopManyWizard(actionids);
+        location.reload(true);
+    }
+    
+    function apiBigfixActionStopManyRest(actionids) {
         for (i=0; i<actionids.length; i++) {
             apiBigfixActionStop( actionids[i] );
         }
-        location.reload(true);
+    }
+    
+    function apiBigfixActionStopManyWizard(actionids) {
+        StopActions(actionids);
     }
 </script>
   </head>
   <body>
-    <?Relevance (h2 of ("Open Completed Actions: " & number of elements of it as string) & concatenation of (p of it & (html tag ("button", attr lists of ("onclick", "apiBigfixActionStop(%27" & preceding text of first " " of it & "%27)"), "Stop Action " & preceding text of first " " of it) ) of it) of elements of it) of sets of (it as string as trimmed string) of (item 0 of it as string & " " & item 3 of it) of (ids of it, number of elements of reported computer sets of it, number of elements of targeted computer sets of it, names of it) whose(item 1 of it = item 2 of it) of bes actions whose( ( (exists master flags whose(TRUE = it) of current console users) OR (current console user = issuer of it) ) AND (targeted by list flag of it OR targeted by id flag of it) AND not reapply flag of it AND not group member flag of it AND "Open"=state of it AND (now - time issued of it) >= 8 * day ) ?>
+    <?Relevance (h2 of ("Open Completed Actions: " & number of elements of it as string) & concatenation of (p of it & (html tag ("button", attr lists of ("onclick", "apiBigfixActionStopRest(%27" & preceding text of first " " of it & "%27)"), "Stop Action " & preceding text of first " " of it) ) of it) of elements of it) of sets of (it as string as trimmed string) of (item 0 of it as string & " " & item 3 of it) of (ids of it, number of elements of reported computer sets of it, number of elements of targeted computer sets of it, names of it) whose(item 1 of it = item 2 of it) of bes actions whose( ( (exists master flags whose(TRUE = it) of current console users) OR (current console user = issuer of it) ) AND (targeted by list flag of it OR targeted by id flag of it) AND not reapply flag of it AND not group member flag of it AND "Open"=state of it AND (now - time issued of it) >= 0 * day ) ?>
     <br />
     <br />
     <hr />
     <br />
     <p>
-        <?Relevance (if it as string does not contain "apiBigfixActionStopMany( [''] )" then it else NOTHING) of (html tag ("button", attr lists of ("onclick", "apiBigfixActionStopMany( ['" & concatenation "', '" of elements of it & "'] )"), "Stop All Actions") ) of set of (it as string) of items 0 of (ids of it, number of elements of reported computer sets of it, number of elements of targeted computer sets of it, names of it) whose(item 1 of it = item 2 of it) of bes actions whose( ( (exists master flags whose(TRUE = it) of current console users) OR (current console user = issuer of it) ) AND (targeted by list flag of it OR targeted by id flag of it) AND not reapply flag of it AND not group member flag of it AND "Open"=state of it AND (now - time issued of it) >= 8 * day ) ?>
+        <?Relevance (if it as string does not contain "thisDashboardActionStopMany( [''] )" then it else NOTHING) of (html tag ("button", attr lists of ("onclick", "thisDashboardActionStopMany( ['" & concatenation "', '" of elements of it & "'] )"), "Stop All Actions") ) of set of (it as string) of items 0 of (ids of it, number of elements of reported computer sets of it, number of elements of targeted computer sets of it, names of it) whose(item 1 of it = item 2 of it) of bes actions whose( ( (exists master flags whose(TRUE = it) of current console users) OR (current console user = issuer of it) ) AND (targeted by list flag of it OR targeted by id flag of it) AND not reapply flag of it AND not group member flag of it AND "Open"=state of it AND (now - time issued of it) >= 0 * day ) ?>
     </p>
   </body>
       ]]></HTML>
