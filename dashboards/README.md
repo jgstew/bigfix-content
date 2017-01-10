@@ -29,10 +29,10 @@
 
 ### Important files for Dashboards:
 
-- C:\Users\*\AppData\Local\BigFix\Enterprise Console\*\*\Sites\BES Support\OJOShared.js
-- C:\Program Files (x86)\BigFix Enterprise\BES Console\Reference\wizards.js
-- C:\Program Files (x86)\BigFix Enterprise\BES Console\Reference\BESOJO.xsd
-- C:\Users\*\AppData\Local\BigFix\Enterprise Console\*\*\Sites\BES Support\SiteMap.js
+- `C:\Users\*\AppData\Local\BigFix\Enterprise Console\*\*\Sites\BES Support\OJOShared.js`
+- `C:\Program Files (x86)\BigFix Enterprise\BES Console\Reference\wizards.js`
+- `C:\Program Files (x86)\BigFix Enterprise\BES Console\Reference\BESOJO.xsd`
+- `C:\Users\*\AppData\Local\BigFix\Enterprise Console\*\*\Sites\BES Support\SiteMap.js`
 
 ### Load javascript libraries from CDN with fallback:
 
