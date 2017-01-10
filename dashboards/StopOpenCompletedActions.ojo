@@ -31,7 +31,7 @@
     
     function apiBigfixActionStopManyRest(actionids) {
         for (i=0; i<actionids.length; i++) {
-            apiBigfixActionStop( actionids[i] );
+            apiBigfixActionStopRest( actionids[i] );
         }
     }
     
