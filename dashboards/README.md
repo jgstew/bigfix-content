@@ -50,6 +50,7 @@
 - https://bitbucket.org/bigfixme/dashboard-framework
 - https://msdn.microsoft.com/en-us/library/jj676915(v=vs.85).aspx
 - https://github.com/Gavin-Paolucci-Kleinow/ie-truth
+ - http://stackoverflow.com/questions/27912296/ie11-detect-whether-compatibility-view-is-on-via-javascript
 
 ### Examples:
 
