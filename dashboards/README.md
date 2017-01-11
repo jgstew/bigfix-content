@@ -48,6 +48,8 @@
  - https://github.com/dolox/fallback/issues/77
 - https://github.com/bigfix/adf
 - https://bitbucket.org/bigfixme/dashboard-framework
+- https://msdn.microsoft.com/en-us/library/jj676915(v=vs.85).aspx
+- https://github.com/Gavin-Paolucci-Kleinow/ie-truth
 
 ### Examples:
 
