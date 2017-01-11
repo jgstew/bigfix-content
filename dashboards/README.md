@@ -52,6 +52,7 @@
 - https://technet.microsoft.com/itpro/internet-explorer/ie11-deploy-guide/deprecated-document-modes
 - https://github.com/Gavin-Paolucci-Kleinow/ie-truth
  - http://stackoverflow.com/questions/27912296/ie11-detect-whether-compatibility-view-is-on-via-javascript
+- https://forum.bigfix.com/t/issues-with-console-dashboards-and-internet-explorer-versions-wizards-js-ie11-incompatibility/19790
 
 ### Examples:
 
