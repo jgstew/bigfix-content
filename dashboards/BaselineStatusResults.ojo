@@ -2,7 +2,7 @@
 <!-- vim: set syntax=xml: -->
 <BES>
   <Wizard>
-    <Title>BaselineStatusResults</Title>
+    <Title>Custom - BaselineStatusResults</Title>
     <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
     <DefaultPage>BaselineStatusResults</DefaultPage>
     <Page Name="BaselineStatusResults" DocType="HTML5" > 
