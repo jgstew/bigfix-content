@@ -25,6 +25,7 @@ th, td {
     right:0;
     bottom:0;
     left:0;
+    background-color: grey;
 }
 #Fullscreen img {
     height: auto;
