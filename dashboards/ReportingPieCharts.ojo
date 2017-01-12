@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<BES>
+  <Wizard>
+    <Title>Reporting - Pie Charts</Title>
+    <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+    <DefaultPage>ReportingPieCharts</DefaultPage>
+    <Page Name="ReportingPieCharts" DocType="HTML5" > 
+        <Title>Relay Cache Sizing</Title>
+        <Head><![CDATA[<meta http-equiv="X-UA-Compatible" content="IE=9"><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/5.0.6/highcharts.js" integrity="sha256-QwUrND/LJhYUBcYRAAxtMNWjZhZI+Yr8N7fpvHSFd4E=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/5.0.6/js/modules/data.js" integrity="sha256-AK2WbpyP70279punWOM2OSKsO5eN4QDIjJCxNXBTpe4=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/5.0.6/js/modules/exporting.js" integrity="sha256-rw4LEW/jjb9Bh4Az8wyu58bFgq4pbniE4g76HQeneuY=" crossorigin="anonymous"></script>]]></Head>
+        <HTML><![CDATA[
+<h2>Reporting - Pie Charts</h2>
+
+<?relevance (html "<div id=%22" & item 3 of item 0 of it & html "%22 style=%22min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto%22></div>" & item 1 of it & html "<script> $(function () { $('#" & item 3 of item 0 of it & html "').highcharts({ data: { table: '" & item 2 of item 0 of it & html "' }, chart: { type: 'pie' }, title: { text: '" & item 1 of item 0 of it & html "' }, tooltip: { formatter: function () { return '<b>' + this.series.name + '</b><br/>' + this.point.y + ' of ' + this.point.name.toLowerCase(); } } }); }); </script>") of (it, div "style=%22display:none%22" of (it & html "</table>") of (html "<table id=%22" & item 2 of it & html "%22>" & (thead of concatenations "" of tr of (th of "" & th of name of item 0 of it)) & tbody of concatenations "" of trs of (th of item 1 of it & td of (it as string) of item 0 of it) of (multiplicity of it, it) of unique values of values of results of item 0 of it)) of (item 0 of it, item 1 of it, "datatable" & item 2 of it, "container" & item 2 of it) of (item 0 of it, item 1 of it, (preceding text of first " " of item 1 of it | item 1 of it) ) of (it, name of it) of (bes properties "Device Type"; bes properties "Agent Version") ?>
+
+<style>
+h1, h2 {
+    text-align: center;
+}
+</style>
+        ]]></HTML>
+    </Page>
+  </Wizard>
+</BES>
