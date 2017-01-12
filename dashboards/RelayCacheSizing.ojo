@@ -18,16 +18,14 @@ th, td {
     padding: 5px;
 }
 </style>
-
-There are <strong><?Relevance number of (it, (it as integer * 1024 * 1024) of (preceding text of first " MB" of it) of values of results from (bes properties "BES Relay Cache Size") of bes computers whose(relay server flag of it) ) whose( item 1 of it < item 0 of it ) of ( sums of (it as trimmed string as integer) of following texts of positions 1 of (preceding texts of first " " of following texts of firsts "size" of it) of (it & " ") of unique values of ((preceding text of first " url=" of it | it) of preceding texts of firsts " http" of substrings separated by "sha1" of it) whose(it contains "size") of unique values whose(it contains "prefetch" AND it contains "sha1") of (it as lowercase) of action scripts of bes actions whose("Open" = state of it) ) ?>
-Relays</strong> with caches that are definitely too small and should have their cache sizes increased.
-<br/>
-All relays should have a cache size larger than:<strong>
+<h2>Relay Cache Sizing</h2>
+<p> There are <strong><?Relevance number of (it, (it as integer * 1024 * 1024) of (preceding text of first " MB" of it) of values of results from (bes properties "BES Relay Cache Size") of bes computers whose(relay server flag of it) ) whose( item 1 of it < item 0 of it ) of ( sums of (it as trimmed string as integer) of following texts of positions 1 of (preceding texts of first " " of following texts of firsts "size" of it) of (it & " ") of unique values of ((preceding text of first " url=" of it | it) of preceding texts of firsts " http" of substrings separated by "sha1" of it) whose(it contains "size") of unique values whose(it contains "prefetch" AND it contains "sha1") of (it as lowercase) of action scripts of bes actions whose("Open" = state of it) ) ?>
+Relays</strong> with caches that are definitely too small and should have their cache sizes increased. </p>
+<p> All relays should have a cache size larger than:<strong>
 <?Relevance (if (0<(it / (1024*1024*1024*1024))) then (it / (1024*1024*1024*1024)) as string & " TB" else if (0<(it / (1024*1024*1024))) then (it / (1024*1024*1024)) as string & " GB" else if (0<(it / (1024*1024))) then (it / (1024*1024)) as string & " MB" else if (0<(it / (1024))) then (it / (1024)) as string & " KB" else (it as string & " B")) of  sums of (it as trimmed string as integer) of following texts of positions 1 of (preceding texts of first " " of following texts of firsts "size" of it) of (it & " ") of unique values of ((preceding text of first " url=" of it | it) of preceding texts of firsts " http" of substrings separated by "sha1" of it) whose(it contains "size") of unique values whose(it contains "prefetch" AND it contains "sha1") of (it as lowercase) of action scripts of bes actions whose("Open" = state of it) ?>
-</strong>, which is the size of the downloads in all open actions. Relay caches should probably be at least <strong>50 GB</strong> even if this number is much less.
+</strong>, which is the size of the downloads in all open actions. Relay caches should probably be at least <strong>50 GB</strong> even if this number is much less.</p>
+<p> The root and/or top level relays should have a cache size at least double the minimum cache size, and generally <strong>300 GB</strong> or larger.</p>
 <br/>
-The root and/or top level relays should have a cache size at least double the minimum cache size, and generally <strong>300 GB</strong> or larger.
-<br/><br/>
 
 <table>
 <tr><th>Relay</th><th>Cache</th></tr>
