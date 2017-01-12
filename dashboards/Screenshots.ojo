@@ -2,7 +2,7 @@
 <!-- vim: set syntax=xml: -->
 <BES>
   <Wizard>
-    <Title>Screenshots</Title>
+    <Title>Custom - Screenshots</Title>
     <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
     <DefaultPage>Screenshots</DefaultPage>
     <Page Name="Screenshots" DocType="HTML5" > 
