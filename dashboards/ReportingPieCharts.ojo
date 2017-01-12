@@ -2,7 +2,7 @@
 <!-- vim: set syntax=xml: -->
 <BES>
   <Wizard>
-    <Title>Reporting - Pie Charts</Title>
+    <Title>Custom - Reporting - Pie Charts</Title>
     <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
     <DefaultPage>ReportingPieCharts</DefaultPage>
     <Page Name="ReportingPieCharts" DocType="HTML5" > 
