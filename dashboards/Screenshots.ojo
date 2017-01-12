@@ -7,7 +7,7 @@
     <DefaultPage>Screenshots</DefaultPage>
     <Page Name="Screenshots" DocType="HTML5" > 
         <Title>Screenshots</Title>
-        <Head><![CDATA[<meta http-equiv="X-UA-Compatible" content="IE=9">]]></Head>
+        <Head><![CDATA[<meta http-equiv="X-UA-Compatible" content="IE=9"><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>]]></Head>
         <HTML><![CDATA[
 <style>
 table, th, td {
@@ -17,11 +17,41 @@ table, th, td {
 th, td {
     padding: 5px;
 }
+#Fullscreen {
+    width: 100%;
+    display: none;
+    position:fixed;
+    top:0;
+    right:0;
+    bottom:0;
+    left:0;
+}
+#Fullscreen img {
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
 </style>
-
+<script>
+$(document).ready(function(){
+                 $('#Fullscreen img').css('width', $(document).width() + 'px');
+                 //for when you click on an image
+                 $('.screenshot').click(function(){
+                     var src = $(this).attr('src'); //get the source attribute of the clicked image
+                     $('#Fullscreen img').attr('src', src); //assign it to the tag for your fullscreen div
+                     $('#Fullscreen').fadeIn();
+                 });
+                 $('#Fullscreen').click(function(){
+                     $(this).fadeOut(); //this will hide the fullscreen div if you click away from the image. 
+                 });
+    });
+</script>
+<div id="Fullscreen">
+    <img src="" alt="" />
+</div>
 <table>
     <tr><th>Computer</th><th>Capture Time</th><th>Screenshot</th></tr>
-    <?Relevance trs of ( concatenations of tds of (html it) of (name of it; (preceding texts of lasts " " of it) of (following texts of firsts ", " of it) of (it as string) of values of results from (bes properties whose(analysis flag of it AND "Screenshot Taken" = name of it AND active flag of best activation of source analysis of it)) of it; ("<img alt='" & item 0 of it & " Screenshot' height='500' src='data:image/png;base64," & item 1 of it & "'>") of (name of computer of it, concatenations of values of it) of results from (bes properties whose(analysis flag of it AND "Screenshot" = name of it AND active flag of best activation of source analysis of it)) of it) ) of computers of results of bes properties whose(analysis flag of it AND "Screenshot" = name of it AND active flag of best activation of source analysis of it) ?>
+    <?Relevance trs of ( concatenations of tds of (html it) of (name of it; (preceding texts of lasts " " of it) of (following texts of firsts ", " of it) of (it as string) of values of results from (bes properties whose(analysis flag of it AND "Screenshot Taken" = name of it AND active flag of best activation of source analysis of it)) of it; ("<img class='screenshot' alt='" & item 0 of it & " Screenshot' height='500' src='data:image/png;base64," & item 1 of it & "'>") of (name of computer of it, concatenations of values of it) of results from (bes properties whose(analysis flag of it AND "Screenshot" = name of it AND active flag of best activation of source analysis of it)) of it) ) of computers of results of bes properties whose(analysis flag of it AND "Screenshot" = name of it AND active flag of best activation of source analysis of it) ?>
 </table>
         ]]></HTML>
     </Page>
