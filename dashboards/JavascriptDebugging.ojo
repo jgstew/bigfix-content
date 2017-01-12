@@ -2,7 +2,7 @@
 <!-- vim: set syntax=xml: -->
 <BES>
   <Wizard>
-    <Title>Javascript Debugging</Title>
+    <Title>Custom - Javascript Debugging</Title>
     <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
     <DefaultPage>JavascriptDebugging</DefaultPage>
     <Page Name="JavascriptDebugging" DocType="HTML5" >
