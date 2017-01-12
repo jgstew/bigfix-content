@@ -2,7 +2,7 @@
 <!-- vim: set syntax=xml: -->
 <BES>
   <Wizard>
-    <Title>Actions - Stop Open Completed Actions</Title>
+    <Title>Custom - Actions - Stop Open Completed Actions</Title>
     <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
     <DefaultPage>StopOpenCompletedActions</DefaultPage>
     <Page Name="StopOpenCompletedActions" DocType="HTML5" > 
