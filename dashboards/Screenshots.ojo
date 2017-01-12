@@ -34,7 +34,8 @@ th, td {
 </style>
 <script>
 $(document).ready(function(){
-                 $('#Fullscreen img').css('width', $(document).width() + 'px');
+                 $('#Fullscreen img').css('max-width', $( window ).width() + 'px');
+                 $('#Fullscreen img').css('max-height', $( window ).height() + 'px');
                  //for when you click on an image
                  $('.screenshot').click(function(){
                      var src = $(this).attr('src'); //get the source attribute of the clicked image
