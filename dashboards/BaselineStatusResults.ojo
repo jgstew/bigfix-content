@@ -12,7 +12,7 @@
 <h2>Baseline Status Results</h2>
 
 <div class="ui-widget">
-    <label>Choose a baseline to examine: TODO - change relevance that lists baselines</label>
+    <label><strong>Choose a baseline to examine: </strong></label>
     <select id="baselinechoice">
         <?Relevance ( html tag ("option", attr lists of ("value", id of it as string) of it, id of it as string & " " & name of it ) ) of top level bes actions whose(multiple flag of it AND exists name of it AND "Multiple Action Group" != name of it AND "Open" = state of it AND (now - time issued of it) <= 90 * day AND ( exists statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it OR exists member actions whose(exists statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it) of it ) ) ?>
     </select>
@@ -198,7 +198,6 @@ $(document).ready(function(){
     
     $( ".custom-combobox-input" ).on( "autocompleteselect", function( event, ui ) {
         //alert( ui.item.value.toString() );
-        //alert( bigfix.relevance.evaluate(' trs of ( concatenations of tds of ( (item 0 of it * 100 / item 1 of it) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it, number of statuses of results of it, names of it) of member actions of top level bes actions whose("' + ui.item.value + '" contains (id of it as string & " " & name of it)) ') );
         $("#results").html( bigfix.relevance.evaluate(' trs of ( concatenations of tds of ( ( (item 0 of it * 100 / item 1 of it) | 0 ) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it | 0, number of statuses of results of it | 0, names of it) of member actions whose(exists statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it) of top level bes actions whose(multiple flag of it AND exists name of it AND "' + ui.item.value.toString() + '" contains (id of it as string & " " & name of it)) ') );
     });
 });
