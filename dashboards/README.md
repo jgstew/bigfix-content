@@ -42,6 +42,8 @@
 
 ### References:
 
+- https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Tivoli%20Endpoint%20Manager/page/IEM%20Console%20JavaScript%20_%20Relevance
+ - The javascript available in fixlets seems similar to that in wizards. Might be the same.
 - http://stackoverflow.com/a/9400432/861745
 - http://stackoverflow.com/questions/5257923/how-to-load-local-script-files-as-fallback-in-cases-where-cdn-are-blocked-unavai
 - http://fallback.io/
