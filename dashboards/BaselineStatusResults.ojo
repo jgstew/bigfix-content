@@ -197,6 +197,9 @@ th, td {
 $(document).ready(function(){
     $("select").combobox();
     
+    // set initial results
+    $("#results").html( bigfix.relevance.evaluate(' trs of ( concatenations of tds of ( ( (item 0 of it * 100 / item 1 of it) | 0 ) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it | 0, number of statuses of results of it | 0, names of it) of member actions whose(exists statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it) of top level bes actions whose(multiple flag of it AND exists name of it AND "' + ( $( ".custom-combobox-input" )[0].value ) + '" contains (id of it as string & " " & name of it)) ') );
+    
     $( ".custom-combobox-input" ).on( "autocompleteselect", function( event, ui ) {
         //alert( ui.item.value.toString() );
         $("#results").html( bigfix.relevance.evaluate(' trs of ( concatenations of tds of ( ( (item 0 of it * 100 / item 1 of it) | 0 ) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it | 0, number of statuses of results of it | 0, names of it) of member actions whose(exists statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it) of top level bes actions whose(multiple flag of it AND exists name of it AND "' + ui.item.value.toString() + '" contains (id of it as string & " " & name of it)) ') );
