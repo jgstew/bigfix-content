@@ -17,6 +17,7 @@
 
 
 <script language="javascript">
+// get the IE effective documentMode
 document.getElementById('resultDocMode').innerHTML = document.documentMode;
 
 // self-invoking function expression that returns all non-native javascript functions  https://github.com/jgstew/tools/blob/master/JS/GetFunctions.js
