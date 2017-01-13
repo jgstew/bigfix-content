@@ -198,7 +198,7 @@ $(document).ready(function(){
     
     $( ".custom-combobox-input" ).on( "autocompleteselect", function( event, ui ) {
         //alert(ui.item.value);
-        $("#results").html( EvaluateRelevance(' trs "class=%22result%22" of ( concatenations of tds of ( (item 0 of it * 100 / item 1 of it) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it, number of statuses of results of it, names of it) of member actions of top level bes actions whose("' + ui.item.value + '" = (id of it as string & " " & name of it)) ') );
+        $("#results").html( EvaluateRelevance(' trs of ( concatenations of tds of ( (item 0 of it * 100 / item 1 of it) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it, number of statuses of results of it, names of it) of member actions of top level bes actions whose("' + ui.item.value + '" contains (id of it as string & " " & name of it)) ') );
     });
 });
 
