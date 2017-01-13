@@ -17,13 +17,13 @@
 <div id="container" style="min-width: 310px; height: 300px; max-width: 600px; margin: 0 auto"></div>
 <br/><br/>
 
-<?relevance (html "<table id=%22table%22 class=%22stripe%22 border=1 style=%22border-collapse: collapse; border: medium none;%22>" & html ("<thead><th>Computer Name</th><th>vPro Configured</th><th>vPro State</th><th>Last Check - vPro</th><th>Days since Last Check</th><th>IP Address</th><th>OS</th></thead><tbody>") & (it) & html "</tbody></table>") of concatenations of trs of (td of ( ( value of result (bes property "Computer Name",it) ) | "<Not Set>" ) & td of ( ( value of result (bes property "vPro Configured?",it) ) | "<Not Set>" ) & td of ( ( value of result (bes property "vPro State",it) ) | "<Not Set>" ) & td of ( ( value of result (bes property "Last Check - vPro",it) ) | "<Not Set>" ) & td of (if (exists (values of result (bes property "Last Check - vPro",it))) then ( (((now - it) / (24*hour)) of (value of result (bes property "Last Check - vPro",it) as time)) as string) else "<Not Set>") & td of (concatenation " | " of ((values of result (bes property "IP Address",it))))  & td of ( ( value of result (bes property "OS",it) ) | "<Not Set>" ) ) of bes computers whose (exists value of result (bes property "Last Check - vPro", it)) ?>
+<?relevance (html "<table id=%22table%22 class=%22compact display%22 style=%22border-collapse: collapse; border: medium none;%22>" & html ("<thead><th>Computer Name</th><th>vPro Configured</th><th>vPro State</th><th>Last Check - vPro</th><th>Days since Last Check</th><th>IP Address</th><th>OS</th></thead><tbody>") & (it) & html "</tbody></table>") of concatenations of trs of (td of ( ( value of result (bes property "Computer Name",it) ) | "<Not Set>" ) & td of ( ( value of result (bes property "vPro Configured?",it) ) | "<Not Set>" ) & td of ( ( value of result (bes property "vPro State",it) ) | "<Not Set>" ) & td of ( ( value of result (bes property "Last Check - vPro",it) ) | "<Not Set>" ) & td of (if (exists (values of result (bes property "Last Check - vPro",it))) then ( (((now - it) / (24*hour)) of (value of result (bes property "Last Check - vPro",it) as time)) as string) else "<Not Set>") & td of (concatenation " | " of ((values of result (bes property "IP Address",it))))  & td of ( ( value of result (bes property "OS",it) ) | "<Not Set>" ) ) of bes computers whose (exists value of result (bes property "Last Check - vPro", it)) ?>
 
 <script>
 $(document).ready( function () {
     $('#table').dataTable( {
         "order": [ 0, 'asc' ],
-        "pageLength": 25
+        "pageLength": 10
 } )
 } );
 </script>
