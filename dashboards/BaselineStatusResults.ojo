@@ -214,7 +214,10 @@ $(document).ready(function(){
     $('#resultsTable').dataTable( {
         "pageLength": 15,
         "bDestroy": true,
-        "order": []
+        "order": [],
+        "language": {
+            "zeroRecords": "Choose a baseline above. Only baselines with component failures are selectable."
+        }
     });
     
     $( ".custom-combobox-input" ).on( "autocompleteselect", function( event, ui ) {
