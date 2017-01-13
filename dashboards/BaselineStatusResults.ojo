@@ -47,6 +47,7 @@ th, td {
     padding: 0;
   }
   .custom-combobox-input {
+    width: 555px;
     margin: 0;
     padding: 5px 10px;
   }
@@ -203,6 +204,8 @@ $(document).ready(function(){
 });
 
 /***********************************************/
+// the following is taken from bigfixme-api.0.0.1.js
+
 var bigfix = bigfix?bigfix:{};
 bigfix.relevance = {};
 
