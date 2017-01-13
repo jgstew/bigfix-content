@@ -53,6 +53,7 @@ th, td {
   }
 </style>
 <script>
+
 // https://bigfix.me/relevance/details/3019196
 // http://jqueryui.com/autocomplete/#combobox
 // TODO - this could probably be a lot better than just taken from a demo
@@ -198,9 +199,64 @@ $(document).ready(function(){
     
     $( ".custom-combobox-input" ).on( "autocompleteselect", function( event, ui ) {
         //alert(ui.item.value);
-        $("#results").html( EvaluateRelevance(' trs of ( concatenations of tds of ( (item 0 of it * 100 / item 1 of it) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it, number of statuses of results of it, names of it) of member actions of top level bes actions whose("' + ui.item.value + '" contains (id of it as string & " " & name of it)) ') );
+        //alert( bigfix.relevance.evaluate(' trs of ( concatenations of tds of ( (item 0 of it * 100 / item 1 of it) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it, number of statuses of results of it, names of it) of member actions of top level bes actions whose("' + ui.item.value + '" contains (id of it as string & " " & name of it)) ') );
+        $("#results").html( bigfix.relevance.evaluate(' trs of ( concatenations of tds of ( (item 0 of it * 100 / item 1 of it) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it, number of statuses of results of it, names of it) of member actions of top level bes actions whose("' + ui.item.value + '" contains (id of it as string & " " & name of it)) ') );
     });
 });
+
+/***********************************************/
+var bigfix = bigfix?bigfix:{};
+bigfix.relevance = {};
+
+	bigfix.relevance.evaluate = function(relevance, callbackObj) {
+	
+		if(callbackObj !== undefined && callbackObj !== null) {
+			var results;
+			
+			if(callbackObj.failure !== undefined && callbackObj.failure !== null) {
+				callbackObj.failure = bigfix.relevance.errorWrapper(relevance, callbackObj.failure);
+			} else {
+				callbackObj.failure = bigfix.relevance.errorWrapper(relevance, bigfix.relevance.defaultErrorHandler);
+			}
+			
+			try {
+				results = Relevance(relevance, callbackObj);
+			} catch (e2) {
+				return undefined;
+			}	
+			
+			return results;
+		} else {
+			var results;
+					
+			try {
+				results = EvaluateRelevance(relevance);
+			} catch (e2) {
+				return undefined;
+			}	
+			
+			return results;
+		}
+	};
+
+	bigfix.relevance.errorWrapper = function(relevance, customErrorHandler) {
+		if(customErrorHandler !== undefined && customErrorHandler != null) {
+			return function(errorMessage){
+				customErrorHandler(relevance, new Error(errorMessage));
+			};
+		}
+		
+		return function(errorMessage){
+			bigfix.relevance.defaultErrorHandler(relevance, new Error(errorMessage));
+		};
+	};
+
+
+	bigfix.relevance.defaultErrorHandler = function(relevance, error){
+		// rethrow error
+		throw error;
+	};
+/***********************************************/
 
 </script>
         ]]></HTML>
