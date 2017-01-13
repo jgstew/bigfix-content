@@ -19,7 +19,7 @@
 <script language="javascript">
 document.getElementById('resultDocMode').innerHTML = document.documentMode;
 
-// self-invoking function expression that returns all non-native javascript functions
+// self-invoking function expression that returns all non-native javascript functions  https://github.com/jgstew/tools/blob/master/JS/GetFunctions.js
 (function () {
     document.write('<br /><hr /><h2>Javascript Functions:</h2><ul>');
     for(var i in this) {
