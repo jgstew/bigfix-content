@@ -26,7 +26,7 @@
 </div>
 <br />
 <br />
-<table id="resultsTable">
+<table id="resultsTable" class="compact">
     <thead><tr><th>Failure%</th><th>#Failed</th><th>#Total</th><th>Component Name</th></tr></thead>
     <tbody id="results">
     
@@ -37,13 +37,6 @@
 <style>
 table {
     width: 100%;
-}
-table, th, td {
-    border: 1px solid black;
-    border-collapse: collapse;
-}
-th, td {
-    padding: 5px;
 }
   .custom-combobox {
     position: relative;
