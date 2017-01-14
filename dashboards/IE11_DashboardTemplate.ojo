@@ -84,13 +84,22 @@ function InsertUtilityDiv() {
         tus += '	<div id="theConnectionInfoCurrentUser"></div>';
         tus += '</div>';
         tus += '</div>';
-        //alert("InsertUtilityDiv");
+        //alert("Running InsertUtilityDiv");
         window.document.body.insertAdjacentHTML("afterBegin", tus);
     }
 }
 
 //window.attachEvent("onload", InsertUtilityDiv);
-window.addEventListener("load", InsertUtilityDiv);
+//window.addEventListener("load", InsertUtilityDiv);
+(function () {
+    // IE9+ and other browsers
+    if(window.addEventListener){ 
+        window.addEventListener('load', InsertUtilityDiv);
+    } else {
+        // IE8 or earlier Fix
+        window.attachEvent("onload", InsertUtilityDiv);
+    }
+})();
 
 function BESFixletID(sid, fid) {
     this.SiteID = sid;
