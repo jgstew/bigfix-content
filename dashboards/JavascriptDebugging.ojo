@@ -7,7 +7,9 @@
     <DefaultPage>JavascriptDebugging</DefaultPage>
     <Page Name="JavascriptDebugging" DocType="HTML5" >
         <Title>Javascript Debugging</Title>
-        <Head><![CDATA[<meta http-equiv="X-UA-Compatible" content="IE=9"></script>]]></Head>
+        <Head><![CDATA[
+            <meta http-equiv="X-UA-Compatible" content="IE=9">
+        ]]></Head>
         <HTML><![CDATA[
 <h1>IE DocumentMode:</h1>
 <h2 id="resultDocMode">detecting…</h2>
