@@ -7,7 +7,11 @@
     <DefaultPage>Screenshots</DefaultPage>
     <Page Name="Screenshots" DocType="HTML5" > 
         <Title>Screenshots</Title>
-        <Head><![CDATA[<meta http-equiv="X-UA-Compatible" content="IE=9"><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js" integrity="sha256-Gn7MUQono8LUxTfRA0WZzJgTua52Udm1Ifrk5421zkA=" crossorigin="anonymous"></script>]]></Head>
+        <Head><![CDATA[
+            <meta http-equiv="X-UA-Compatible" content="IE=9">
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js" integrity="sha256-Gn7MUQono8LUxTfRA0WZzJgTua52Udm1Ifrk5421zkA=" crossorigin="anonymous"></script>
+        ]]></Head>
         <HTML><![CDATA[
 <style>
 table, th, td {
