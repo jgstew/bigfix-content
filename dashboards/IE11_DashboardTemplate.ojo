@@ -15,8 +15,7 @@
         <HTML><![CDATA[
 </noscript>
 <h2>IE11 Dashboard Template</h2>
-<h3><span>IE DocumentMode:</span>
-<span id="resultDocMode">detecting…</span></h3>
+<h3><span>IE DocumentMode:</span><span id="resultDocMode">detecting…</span></h3>
 
 <script language="javascript">
 // get the IE effective documentMode
