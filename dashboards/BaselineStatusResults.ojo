@@ -203,8 +203,29 @@ $(document).ready(function(){
     // set initial results
     $("#results").html( bigfix.relevance.evaluate(' trs of ( concatenations of tds of ( ( (item 0 of it * 100 / item 1 of it) | 0 ) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it | 0, number of statuses of results of it | 0, names of it) of member actions whose(exists statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it) of top level bes actions whose(multiple flag of it AND exists name of it AND "' + ( $( ".custom-combobox-input" )[0].value ) + '" contains (id of it as string & " " & name of it)) ') );
     
+    // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
+    // https://datatables.net/plug-ins/api/fnSortNeutral
+    // https://cdn.datatables.net/plug-ins/1.10.13/api/fnSortNeutral.js
+    //  - Author: https://datatables.net/forums/profile/1/allan
+    jQuery.fn.dataTableExt.oApi.fnSortNeutral = function ( oSettings )
+    {
+        /* Remove any current sorting */
+        oSettings.aaSorting = [];
+
+        /* Sort display arrays so we get them in numerical order */
+        oSettings.aiDisplay.sort( function (x,y) {
+            return x-y;
+        } );
+        oSettings.aiDisplayMaster.sort( function (x,y) {
+            return x-y;
+        } );
+
+        /* Redraw */
+        oSettings.oApi._fnReDraw( oSettings );
+    };
+
     // https://legacy.datatables.net/ref#bDestroy
-    $('#resultsTable').dataTable( {
+    var oDataTable = $('#resultsTable').dataTable( {
         "pageLength": 15,
         "bDestroy": true,
         "order": [],
@@ -221,13 +242,19 @@ $(document).ready(function(){
         
         $("#results").html( bigfix.relevance.evaluate(' trs of ( concatenations of tds of ( ( (item 0 of it * 100 / item 1 of it) | 0 ) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it | 0, number of statuses of results of it | 0, names of it) of member actions whose(exists statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it) of top level bes actions whose(multiple flag of it AND exists name of it AND "' + ui.item.value.toString() + '" contains (id of it as string & " " & name of it)) ') );
         
-        $('#resultsTable').dataTable( {
+        oDataTable = $('#resultsTable').dataTable( {
             "pageLength": 15,
             "bDestroy": true,
             "order": []
         });
     });
     
+    // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
+    //  - Author: https://datatables.net/forums/profile/6627/manifestinteractive
+    $('.sorting, .sorting_asc, .sorting_desc').dblclick(function(){
+        oDataTable.fnSortNeutral();
+        return false;
+    });
 });
 
 
