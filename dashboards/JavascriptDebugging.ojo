@@ -9,11 +9,11 @@
         <Title>Javascript Debugging</Title>
         <Head><![CDATA[
             <meta http-equiv="X-UA-Compatible" content="IE=11">
-            <script src="C:\Users\jgstew\Documents\_BigFix\wizards.js"></script>
-            <noscript>
+            <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
         ]]></Head>
         <HTML><![CDATA[
-</noscript>
+            <script language="javascript">InsertUtilityDiv();</script>
+
 <h1>IE DocumentMode:</h1>
 <h2 id="resultDocMode">detecting…</h2>
 <h1>Detect IE/Edge version with JavaScript:</h1>
