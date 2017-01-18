@@ -228,7 +228,7 @@ $(document).ready(function(){
     var oDataTable = $('#resultsTable').dataTable( {
         "pageLength": 15,
         "bDestroy": true,
-        "order": [],
+        "order": [[ 1, 'desc' ]],
         "language": {
             "zeroRecords": "Choose a baseline above. Only baselines with component failures are selectable."
         }
@@ -245,7 +245,7 @@ $(document).ready(function(){
         oDataTable = $('#resultsTable').dataTable( {
             "pageLength": 15,
             "bDestroy": true,
-            "order": []
+            "order": [[ 1, 'desc' ]]
         });
     });
     
