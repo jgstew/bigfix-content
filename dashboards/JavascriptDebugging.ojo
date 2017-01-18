@@ -9,6 +9,8 @@
         <Title>Javascript Debugging</Title>
         <Head><![CDATA[
             <meta http-equiv="X-UA-Compatible" content="IE=11">
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js" integrity="sha256-ffw+9zwShMev88XNrDgS0hLIuJkDfXhgyLogod77mn8=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/detectizr/2.2.0/detectizr.js" integrity="sha256-mlPUqLPaU8r9zgGmNx2H4AxxQlXkI/uAGFfsOVU5Q6c=" crossorigin="anonymous"></script>
             <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
         ]]></Head>
         <HTML><![CDATA[
@@ -19,11 +21,14 @@
 <h1>Detect IE/Edge version with JavaScript:</h1>
 <h2 id="result">detecting…</h2>
 <p id="details">n/a</p>
-
+<hr />
 
 <script language="javascript">
 // get the IE effective documentMode
 document.getElementById('resultDocMode').innerHTML = document.documentMode;
+
+Detectizr.detect({detectScreen:true});
+document.write( "<b>Device Type</b>: " + Detectizr.device.type + "<br>" + "<b>Device OS</b>: " + Detectizr.os.name + " " + Detectizr.os.version + "<br>" + "<b>Browser</b>: " + Detectizr.browser.name + " " + Detectizr.browser.version + "<br>" );
 
 // self-invoking function expression that returns all non-native javascript functions  https://github.com/jgstew/tools/blob/master/JS/GetFunctions.js
 (function () {
@@ -35,7 +40,6 @@ document.getElementById('resultDocMode').innerHTML = document.documentMode;
     }
     document.write('</ul><hr />');
 })();
-
 
 // Get IE or Edge browser version
 // https://codepen.io/gapcode/pen/vEJNZN
