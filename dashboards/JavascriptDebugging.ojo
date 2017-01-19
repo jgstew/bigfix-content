@@ -20,7 +20,7 @@
 <h2 id="resultDocMode">detecting…</h2>
 <h1>Detect IE/Edge version with JavaScript:</h1>
 <h2 id="result">detecting…</h2>
-<p id="details">n/a</p>
+<p id="details"> na </p>
 <hr />
 
 <script language="javascript">
@@ -28,11 +28,16 @@
 document.getElementById('resultDocMode').innerHTML = document.documentMode;
 
 Detectizr.detect({detectScreen:true});
-document.write( "<b>Device Type</b>: " + Detectizr.device.type + "<br>" + "<b>Device OS</b>: " + Detectizr.os.name + " " + Detectizr.os.version + "<br>" + "<b>Browser</b>: " + Detectizr.browser.name + " " + Detectizr.browser.version + "<br>" );
+document.write( "<h2>Detectizr:</h2>" );
+document.write( "<b>Device Type</b>: " + Detectizr.device.type + "<br>" + "<b>Device OS</b>: " + Detectizr.os.name + " " + Detectizr.os.version + "<br>" + "<b>Browser</b>: " + Detectizr.browser.name + " " + Detectizr.browser.version + "<br /><br />" );
+
+document.write( JSON.stringify( Detectizr ) );
+document.write( "<br /><h2>Modernizr:</h2>" );
+document.write( JSON.stringify( Modernizr ) );
 
 // self-invoking function expression that returns all non-native javascript functions  https://github.com/jgstew/tools/blob/master/JS/GetFunctions.js
 (function () {
-    document.write('<br /><hr /><h2>Javascript Functions:</h2><ul>');
+    document.write('<br /><br /><hr /><h2>Javascript Functions:</h2><ul>');
     for(var i in this) {
         if( this[i] && "function"==(typeof this[i]).toString() && !~this[i].toString().indexOf("[native code]") ) {
             document.write('<li>'+ this[i].toString() +"</li>");
