@@ -31,6 +31,7 @@ Detectizr.detect({detectScreen:true});
 document.write( "<h2>Detectizr:</h2>" );
 document.write( "<b>Device Type</b>: " + Detectizr.device.type + "<br>" + "<b>Device OS</b>: " + Detectizr.os.name + " " + Detectizr.os.version + "<br>" + "<b>Browser</b>: " + Detectizr.browser.name + " " + Detectizr.browser.version + "<br /><br />" );
 
+// http://stackoverflow.com/questions/957537/how-can-i-display-a-javascript-object
 document.write( JSON.stringify( Detectizr ) );
 document.write( "<br /><h2>Modernizr:</h2>" );
 document.write( JSON.stringify( Modernizr ) );
