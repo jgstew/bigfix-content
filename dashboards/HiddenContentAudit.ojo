@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<BES>
+  <Wizard>
+    <Title>Custom - Hidden Content Audit</Title>
+    <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+    <DefaultPage>HiddenContentAudit</DefaultPage>
+    <Page Name="HiddenContentAudit" DocType="HTML5" > 
+        <Title>Hidden Content Audit</Title>
+        <Head><![CDATA[
+            <meta http-equiv="X-UA-Compatible" content="IE=11">
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=" crossorigin="anonymous"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" integrity="sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik=" crossorigin="anonymous" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/js/jquery.dataTables.min.js" integrity="sha256-yWA356lDhruy1J8jGncaMWKAPYDbK47OKb0uT/aELLc=" crossorigin="anonymous"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/css/jquery.dataTables.min.css" integrity="sha256-+Z1rYa3ys5OdZNUck5G7lBvb8A13OrYwvf+d8PfEaHQ=" crossorigin="anonymous" />
+            <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
+        ]]></Head>
+        <HTML><![CDATA[
+            <script language="javascript">InsertUtilityDiv();</script>
+
+<h2>Hidden Content Audit:</h2>
+
+<table id="resultsTable" class="compact display">
+    <thead><tr><th>#Applicable</th><th>Type</th><th>Hidden Content Name</th><th>Content ID</th></tr></thead>
+    <tbody id="results">
+    
+    </tbody>
+</table>
+
+
+<style>
+table {
+    width: 100%;
+}
+</style>
+<script>
+
+$(document).ready(function(){
+    
+    // set initial results
+    $("#results").html( bigfix.relevance.evaluate(' trs of ( html concatenations of tds of (applicable computer count of it as string; type of it; name of it; id of it as string) ) of bes fixlets whose(not visible flag of it) ') );
+    
+    // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
+    // https://datatables.net/plug-ins/api/fnSortNeutral
+    // https://cdn.datatables.net/plug-ins/1.10.13/api/fnSortNeutral.js
+    //  - Author: https://datatables.net/forums/profile/1/allan
+    jQuery.fn.dataTableExt.oApi.fnSortNeutral = function ( oSettings )
+    {
+        /* Remove any current sorting */
+        oSettings.aaSorting = [];
+
+        /* Sort display arrays so we get them in numerical order */
+        oSettings.aiDisplay.sort( function (x,y) {
+            return x-y;
+        } );
+        oSettings.aiDisplayMaster.sort( function (x,y) {
+            return x-y;
+        } );
+
+        /* Redraw */
+        oSettings.oApi._fnReDraw( oSettings );
+    };
+
+    // https://legacy.datatables.net/ref#bDestroy
+    var oDataTable = $('#resultsTable').dataTable( {
+        "pageLength": 25,
+        "bDestroy": true,
+        "order": [[ 0, 'desc' ]],
+        "language": {
+            "zeroRecords": "No hidden content. Nothing to see here."
+        }
+    });
+    
+    // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
+    //  - Author: https://datatables.net/forums/profile/6627/manifestinteractive
+    $('.sorting, .sorting_asc, .sorting_desc').dblclick(function(){
+        oDataTable.fnSortNeutral();
+        return false;
+    });
+});
+
+
+
+/***********************************************/
+// the following is taken from bigfixme-api.0.0.1.js
+
+var bigfix = bigfix?bigfix:{};
+bigfix.relevance = {};
+
+	bigfix.relevance.evaluate = function(relevance, callbackObj) {
+	
+		if(callbackObj !== undefined && callbackObj !== null) {
+			var results;
+			
+			if(callbackObj.failure !== undefined && callbackObj.failure !== null) {
+				callbackObj.failure = bigfix.relevance.errorWrapper(relevance, callbackObj.failure);
+			} else {
+				callbackObj.failure = bigfix.relevance.errorWrapper(relevance, bigfix.relevance.defaultErrorHandler);
+			}
+			
+			try {
+				results = Relevance(relevance, callbackObj);
+			} catch (e2) {
+				return undefined;
+			}	
+			
+			return results;
+		} else {
+			var results;
+					
+			try {
+				results = EvaluateRelevance(relevance);
+			} catch (e2) {
+				return undefined;
+			}	
+			
+			return results;
+		}
+	};
+
+	bigfix.relevance.errorWrapper = function(relevance, customErrorHandler) {
+		if(customErrorHandler !== undefined && customErrorHandler != null) {
+			return function(errorMessage){
+				customErrorHandler(relevance, new Error(errorMessage));
+			};
+		}
+		
+		return function(errorMessage){
+			bigfix.relevance.defaultErrorHandler(relevance, new Error(errorMessage));
+		};
+	};
+
+
+	bigfix.relevance.defaultErrorHandler = function(relevance, error){
+		// rethrow error
+		throw error;
+	};
+/***********************************************/
+
+</script>
+        ]]></HTML>
+    </Page>
+  </Wizard>
+</BES>
