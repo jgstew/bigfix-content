@@ -14,6 +14,9 @@
             <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=" crossorigin="anonymous"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/js/jquery.dataTables.min.js" integrity="sha256-yWA356lDhruy1J8jGncaMWKAPYDbK47OKb0uT/aELLc=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" integrity="sha256-gfQwA6PlkZsLqWu4bU4hXPrbTqzixm0B5MdvBLI+Oas=" crossorigin="anonymous"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.css" integrity="sha256-R2jMs9TISUBFqVTr3Tfh2ChO3bK75hs0FBwshlxrUUw=" crossorigin="anonymous" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.js" integrity="sha256-lYa1oow3mJv8AcE44iQ5PoqmTOwP1mUzcuom5btzetg=" crossorigin="anonymous"></script>
             <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
         ]]></Head>
         <HTML><![CDATA[
@@ -28,13 +31,16 @@
     </tbody>
 </table>
 
+<div id="chart" style="position: absolute; z-index: 3; top: -33px; right: 130px;">
+  <svg></svg>
+</div>
 
 <style>
 table {
     width: 100%;
 }
 h2 {
-    padding: 1px;
+    padding: 0px;
     margin: 0px 0px 1px 0px;
     border: 0;
 }
@@ -91,14 +97,30 @@ $(document).ready(function(){
         if(this.resizeTO) clearTimeout(this.resizeTO);
         this.resizeTO = setTimeout(function() {
             $(this).trigger('resizeEnd');
-        }, 10);
+        }, 5);
     });
     
     $(window).bind('resizeEnd', function() {
-        //do something, window hasn't changed size in 10ms
+        //do something, window hasn't changed size in 5ms
         oDataTable.fnDraw();
     });
+    
 });
+
+    nv.addGraph(function() {
+        var chart = nv.models.pieChart()
+            .x(function(d) { return d.label })
+            .y(function(d) { return d.value })
+            .showLabels(false)
+            .showLegend(false);
+
+        d3.select("#chart svg")
+            .datum( <?Relevance ("[ " & it & " ]") of concatenations ", " of (html it) of ("{ %22label%22: %22" & item 0 of it & "%22, %22value%22: " & item 1 of it as string & " }") of ( ( "Globally Hidden", number of bes fixlets whose(not globally visible flag of it) );( "Locally Hidden", number of bes fixlets whose(not locally visible flag of it) ) ) ?> )
+            .transition().duration(30)
+            .call(chart);
+
+        return chart;
+    });
 
 </script>
         ]]></HTML>
