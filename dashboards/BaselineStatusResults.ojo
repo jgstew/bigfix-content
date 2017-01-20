@@ -40,8 +40,8 @@
     </tbody>
 </table>
 
-<div id="chart" style="position: absolute; z-index: 3; top: -30px; right: -30px;">
-  <svg style="width: 200px; height: 200px;"></svg>
+<div id="chart" style="position: absolute; z-index: 3; top: -38px; right: 180px;">
+  <svg style="width: 270px; height: 270px;"></svg>
 </div>
 
 <style>
@@ -93,7 +93,7 @@ function drawPieChart() {
 
         d3.select("#chart svg")
             .datum( getChartData( $("#results > tr > td:nth-child(2)") , $("#results > tr > td:nth-child(4)") ) )
-            .transition().duration(30)
+            .transition().duration(300)
             .call(chart);
 
         return chart;
