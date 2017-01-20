@@ -27,13 +27,15 @@
  - Placing the files in a folder before loading with the console is important, because the console will copy the entire contents of the folder.
 - Add the dashboard files to a custom site. 
 
+### Get fully rendered HTML for debugging:
+
+- http://stackoverflow.com/questions/10144820/get-the-html-of-the-javascript-rendered-page-after-interacting-with-it
+
 ### Important files for Dashboards:
 
 - `C:\Program Files (x86)\BigFix Enterprise\BES Console\Reference\wizards.js`
 - `C:\Program Files (x86)\BigFix Enterprise\BES Console\reference\common.js`
 - `C:\Program Files (x86)\BigFix Enterprise\BES Console\Reference\BESOJO.xsd`
-- `C:\Users\*\AppData\Local\BigFix\Enterprise Console\*\*\Sites\BES Support\OJOShared.js`
-- `C:\Users\*\AppData\Local\BigFix\Enterprise Console\*\*\Sites\BES Support\SiteMap.js`
 
 ### Load javascript libraries from CDN with fallback:
 
@@ -55,6 +57,7 @@
 - https://github.com/Gavin-Paolucci-Kleinow/ie-truth
  - http://stackoverflow.com/questions/27912296/ie11-detect-whether-compatibility-view-is-on-via-javascript
 - https://forum.bigfix.com/t/issues-with-console-dashboards-and-internet-explorer-versions-wizards-js-ie11-incompatibility/19790
+- http://stackoverflow.com/questions/10144820/get-the-html-of-the-javascript-rendered-page-after-interacting-with-it
 
 ### Examples:
 
