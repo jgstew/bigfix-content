@@ -33,7 +33,7 @@
 <table id="resultsTable" class="compact display">
     <thead><tr><th>Failure%</th><th>#Failed</th><th>#Total</th><th>Component Name</th></tr></thead>
     <tbody id="results">
-    
+        <?Relevance trs of ( concatenations of tds of ( ( (item 0 of it * 100 / item 1 of it) | 0 ) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it | 0, number of statuses of results of it | 0, names of it) of member actions whose(exists statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it) of items 1 of (it as integer, top level bes actions) whose(item 0 of it = id of item 1 of it) of ( unique value of tuple string items 0 of concatenations ", " of (id of it as string) of top level bes actions whose(multiple flag of it AND exists name of it AND "Multiple Action Group" != name of it AND "Open" = state of it AND (now - time issued of it) <= 90 * day AND ( exists statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it OR exists member actions whose(exists statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it) of it ) ) ) ?>
     </tbody>
 </table>
 
@@ -60,6 +60,21 @@ table {
   }
 </style>
 <script>
+
+// Helper function designed to take jquery array result as input from a table and put it in the format NVD3 expects
+//  - example values:  $("#results > tr > td:nth-child(2)")
+//  - example lables:  $("#results > tr > td:nth-child(4)")
+//  - usage: getChartData( $("#results > tr > td:nth-child(2)") , $("#results > tr > td:nth-child(4)") );
+function getChartData(values, labels) {
+    var arrKeyValuePairs = [];
+    for (i = 0; i < values.length; i++) { 
+        arrKeyValuePairs[i] = {
+            "label": labels[i].innerText,
+            "value": Number( values[i].innerText )
+        };
+    }
+    return arrKeyValuePairs;
+}
 
 // https://bigfix.me/relevance/details/3019196
 // http://jqueryui.com/autocomplete/#combobox
@@ -204,8 +219,8 @@ table {
 $(document).ready(function(){
     $("#baselinechoice").combobox();
     
-    // set initial results
-    $("#results").html( bigfix.relevance.evaluate(' trs of ( concatenations of tds of ( ( (item 0 of it * 100 / item 1 of it) | 0 ) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it | 0, number of statuses of results of it | 0, names of it) of member actions whose(exists statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it) of top level bes actions whose(multiple flag of it AND exists name of it AND "' + ( $( ".custom-combobox-input" )[0].value ) + '" contains (id of it as string & " " & name of it)) ') );
+    // set initial results (NO LONGER NEEDED)
+    //$("#results").html( bigfix.relevance.evaluate(' trs of ( concatenations of tds of ( ( (item 0 of it * 100 / item 1 of it) | 0 ) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it | 0, number of statuses of results of it | 0, names of it) of member actions whose(exists statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it) of top level bes actions whose(multiple flag of it AND exists name of it AND "' + ( $( ".custom-combobox-input" )[0].value ) + '" contains (id of it as string & " " & name of it)) ') );
     
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
     // https://datatables.net/plug-ins/api/fnSortNeutral
