@@ -14,6 +14,9 @@
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" integrity="sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik=" crossorigin="anonymous" />
             <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/js/jquery.dataTables.min.js" integrity="sha256-yWA356lDhruy1J8jGncaMWKAPYDbK47OKb0uT/aELLc=" crossorigin="anonymous"></script>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/css/jquery.dataTables.min.css" integrity="sha256-+Z1rYa3ys5OdZNUck5G7lBvb8A13OrYwvf+d8PfEaHQ=" crossorigin="anonymous" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" integrity="sha256-gfQwA6PlkZsLqWu4bU4hXPrbTqzixm0B5MdvBLI+Oas=" crossorigin="anonymous"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.css" integrity="sha256-R2jMs9TISUBFqVTr3Tfh2ChO3bK75hs0FBwshlxrUUw=" crossorigin="anonymous" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.js" integrity="sha256-lYa1oow3mJv8AcE44iQ5PoqmTOwP1mUzcuom5btzetg=" crossorigin="anonymous"></script>
             <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
         ]]></Head>
         <HTML><![CDATA[
@@ -37,6 +40,9 @@
     </tbody>
 </table>
 
+<div id="chart" style="position: absolute; z-index: 3; top: -33px; right: 130px;">
+  <svg></svg>
+</div>
 
 <style>
 table {
@@ -74,6 +80,23 @@ function getChartData(values, labels) {
         };
     }
     return arrKeyValuePairs;
+}
+
+function drawPieChart() {
+    return     nv.addGraph(function() {
+        var chart = nv.models.pieChart()
+            .x(function(d) { return d.label })
+            .y(function(d) { return d.value })
+            .showLabels(false)
+            .showLegend(false);
+
+        d3.select("#chart svg")
+            .datum( getChartData( $("#results > tr > td:nth-child(2)") , $("#results > tr > td:nth-child(4)") ) )
+            .transition().duration(30)
+            .call(chart);
+
+        return chart;
+    });
 }
 
 // https://bigfix.me/relevance/details/3019196
@@ -218,7 +241,9 @@ function getChartData(values, labels) {
 
 $(document).ready(function(){
     $("#baselinechoice").combobox();
-    
+
+    drawPieChart();
+
     // set initial results (NO LONGER NEEDED)
     //$("#results").html( bigfix.relevance.evaluate(' trs of ( concatenations of tds of ( ( (item 0 of it * 100 / item 1 of it) | 0 ) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it | 0, number of statuses of results of it | 0, names of it) of member actions whose(exists statuses whose("Failed" = it as string OR "Waiting" = it as string) of results of it) of top level bes actions whose(multiple flag of it AND exists name of it AND "' + ( $( ".custom-combobox-input" )[0].value ) + '" contains (id of it as string & " " & name of it)) ') );
     
@@ -266,6 +291,8 @@ $(document).ready(function(){
             "bDestroy": true,
             "order": [[ 1, 'desc' ]]
         });
+        
+        drawPieChart();
     });
     
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
