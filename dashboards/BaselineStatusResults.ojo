@@ -36,7 +36,6 @@
 <table id="resultsTable" class="compact display">
     <thead><tr><th>Failure%</th><th>#Failed</th><th>#Total</th><th>Component Name</th></tr></thead>
     <tbody id="results">
-        
     </tbody>
 </table>
 
@@ -67,6 +66,62 @@ table {
   }
 </style>
 <script>
+
+/***********************************************/
+// the following is taken from bigfixme-api.0.0.1.js
+
+var bigfix = bigfix?bigfix:{};
+bigfix.relevance = {};
+
+	bigfix.relevance.evaluate = function(relevance, callbackObj) {
+	
+		if(callbackObj !== undefined && callbackObj !== null) {
+			var results;
+			
+			if(callbackObj.failure !== undefined && callbackObj.failure !== null) {
+				callbackObj.failure = bigfix.relevance.errorWrapper(relevance, callbackObj.failure);
+			} else {
+				callbackObj.failure = bigfix.relevance.errorWrapper(relevance, bigfix.relevance.defaultErrorHandler);
+			}
+			
+			try {
+				results = Relevance(relevance, callbackObj);
+			} catch (e2) {
+				return undefined;
+			}	
+			
+			return results;
+		} else {
+			var results;
+					
+			try {
+				results = EvaluateRelevance(relevance);
+			} catch (e2) {
+				return undefined;
+			}	
+			
+			return results;
+		}
+	};
+
+	bigfix.relevance.errorWrapper = function(relevance, customErrorHandler) {
+		if(customErrorHandler !== undefined && customErrorHandler != null) {
+			return function(errorMessage){
+				customErrorHandler(relevance, new Error(errorMessage));
+			};
+		}
+		
+		return function(errorMessage){
+			bigfix.relevance.defaultErrorHandler(relevance, new Error(errorMessage));
+		};
+	};
+
+
+	bigfix.relevance.defaultErrorHandler = function(relevance, error){
+		// rethrow error
+		throw error;
+	};
+/***********************************************/
 
 function fnGetDataTablesDataAjax(data, callback, settings){
     callback(
@@ -245,14 +300,12 @@ function drawPieChart() {
       $( "#combobox" ).toggle();
     });
   } );
-
+  
 $(document).ready(function(){
     $("#baselinechoice").combobox();
     
     // set initial results 
-    $("#results").html( bigfix.relevance.evaluate(' trs of ( concatenations of tds of ( ( (item 0 of it * 100 / item 1 of it) | 0 ) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose(bes action status failed = it OR bes action status download failed = it OR bes action status error = it OR bes action status waiting = it OR bes action status hash mismatch = it OR bes action status invalid signature = it) of results whose(if (bes action status waiting = status of it) then ("Action has failed and is waiting before trying again." = detailed status of it) else TRUE) of it | 0, number of statuses of results of it | 0, names of it) of member actions whose( exists statuses whose(bes action status failed = it OR bes action status download failed = it OR bes action status error = it OR bes action status waiting = it OR bes action status hash mismatch = it OR bes action status invalid signature = it) of results whose(if (bes action status waiting = status of it) then ("Action has failed and is waiting before trying again." = detailed status of it) else TRUE) of it) of top level bes actions whose(multiple flag of it AND exists name of it AND "' + ( $( ".custom-combobox-input" )[0].value ) + '" contains (id of it as string & " " & name of it)) ') );
-    
-    drawPieChart();
+    //$("#results").html( bigfix.relevance.evaluate(' trs of ( concatenations of tds of ( ( (item 0 of it * 100 / item 1 of it) | 0 ) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose(bes action status failed = it OR bes action status download failed = it OR bes action status error = it OR bes action status waiting = it OR bes action status hash mismatch = it OR bes action status invalid signature = it) of results whose(if (bes action status waiting = status of it) then ("Action has failed and is waiting before trying again." = detailed status of it) else TRUE) of it | 0, number of statuses of results of it | 0, names of it) of member actions whose( exists statuses whose(bes action status failed = it OR bes action status download failed = it OR bes action status error = it OR bes action status waiting = it OR bes action status hash mismatch = it OR bes action status invalid signature = it) of results whose(if (bes action status waiting = status of it) then ("Action has failed and is waiting before trying again." = detailed status of it) else TRUE) of it) of top level bes actions whose(multiple flag of it AND exists name of it AND "' + ( $( ".custom-combobox-input" )[0].value ) + '" contains (id of it as string & " " & name of it)) ') );
     
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
     // https://datatables.net/plug-ins/api/fnSortNeutral
@@ -274,31 +327,34 @@ $(document).ready(function(){
         /* Redraw */
         oSettings.oApi._fnReDraw( oSettings );
     };
-
+    
     // https://legacy.datatables.net/ref#bDestroy
-    var oDataTable = $('#resultsTable').dataTable( {
+    oDataTable = $('#resultsTable').dataTable( {
         "pageLength": 15,
         "bDestroy": true,
         "order": [[ 1, 'desc' ]],
         "language": {
             "zeroRecords": "Choose a baseline above. Only baselines with component failures are selectable."
-        }
+        },
+        "ajax": fnGetDataTablesDataAjax
     });
+    
+    drawPieChart();
     
     $( ".custom-combobox-input" ).on( "autocompleteselect", function( event, ui ) {
         //alert( ui.item.value.toString() );
         
         // http://stackoverflow.com/questions/24452270/how-to-reinitialize-datatable-in-ajax
-        $("#resultsTable").dataTable().fnDestroy();
+        //$("#resultsTable").dataTable().fnDestroy();
         
-        $("#results").html( bigfix.relevance.evaluate(' trs of ( concatenations of tds of ( ( (item 0 of it * 100 / item 1 of it) | 0 ) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose(bes action status failed = it OR bes action status download failed = it OR bes action status error = it OR bes action status waiting = it OR bes action status hash mismatch = it OR bes action status invalid signature = it) of results whose(if (bes action status waiting = status of it) then ("Action has failed and is waiting before trying again." = detailed status of it) else TRUE) of it | 0, number of statuses of results of it | 0, names of it) of member actions whose( exists statuses whose(bes action status failed = it OR bes action status download failed = it OR bes action status error = it OR bes action status waiting = it OR bes action status hash mismatch = it OR bes action status invalid signature = it) of results whose(if (bes action status waiting = status of it) then ("Action has failed and is waiting before trying again." = detailed status of it) else TRUE) of it) of top level bes actions whose(multiple flag of it AND exists name of it AND "' + ( $( ".custom-combobox-input" )[0].value ) + '" contains (id of it as string & " " & name of it)) ') );
+        //$("#results").html( bigfix.relevance.evaluate(' trs of ( concatenations of tds of ( ( (item 0 of it * 100 / item 1 of it) | 0 ) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose(bes action status failed = it OR bes action status download failed = it OR bes action status error = it OR bes action status waiting = it OR bes action status hash mismatch = it OR bes action status invalid signature = it) of results whose(if (bes action status waiting = status of it) then ("Action has failed and is waiting before trying again." = detailed status of it) else TRUE) of it | 0, number of statuses of results of it | 0, names of it) of member actions whose( exists statuses whose(bes action status failed = it OR bes action status download failed = it OR bes action status error = it OR bes action status waiting = it OR bes action status hash mismatch = it OR bes action status invalid signature = it) of results whose(if (bes action status waiting = status of it) then ("Action has failed and is waiting before trying again." = detailed status of it) else TRUE) of it) of top level bes actions whose(multiple flag of it AND exists name of it AND "' + ( $( ".custom-combobox-input" )[0].value ) + '" contains (id of it as string & " " & name of it)) ') );
         
-        oDataTable = $('#resultsTable').dataTable( {
-            "pageLength": 15,
-            "bDestroy": true,
-            "order": [[ 1, 'desc' ]]
-        });
-        oDataTable.fnDraw();
+        //oDataTable = $('#resultsTable').dataTable( {
+        //    "pageLength": 15,
+        //    "bDestroy": true,
+        //    "order": [[ 1, 'desc' ]]
+        //});
+        $('.dataTable').DataTable().ajax.reload();
         drawPieChart();
     });
     
@@ -309,64 +365,6 @@ $(document).ready(function(){
         return false;
     });
 });
-
-
-
-/***********************************************/
-// the following is taken from bigfixme-api.0.0.1.js
-
-var bigfix = bigfix?bigfix:{};
-bigfix.relevance = {};
-
-	bigfix.relevance.evaluate = function(relevance, callbackObj) {
-	
-		if(callbackObj !== undefined && callbackObj !== null) {
-			var results;
-			
-			if(callbackObj.failure !== undefined && callbackObj.failure !== null) {
-				callbackObj.failure = bigfix.relevance.errorWrapper(relevance, callbackObj.failure);
-			} else {
-				callbackObj.failure = bigfix.relevance.errorWrapper(relevance, bigfix.relevance.defaultErrorHandler);
-			}
-			
-			try {
-				results = Relevance(relevance, callbackObj);
-			} catch (e2) {
-				return undefined;
-			}	
-			
-			return results;
-		} else {
-			var results;
-					
-			try {
-				results = EvaluateRelevance(relevance);
-			} catch (e2) {
-				return undefined;
-			}	
-			
-			return results;
-		}
-	};
-
-	bigfix.relevance.errorWrapper = function(relevance, customErrorHandler) {
-		if(customErrorHandler !== undefined && customErrorHandler != null) {
-			return function(errorMessage){
-				customErrorHandler(relevance, new Error(errorMessage));
-			};
-		}
-		
-		return function(errorMessage){
-			bigfix.relevance.defaultErrorHandler(relevance, new Error(errorMessage));
-		};
-	};
-
-
-	bigfix.relevance.defaultErrorHandler = function(relevance, error){
-		// rethrow error
-		throw error;
-	};
-/***********************************************/
 
 </script>
         ]]></HTML>
