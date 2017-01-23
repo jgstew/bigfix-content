@@ -341,7 +341,7 @@ $(document).ready(function(){
         "bDestroy": true,
         "order": [[ 1, 'desc' ]],
         "language": {
-            "zeroRecords": "Choose a baseline above. Only baselines with component failures are selectable."
+            "zeroRecords": "Choose a baseline above. Only baselines with component failures will show / have results."
         },
         "ajax": fnGetDataTablesDataAjax
     });
@@ -365,8 +365,7 @@ $(document).ready(function(){
         
         //alert( event.currentTarget.value );
         sSelection = ui.item.value;
-        $('.dataTable').DataTable().ajax.reload();
-        drawPieChart();
+        $('.dataTable').DataTable().ajax.reload( drawPieChart() );
     });
     
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
