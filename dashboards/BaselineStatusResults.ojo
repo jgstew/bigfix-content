@@ -310,10 +310,7 @@ $(document).ready(function(){
     
     // set the global variable to the current selection.
     sSelection = $( ".custom-combobox-input" )[0].value;
-    
-    // set initial results NO LONGER NEEDED!
-    //$("#results").html( bigfix.relevance.evaluate(' trs of ( concatenations of tds of ( ( (item 0 of it * 100 / item 1 of it) | 0 ) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose(bes action status failed = it OR bes action status download failed = it OR bes action status error = it OR bes action status waiting = it OR bes action status hash mismatch = it OR bes action status invalid signature = it) of results whose(if (bes action status waiting = status of it) then ("Action has failed and is waiting before trying again." = detailed status of it) else TRUE) of it | 0, number of statuses of results of it | 0, names of it) of member actions whose( exists statuses whose(bes action status failed = it OR bes action status download failed = it OR bes action status error = it OR bes action status waiting = it OR bes action status hash mismatch = it OR bes action status invalid signature = it) of results whose(if (bes action status waiting = status of it) then ("Action has failed and is waiting before trying again." = detailed status of it) else TRUE) of it) of top level bes actions whose(multiple flag of it AND exists name of it AND "' + ( $( ".custom-combobox-input" )[0].value ) + '" contains (id of it as string & " " & name of it)) ') );
-    
+
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
     // https://datatables.net/plug-ins/api/fnSortNeutral
     // https://cdn.datatables.net/plug-ins/1.10.13/api/fnSortNeutral.js
@@ -335,6 +332,7 @@ $(document).ready(function(){
         oSettings.oApi._fnReDraw( oSettings );
     };
     
+    // load initial datatable with settings
     // https://legacy.datatables.net/ref#bDestroy
     oDataTable = $('#resultsTable').dataTable( {
         "pageLength": 15,
@@ -346,25 +344,17 @@ $(document).ready(function(){
         "ajax": fnGetDataTablesDataAjax
     });
     
+    // draw initial pie chart
     drawPieChart();
     
     // https://api.jqueryui.com/autocomplete/
     $( ".custom-combobox-input" ).on( "autocompleteselect", function( event, ui ) {
-        //alert( ui.item.value.toString() );
         
-        // http://stackoverflow.com/questions/24452270/how-to-reinitialize-datatable-in-ajax
-        //$("#resultsTable").dataTable().fnDestroy();
-        
-        //$("#results").html( bigfix.relevance.evaluate(' trs of ( concatenations of tds of ( ( (item 0 of it * 100 / item 1 of it) | 0 ) as string & "%25"; item 0 of it as string; item 1 of it as string; item 2 of it) ) of (number of statuses whose(bes action status failed = it OR bes action status download failed = it OR bes action status error = it OR bes action status waiting = it OR bes action status hash mismatch = it OR bes action status invalid signature = it) of results whose(if (bes action status waiting = status of it) then ("Action has failed and is waiting before trying again." = detailed status of it) else TRUE) of it | 0, number of statuses of results of it | 0, names of it) of member actions whose( exists statuses whose(bes action status failed = it OR bes action status download failed = it OR bes action status error = it OR bes action status waiting = it OR bes action status hash mismatch = it OR bes action status invalid signature = it) of results whose(if (bes action status waiting = status of it) then ("Action has failed and is waiting before trying again." = detailed status of it) else TRUE) of it) of top level bes actions whose(multiple flag of it AND exists name of it AND "' + ( $( ".custom-combobox-input" )[0].value ) + '" contains (id of it as string & " " & name of it)) ') );
-        
-        //oDataTable = $('#resultsTable').dataTable( {
-        //    "pageLength": 15,
-        //    "bDestroy": true,
-        //    "order": [[ 1, 'desc' ]]
-        //});
-        
-        //alert( event.currentTarget.value );
+        // set `sSelection` to the value that has been selected in combobox
         sSelection = ui.item.value;
+        
+        // update table & chart based upon new combobox selection
+        // https://datatables.net/reference/api/ajax.reload()
         $('.dataTable').DataTable().ajax.reload( drawPieChart() );
     });
     
