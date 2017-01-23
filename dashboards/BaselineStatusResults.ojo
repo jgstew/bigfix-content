@@ -335,7 +335,9 @@ $(document).ready(function(){
     // load initial datatable with settings
     // https://legacy.datatables.net/ref#bDestroy
     oDataTable = $('#resultsTable').dataTable( {
-        "pageLength": 15,
+        "scrollY": '70vh',
+        "scrollCollapse": true,
+        "paging": false,
         "bDestroy": true,
         "order": [[ 1, 'desc' ]],
         "language": {
