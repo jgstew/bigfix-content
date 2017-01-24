@@ -356,7 +356,7 @@ $(document).ready(function(){
         "bDestroy": true,
         "order": [[ 1, 'desc' ]],
         "language": {
-            "zeroRecords": "Choose a baseline above. Only baselines with component failures will show / have results.",
+            "zeroRecords": "No baseline components with failures or all items filtered out. Only baselines with component failures will show / have results.",
             "info": "Showing _TOTAL_ baseline components with failures",
             "infoEmpty": "No baseline components with failures to show"
         },
