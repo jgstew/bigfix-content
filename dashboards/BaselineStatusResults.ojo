@@ -55,6 +55,7 @@ table {
 }
 div.dataTables_filter input {
     margin: 11px;
+    width: 200px;
 }
 div.dt-buttons {
     float: right;
