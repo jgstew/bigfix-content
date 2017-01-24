@@ -378,7 +378,19 @@ $(document).ready(function(){
         
         // update table & chart based upon new combobox selection
         // https://datatables.net/reference/api/ajax.reload()
-        $('.dataTable').DataTable().ajax.reload( drawPieChart() );
+        $('.dataTable').DataTable().ajax.reload( function(){
+            drawPieChart();
+            
+            // if table is empty, hide unnecessary UI elements
+            // http://stackoverflow.com/a/19297003/861745
+            if ($(".dataTables_empty").length) {
+                $("div.dt-buttons").hide();
+                $(".dataTables_filter").hide();
+            } else {
+                $("div.dt-buttons").show();
+                $(".dataTables_filter").show();
+            }
+        });
     });
     
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
