@@ -38,19 +38,23 @@
 </div>
 <br />
 <br />
+<br />
 <table id="resultsTable" class="compact display">
     <thead><tr><th>Failure%</th><th>#Failed</th><th>#Total</th><th>Component Name</th></tr></thead>
     <tbody id="results">
     </tbody>
 </table>
 
-<div id="chart" style="position: absolute; z-index: 3; top: -38px; right: 180px;">
+<div id="chart" style="position: absolute; z-index: 3; top: -38px; right: 0px;">
   <svg style="width: 270px; height: 270px;"></svg>
 </div>
 
 <style>
 table {
     width: 100%;
+}
+div.dataTables_filter input {
+    margin: 11px;
 }
 div.dt-buttons {
     float: right;
@@ -359,7 +363,7 @@ $(document).ready(function(){
         buttons: [
             'copy'
         ],
-        "dom":  'lfrtipB'
+        "dom":  'lrtiBf'
     });
     
     // draw initial pie chart
