@@ -20,12 +20,7 @@
             
             <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css" />
             <script src="https://cdn.datatables.net/buttons/1.2.4/js/dataTables.buttons.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.24/pdfmake.min.js" integrity="sha256-IUV03gSOoEHUfgEihwtkOMru6tWuk3futeUtYJ+k6fk=" crossorigin="anonymous"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.24/vfs_fonts.js" integrity="sha256-Z4C2ncQ6qTBKGEjvLDWOAT1JIcxVJszOWm6Mt8GUUUs=" crossorigin="anonymous"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js" integrity="sha256-RbP/rbx4XeYJH6eYUniR63Jk5NEV48Gjestg49cNSWY=" crossorigin="anonymous"></script>
             <script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.html5.min.js"></script>
-            <script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.flash.min.js"></script>
-            <script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.print.min.js"></script>
             
             <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
         ]]></Head>
@@ -56,6 +51,11 @@
 <style>
 table {
     width: 100%;
+}
+div.dt-buttons {
+    float: right;
+    margin-top: 5px;
+    margin-left: 10px;
 }
   .custom-combobox {
     position: relative;
@@ -355,7 +355,11 @@ $(document).ready(function(){
             "info": "Showing _TOTAL_ baseline components with failures",
             "infoEmpty": "No baseline components with failures to show"
         },
-        "ajax": fnGetDataTablesDataAjax
+        "ajax": fnGetDataTablesDataAjax,
+        buttons: [
+            'copy'
+        ],
+        "dom":  'lfrtipB'
     });
     
     // draw initial pie chart
