@@ -165,7 +165,8 @@ function drawPieChart() {
             .x(function(d) { return d.label })
             .y(function(d) { return d.value })
             .showLabels(false)
-            .showLegend(false);
+            .showLegend(false)
+            .noData(" ");
 
         d3.select("#chart svg")
             .datum( getChartData( $("#results > tr > td:nth-child(2)") , $("#results > tr > td:nth-child(4)") ) )
