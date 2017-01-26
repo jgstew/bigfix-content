@@ -21,7 +21,7 @@
 
 <h2>BigFix Global Search</h2>
 
-<table id="resultsTable" class="compact display">
+<table id="resultsTable" class="compact display" width="100%">
     <thead><tr><th>Type: Name</th></tr></thead>
     <tbody id="results">
         
@@ -36,7 +36,7 @@ h2 {
     text-align: center;
 }
 div.dataTables_filter input {
-    width: 350px;
+    width: 250px;
 }
 </style>
 <script>
