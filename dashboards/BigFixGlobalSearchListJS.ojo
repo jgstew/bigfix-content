@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<BES>
+  <Wizard>
+    <Title>Custom - BigFix Global Search</Title>
+    <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+    <DefaultPage>Page1</DefaultPage>
+    <Page Name="Page1" DocType="HTML5" > 
+        <Title>BigFix Global Search</Title>
+        <Head><![CDATA[
+            <meta http-equiv="X-UA-Compatible" content="IE=11">
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.4.1/list.min.js" integrity="sha256-lFOz0Sg8djWQPKOfRce9A9EcYSWhFMsYo+ulRYVnjrw=" crossorigin="anonymous"></script>
+            <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
+        ]]></Head>
+        <HTML><![CDATA[
+            <script language="javascript">InsertUtilityDiv();</script>
+
+<h2>BigFix Global Search - VERY SLOW</h2>
+<h3>I was hoping that list.js would be faster than jQuery DataTables, but it seems slower for a list with over 30000 items.</h3>
+<br />
+
+<div id="globalsearch">
+    <input class="search" placeholder="Search" />
+    
+    <ul class="list">
+        
+    </ul>
+</div>
+
+
+<style>
+h2 {
+    padding: 0px;
+    margin: 0px 0px 1px 0px;
+    border: 0;
+}
+</style>
+<script>
+
+var options = {
+  valueNames: [ 'content' ],
+  item: '<li><span class="content"></span></li>',
+  indexAsync: true
+};
+
+var values = [
+  <?Relevance html concatenations ( concatenations ", " of ("{ content: " & it & " }") of ("%22" & it & "%22") of (concatenations "\%22" of substrings separated by "%22" of concatenations "\\" of substrings separated by "\" of it) of unique values of ( ("Wizard: " & it) of names of bes wizards;("Fixlet: " & it) of names of plain bes fixlets;("Action: " & it) of names of bes actions;("Roles: " & it) of names of bes roles;("Analysis: " & it) of names of bes analyses;("Baseline: " & it) of names of bes baselines;("Site: " & it) of names of bes sites;("Filter: " & it) of names of bes filters;("Property: " & it) of names of bes properties;("Task: " & it) of names of bes tasks;("ComputerGroup: " & it) of names of bes computer groups;("WebUI App: " & it) of names of bes webui apps;("Filter: " & it) of names of bes filters;("BESDomain: " & it) of names of bes domains ) ) of ("" as html; "" as html) ?>
+];
+
+// Uncomment the following line to use this: (VERY SLOW!!!)
+//var userList = new List('globalsearch', options, values);
+
+</script>
+        ]]></HTML>
+    </Page>
+  </Wizard>
+</BES>
