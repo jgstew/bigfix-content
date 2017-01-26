@@ -54,7 +54,8 @@ $(document).ready(function(){
         "ordering": false,
         "orderClasses": false,
         "deferRender": true,
-        "pageLength": 25
+        "pageLength": 25,
+        "searchDelay": 600
     });
     
     // Only trigger event when window stops resizing
