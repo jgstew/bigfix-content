@@ -42,68 +42,6 @@ div.dataTables_filter input {
 
 var dataSet = <?Relevance html concatenations ( ("[ " & it & " ]") of concatenations ", " of (it as string) of jsons of (("["&it&"]") of concatenations ", " of it) of ("%22"&it&"%22") of (concatenations "\%22" of substrings separated by "%22" of concatenations "\\" of substrings separated by "\" of it) of unique values of ( ("Wizard: " & it) of names of bes wizards;("Fixlet: " & it) of names of plain bes fixlets;("Action: " & it) of names of bes actions;("Roles: " & it) of names of bes roles;("Analysis: " & it) of names of bes analyses;("Baseline: " & it) of names of bes baselines;("Site: " & it) of names of bes sites;("Filter: " & it) of names of bes filters;("Property: " & it) of names of bes properties;("Task: " & it) of names of bes tasks;("ComputerGroup: " & it) of names of bes computer groups;("WebUI App: " & it) of names of bes webui apps;("Filter: " & it) of names of bes filters;("BESDomain: " & it) of names of bes domains ) ) of ("" as html;"" as html) ?>;
 
-/***********************************************/
-// the following is taken from bigfixme-api.0.0.1.js
-
-var bigfix = bigfix?bigfix:{};
-bigfix.relevance = {};
-
-	bigfix.relevance.evaluate = function(relevance, callbackObj) {
-	
-		if(callbackObj !== undefined && callbackObj !== null) {
-			var results;
-			
-			if(callbackObj.failure !== undefined && callbackObj.failure !== null) {
-				callbackObj.failure = bigfix.relevance.errorWrapper(relevance, callbackObj.failure);
-			} else {
-				callbackObj.failure = bigfix.relevance.errorWrapper(relevance, bigfix.relevance.defaultErrorHandler);
-			}
-			
-			try {
-				results = Relevance(relevance, callbackObj);
-			} catch (e2) {
-				return undefined;
-			}	
-			
-			return results;
-		} else {
-			var results;
-					
-			try {
-				results = EvaluateRelevance(relevance);
-			} catch (e2) {
-				return undefined;
-			}	
-			
-			return results;
-		}
-	};
-
-	bigfix.relevance.errorWrapper = function(relevance, customErrorHandler) {
-		if(customErrorHandler !== undefined && customErrorHandler != null) {
-			return function(errorMessage){
-				customErrorHandler(relevance, new Error(errorMessage));
-			};
-		}
-		
-		return function(errorMessage){
-			bigfix.relevance.defaultErrorHandler(relevance, new Error(errorMessage));
-		};
-	};
-
-
-	bigfix.relevance.defaultErrorHandler = function(relevance, error){
-		// rethrow error
-		throw error;
-	};
-/***********************************************/
-
-function fnGetDataTablesDataAjax(data, callback, settings){
-    callback(
-        JSON.parse( bigfix.relevance.evaluate(' ("{ %22data%22: [ " & it & " ] }") of concatenations ", " of (it as string) of jsons of (("["&it&"]") of concatenations ", " of it) of ("%22"&it&"%22") of (concatenations "\%22" of substrings separated by "%22" of concatenations "\\" of substrings separated by "\" of it) of ( ("Wizard: " & it) of names of bes wizards;("Fixlet: " & it) of names of plain bes fixlets;("Action: " & it) of names of bes actions;("Roles: " & it) of names of bes roles;("Analysis: " & it) of names of bes analyses;("Baseline: " & it) of names of bes baselines;("Site: " & it) of names of bes sites;("Filter: " & it) of names of bes filters;("Property: " & it) of names of bes properties;("Task: " & it) of names of bes tasks;("ComputerGroup: " & it) of names of bes computer groups;("WebUI App: " & it) of names of bes webui apps;("Filter: " & it) of names of bes filters;("BESDomain: " & it) of names of bes domains ) ') )
-    );
-}
-
 $(document).ready(function(){
 
     // https://legacy.datatables.net/ref#bDestroy
