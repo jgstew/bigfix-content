@@ -35,7 +35,7 @@ h2 {
     border: 0;
 }
 div.dataTables_filter input {
-    width: 200px;
+    width: 350px;
 }
 </style>
 <script>
