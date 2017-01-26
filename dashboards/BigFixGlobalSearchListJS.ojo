@@ -40,7 +40,8 @@ h2 {
 var options = {
   valueNames: [ 'content' ],
   item: '<li><span class="content"></span></li>',
-  indexAsync: true
+  indexAsync: true,
+  page: 20
 };
 
 var values = [
