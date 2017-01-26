@@ -29,13 +29,13 @@
 </table>
 
 <style>
-table {
-    width: 100%;
-}
 h2 {
     padding: 0px;
     margin: 0px 0px 1px 0px;
     border: 0;
+}
+div.dataTables_filter input {
+    width: 200px;
 }
 </style>
 <script>
