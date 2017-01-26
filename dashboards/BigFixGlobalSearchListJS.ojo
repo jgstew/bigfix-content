@@ -10,20 +10,24 @@
         <Head><![CDATA[
             <meta http-equiv="X-UA-Compatible" content="IE=11">
             <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.4.1/list.min.js" integrity="sha256-lFOz0Sg8djWQPKOfRce9A9EcYSWhFMsYo+ulRYVnjrw=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/list.fuzzysearch.js/0.1.0/list.fuzzysearch.min.js" integrity="sha256-d2geNXrXuDRintfRWBORsefdAwbIrCPrbhgyufgOXOY=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/list.pagination.js/0.1.1/list.pagination.min.js" integrity="sha256-WwTza96H3BgcQTfEfxX7MFaFc/dZA0QrPRKDRLdFHJo=" crossorigin="anonymous"></script>
             <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
         ]]></Head>
         <HTML><![CDATA[
             <script language="javascript">InsertUtilityDiv();</script>
 
 <h2>BigFix Global Search</h2>
-<br />
+<h3>This is a demo using list.js - The version using datatables works better</h3>
 
 <div id="globalsearch">
-    <input class="search" placeholder="Search" style="width: 300px;" />
+    <input class="search" placeholder="Search" style="width: 500px;" />
     <br /><br />
     <div class="list">
         
     </div>
+    
+    <div class="pagination"></div>
 </div>
 
 
@@ -32,6 +36,9 @@ h2 {
     padding: 0px;
     margin: 0px 0px 1px 0px;
     border: 0;
+}
+li {
+    padding: 0px 0px 0px 30px;
 }
 </style>
 <script>
