@@ -15,16 +15,15 @@
         <HTML><![CDATA[
             <script language="javascript">InsertUtilityDiv();</script>
 
-<h2>BigFix Global Search - VERY SLOW</h2>
-<h3>I was hoping that list.js would be faster than jQuery DataTables, but it seems slower for a list with over 30000 items.</h3>
+<h2>BigFix Global Search</h2>
 <br />
 
 <div id="globalsearch">
-    <input class="search" placeholder="Search" />
-    
-    <ul class="list">
+    <input class="search" placeholder="Search" style="width: 300px;" />
+    <br /><br />
+    <div class="list">
         
-    </ul>
+    </div>
 </div>
 
 
@@ -41,15 +40,14 @@ var options = {
   valueNames: [ 'content' ],
   item: '<li><span class="content"></span></li>',
   indexAsync: true,
-  page: 20
+  page: 25
 };
 
 var values = [
   <?Relevance html concatenations ( concatenations ", " of ("{ content: " & it & " }") of ("%22" & it & "%22") of (concatenations "\%22" of substrings separated by "%22" of concatenations "\\" of substrings separated by "\" of it) of unique values of ( ("Wizard: " & it) of names of bes wizards;("Fixlet: " & it) of names of plain bes fixlets;("Action: " & it) of names of bes actions;("Roles: " & it) of names of bes roles;("Analysis: " & it) of names of bes analyses;("Baseline: " & it) of names of bes baselines;("Site: " & it) of names of bes sites;("Filter: " & it) of names of bes filters;("Property: " & it) of names of bes properties;("Task: " & it) of names of bes tasks;("ComputerGroup: " & it) of names of bes computer groups;("WebUI App: " & it) of names of bes webui apps;("Filter: " & it) of names of bes filters;("BESDomain: " & it) of names of bes domains ) ) of ("" as html; "" as html) ?>
 ];
 
-// Uncomment the following line to use this: (VERY SLOW!!!)
-//var userList = new List('globalsearch', options, values);
+var userList = new List('globalsearch', options, values);
 
 </script>
         ]]></HTML>
