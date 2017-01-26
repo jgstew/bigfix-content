@@ -115,7 +115,8 @@ $(document).ready(function(){
         "data": dataSet,
         "ordering": false,
         "orderClasses": false,
-        "deferRender": true
+        "deferRender": true,
+        "pageLength": 25
     });
     
     // Only trigger event when window stops resizing
