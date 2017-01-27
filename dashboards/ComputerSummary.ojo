@@ -107,22 +107,7 @@
             <div class='sectionContents' id='Agent Settings' style=''>
                 <div id="settings">
                     <table class='properties'>
-                        <tr>  <td class="name"><nobr>_BESClient_Comm_CommandPollEnable</nobr></td>  <td  width="100%">1</td></tr>
-                        <tr>  <td class="name"><nobr>_BESClient_Comm_CommandPollIntervalSeconds</nobr></td>  <td  width="100%">3600</td></tr>
-                        <tr>  <td class="name"><nobr>_BESClient_Download_DownloadsCacheLimitMB</nobr></td>  <td  width="100%">5000</td></tr>
-                        <tr>  <td class="name"><nobr>_BESClient_Download_MinimumDiskFreeMB</nobr></td>  <td  width="100%">2000</td></tr>
-                        <tr>  <td class="name"><nobr>_BESClient_Download_RetryMinutes</nobr></td>  <td  width="100%">1</td></tr>
-                        <tr>  <td class="name"><nobr>_BESClient_Download_UtilitiesCacheLimitMB</nobr></td>  <td  width="100%">500</td></tr>
-                        <tr>  <td class="name"><nobr>_BESClient_InstallTime_User</nobr></td>  <td  width="100%">jgstew</td></tr>
-                        <tr>  <td class="name"><nobr>_BESClient_Log_Days</nobr></td>  <td  width="100%">30</td></tr>
-                        <tr>  <td class="name"><nobr>_BESClient_Query_NMOMaxQueryTime</nobr></td>  <td  width="100%">30</td></tr>
-                        <tr>  <td class="name"><nobr>_BESClient_Query_WorkTime</nobr></td>  <td  width="100%">500</td></tr>
-                        <tr>  <td class="name"><nobr>_BESClient_RelaySelect_FailoverRelay</nobr></td>  <td  width="100%">http://192.168.1.57:52311/bfmirror/downloads/</td></tr>
-                        <tr>  <td class="name"><nobr>_BESClient_Resource_SleepIdle</nobr></td>  <td  width="100%">500</td></tr>
-                        <tr>  <td class="name"><nobr>_BESClient_Resource_StartupNormalSpeed</nobr></td>  <td  width="100%">0</td></tr>
-                        <tr>  <td class="name"><nobr>_BESClient_Resource_WorkIdle</nobr></td>  <td  width="100%">20</td></tr>
-                        <tr>  <td class="name"><nobr>_BESClient_Upgrade_UTF8Settings</nobr></td>  <td  width="100%">1</td></tr>
-                        <tr>  <td class="name"><nobr>_BESClient_UploadManager_BufferDirectory</nobr></td>  <td  width="100%">/var/opt/BESClient/__BESData/__Global/Upload</td></tr>
+                        <?Relevance trs of ( html concatenations of (tds "class='name' style='white-space: nowrap'" of name of it; tds "width='100%25'" of value of it) ) of client settings whose(name of it does not start with "__") of (items 1 of (it, bes computers) whose(item 0 of it as integer = id of item 1 of it) of (tuple string items 0 of concatenations ", " of (it as string) of ids of bes computers)) ?>
                     </table>
                 </div>
             </div>
