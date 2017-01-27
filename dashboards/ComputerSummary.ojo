@@ -67,8 +67,7 @@
             <div class='sectionContents' id='Computer Group Memberships' style=''>
                 <div id="groups">
                     <table class='properties'>
-                        <tr>  <td class="name"><nobr>Automatic Group</nobr></td>  <td  width="100%">(Public) Non-BigFix Systems</td></tr>
-                        <tr>  <td class="name"><nobr>Automatic Group</nobr></td>  <td  width="100%">All non-BigFixServers</td></tr>
+                        <?Relevance trs of ( html concatenation of (tds "class='name' style='white-space: nowrap'" of (if automatic flag of it then "Automatic Group" else "Manual Group") ; tds "width='100%25'" of name of it) ) of bes computer groups of (items 1 of (it, bes computers) whose(item 0 of it as integer = id of item 1 of it) of (tuple string items 0 of concatenations ", " of (it as string) of ids of bes computers)) ?>
                     </table>
                 </div>
             </div>
@@ -81,19 +80,7 @@
             <div id="subscribedSites">
                 <div class='subsection'>
                     <ul>
-                        <li>BES Asset Discovery</li>
-                        <li>BES Inventory and License</li>
-                        <li>BES Support</li>
-                        <li>BigFix Labs</li>
-                        <li>BigFixMe</li>
-                        <li>ClientSettings</li>
-                        <li>Linux RPM Patching</li>
-                        <li>Mailbox Site (mailboxsite4029595)</li>
-                        <li>Master Action Site</li>
-                        <li>Patching Support</li>
-                        <li>Private</li>
-                        <li>Public</li>
-                        <li>Software Distribution</li>
+                        <?Relevance lis of unique values of display names of subscribed sites of (items 1 of (it, bes computers) whose(item 0 of it as integer = id of item 1 of it) of (tuple string items 0 of concatenations ", " of (it as string) of ids of bes computers)) ?>
                     </ul>
                 </div>
             </div>
