@@ -51,11 +51,7 @@
             <div class='sectionContents' id='Agent Relay Status' style=''>
                 <div id="relayStatus">
                     <table class='properties'>
-                        <tr>  <td class="name"><nobr>Relay Selection Method</nobr></td>  <td  width="100%">Manual</td></tr>
-                        <tr>  <td class="name"><nobr>Primary Relay</nobr></td>  <td  width="100%">&nbsp;</td></tr>
-                        <tr>  <td class="name"><nobr>Secondary Relay</nobr></td>  <td  width="100%">&nbsp;</td></tr>
-                        <tr>  <td class="name"><nobr>Distance to Relay</nobr></td>  <td class="propertyError" width="100%">&lt;loading&gt;</td></tr>
-                        <tr>  <td class="name"><nobr>Root Server</nobr></td>  <td class="propertyError" width="100%">&lt;loading&gt;</td></tr>
+                        <?Relevance trs of ( html concatenations of (tds "class='name' style='white-space: nowrap'" of "Relay Selection Method" ;tds "width='100%25'" of relay selection method of it); html concatenations of (tds "class='name' style='white-space: nowrap'" of "Primary Relay" ;tds "width='100%25'" of relay server of it); html concatenations of (tds "class='name' style='white-space: nowrap'" of "Distance to Relay" ;tds "width='100%25'" of ((it as string) of relay distance of it|"") ); html concatenations of (tds "class='name' style='white-space: nowrap'" of "Root Server" ;tds "width='100%25'" of ((it as string) of root server of it|"") ) ) of (items 1 of (it, bes computers) whose(item 0 of it as integer = id of item 1 of it) of (tuple string items 0 of concatenations ", " of (it as string) of ids of bes computers)) ?>
                     </table>
                 </div>
             </div>
