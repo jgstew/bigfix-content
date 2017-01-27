@@ -17,7 +17,9 @@
         <HTML><![CDATA[
 <script language="javascript">InsertUtilityDiv();</script>
 
-<h2 style="padding: 10px; text-align: center;">Computer Summary - Work In Progress attempt at reverse engineering the BigFix Computer Summary</h2>
+<h2 style="padding: 10px; text-align: center;">Computer Summary</h2>
+<p style="margin: 3px;">a Work In Progress attempt at reverse engineering the BigFix Computer Summary view within the BigFix Console inside a console dashboard.</p>
+<p style="margin: 3px;">right now this only provides a view of a single computer you cannot choose, but the goals is to change that.</p>
 
 <div class="contents" style="clear: both; width: 96%;">
     <div style="margin-right: 24px; margin-bottom: 0px; margin-top: 8px; float: right">
