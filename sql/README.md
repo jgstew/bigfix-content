@@ -1,0 +1,1 @@
+- http://www.ibm.com/support/knowledgecenter/SS63NW_9.2.0/com.ibm.tivoli.tem.doc_9.2/Platform/API_Reference/DatabaseAPI/DatabaseAPIIntro.html
