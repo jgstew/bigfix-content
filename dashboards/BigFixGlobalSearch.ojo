@@ -41,6 +41,7 @@ div.dataTables_filter input {
 </style>
 <script>
 
+// https://datatables.net/release-datatables/examples/data_sources/js_array.html
 var dataSet = <?Relevance html concatenations ( ("[ " & it & " ]") of concatenations ", " of (it as string) of jsons of (("["&it&"]") of concatenations ", " of it) of ("%22"&it&"%22") of (concatenations "\%22" of substrings separated by "%22" of concatenations "\\" of substrings separated by "\" of it) of unique values of ( ("Wizard: " & it) of names of bes wizards;("Fixlet: " & it) of names of plain bes fixlets;("Action: " & it) of names of bes actions;("Roles: " & it) of names of bes roles;("Analysis: " & it) of names of bes analyses;("Baseline: " & it) of names of bes baselines;("Site: " & it) of names of bes sites;("Filter: " & it) of names of bes filters;("Property: " & it) of names of bes properties;("Task: " & it) of names of bes tasks;("ComputerGroup: " & it) of names of bes computer groups;("WebUI App: " & it) of names of bes webui apps;("Filter: " & it) of names of bes filters;("BESDomain: " & it) of names of bes domains ) ) of ("" as html;"" as html) ?>;
 
 $(document).ready(function(){
