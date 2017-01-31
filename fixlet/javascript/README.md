@@ -2,7 +2,8 @@ This is a folder to contain fixlets/tasks that are used to make javascript libra
 
 ## Mandatory fields
 
-- Title (Name): Must contain "Shared Javascript Library"
+- Title (Name): Must contain `Shared Javascript Library`
+ - Title should follow convension: `Shared Javascript Library - _JS_LIBRARY_NAME_.js - _JS_LIBRARY_VERSION_`
 - MIMEField version
 - MIMEField ???.js
 
