@@ -6,8 +6,11 @@
 
 **How are they different than a Custom Web Report?**
 
-- They are all basically the exact same thing. The main difference is that a Wizard is expected to have multiple "Pages" and "Steps" that are separate HTML documents internally. Dashboards and Custom Web Reports are expected to be a single HTML document, but through use of JavaScript, that single HTML document could have a wizard within it, or some other method for emulating multiple "Steps", though it could also be anything else.
-- a Custom Web Report is within a WebReports context, while Dashboards & Wizards are within a slightly different BigFix Console context. This means there are a few things that work in one and not the other.
+- They are all basically the exact same thing.
+- Any Custom Web Report could be a Dashboard or Wizard
+- Any Dashboard or Wizard that primarily uses reports could be a Custom Web Report.
+- The main difference is that a Wizard is expected to have multiple "Pages" and "Steps" that are separate HTML documents internally. Dashboards and Custom Web Reports are expected to be a single HTML document, but through use of JavaScript, that single HTML document could have a wizard within it, or some other method for emulating multiple "Steps", though it could also be anything else.
+- a Custom Web Report is within a WebReports context, while Dashboards & Wizards are within a slightly different BigFix Console context. This means there are a few things that work in one and not the other. Generally Dashboards & Wizards are more capable than Custom Web Reports.
 
 **How are all of the above different than a Client UI Dashboard?**
 
