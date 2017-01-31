@@ -48,6 +48,8 @@
 - https://forum.bigfix.com/t/example-custom-web-report-with-pie-chart/16017/15
  - Load javascript embedded withing a BigFix Task with fallback to CDN
 
+An even better option: https://github.com/jgstew/bigfix-content/tree/master/fixlet/javascript
+
 ### References:
 
 - https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Tivoli%20Endpoint%20Manager/page/IEM%20Console%20JavaScript%20_%20Relevance
