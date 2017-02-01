@@ -57,6 +57,8 @@ An even better option: https://github.com/jgstew/bigfix-content/tree/master/fixl
 - Improved Fixlet Maker Dashboard - something to make content from templates
 - Dashboard to help make parameterized fixlets
 - "Computer Controller" - pick a particular computer from a table, then control it specifically
+ - get state from analyses and BFQuery
+ - check state changes using BFQuery and/or `notify client forcerefresh`
  - some basic computer info
  - some info on: current user / apparent primary user / assigned user
  - shutdown
@@ -65,7 +67,7 @@ An even better option: https://github.com/jgstew/bigfix-content/tree/master/fixl
  - screen brightness
  - [screenshot](https://github.com/jgstew/bigfix-content/blob/master/dashboards/Screenshots.ojo)
  - RDP/VNC?
-
+ - log collection & troubleshooting
 
 ### References:
 
