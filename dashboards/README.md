@@ -56,6 +56,15 @@ An even better option: https://github.com/jgstew/bigfix-content/tree/master/fixl
  - What client settings exist only on a very small number of endpoints, which could be misconfigurations
 - Improved Fixlet Maker Dashboard - something to make content from templates
 - Dashboard to help make parameterized fixlets
+- "Computer Controller" - pick a particular computer from a table, then control it specifically
+ - some basic computer info
+ - some info on: current user / apparent primary user / assigned user
+ - shutdown
+ - restart
+ - mute/unmute/volume
+ - screen brightness
+ - [screenshot](https://github.com/jgstew/bigfix-content/blob/master/dashboards/Screenshots.ojo)
+ - RDP/VNC?
 
 
 ### References:
