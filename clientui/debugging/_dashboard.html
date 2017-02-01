@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=11">
+		<meta version="1.0.0" product="CustomDashboardClientUI"/>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<title>Custom Dashboard ClientUI</title>
+		
+	</head>	
+	<body>
+<h1>IE DocumentMode:</h1>
+<h2 id="resultDocMode">detecting…</h2>
+
+<script language="javascript">
+
+// get the IE effective documentMode
+document.getElementById('resultDocMode').innerHTML = document.documentMode;
+
+// self-invoking function expression that returns all non-native javascript functions  https://github.com/jgstew/tools/blob/master/JS/GetFunctions.js
+(function () {
+    document.write('<br /><br /><hr /><h2>Javascript Functions:</h2><ul>');
+    for(var i in this) {
+        document.write('<li>'+ 'NotWorkingInClientUI' +"</li>");
+    }
+    document.write('</ul><hr />');
+})();
+
+</script>
+	</body>
+</html> 
