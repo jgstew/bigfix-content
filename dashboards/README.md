@@ -54,6 +54,8 @@ An even better option: https://github.com/jgstew/bigfix-content/tree/master/fixl
 
 - Help set client settings with drop downs
  - What client settings exist only on a very small number of endpoints, which could be misconfigurations
+- Improved Fixlet Maker Dashboard - something to make content from templates
+- Dashboard to help make parameterized fixlets
 
 
 ### References:
