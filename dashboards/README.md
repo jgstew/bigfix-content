@@ -50,6 +50,12 @@
 
 An even better option: https://github.com/jgstew/bigfix-content/tree/master/fixlet/javascript
 
+### Dashboard Ideas:
+
+- Help set client settings with drop downs
+ - What client settings exist only on a very small number of endpoints, which could be misconfigurations
+
+
 ### References:
 
 - https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Tivoli%20Endpoint%20Manager/page/IEM%20Console%20JavaScript%20_%20Relevance
