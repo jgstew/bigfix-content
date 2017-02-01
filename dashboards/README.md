@@ -64,6 +64,7 @@ An even better option: https://github.com/jgstew/bigfix-content/tree/master/fixl
 - "Computer Controller" - pick a particular computer from a table, then control it specifically
  - get state from analyses and BFQuery
  - check state changes using BFQuery and/or `notify client forcerefresh`
+ - provide feedback on time of last update of displayed data, calculate age in JS, allow refresh with BFQuery if older than X time.
  - some basic computer info
  - some info on: current user / apparent primary user / assigned user
  - shutdown
