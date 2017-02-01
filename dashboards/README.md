@@ -52,8 +52,11 @@ An even better option: https://github.com/jgstew/bigfix-content/tree/master/fixl
 
 ### Dashboard Ideas:
 
-- Help set client settings with drop downs
+- Client Settings Manager
+ - Help set client settings with drop downs
+ - Help delete/unset client settings
  - What client settings exist only on a very small number of endpoints, which could be misconfigurations
+ - Detect conflicting policy actions that set client settings (reapplication count? actionscript parsing?)
 - Improved Fixlet Maker Dashboard - something to make content from templates
 - Dashboard to help make parameterized fixlets
 - "Computer Controller" - pick a particular computer from a table, then control it specifically
