@@ -20,7 +20,11 @@ document.getElementById('resultDocMode').innerHTML = document.documentMode;
 (function () {
     document.write('<br /><br /><hr /><h2>Javascript Functions:</h2><ul>');
     for(var i in this) {
-        document.write('<li>'+ 'NotWorkingInClientUI' +"</li>");
+		if(this[i])
+		{
+			alert(this[i]);
+			document.write('<li>'+ 'NotWorkingInClientUI' +"</li>");
+		}
     }
     document.write('</ul><hr />');
 })();
