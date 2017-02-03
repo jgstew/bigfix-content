@@ -52,6 +52,12 @@ An even better option: https://github.com/jgstew/bigfix-content/tree/master/fixl
 
 ### Dashboard Ideas:
 
+- MO Console Operator Management
+ - help disable users that have not logged in over X days
+ - delete console users that have been disabled for X days
+ - help manage roles
+ - help provision users
+ - help with computer assignments
 - Client Settings Manager
  - Help set client settings with drop downs
  - Help delete/unset client settings
