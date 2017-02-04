@@ -62,6 +62,8 @@ An even better option: https://github.com/jgstew/bigfix-content/tree/master/fixl
  - Help set client settings with drop downs
  - Help delete/unset client settings
  - What client settings exist only on a very small number of endpoints, which could be misconfigurations
+  - https://bigfix.me/relevance/details/3019347
+  - https://bigfix.me/relevance/details/3019348
  - Detect conflicting policy actions that set client settings (reapplication count? actionscript parsing?)
  - Detect overuse of clientsettings (too many unique setting names or name/value pairs)
   - client settings are gathered every report, which can be a problem
