@@ -1,0 +1,357 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<BES>
+  <Wizard>
+    <Title>Custom - Client Settings Manager</Title>
+    <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+    <DefaultPage>BaselineStatusResults</DefaultPage>
+    <Page Name="BaselineStatusResults" DocType="HTML5" > 
+        <Title>Client Settings Manager</Title>
+        <Head><![CDATA[
+            <meta http-equiv="X-UA-Compatible" content="IE=11">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" integrity="sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik=" crossorigin="anonymous" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/css/jquery.dataTables.min.css" integrity="sha256-+Z1rYa3ys5OdZNUck5G7lBvb8A13OrYwvf+d8PfEaHQ=" crossorigin="anonymous" />
+            
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/js/jquery.dataTables.min.js" integrity="sha256-yWA356lDhruy1J8jGncaMWKAPYDbK47OKb0uT/aELLc=" crossorigin="anonymous"></script>
+            
+            <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
+        ]]></Head>
+        <HTML><![CDATA[
+            <script language="javascript">InsertUtilityDiv();</script>
+
+<h2>Client Settings Manager</h2>
+<strong>This is an early work in progress. The search is broken for some unknown reason.</strong>
+
+<div class="ui-widget">
+    <label><strong>Enter a Client Setting:</strong></label>
+    <select id="firstchoice">
+        <?Relevance ( html tag ("option", attr lists of ("value", multiplicity of it as string) of it, it as string as html as string ) ) of unique values of names of client settings of bes computers ?>
+    </select>
+</div>
+<br />
+<table id="resultsTable" class="compact display" width="90%">
+    <thead><tr><th># of each</th><th>Values</th></tr></thead>
+    <tbody id="results">
+    </tbody>
+</table>
+
+<div id="chart" style="position: absolute; z-index: 3; top: -38px; right: 0px;">
+  <svg style="width: 270px; height: 270px;"></svg>
+</div>
+
+<style>
+body {
+  overflow-y: scroll;
+}
+table {
+    width: 100%;
+}
+div.dataTables_filter input {
+    margin: 11px;
+    width: 200px;
+}
+div.dt-buttons {
+    float: right;
+    margin-top: 5px;
+    margin-left: 10px;
+}
+  .custom-combobox {
+    position: relative;
+    display: inline-block;
+    z-index: 5;
+  }
+  .custom-combobox-toggle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin-left: -1px;
+    padding: 0;
+  }
+  .custom-combobox-input {
+    width: 600px;
+    margin: 0;
+    padding: 5px 10px;
+  }
+</style>
+<script>
+
+/***********************************************/
+// the following is taken from bigfixme-api.0.0.1.js
+
+var bigfix = bigfix?bigfix:{};
+bigfix.relevance = {};
+
+	bigfix.relevance.evaluate = function(relevance, callbackObj) {
+	
+		if(callbackObj !== undefined && callbackObj !== null) {
+			var results;
+			
+			if(callbackObj.failure !== undefined && callbackObj.failure !== null) {
+				callbackObj.failure = bigfix.relevance.errorWrapper(relevance, callbackObj.failure);
+			} else {
+				callbackObj.failure = bigfix.relevance.errorWrapper(relevance, bigfix.relevance.defaultErrorHandler);
+			}
+			
+			try {
+				results = Relevance(relevance, callbackObj);
+			} catch (e2) {
+				return undefined;
+			}	
+			
+			return results;
+		} else {
+			var results;
+					
+			try {
+				results = EvaluateRelevance(relevance);
+			} catch (e2) {
+				return undefined;
+			}	
+			
+			return results;
+		}
+	};
+
+	bigfix.relevance.errorWrapper = function(relevance, customErrorHandler) {
+		if(customErrorHandler !== undefined && customErrorHandler != null) {
+			return function(errorMessage){
+				customErrorHandler(relevance, new Error(errorMessage));
+			};
+		}
+		
+		return function(errorMessage){
+			bigfix.relevance.defaultErrorHandler(relevance, new Error(errorMessage));
+		};
+	};
+
+
+	bigfix.relevance.defaultErrorHandler = function(relevance, error){
+		// rethrow error
+		throw error;
+	};
+/***********************************************/
+
+function fnGetDataTablesDataAjax(data, callback, settings){
+    callback(
+        JSON.parse( bigfix.relevance.evaluate(' ("{ %22data%22: [ " & it & " ] }") of concatenations ", " of ( (it as string) of jsons of ("["&it&"]") of concatenations ", " of ("%22" & it & "%22") of (tuple string items of it) ) of (it as string) of (multiplicity of it, it as html as string) of unique values of values of client settings whose("' + ( sSelection ) + '" = name of it) of bes computers ') )
+    );
+}
+
+
+// https://bigfix.me/relevance/details/3019196
+// http://jqueryui.com/autocomplete/#combobox
+// TODO - this could probably be a lot better than just taken from a demo
+  $( function() {
+    $.widget( "custom.combobox", {
+      _create: function() {
+        this.wrapper = $( "<span>" )
+          .addClass( "custom-combobox" )
+          .insertAfter( this.element );
+ 
+        this.element.hide();
+        this._createAutocomplete();
+        this._createShowAllButton();
+      },
+ 
+      _createAutocomplete: function() {
+        var selected = this.element.children( ":selected" ),
+          value = selected.val() ? selected.text() : "";
+ 
+        this.input = $( "<input>" )
+          .appendTo( this.wrapper )
+          .val( value )
+          .attr( "title", "" )
+          .addClass( "custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left" )
+          .autocomplete({
+            delay: 0,
+            minLength: 0,
+            source: $.proxy( this, "_source" )
+          })
+          .tooltip({
+            classes: {
+              "ui-tooltip": "ui-state-highlight"
+            }
+          });
+ 
+        this._on( this.input, {
+          autocompleteselect: function( event, ui ) {
+            ui.item.option.selected = true;
+            this._trigger( "select", event, {
+              item: ui.item.option
+            });
+          },
+ 
+          autocompletechange: "_removeIfInvalid"
+        });
+      },
+ 
+      _createShowAllButton: function() {
+        var input = this.input,
+          wasOpen = false;
+ 
+        $( "<a>" )
+          .attr( "tabIndex", -1 )
+          .attr( "title", "Show All Items" )
+          .tooltip()
+          .appendTo( this.wrapper )
+          .button({
+            icons: {
+              primary: "ui-icon-triangle-1-s"
+            },
+            text: false
+          })
+          .removeClass( "ui-corner-all" )
+          .addClass( "custom-combobox-toggle ui-corner-right" )
+          .on( "mousedown", function() {
+            wasOpen = input.autocomplete( "widget" ).is( ":visible" );
+          })
+          .on( "click", function() {
+            input.trigger( "focus" );
+ 
+            // Close if already visible
+            if ( wasOpen ) {
+              return;
+            }
+ 
+            // Pass empty string as value to search for, displaying all results
+            input.autocomplete( "search", "" );
+          });
+      },
+ 
+      _source: function( request, response ) {
+        var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+        response( this.element.children( "option" ).map(function() {
+          var text = $( this ).text();
+          if ( this.value && ( !request.term || matcher.test(text) ) )
+            return {
+              label: text,
+              value: text,
+              option: this
+            };
+        }) );
+      },
+ 
+      _removeIfInvalid: function( event, ui ) {
+ 
+        // Selected an item, nothing to do
+        if ( ui.item ) {
+          return;
+        }
+ 
+        // Search for a match (case-insensitive)
+        var value = this.input.val(),
+          valueLowerCase = value.toLowerCase(),
+          valid = false;
+        this.element.children( "option" ).each(function() {
+          if ( $( this ).text().toLowerCase() === valueLowerCase ) {
+            this.selected = valid = true;
+            return false;
+          }
+        });
+ 
+        // Found a match, nothing to do
+        if ( valid ) {
+          return;
+        }
+ 
+        // Remove invalid value
+        this.input
+          .val( "" )
+          .attr( "title", value + " didn't match any item" )
+          .tooltip( "open" );
+        this.element.val( "" );
+        this._delay(function() {
+          this.input.tooltip( "close" ).attr( "title", "" );
+        }, 2500 );
+        this.input.autocomplete( "instance" ).term = "";
+      },
+ 
+      _destroy: function() {
+        this.wrapper.remove();
+        this.element.show();
+      }
+    });
+ 
+    $( "#combobox" ).combobox();
+    $( "#toggle" ).on( "click", function() {
+      $( "#combobox" ).toggle();
+    });
+  } );
+
+// This is a global variable to contain the combobox selection / new selection.
+var sSelection = "";
+
+$(document).ready(function(){
+    // set up the combobox UI elements
+    $("#firstchoice").combobox();
+    
+    // set the global variable to the current selection.
+    sSelection = $( ".custom-combobox-input" )[0].value;
+
+    // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
+    // https://datatables.net/plug-ins/api/fnSortNeutral
+    // https://cdn.datatables.net/plug-ins/1.10.13/api/fnSortNeutral.js
+    //  - Author: https://datatables.net/forums/profile/1/allan
+    jQuery.fn.dataTableExt.oApi.fnSortNeutral = function ( oSettings )
+    {
+        /* Remove any current sorting */
+        oSettings.aaSorting = [];
+
+        /* Sort display arrays so we get them in numerical order */
+        oSettings.aiDisplay.sort( function (x,y) {
+            return x-y;
+        } );
+        oSettings.aiDisplayMaster.sort( function (x,y) {
+            return x-y;
+        } );
+
+        /* Redraw */
+        oSettings.oApi._fnReDraw( oSettings );
+    };
+    
+    // load initial datatable with settings
+    // https://legacy.datatables.net/ref#bDestroy
+    oDataTable = $('#resultsTable').dataTable( {
+        "scrollY": '70vh',
+        "scrollCollapse": true,
+        "paging": false,
+        "bDestroy": true,
+        "order": [[ 0, 'desc' ]],
+        "language": {
+            "zeroRecords": "No content, make a choice above.",
+            "info": "Showing _TOTAL_ values",
+            "infoEmpty": "No values to show"
+        },
+        "ajax": fnGetDataTablesDataAjax,
+        "columnDefs": [
+            { "width": "10em", "targets": 0 },
+            { targets: 1, "searchable": true }
+        ]
+    });
+    
+    // https://api.jqueryui.com/autocomplete/
+    $( ".custom-combobox-input" ).on( "autocompleteselect", function( event, ui ) {
+        
+        // set `sSelection` to the value that has been selected in combobox
+        sSelection = ui.item.value;
+        
+        // update table & chart based upon new combobox selection
+        // https://datatables.net/reference/api/ajax.reload()
+        $('.dataTable').DataTable().ajax.reload();
+    });
+    
+    // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
+    //  - Author: https://datatables.net/forums/profile/6627/manifestinteractive
+    $('.sorting, .sorting_asc, .sorting_desc').dblclick(function(){
+        oDataTable.fnSortNeutral();
+        return false;
+    });
+});
+
+</script>
+        ]]></HTML>
+    </Page>
+  </Wizard>
+</BES>
