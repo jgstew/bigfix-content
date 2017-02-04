@@ -5,29 +5,49 @@
 		<meta version="1.0.0" product="CustomDashboardClientUI"/>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 		<title>Custom Dashboard ClientUI</title>
-		
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/css/jquery.dataTables.min.css" integrity="sha256-+Z1rYa3ys5OdZNUck5G7lBvb8A13OrYwvf+d8PfEaHQ=" crossorigin="anonymous" />
+        
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/js/jquery.dataTables.min.js" integrity="sha256-yWA356lDhruy1J8jGncaMWKAPYDbK47OKb0uT/aELLc=" crossorigin="anonymous"></script>
+
 	</head>	
 	<body>
-<h1>Hello World</h1>
 <h2>IE DocumentMode: <span id="resultDocMode"></span></h2>
+
+<table id="resultsTable" class="compact display" width="100%">
+    <thead><tr><th>Relevance Inspectors</th></tr></thead>
+    <tbody id="results">
+        
+    </tbody>
+</table>
+
 
 <script language="javascript">
 
 // get the IE effective documentMode
 document.getElementById('resultDocMode').innerHTML = document.documentMode;
 
-// self-invoking function expression that returns all non-native javascript functions  https://github.com/jgstew/tools/blob/master/JS/GetFunctions.js
-(function () {
-    document.write('<br /><br /><hr /><h2>Javascript Functions:</h2><ul>');
-    for(var i in this) {
-		if(this[i])
-		{
-			alert(this[i]);
-			document.write('<li>'+ 'NotWorkingInClientUI' +"</li>");
-		}
-    }
-    document.write('</ul><hr />');
-})();
+$(document).ready(function(){
+
+    // https://legacy.datatables.net/ref#bDestroy
+    var oDataTable = $('#resultsTable').dataTable( {
+        "paging": true,
+        "language": {
+            "zeroRecords": "No content. Nothing to see here."
+        },
+        "data": dataSet,
+        "ordering": false,
+        "orderClasses": false,
+        "deferRender": true,
+        "pageLength": 10,
+        "searchDelay": 600
+    });
+
+});
+
+// https://datatables.net/release-datatables/examples/data_sources/js_array.html
+var dataSet = <?Relevance html concatenations ( ("[ " & it & " ]") of concatenations ", " of (it as string) of jsons of (("["&it&"]") of concatenations ", " of it) of ("%22"&it&"%22") of (concatenations "\%22" of substrings separated by "%22" of concatenations "\\" of substrings separated by "\" of it) of unique values of ( (it as string) of properties ) ) of ("" as html;"" as html) ?>;
 
 </script>
 	</body>
