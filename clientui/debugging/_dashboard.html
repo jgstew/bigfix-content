@@ -15,14 +15,24 @@
 	<body>
 <h2>IE DocumentMode: <span id="resultDocMode"></span></h2>
 
-<table id="resultsTable" class="compact display" width="100%">
+<table id="resultsTable" class="compact display" width="95%">
     <thead><tr><th>Relevance Inspectors</th></tr></thead>
     <tbody id="results">
         
     </tbody>
 </table>
 
-
+<style>
+h2 {
+    padding: 0px;
+    margin: 0px 0px 1px 0px;
+    border: 0;
+    text-align: center;
+}
+div.dataTables_filter input {
+    width: 150px;
+}
+</style>
 <script language="javascript">
 
 // get the IE effective documentMode
