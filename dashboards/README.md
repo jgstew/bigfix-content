@@ -58,7 +58,7 @@ An even better option: https://github.com/jgstew/bigfix-content/tree/master/fixl
  - help manage roles
  - help provision users
  - help with computer assignments
-- Client Settings Manager
+- [Client Settings Manager](https://github.com/jgstew/bigfix-content/blob/master/dashboards/ClientSettingsManager.ojo)
  - Help set client settings with drop downs
  - Help delete/unset client settings
  - What client settings exist only on a very small number of endpoints, which could be misconfigurations
