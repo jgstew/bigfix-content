@@ -31,7 +31,7 @@
     </select>
 </div>
 <br />
-<table id="resultsTable" class="compact display" width="90%">
+<table id="resultsTable" class="compact display" width="100%">
     <thead><tr><th># of each</th><th>Values</th></tr></thead>
     <tbody id="results">
     </tbody>
@@ -45,8 +45,9 @@
 body {
   overflow-y: scroll;
 }
-table {
-    width: 100%;
+.dataTables_wrapper {
+    width: 90%;
+    margin:1px auto;
 }
 div.dataTables_filter input {
     margin: 11px;
