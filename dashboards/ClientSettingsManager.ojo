@@ -22,8 +22,8 @@
             <script language="javascript">InsertUtilityDiv();</script>
 
 <h2>Client Settings Manager</h2>
-<strong>This is an early work in progress. The search is broken for some unknown reason.</strong>
-
+<strong>This is an early work in progress. The search is odd for some unknown reason. Can't click on the box, only the word.</strong>
+<p> The goal of this dashboard is to add buttons to quickly create tasks or actions to set these settings </p>
 <div class="ui-widget">
     <label><strong>Enter a Client Setting:</strong></label>
     <select id="firstchoice">
@@ -45,13 +45,19 @@
 body {
   overflow-y: scroll;
 }
+h2 {
+    padding: 0px;
+    margin: 0px 0px 1px 0px;
+    border: 0;
+    text-align: center;
+}
 .dataTables_wrapper {
     width: 90%;
     margin:1px auto;
 }
 div.dataTables_filter input {
     margin: 11px;
-    width: 200px;
+    width: 150px;
 }
 div.dt-buttons {
     float: right;
@@ -329,7 +335,8 @@ $(document).ready(function(){
         "columnDefs": [
             { "width": "10em", "targets": 0 },
             { targets: 1, "searchable": true }
-        ]
+        ],
+        "dom": '<"toolbar">rtipf'
     });
     
     // https://api.jqueryui.com/autocomplete/
@@ -349,6 +356,8 @@ $(document).ready(function(){
         oDataTable.fnSortNeutral();
         return false;
     });
+    
+    $("div.toolbar").html('<lable>Custom Value: </lable><input></input>');
 });
 
 </script>
