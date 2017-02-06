@@ -26,7 +26,7 @@
 <p> The goal of this dashboard is to add buttons to quickly create tasks or actions to set these settings </p>
 
 <p><strong>TODO: This is an early work in progress.</strong></p>
-<p><strong>Known Issue: throws an error if value is "" (empty string)</strong></p>
+<p><strong>Known Issue: throws an error if value is invalid JSON. TODO: Need to escape some chars? ("\)</strong></p>
 
 <div class="ui-widget">
     <label><strong>Enter a Client Setting:</strong></label>
