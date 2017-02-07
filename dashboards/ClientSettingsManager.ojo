@@ -25,9 +25,6 @@
 
 <p> The goal of this dashboard is to add buttons to quickly create tasks or actions to set these settings </p>
 
-<p><strong>TODO: This is an early work in progress.</strong></p>
-<p><strong>Known Issue: throws an error if value is invalid JSON. TODO: Need to escape some chars? ("\)</strong></p>
-
 <div class="ui-widget">
     <label><strong>Enter a Client Setting:</strong></label>
     <select id="firstchoice">
@@ -41,6 +38,18 @@
     <tbody id="results">
     </tbody>
 </table>
+
+<br />
+<br />
+<br />
+<hr />
+
+<p><strong>NOTE: This is an early work in progress.</strong></p>
+<p><strong>Known Issue: throws an error if value is invalid JSON. TODO: Need to escape some chars? ("\)</strong></p>
+<p><strong>TODO: provide a TakeAction button instead of "AlreadyExists" text.</strong></p>
+<p><strong>TODO: add option to delete the selected setting</strong></p>
+<p><strong>TODO: add option to set a custom value not in the listed options</strong></p>
+<p><strong>TODO: add results to table for tasks/fixlets that set custom settings that don't exist on computers already</strong></p>
 
 <div id="chart" style="position: absolute; z-index: 3; top: -38px; right: 0px;">
   <svg style="width: 270px; height: 270px;"></svg>
@@ -82,7 +91,7 @@ div.dataTables_filter input {
     padding: 0;
   }
   .custom-combobox-input {
-    width: 600px;
+    width: 500px;
     margin: 0;
     padding: 5px 10px;
   }
@@ -406,7 +415,8 @@ $(document).ready(function(){
 
         // https://bigfix.me/relevance/details/3019354
         // ImportXML(xml, openDocuments, siteName, computerIDs)
-        ImportXML(fnCreateClientSettingsXML(sSelection, dataRow[1]), true, "<?Relevance ( tuple string item 0 of concatenations ", " of names of (bes custom sites whose(name of it as lowercase contains "client" AND name of it as lowercase contains "setting" AND exists writer whose(it = current console user) of it)) ) | "" ?>" );
+        ImportXML(fnCreateClientSettingsXML(sSelection, dataRow[1]), false, "<?Relevance ( tuple string item 0 of concatenations ", " of names of (bes custom sites whose(name of it as lowercase contains "client" AND name of it as lowercase contains "setting" AND exists writer whose(it = current console user) of it)) ) | "" ?>" );
+
         // reload table to show that the new task exists
         $(".dataTable").DataTable().ajax.reload();
         // TakeFixletAction(id, siteID, contentID, parameters, callback);
