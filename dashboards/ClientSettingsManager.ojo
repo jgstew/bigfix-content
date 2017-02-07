@@ -400,6 +400,9 @@ $(document).ready(function(){
     // https://datatables.net/examples/ajax/null_data_source.html
     $("#resultsTable tbody").on( "click", "button", function() {
         var dataRow = $(".dataTable").DataTable().row( $(this).parents("tr") ).data();
+        
+        // TODO: create task if button contains "Create", Take action if button contains "Take"
+        //alert( $(this).html() ); // get name of button
 
         // https://bigfix.me/relevance/details/3019354
         // ImportXML(xml, openDocuments, siteName, computerIDs)
