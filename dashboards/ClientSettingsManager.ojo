@@ -368,14 +368,16 @@ $(document).ready(function(){
         return false;
     });
     
-    // This adds a toolbar item, but not sure it is needed. Can use searchbox instead.
-    //$("div.toolbar").html("<lable>Custom Value: </lable><input></input>");
-
     // http://api.jquery.com/on/
     // https://datatables.net/examples/ajax/null_data_source.html
     $("#resultsTable tbody").on( "click", "button", function() {
         var dataRow = $(".dataTable").DataTable().row( $(this).parents("tr") ).data();
+
+        // TODO: create fixlet/task to set the setting/value combo.
         alert( sSelection + "=" + dataRow[1] );
+        // https://bigfix.me/relevance/details/3019354
+        // ImportXML(xml, openDocuments, siteName, computerIDs)
+        // TakeFixletAction(id, siteID, contentID, parameters, callback);
     });
 });
 
