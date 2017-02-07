@@ -316,7 +316,7 @@ $(document).ready(function(){
             return x - y;
         });
         oSettings.aiDisplayMaster.sort( function (x,y) {
-            return x-y;
+            return x - y;
         });
 
         /* Redraw */
@@ -343,7 +343,8 @@ $(document).ready(function(){
             {"targets": 1, "searchable": true},
             // the following is used to set an empty value when no value is returned (null)
             {"targets": 1, "defaultContent": ""},
-            {"targets": 2, "defaultContent": "TODO:button"},
+            {"targets": 2, "defaultContent": "<button>TODO:Set</button>"},
+            {"targets": 2, "className": "dt-body-center"},
             {"targets": 2, "width": "4em"}
         ],
         "dom": '<"toolbar">frtip'
@@ -369,6 +370,13 @@ $(document).ready(function(){
     
     // This adds a toolbar item, but not sure it is needed. Can use searchbox instead.
     //$("div.toolbar").html("<lable>Custom Value: </lable><input></input>");
+
+    // http://api.jquery.com/on/
+    // https://datatables.net/examples/ajax/null_data_source.html
+    $("#resultsTable tbody").on( "click", "button", function() {
+        var dataRow = $(".dataTable").DataTable().row( $(this).parents("tr") ).data();
+        alert( sSelection + "=" + dataRow[1] );
+    });
 });
 
 </script>
