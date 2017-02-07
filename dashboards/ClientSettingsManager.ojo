@@ -147,7 +147,7 @@ bigfix.relevance = {};
 
 function fnGetDataTablesDataAjax(data, callback, settings) {
     callback(
-        JSON.parse(bigfix.relevance.evaluate(' ("{ %22data%22: [ " & it & " ] }") of concatenations ", " of ( (it as string) of jsons of ("["&it&"]") of concatenations ", " of ("%22" & it & "%22") of (tuple string items of it) ) of (it as string) of (multiplicity of it, it as html as string) of unique values of values of client settings whose("' + sSelection + '" = name of it) of bes computers '))
+        JSON.parse(bigfix.relevance.evaluate(' ("{ %22data%22: [ " & it & " ] }") of concatenations ", " of ( (it as string) of jsons of ("["&it&"]") of concatenations ", " of ("%22" & it & "%22") of (tuple string items of it) ) of (it as string) of (multiplicity of it, it as html as string, (if ( it is contained by set of following texts of lasts "%22 whose(%22" of preceding texts of lasts "%22 = value of it) of client" of unique values of relevances of custom bes fixlets whose("Configuration: Client Settings" = category of it AND relevance of it starts with "not exists settings %22' + sSelection + '" AND relevance of it ends with "%22 = value of it) of client") ) then "AlreadyExists" else "<button>CreateTask</button>") ) of unique values of values of client settings whose("' + sSelection + '" = name of it) of bes computers '))
     );
 }
 
@@ -371,7 +371,7 @@ $(document).ready(function(){
             {"targets": 1, "searchable": true},
             // the following is used to set an empty value when no value is returned (null)
             {"targets": 1, "defaultContent": ""},
-            {"targets": 2, "defaultContent": "<button>CreateTask</button>"},
+            {"targets": 2, "defaultContent": ""},
             {"targets": 2, "className": "dt-body-center"},
             {"targets": 2, "width": "4em"}
         ],
@@ -400,10 +400,12 @@ $(document).ready(function(){
     // https://datatables.net/examples/ajax/null_data_source.html
     $("#resultsTable tbody").on( "click", "button", function() {
         var dataRow = $(".dataTable").DataTable().row( $(this).parents("tr") ).data();
-        
+
         // https://bigfix.me/relevance/details/3019354
         // ImportXML(xml, openDocuments, siteName, computerIDs)
         ImportXML(fnCreateClientSettingsXML(sSelection, dataRow[1]), true, "<?Relevance ( tuple string item 0 of concatenations ", " of names of (bes custom sites whose(name of it as lowercase contains "client" AND name of it as lowercase contains "setting" AND exists writer whose(it = current console user) of it)) ) | "" ?>" );
+        // reload table to show that the new task exists
+        $(".dataTable").DataTable().ajax.reload();
         // TakeFixletAction(id, siteID, contentID, parameters, callback);
     });
 });
