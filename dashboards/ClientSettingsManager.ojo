@@ -286,9 +286,9 @@ function fnGetDataTablesDataAjax(data, callback, settings) {
       }
     });
 
-    $( "#combobox" ).combobox();
-    $( "#toggle" ).on( "click", function() {
-      $( "#combobox" ).toggle();
+    $("#combobox").combobox();
+    $("#toggle").on( "click", function() {
+      $("#combobox").toggle();
     });
   } );
 
@@ -300,27 +300,27 @@ $(document).ready(function(){
     $("#firstchoice").combobox();
     
     // set the global variable to the current selection.
-    sSelection = $( ".custom-combobox-input" )[0].value;
+    sSelection = $(".custom-combobox-input")[0].value;
 
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
     // https://datatables.net/plug-ins/api/fnSortNeutral
     // https://cdn.datatables.net/plug-ins/1.10.13/api/fnSortNeutral.js
     //  - Author: https://datatables.net/forums/profile/1/allan
-    jQuery.fn.dataTableExt.oApi.fnSortNeutral = function ( oSettings )
+    jQuery.fn.dataTableExt.oApi.fnSortNeutral = function (oSettings)
     {
         /* Remove any current sorting */
         oSettings.aaSorting = [];
 
         /* Sort display arrays so we get them in numerical order */
         oSettings.aiDisplay.sort( function (x,y) {
-            return x-y;
-        } );
+            return x - y;
+        });
         oSettings.aiDisplayMaster.sort( function (x,y) {
             return x-y;
-        } );
+        });
 
         /* Redraw */
-        oSettings.oApi._fnReDraw( oSettings );
+        oSettings.oApi._fnReDraw(oSettings);
     };
     
     // load initial datatable with settings
@@ -339,25 +339,25 @@ $(document).ready(function(){
         },
         "ajax": fnGetDataTablesDataAjax,
         "columnDefs": [
-            { "width": "6em", "targets": 0 },
-            { "targets": 1, "searchable": true },
+            {"width": "6em", "targets": 0},
+            {"targets": 1, "searchable": true},
             // the following is used to set an empty value when no value is returned (null)
-            { "targets": 1, "defaultContent": "" },
-            { "targets": 2, "defaultContent": "TODO:button" },
-            { "targets": 2, "width": "4em" }
+            {"targets": 1, "defaultContent": ""},
+            {"targets": 2, "defaultContent": "TODO:button"},
+            {"targets": 2, "width": "4em"}
         ],
         "dom": '<"toolbar">frtip'
     });
     
     // https://api.jqueryui.com/autocomplete/
-    $( ".custom-combobox-input" ).on( "autocompleteselect", function( event, ui ) {
+    $(".custom-combobox-input").on("autocompleteselect", function( event, ui ) {
         
         // set `sSelection` to the value that has been selected in combobox
         sSelection = ui.item.value;
         
         // update table & chart based upon new combobox selection
         // https://datatables.net/reference/api/ajax.reload()
-        $('.dataTable').DataTable().ajax.reload();
+        $(".dataTable").DataTable().ajax.reload();
     });
     
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
