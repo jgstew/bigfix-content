@@ -145,9 +145,9 @@ bigfix.relevance = {};
 	};
 /***********************************************/
 
-function fnGetDataTablesDataAjax(data, callback, settings){
+function fnGetDataTablesDataAjax(data, callback, settings) {
     callback(
-        JSON.parse( bigfix.relevance.evaluate(' ("{ %22data%22: [ " & it & " ] }") of concatenations ", " of ( (it as string) of jsons of ("["&it&"]") of concatenations ", " of ("%22" & it & "%22") of (tuple string items of it) ) of (it as string) of (multiplicity of it, it as html as string) of unique values of values of client settings whose("' + ( sSelection ) + '" = name of it) of bes computers ') )
+        JSON.parse(bigfix.relevance.evaluate(' ("{ %22data%22: [ " & it & " ] }") of concatenations ", " of ( (it as string) of jsons of ("["&it&"]") of concatenations ", " of ("%22" & it & "%22") of (tuple string items of it) ) of (it as string) of (multiplicity of it, it as html as string) of unique values of values of client settings whose("' + sSelection + '" = name of it) of bes computers '))
     );
 }
 
@@ -325,8 +325,8 @@ $(document).ready(function(){
     
     // load initial datatable with settings
     // https://legacy.datatables.net/ref#bDestroy
-    oDataTable = $('#resultsTable').dataTable( {
-        "scrollY": '70vh',
+    oDataTable = $("#resultsTable").dataTable( {
+        "scrollY": "70vh",
         "scrollCollapse": true,
         "paging": false,
         "bDestroy": true,
@@ -343,7 +343,7 @@ $(document).ready(function(){
             { "targets": 1, "searchable": true },
             // the following is used to set an empty value when no value is returned (null)
             { "targets": 1, "defaultContent": "" },
-            { "targets": 2, "defaultContent": "button" },
+            { "targets": 2, "defaultContent": "TODO:button" },
             { "targets": 2, "width": "4em" }
         ],
         "dom": '<"toolbar">frtip'
@@ -362,13 +362,13 @@ $(document).ready(function(){
     
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
     //  - Author: https://datatables.net/forums/profile/6627/manifestinteractive
-    $('.sorting, .sorting_asc, .sorting_desc').dblclick(function(){
+    $(".sorting, .sorting_asc, .sorting_desc").dblclick(function(){
         oDataTable.fnSortNeutral();
         return false;
     });
     
     // This adds a toolbar item, but not sure it is needed. Can use searchbox instead.
-    //$("div.toolbar").html('<lable>Custom Value: </lable><input></input>');
+    //$("div.toolbar").html("<lable>Custom Value: </lable><input></input>");
 });
 
 </script>
