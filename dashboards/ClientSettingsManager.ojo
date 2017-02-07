@@ -151,6 +151,34 @@ function fnGetDataTablesDataAjax(data, callback, settings) {
     );
 }
 
+// https://github.com/jgstew/tools/blob/master/JS/createActionClientSettings.js
+function fnCreateClientSettingsXML(name, value, dateRelease, userName) {
+	// http://www.codereadability.com/javascript-default-parameters-with-or-operator/
+	if (dateRelease === undefined) {
+		dateRelease = new Date();
+	}
+	if (userName === undefined) {
+		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch
+		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError
+		try {
+			// https://developer.bigfix.com/relevance/reference/bes-user.html#current-console-user-bes-user
+			// https://developer.bigfix.com/relevance/reference/string.html#bes-current-wruser-string
+			testGetUserName = bigfix.relevance.evaluate(' if (in web reports context AND exists properties "bes current wruser") then (bes current wruser) else (name of current console user | "") ');
+      if (testGetUserName !== "jgstew") {
+				userName=testGetUserName;
+      }
+		} catch (e) {
+			if (e instanceof ReferenceError && e.message == "bigfix is not defined"){
+				// pass
+			} else {
+				throw(e);
+			}
+		}
+	}
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
+  // following return statement compiled by http://babeljs.io/
+	return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<BES xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"BES.xsd\">\n\t<Task>\n\t\t<Title>Set \"" + name + "\" to \"" + value + "\" - Universal</Title>\n\t\t<Description><![CDATA[<P>This task will set a client setting</P><P>This task was automatically generated using the Dashboard: \"Custom - Client Settings Manager\"</P><P>&nbsp;</P>]]]]><![CDATA[></Description>\n\t\t<Relevance>not exists settings \"" + name + "\" whose(\"" + value + "\" = value of it) of client</Relevance>\n\t\t<Category>Configuration: Client Settings</Category>\n\t\t<DownloadSize>0</DownloadSize>\n\t\t<Source>Custom Dashboard - Client Settings Manager</Source>\n\t\t<SourceID>jgstew" + (userName ? "; " + userName : "") + "</SourceID>\n\t\t<SourceReleaseDate>" + dateRelease.toISOString().slice(0, 10) + "</SourceReleaseDate>\n\t\t<SourceSeverity></SourceSeverity>\n\t\t<CVENames></CVENames>\n\t\t<SANSID></SANSID>\n\t\t<Domain>BESC</Domain>\n\t\t<DefaultAction ID=\"Action1\">\n\t\t\t<Description>\n\t\t\t\t<PreLink>Click </PreLink>\n\t\t\t\t<Link>here</Link>\n\t\t\t\t<PostLink> to set the Client Setting</PostLink>\n\t\t\t</Description>\n\t\t\t<ActionScript MIMEType=\"application/x-Fixlet-Windows-Shell\">\nsetting \"" + name + "\"=\"" + value + "\" on \"{ parameter \"action issue date\" of action}\" for client\n\t\t\t</ActionScript>\n\t\t\t<SuccessCriteria Option=\"OriginalRelevance\"></SuccessCriteria>\n\t\t</DefaultAction>\n\t</Task>\n</BES>";
+}
 
 // https://bigfix.me/relevance/details/3019196
 // http://jqueryui.com/autocomplete/#combobox
@@ -374,7 +402,8 @@ $(document).ready(function(){
         var dataRow = $(".dataTable").DataTable().row( $(this).parents("tr") ).data();
 
         // TODO: create fixlet/task to set the setting/value combo.
-        alert( sSelection + "=" + dataRow[1] );
+        alert( fnCreateClientSettingsXML(sSelection, dataRow[1]) );
+        
         // https://bigfix.me/relevance/details/3019354
         // ImportXML(xml, openDocuments, siteName, computerIDs)
         // TakeFixletAction(id, siteID, contentID, parameters, callback);
