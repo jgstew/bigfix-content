@@ -46,6 +46,7 @@
 
 <p><strong>NOTE: This is an early work in progress.</strong></p>
 <p><strong>Known Issue: throws an error if value is invalid JSON. TODO: Need to escape some chars? ("\)</strong></p>
+<p><strong>Known Issue: TakeAction currently only works for master operators. Work in Progress.</strong></p>
 <p><strong>TODO: add option to delete the selected setting</strong></p>
 <p><strong>TODO: add option to set a custom value not in the listed options</strong></p>
 <p><strong>TODO: add results to table for tasks/fixlets that set custom settings that don't exist on computers already</strong></p>
