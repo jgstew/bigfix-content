@@ -46,7 +46,6 @@
 
 <p><strong>NOTE: This is an early work in progress.</strong></p>
 <p><strong>Known Issue: throws an error if value is invalid JSON. TODO: Need to escape some chars? ("\)</strong></p>
-<p><strong>TODO: provide a TakeAction button instead of "AlreadyExists" text.</strong></p>
 <p><strong>TODO: add option to delete the selected setting</strong></p>
 <p><strong>TODO: add option to set a custom value not in the listed options</strong></p>
 <p><strong>TODO: add results to table for tasks/fixlets that set custom settings that don't exist on computers already</strong></p>
@@ -156,7 +155,7 @@ bigfix.relevance = {};
 
 function fnGetDataTablesDataAjax(data, callback, settings) {
     callback(
-        JSON.parse(bigfix.relevance.evaluate(' ("{ %22data%22: [ " & it & " ] }") of concatenations ", " of ( (it as string) of jsons of ("["&it&"]") of concatenations ", " of ("%22" & it & "%22") of (tuple string items of it) ) of (it as string) of (multiplicity of it, it as html as string, (if ( it is contained by set of following texts of lasts "%22 whose(%22" of preceding texts of lasts "%22 = value of it) of client" of unique values of relevances of custom bes fixlets whose("Configuration: Client Settings" = category of it AND relevance of it starts with "not exists settings %22' + sSelection + '" AND relevance of it ends with "%22 = value of it) of client") ) then "AlreadyExists" else "<button>CreateTask</button>") ) of unique values of values of client settings whose("' + sSelection + '" = name of it) of bes computers '))
+        JSON.parse(bigfix.relevance.evaluate(' ("{ %22data%22: [ " & it & " ] }") of concatenations ", " of ( (it as string) of jsons of ("["&it&"]") of concatenations ", " of ("%22" & it & "%22") of (tuple string items of it) ) of (it as string) of (multiplicity of it, it as html as string, (if ( it is contained by set of following texts of lasts "%22 whose(%22" of preceding texts of lasts "%22 = value of it) of client" of unique values of relevances of custom bes fixlets whose("Configuration: Client Settings" = category of it AND relevance of it starts with "not exists settings %22' + sSelection + '" AND relevance of it ends with "%22 = value of it) of client") ) then "<button>TakeAction</button>" else "<button>CreateTask</button>") ) of unique values of values of client settings whose("' + sSelection + '" = name of it) of bes computers '))
     );
 }
 
@@ -331,6 +330,7 @@ function fnCreateClientSettingsXML(name, value, dateRelease, userName) {
 
 // This is a global variable to contain the combobox selection / new selection.
 var sSelection = "";
+var sUserActionSite = "";
 
 $(document).ready(function(){
     // set up the combobox UI elements
@@ -413,14 +413,23 @@ $(document).ready(function(){
         // TODO: create task if button contains "Create", Take action if button contains "Take"
         //alert( $(this).html() ); // get name of button
 
-        // https://bigfix.me/relevance/details/3019354
-        // ImportXML(xml, openDocuments, siteName, computerIDs)
-        ImportXML(fnCreateClientSettingsXML(sSelection, dataRow[1]), false, "<?Relevance ( tuple string item 0 of concatenations ", " of names of (bes custom sites whose(name of it as lowercase contains "client" AND name of it as lowercase contains "setting" AND exists writer whose(it = current console user) of it)) ) | "" ?>" );
+        if( $(this).html() === "CreateTask" ) {
+            // https://bigfix.me/relevance/details/3019354
+            // ImportXML(xml, openDocuments, siteName, computerIDs)
+            ImportXML(fnCreateClientSettingsXML(sSelection, dataRow[1]), false, "<?Relevance ( tuple string item 0 of concatenations ", " of names of (bes custom sites whose(name of it as lowercase contains "client" AND name of it as lowercase contains "setting" AND exists writer whose(it = current console user) of it)) ) | "" ?>" );
 
-        // reload table to show that the new task exists
-        $(".dataTable").DataTable().ajax.reload();
-        // TakeFixletAction(id, siteID, contentID, parameters, callback);
+            // reload table to show that the new task exists
+            $(".dataTable").DataTable().ajax.reload();
+        } else {
+            // https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Tivoli%20Endpoint%20Manager/page/IEM%20Console%20JavaScript%20_%20Relevance
+            // TakeFixletAction(id, siteID, contentID, parameters, callback);
+            TakeFixletAction( bigfix.relevance.evaluate(' minimum of ids of custom bes fixlets whose("Configuration: Client Settings" = category of it AND relevance of it = "not exists settings %22' + sSelection + '%22 whose(%22' + dataRow[1] + '%22 = value of it) of client") '), sUserActionSite, "Action1" );
+        }
     });
+
+    if(sUserActionSite === "") {
+        sUserActionSite = bigfix.relevance.evaluate(' id of action site of current console user ');
+    }
 });
 
 </script>
