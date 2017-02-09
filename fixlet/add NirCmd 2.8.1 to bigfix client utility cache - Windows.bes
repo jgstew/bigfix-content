@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>add NirCmd 2.8.1 to bigfix client utility cache - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>not exists files "9adfc7ab66348d84ebdd9c1e8093cad4cc8485ef" whose(44544 = size of it) of folders "Utilities" of folders "__Cache" of folders "__Global" of data folders of clients</Relevance>
+		<Category>Configuration</Category>
+		<DownloadSize>44544</DownloadSize>
+		<Source>http://www.nirsoft.net/utils/nircmd.html</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2017-02-05</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 09 Feb 2017 19:29:14 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// http://www.nirsoft.net/utils/nircmd.html
+prefetch NirCmd.exe sha1:9adfc7ab66348d84ebdd9c1e8093cad4cc8485ef size:44544 https://github.com/jgstew/bigfix-content/raw/f893e2654a3805da38e30d5e496a7f84ffc77eea/downloads/nircmd.exe sha256:31b3b228382dc359f22ae97b2602eee81dc743fb21196061eacc6619533881f5
+
+utility __Download\NirCmd.exe
+</ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>

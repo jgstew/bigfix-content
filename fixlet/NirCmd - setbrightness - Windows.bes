@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>NirCmd - setbrightness - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists integer values of selects "CurrentBrightness FROM WmiMonitorBrightness WHERE Active=True" of wmis "ROOT/WMI"</Relevance>
+		<Category>Configuration</Category>
+		<DownloadSize>44544</DownloadSize>
+		<Source>http://www.nirsoft.net/utils/nircmd.html</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2017-02-05</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 09 Feb 2017 19:50:49 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+action parameter query "iDesiredBrightness" with description "Enter the Desired Brightness: (min 5, max 100)" and with default value "75"
+// parameter "iDesiredBrightness" = "10"
+
+// http://www.nirsoft.net/utils/nircmd.html
+prefetch NirCmd.exe sha1:9adfc7ab66348d84ebdd9c1e8093cad4cc8485ef size:44544 https://github.com/jgstew/bigfix-content/raw/f893e2654a3805da38e30d5e496a7f84ffc77eea/downloads/nircmd.exe sha256:31b3b228382dc359f22ae97b2602eee81dc743fb21196061eacc6619533881f5
+
+// https://bigfix.me/relevance/details/3019382
+// https://bigfix.me/relevance/details/3019381
+wait __Download\NirCmd setbrightness { ( maxima of (it; 5) ) of ( minima of (it; 100) ) of ( ((it as integer) of (parameter "iDesiredBrightness")) | 0 ) }
+
+utility __Download\NirCmd.exe
+// https://msdn.microsoft.com/en-us/library/windows/desktop/aa394536(v=vs.85).aspx
+</ActionScript>
+			<SuccessCriteria Option="CustomRelevance">(integer values of selects "CurrentBrightness FROM WmiMonitorBrightness WHERE Active=True" of wmis "ROOT/WMI") != ( maxima of (it; 5) ) of ( minima of (it; 100) ) of ( ((it as integer) of (parameter "iDesiredBrightness")) | 0 )</SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
