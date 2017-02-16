@@ -2,7 +2,7 @@
 <FixletDebuggerFile>
 	<Actions>
 // Open CMD as system account
-run { (tuple string item 0 of concatenations ", " of pathnames of (files "PsExec.exe" of it; files "PAExec.exe" of it) of folders "temp" of (folders "windows" of it; it) of root folders of drives of system folders) | "PsExec.exe" } -accepteula -h -s -i CMD /C ( TaskKill /T /F /PID {pid of processes whose(pathname of image file of it = pathname whose(it contains "FixletDebugger.exe") of client)} &amp;&amp; "{ pathname whose(it contains "FixletDebugger.exe") of client }" )
+run { (tuple string item 0 of concatenations ", " of pathnames of (files "PsExec.exe" of it; files "PAExec.exe" of it) of folders "temp" of (folders "windows" of it; it) of root folders of drives of system folders) | "PsExec.exe" } -accepteula -h -s -i -d CMD /C ( TaskKill /F /PID {pid of processes whose(pathname of image file of it = pathname whose(it contains "FixletDebugger.exe") of client)} &amp;&amp; "{ pathname whose(it contains "FixletDebugger.exe") of client }" )
 // This is meant to be run in the fixlet debugger, requires PsExec to be present in TEMP folders or PATH.
 </Actions>
 </FixletDebuggerFile>
