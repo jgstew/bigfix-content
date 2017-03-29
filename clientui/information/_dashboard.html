@@ -12,12 +12,13 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/js/jquery.dataTables.min.js" integrity="sha256-yWA356lDhruy1J8jGncaMWKAPYDbK47OKb0uT/aELLc=" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js" integrity="sha256-1hjUhpc44NwiNg8OwMu2QzJXhD8kcj+sJA3aCQZoUjg=" crossorigin="anonymous"></script>
 	</head>	
 	<body>
 <h2>Computer Info</h2>
 <br/>
-
-<div id="harddrive"></div>
+<div id="nownow">blah</div>
+<div id="harddrive"> <span style="margin:5px;position:absolute"> Hard Drive Usage </span> </div>
 
 <style>
 h2 {
@@ -28,6 +29,7 @@ h2 {
 }
 </style>
 <script language="javascript">
+var datetimeUpdated = moment("<?Relevance now ?>");
 var iHardDriveSpaceFree = <?Relevance free space of drives of system folders | 0 ?>;
 var iHardDriveSpaceTotal = <?Relevance total space of drives of system folders | 0 ?>;
 var iHardDriveSpaceUsed = iHardDriveSpaceTotal - iHardDriveSpaceFree;
@@ -37,6 +39,8 @@ $(document).ready(function(){
 		max: iHardDriveSpaceTotal,
 		value: iHardDriveSpaceUsed
 	});
+	// TODO: this part doesn't seem to work:
+	$("#nownow").text = datetimeUpdated.toISOString();
 });
 
 </script>
