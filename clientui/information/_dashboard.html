@@ -22,7 +22,7 @@
 <div id="harddrive"> <span style="margin:5px;position:absolute"> Hard Drive Usage </span> </div>
 <br/>
 <details>
-	<summary>There are <?Relevance number of relevant fixlets whose(exists values whose("Important" = it OR "Critical" = it) of headers "X-Fixlet-Source-Severity" of it AND not exists values whose(it contains " (Superseded)") of headers "Subject" of it) of sites whose("Fixlet Site" = type of it AND exists names whose(it starts with "Updates for " OR it starts with "Patches for" OR it = "Enterprise Security") of it) | 0 ?> missing patches.</summary>
+	<summary>There are <?Relevance number of relevant fixlets whose(exists values whose("Important" = it OR "Critical" = it) of headers "X-Fixlet-Source-Severity" of it AND not exists values whose(it contains " (Superseded)") of headers "Subject" of it) of sites whose("Fixlet Site" = type of it AND exists names whose(it starts with "Updates for " OR it starts with "Patches for" OR it = "Enterprise Security") of it) | 0 ?> missing important patches.</summary>
 	<?Relevance uls of html concatenations of lis of values of headers "Subject" of relevant fixlets whose(exists values whose("Important" = it OR "Critical" = it) of headers "X-Fixlet-Source-Severity" of it AND not exists values whose(it contains " (Superseded)") of headers "Subject" of it) of sites whose("Fixlet Site" = type of it AND exists names whose(it starts with "Updates for " OR it starts with "Patches for" OR it = "Enterprise Security") of it) ?>
 </details>
 <br/>
