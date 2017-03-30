@@ -25,7 +25,9 @@
 	<?Relevance uls of html concatenations of lis of values of headers "Subject" of relevant fixlets whose(exists values whose("Important" = it OR "Critical" = it) of headers "X-Fixlet-Source-Severity" of it AND not exists values whose(it contains " (Superseded)") of headers "Subject" of it) of sites whose("Fixlet Site" = type of it AND exists names whose(it starts with "Updates for " OR it starts with "Patches for" OR it = "Enterprise Security") of it) ?>
 </details>
 <br/>
-<div>info is <span id="iUpdateTimeDiff">1</span> minute<span id="strPluralizeTime"></span> old</div>
+
+
+<div style="position: absolute; z-index: 3; top: 2px; right: 5px; color: Silver;">info below is <span id="iUpdateTimeDiff">1</span> minute<span id="strPluralizeTime"></span> old</div>
 
 <style>
 h2 {
@@ -78,9 +80,10 @@ $(document).ready(function(){
 		value: iHardDriveSpaceUsed
 	});
 
-	// Update age
+	// Update age of report info every minute
 	setInterval( fnUpdateRefreshTime , 59000);
-	setInterval( reFresh , 3 * 60 * 1000);
+	// Update full report every 10 minutes
+	setInterval( reFresh , 10 * 60 * 1000);
 });
 
 //Refresh the page
