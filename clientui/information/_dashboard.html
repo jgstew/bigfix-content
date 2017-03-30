@@ -12,6 +12,7 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/js/jquery.dataTables.min.js" integrity="sha256-yWA356lDhruy1J8jGncaMWKAPYDbK47OKb0uT/aELLc=" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-details/0.1.0/jquery.details.min.js" integrity="sha256-zoub8L3iliulReVpJt9t02H8JfkXJVKT5l09kN85o7k=" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js" integrity="sha256-1hjUhpc44NwiNg8OwMu2QzJXhD8kcj+sJA3aCQZoUjg=" crossorigin="anonymous"></script>
 	</head>	
 	<body>
@@ -19,6 +20,12 @@
 <br/>
 <div id="nownow"></div>
 <div id="harddrive"> <span style="margin:5px;position:absolute"> Hard Drive Usage </span> </div>
+<br/>
+<details>
+	<summary>There are <?Relevance number of relevant fixlets whose(exists values whose("Important" = it OR "Critical" = it) of headers "X-Fixlet-Source-Severity" of it AND not exists values whose(it contains " (Superseded)") of headers "Subject" of it) of sites whose("Fixlet Site" = type of it AND exists names whose(it starts with "Updates for " OR it starts with "Patches for" OR it = "Enterprise Security") of it) | 0 ?> missing patches.</summary>
+	<?Relevance uls of html concatenations of lis of values of headers "Subject" of relevant fixlets whose(exists values whose("Important" = it OR "Critical" = it) of headers "X-Fixlet-Source-Severity" of it AND not exists values whose(it contains " (Superseded)") of headers "Subject" of it) of sites whose("Fixlet Site" = type of it AND exists names whose(it starts with "Updates for " OR it starts with "Patches for" OR it = "Enterprise Security") of it) ?>
+</details>
+<br/>
 
 <style>
 h2 {
@@ -27,6 +34,10 @@ h2 {
     border: 0;
     text-align: center;
 }
+
+/* The following styles are for details/summary shim */
+summary { cursor: pointer; }
+summary:hover, summary:focus { background: #ddd; }
 </style>
 <script language="javascript">
 
@@ -54,7 +65,9 @@ var iHardDriveSpaceUsed = iHardDriveSpaceTotal - iHardDriveSpaceFree;
 var iNumMissingPatches = <?Relevance number of relevant fixlets whose(exists values whose("Important" = it OR "Critical" = it) of headers "X-Fixlet-Source-Severity" of it AND not exists values whose(it contains " (Superseded)") of headers "Subject" of it) of sites whose("Fixlet Site" = type of it AND exists names whose(it starts with "Updates for " OR it starts with "Patches for" OR it = "Enterprise Security") of it) | 0 ?>;
 
 $(document).ready(function(){
-	
+	// invoke jquery.details.min.js
+	$('details').details();
+	// invoke jqueryui progressbar widget
 	$( "#harddrive" ).progressbar({
 		max: iHardDriveSpaceTotal,
 		value: iHardDriveSpaceUsed
