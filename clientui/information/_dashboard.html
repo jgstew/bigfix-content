@@ -18,21 +18,20 @@
 	<body>
 <h2>Computer Info</h2>
 <br/>
-<div id="nownow"></div>
 <div id="harddrive"> <span style="margin:5px;position:absolute"> Hard Drive Usage </span> </div>
 <br/>
 <details>
-	<summary>There are <?Relevance number of relevant fixlets whose(exists values whose("Important" = it OR "Critical" = it) of headers "X-Fixlet-Source-Severity" of it AND not exists values whose(it contains " (Superseded)") of headers "Subject" of it) of sites whose("Fixlet Site" = type of it AND exists names whose(it starts with "Updates for " OR it starts with "Patches for" OR it = "Enterprise Security") of it) | 0 ?> missing important patches.</summary>
+	<summary>There are <span id="iNumMissingPatches"><?Relevance number of relevant fixlets whose(exists values whose("Important" = it OR "Critical" = it) of headers "X-Fixlet-Source-Severity" of it AND not exists values whose(it contains " (Superseded)") of headers "Subject" of it) of sites whose("Fixlet Site" = type of it AND exists names whose(it starts with "Updates for " OR it starts with "Patches for" OR it = "Enterprise Security") of it) | 0 ?></span> missing important patches.</summary>
 	<?Relevance uls of html concatenations of lis of values of headers "Subject" of relevant fixlets whose(exists values whose("Important" = it OR "Critical" = it) of headers "X-Fixlet-Source-Severity" of it AND not exists values whose(it contains " (Superseded)") of headers "Subject" of it) of sites whose("Fixlet Site" = type of it AND exists names whose(it starts with "Updates for " OR it starts with "Patches for" OR it = "Enterprise Security") of it) ?>
 </details>
 <br/>
+<div>info is <span id="iUpdateTimeDiff">1</span> minute<span id="strPluralizeTime"></span> old</div>
 
 <style>
 h2 {
     padding: 0px;
     margin: 0px 0px 1px 0px;
     border: 0;
-    text-align: center;
 }
 
 /* The following styles are for details/summary shim */
@@ -43,26 +42,32 @@ summary:hover, summary:focus { background: #ddd; }
 
 // http://www.htmlgoodies.com/html5/javascript/calculating-the-difference-between-two-dates-in-javascript.html
 Date.minsBetween = function( date1, date2 ) {
+  if(!date2){
+	date2 = new Date();
+  }
   //Get 1 min in milliseconds
   var one_min=1000*60;
 
   // Convert both dates to milliseconds
-  var date1_ms = date1.getTime();
-  var date2_ms = date2.getTime();
+  var date1_ms = new Date(date1).getTime();
+  var date2_ms = new Date(date2).getTime();
 
   // Calculate the difference in milliseconds
-  var difference_ms = date2_ms - date1_ms;
+  var difference_ms = Math.abs(date2_ms - date1_ms);
     
   // Convert back to min and return
   return Math.round(difference_ms/one_min); 
 }
 
-var datetimeUpdated = moment("<?Relevance now ?>");
+var datetimeUpdated = moment("<?Relevance now as universal string ?>");
 var iHardDriveSpaceFree = <?Relevance free space of drives of system folders | 0 ?>;
 var iHardDriveSpaceTotal = <?Relevance total space of drives of system folders | 0 ?>;
 var iHardDriveSpaceUsed = iHardDriveSpaceTotal - iHardDriveSpaceFree;
-// https://bigfix.me/relevance/details/3019839
-var iNumMissingPatches = <?Relevance number of relevant fixlets whose(exists values whose("Important" = it OR "Critical" = it) of headers "X-Fixlet-Source-Severity" of it AND not exists values whose(it contains " (Superseded)") of headers "Subject" of it) of sites whose("Fixlet Site" = type of it AND exists names whose(it starts with "Updates for " OR it starts with "Patches for" OR it = "Enterprise Security") of it) | 0 ?>;
+
+function fnUpdateRefreshTime() {
+  $( "#iUpdateTimeDiff" ).text( (Date.minsBetween(datetimeUpdated) + 1).toString() );
+  $( "#strPluralizeTime" ).text( 's' );
+}
 
 $(document).ready(function(){
 	// invoke jquery.details.min.js
@@ -72,10 +77,18 @@ $(document).ready(function(){
 		max: iHardDriveSpaceTotal,
 		value: iHardDriveSpaceUsed
 	});
-	// TODO: set difference in HTML element
-	//alert( datetimeUpdated.toISOString() );
+
+	// Update age
+	setInterval( fnUpdateRefreshTime , 59000);
+	setInterval( reFresh , 3 * 60 * 1000);
 });
 
+//Refresh the page
+function reFresh()
+{
+	//location.reload(true);
+	location.href='cid:load?page=_dashboard.html';
+}
 </script>
 	</body>
 </html>
