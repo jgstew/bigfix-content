@@ -2,6 +2,8 @@
 
 ### Client UI Dashboard to provide the user with info about the computer system they are using.
 
+http://jgstew.github.io/images/BigFix_ClientUI_Dashboard_Info_WorkInProgress.PNG
+
 ## Related:
 
 - https://forum.bigfix.com/t/client-collected-data-report/17622/8
