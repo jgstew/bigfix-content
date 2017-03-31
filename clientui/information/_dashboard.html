@@ -7,7 +7,8 @@
 		<title>Computer Info ClientUI Dashboard</title>
 
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/css/jquery.dataTables.min.css" integrity="sha256-+Z1rYa3ys5OdZNUck5G7lBvb8A13OrYwvf+d8PfEaHQ=" crossorigin="anonymous" />
-        	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" integrity="sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik=" crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" integrity="sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik=" crossorigin="anonymous" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
 		
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/js/jquery.dataTables.min.js" integrity="sha256-yWA356lDhruy1J8jGncaMWKAPYDbK47OKb0uT/aELLc=" crossorigin="anonymous"></script>
@@ -27,7 +28,7 @@
 <br/>
 
 
-<div style="position: absolute; z-index: 3; top: 2px; right: 5px; color: Silver;">info below is <span id="iUpdateTimeDiff">1</span> minute<span id="strPluralizeTime"></span> old</div>
+<div onmousedown="reFresh()" style="position: absolute; z-index: 3; top: 2px; right: 5px; color: Silver; cursor: pointer;">info below is <span id="iUpdateTimeDiff">1</span> minute<span id="strPluralizeTime"></span> old <i class="fa fa-refresh" aria-hidden="true"></i></div>
 
 <style>
 h2 {
@@ -80,8 +81,8 @@ $(document).ready(function(){
 		value: iHardDriveSpaceUsed
 	});
 
-	// Update age of report info every minute
-	setInterval( fnUpdateRefreshTime , 59000);
+	// Update age of report info approximately every minute
+	setInterval( fnUpdateRefreshTime , 58 * 1000);
 	// Update full report every 10 minutes
 	setInterval( reFresh , 10 * 60 * 1000);
 });
