@@ -1,5 +1,25 @@
 ## Work in progress
 
+TODO:
+- Windows Reliability Score
+- SecureBoot
+- UEFI
+- TPM
+- Credential Guard
+- EMET
+- EMET issues/events?
+- AntiVirus
+- Windows Activation
+- Office Activation
+- Current User Not Local Admin
+- Current User is Admin & running a browser (not good)
+- Patch level score
+- Admin Accnt renamed & disabled
+- Managed vs Unmanaged
+- Standard Image vs Non-standard image
+- Folder Redirection Info (technician only?)
+- Windows 10 branch info / build
+
 ### Client UI Dashboard to provide the user with info about the computer system they are using.
 
 ![ScreenShot](http://jgstew.github.io/images/BigFix_ClientUI_Dashboard_Info_WorkInProgress.PNG)
