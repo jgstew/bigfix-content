@@ -19,6 +19,7 @@ TODO:
 - Standard Image vs Non-standard image
 - Folder Redirection Info (technician only?)
 - Windows 10 branch info / build
+- Device Health API?
 
 ### Client UI Dashboard to provide the user with info about the computer system they are using.
 
