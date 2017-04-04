@@ -28,7 +28,7 @@
 	<?Relevance uls of html concatenations of lis of values of headers "Subject" of relevant fixlets whose(exists values whose("Important" = it OR "Critical" = it) of headers "X-Fixlet-Source-Severity" of it AND not exists values whose(it contains " (Superseded)") of headers "Subject" of it) of sites whose("Fixlet Site" = type of it AND exists names whose(it starts with "Updates for " OR it starts with "Patches for" OR it = "Enterprise Security") of it) ?>
 </details>
 <br/>
-
+<?Relevance html tags "details" of html concatenations of ( ( html tags "summary" of concatenations of ( "There " ; (if item 0 of it = 1 then "is" else "are") ; " " ; item 0 of it as string ; " " ; item 1 of it ; (if item 0 of it = 1 then "" else "s") ; " available." ) ) ; ( uls of html concatenations of lis of elements of item 2 of it ) ) of (number of elements of it, "offer", it) of sets of values of headers "Subject" of relevant offer actions of sites ?>
 
 <a id="RefreshData" href="cid:load?page=_dashboard.html" onmousedown="location.href='cid:load?page=_dashboard.html'" style="position: absolute; z-index: 3; top: 2px; right: 5px; color: Silver; text-decoration: none;">info below is <span id="iUpdateTimeDiff">1</span> minute<span id="strPluralizeTime"></span> old <i class="fa fa-refresh" aria-hidden="true"></i></a>
 
@@ -70,7 +70,8 @@ var iHardDriveSpaceTotal = <?Relevance total space of drives of system folders |
 var iHardDriveSpaceUsed = iHardDriveSpaceTotal - iHardDriveSpaceFree;
 
 function fnUpdateRefreshTime() {
-  $( "#iUpdateTimeDiff" ).text( (Date.minsBetween(datetimeUpdated) + 1).toString() );
+  var iMinDiff = (Date.minsBetween(datetimeUpdated) + 1);
+  $( "#iUpdateTimeDiff" ).text( iMinDiff.toString() );
   $( "#strPluralizeTime" ).text( 's' );
 }
 
@@ -85,8 +86,8 @@ $(document).ready(function(){
 
 	// Update age of report info approximately every minute
 	setInterval( fnUpdateRefreshTime , 58 * 1000);
-	// Update full report every 10 minutes
-	setInterval( reFresh , 10 * 60 * 1000);
+	// Update full report every X minutes
+	//setInterval( reFresh , 10 * 60 * 1000);
 });
 
 //Refresh the page
