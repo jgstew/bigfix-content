@@ -2,7 +2,7 @@
 
 TODO:
 - Windows Reliability Score
- - https://bigfix.me/relevance/details/3019855 Average Windows Reliability Score over the past 2 days
+  - https://bigfix.me/relevance/details/3019855 Average Windows Reliability Score over the past 2 days
 - SecureBoot
 - UEFI
 - TPM
