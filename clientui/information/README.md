@@ -1,6 +1,7 @@
 ## Work in progress
 
-TODO:
+TODO: 
+- Use FallBack.JS - https://github.com/dolox/fallback/issues/77#issuecomment-273781551
 - Windows Reliability Score
   - https://github.com/strawgate/C3-Inventory/issues/34
   - https://bigfix.me/relevance/details/3019855 Average Windows Reliability Score over the past 2 days
@@ -35,3 +36,4 @@ TODO:
 - https://forum.bigfix.com/t/action-link-from-a-fixlet-on-a-ui-dashboard/3038/5
 - https://forum.bigfix.com/t/how-do-you-enable-the-technician-mode-in-the-clientui/15673
 - https://forum.bigfix.com/t/bigfix-clientui-admx-and-bigfix-me-talk-slides/16049
+- https://github.com/dolox/fallback/issues/77#issuecomment-273781551
