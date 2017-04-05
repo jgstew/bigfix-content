@@ -37,3 +37,4 @@ TODO:
 - https://forum.bigfix.com/t/how-do-you-enable-the-technician-mode-in-the-clientui/15673
 - https://forum.bigfix.com/t/bigfix-clientui-admx-and-bigfix-me-talk-slides/16049
 - https://github.com/dolox/fallback/issues/77#issuecomment-273781551
+- https://bigfix.me/relevance/details/3019850
