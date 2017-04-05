@@ -3,6 +3,7 @@
 TODO:
 - Windows Reliability Score
   - https://bigfix.me/relevance/details/3019855 Average Windows Reliability Score over the past 2 days
+  - https://bigfix.me/analysis/details/2998435 Stability - Windows - C3
 - SecureBoot
 - UEFI
 - TPM
