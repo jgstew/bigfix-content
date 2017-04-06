@@ -13,6 +13,7 @@ TODO:
 - EMET
 - EMET issues/events?
 - AntiVirus
+  - https://bigfix.me/relevance/details/3019112
 - Windows Activation
 - Office Activation
 - Current User Not Local Admin
