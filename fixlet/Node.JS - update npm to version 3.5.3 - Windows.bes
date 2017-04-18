@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: set syntax=xml: -->
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>Node.JS - update npm to version 3.5.3 - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists folders "npm" of folders "node_modules" of (folders it) of unique values of (it as string) of values "InstallPath" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Node.js" of (x32 registries; x64 registries)</Relevance>
+		<Relevance><![CDATA[not exists values whose(it as string as version >= "3.5.3") of keys "version" of jsons of files "package.json" of folders "npm" of folders "node_modules" of (folders it) of unique values of (it as string) of values "InstallPath" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Node.js" of (x32 registries; x64 registries)]]></Relevance>
+		<Category>Update</Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2017-04-18</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 18 Apr 2017 19:52:15 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+dos cd {(folders it) of unique values of (it as string) of values "InstallPath" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Node.js" of (x32 registries; x64 registries)} && npm install npm@3.5.3
+//dos npm install -g npm@3.5.3
+]]></ActionScript>
+		</DefaultAction>
+	</Fixlet>
+</BES>

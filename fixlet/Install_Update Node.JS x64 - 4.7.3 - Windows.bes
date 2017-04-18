@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: set syntax=xml: -->
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>Install/Update Node.JS x64 - 4.7.3 - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>x64 of operating system</Relevance>
+		<Relevance><![CDATA[not exists keys whose(value "DisplayName" of it as string contains "Node.js" AND value "DisplayVersion" of it as string as version >= "4.7.3") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)]]></Relevance>
+		<Category></Category>
+		<DownloadSize>11141120</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2017-04-17</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 18 Apr 2017 18:54:54 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+action uses wow64 redirection {not x64 of operating system}
+
+prefetch node-x64.msi sha1:d155704b0dbe8af6a8c02af43142210c81523cad size:11141120 https://nodejs.org/download/release/v4.7.3/node-v4.7.3-x64.msi sha256:a8955cc0578214ab0a303332c565bd2df35db42a4b4c7f9c6e898197ac6645b8
+
+waithidden "{pathname of system folder & "\msiexec.exe"}" /i "{(pathname of client folder of current site) & "\__Download\node-x64.msi"}" /qn /norestart
+]]></ActionScript>
+		</DefaultAction>
+	</Fixlet>
+</BES>
