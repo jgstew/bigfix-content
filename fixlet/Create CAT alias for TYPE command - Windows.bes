@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: set syntax=xml: -->
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>Create CAT alias for TYPE command - Windows</Title>
+		<Description>The goal of this is to make switching between Windows and other OSes easier by making unix commands work on windows when an equivalent command is available of a different name.</Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>not exists lines whose(it contains "@type %25*") of files "cat.bat" of windows folders</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2017-04-18</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 12 May 2017 23:06:27 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// https://www.lemoda.net/windows/windows2unix/windows2unix.html
+// http://stackoverflow.com/questions/9362692/how-to-create-ls-in-windows-command-prompt
+// http://stackoverflow.com/questions/20530996/aliases-in-windows-command-prompt
+
+delete __createfile
+
+createfile until END_OF_FILE
+@type %*
+@echo off
+
+REM added with bigfix
+REM this is to allow unix commands to be an alias for eqivalent windows commands
+END_OF_FILE
+
+delete {pathname of windows folders}\cat.bat
+copy __createfile {pathname of windows folders}\cat.bat
+
+// TODO: clear, pwd, rm, cp, man, mv, uptime, env, ps
+</ActionScript>
+		</DefaultAction>
+	</Fixlet>
+</BES>
