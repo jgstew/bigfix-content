@@ -1,7 +1,7 @@
 
 ClientUI's are html files that are displayed within the BigFix Client UI. 
 
-They can have client side relevance substitution to display dynamic content.
+They can have client side relevance substitution to display dynamic content. They can use javascript to enhance the function of the page, but the javascript cannot dynamically get relevance results like is possible in a Console Dashboard or Web Report.
 
 ## Related:
 
