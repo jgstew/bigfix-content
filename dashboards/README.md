@@ -104,3 +104,13 @@ An even better option: https://github.com/jgstew/bigfix-content/tree/master/fixl
 ### Examples:
 
 - https://bigfix.me/cdb/dashboard/115
+
+
+### Related
+
+- https://forum.bigfix.com/t/what-is-the-best-way-to-detect-if-running-in-a-dashboard-or-web-report/19924
+- https://forum.bigfix.com/t/bigfix-global-search-dashboard-and-webreport/19963
+- https://forum.bigfix.com/t/example-custom-web-report-with-pie-chart/16017
+- https://forum.bigfix.com/t/how-to-create-a-custom-dashboard/15418/4
+- https://forum.bigfix.com/t/report-available-asset-dashboard/6286
+- https://forum.bigfix.com/t/webreport-results-via-soap-api/20131/3
