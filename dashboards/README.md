@@ -114,3 +114,4 @@ An even better option: https://github.com/jgstew/bigfix-content/tree/master/fixl
 - https://forum.bigfix.com/t/how-to-create-a-custom-dashboard/15418/4
 - https://forum.bigfix.com/t/report-available-asset-dashboard/6286
 - https://forum.bigfix.com/t/webreport-results-via-soap-api/20131/3
+- https://forum.bigfix.com/t/webreport-and-dashboard-that-recommends-relay-cache-sizing/19023
