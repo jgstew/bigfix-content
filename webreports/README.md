@@ -9,4 +9,5 @@ New installs of 9.5+ require this: https://www.ibm.com/support/knowledgecenter/S
 - https://developer.bigfix.com/other/web-reports-api/
 - https://developer.bigfix.com/other/web-reports-api/setting_onload.html
 - https://developer.bigfix.com/other/web-reports-api/wr_vs_dashboard.html
+- https://forum.bigfix.com/t/resolved-export-a-list-of-all-reports-to-csv/21422/2
 
