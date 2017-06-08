@@ -2,7 +2,7 @@
 <!-- vim: set syntax=xml: -->
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
-		<Title>Install Node.JS x64 - 0.12.14 - Windows</Title>
+		<Title>Install Node.JS x64 - 0.12.14 - Windows (Superseded)</Title>
 		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>x64 of operating system</Relevance>
