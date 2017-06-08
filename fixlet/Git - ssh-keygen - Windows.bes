@@ -28,14 +28,15 @@
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
-// TODO
 parameter "KeyGenLocation" = "{ unique value of pathnames of files "ssh-keygen.exe" of folders "bin" of folders "usr" of (folders it) of (it as string) of values "InstallLocation" of keys whose(value "DisplayName" of it as string contains "Git") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries) }"
-parameter "FileSaveLocation" = "{ unique value of (it & "\id_rsa") of pathnames of folders ".ssh" of (folders it) of unique values of home directories of users of (current users;logged on users) }"
+parameter "FileSaveLocation" = "{ unique value of home directories of users of (current users;logged on users) }\.ssh"
+
+folder create "{parameter "FileSaveLocation"}"
 
 override wait
 hidden=true
 runas=currentuser
-wait CMD /C "{parameter "KeyGenLocation"}" -f {parameter "FileSaveLocation"} -t rsa -N ''
+wait CMD /C "{parameter "KeyGenLocation"}" -f {parameter "FileSaveLocation"}\id_rsa -t rsa -N ''
 
 // http://guides.beanstalkapp.com/version-control/git-on-windows.html#installing-ssh-keys
 // http://stackoverflow.com/questions/10767488/automate-ssh-keygen-t-rsa-so-it-does-not-ask-for-a-passphrase
