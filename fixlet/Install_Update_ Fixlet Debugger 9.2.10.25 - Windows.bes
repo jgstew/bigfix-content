@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: set syntax=xml: -->
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>Install/Update: Fixlet Debugger 9.2.10.25 - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance><![CDATA[version of operating system >= "5.1"]]></Relevance>
+		<Relevance>not exists keys whose(value "DisplayName" of it as string contains "Fixlet Debugger" AND value "DisplayVersion" of it as string as version = "9.2.10.25") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of registry</Relevance>
+		<Category></Category>
+		<DownloadSize>8303994</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2017-06-08</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 08 Jun 2017 23:30:26 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+
+// http://software.bigfix.com/download/bes/92/util/QNA9.2.10.25.zip
+//SHA1 232f026d21f9c3a2c509b367ba52be16aa5bd190
+//SHA256 cc23693628a25f56c4b9a5e4ec7228cc6fde39d6eec03f7a972e9d5b4becd1d5
+//File size 7.9 MB ( 8303994 bytes )
+
+// Download zipinst
+//   http://www.nirsoft.net/utils/zipinst.html
+prefetch zipinst.exe sha1:6a1290fd85019dc80e34abeb4be5bcbbc742d012 size:39424 http://www.nirsoft.net/utils/zipinst.exe
+
+// Download Fixlet Debugger
+prefetch FixletDebugger.zip sha1:232f026d21f9c3a2c509b367ba52be16aa5bd190 size:8303994 http://software.bigfix.com/download/bes/92/util/QNA9.2.10.25.zip
+
+// Add zipinst.exe to Utility Cache (to use in multiple tasks)
+utility __Download\zipinst.exe
+
+// This should be an unnessisary sanity check, but it is a good idea due to the relevance substitution below.
+continue if{ 1 = number of files whose(name of it as lowercase ends with ".zip") of folder "__Download" of client folder of current site }
+
+// Create zipinst config file
+//   http://www.nirsoft.net/utils/zipinst.html
+delete __createfile
+delete __Download\zipinst.zic
+createfile until END_OF_FILE
+[install]
+ProductName=Fixlet Debugger
+CompanyName=BigFix Enterprise
+Description=A debugger to assist in creating content for IBM Endpoint Manager. Find more information here:  https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Tivoli%20Endpoint%20Manager/page/Fixlet%20Debugger%20(QnA)%20Tool
+ZipFile={ pathname of files whose(name of it as lowercase ends with ".zip") of folder "__Download" of client folder of current site }
+AddUninstall=1
+AddUninstallShortcut=0
+DesktopShortcut=0
+InstallTo=1
+StartMenuShortcut=1
+NoUserInteraction=1
+InstallFolder=%zi.ProgramFiles%\%zi.CompanyName%\FixletDebugger-%zi.ProductVersion%
+StartMenuFolder=%zi.ProductName%\%zi.ProductVersion%
+UninstallRegKey=FixletDebugger-9.2.10.25
+NoExtraUninstallInfo=0
+NoSuccessMessage=1
+UninstallInDestFolder=1
+END_OF_FILE
+
+move __createfile "{pathname of client folder of current site}\__Download\zipinst.zic"
+
+// Install
+waithidden __Download\zipinst.exe /cfg "{pathname of client folder of current site}\__Download\zipinst.zic"
+
+// Delete extra Start Menu shortcuts
+delete "{pathname of files "Eval.lnk" of folders of folders "Fixlet Debugger" of folders "Microsoft\Windows\Start Menu\Programs" of folders (value of variable "ALLUSERSPROFILE" of environment)}"
+delete "{pathname of files "EvalSession.lnk" of folders of folders "Fixlet Debugger" of folders "Microsoft\Windows\Start Menu\Programs" of folders (value of variable "ALLUSERSPROFILE" of environment)}"
+</ActionScript>
+		</DefaultAction>
+	</Fixlet>
+</BES>
