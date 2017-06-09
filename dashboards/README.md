@@ -83,6 +83,13 @@ An even better option: https://github.com/jgstew/bigfix-content/tree/master/fixl
   - [screenshot](https://github.com/jgstew/bigfix-content/blob/master/dashboards/Screenshots.ojo)
   - RDP/VNC?
   - log collection & troubleshooting
+- Recently Modified Custom Content
+  - https://developer.bigfix.com/relevance/reference/bes-fixlet.html#source-release-date-of-bes-fixlet-date
+  - https://developer.bigfix.com/relevance/reference/time.html#date-time-zone-of-time-date
+  - Custom Content Modified in the past ? days by [All Users|Current User].
+  - ? days = [1, 2, 5, 7, 15, 31, 90, 365, Max] where (it <= Max)
+  - https://bigfix.me/relevance/details/3020171
+
 
 ### References:
 
