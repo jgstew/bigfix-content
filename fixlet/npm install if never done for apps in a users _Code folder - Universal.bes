@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: set syntax=xml: -->
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>npm install if never done for apps in a users _Code folder - Universal  !WorkInProgress!</Title>
+		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Relevance>exists (it; folders of it) whose(exists files "package.json" of it AND not exists folders "node_modules" of it) of folders of folders "_Code" of folders "Documents" of (folders it) of unique value of home directories of users of (current users;logged on users)</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2017-06-09</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Sat, 10 Jun 2017 01:24:54 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+parameter "Num_Need_NPM_Install_Before" = "{ number of (it; folders of it) whose(exists files "package.json" of it AND not exists folders "node_modules" of it) of folders of folders "_Code" of folders "Documents" of (folders it) of unique values of home directories of users of (current users;logged on users) }"
+parameter "UserCodePathname" = "{ pathnames of folders "_Code" of folders "Documents" of (folders it) of unique value of home directories of users of (current users;logged on users) }"
+
+//    CREATEFILE START
+delete __createfile
+createfile until END_OF_FILE
+
+{ concatenations "%0d%0a" of ( "cd %22" & it & "%22 && npm install" ) of pathnames of (it; folders of it) whose(exists files "package.json" of it AND not exists folders "node_modules" of it) of folders of folders "_Code" of folders "Documents" of (folders it) of unique value of home directories of users of (current users;logged on users) }
+
+END_OF_FILE
+//    CREATEFILE END
+
+delete "{ parameter "UserCodePathname" }\npm_install.bat"
+copy __createfile "{ parameter "UserCodePathname" }\npm_install.bat"
+
+override wait
+hidden=true
+runas=currentuser
+wait CMD /C "{ parameter "UserCodePathname" }\npm_install.bat"
+
+parameter "Num_Need_NPM_Install_After" = "{ number of (it; folders of it) whose(exists files "package.json" of it AND not exists folders "node_modules" of it) of folders of folders "_Code" of folders "Documents" of (folders it) of unique values of home directories of users of (current users;logged on users) }"
+
+exit { (it +  ( (it as integer) of ( parameter "Num_Need_NPM_Install_After" ) ) ) of (it as integer * 10) of ( parameter "Num_Need_NPM_Install_Before" ) }
+]]></ActionScript>
+		</DefaultAction>
+	</Fixlet>
+</BES>
