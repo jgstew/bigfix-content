@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: set syntax=xml: -->
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>run grunt TASK for apps in a users _Code folder - Universal</Title>
+		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Relevance><![CDATA[ /* TODO: Add Relevance - I think this should only run after the first npm install & bower install, if applicable. */ exists (it; folders of it) whose(exists files "Gruntfile.js" of it) of folders of folders "_Code" of folders "Documents" of (folders it) of unique value of home directories of users of (current users;logged on users)]]></Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2017-06-09</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Mon, 12 Jun 2017 18:52:36 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+action parameter query "GruntTask" with default "devsetup"
+
+// Run the grunt task entered on only those apps that have that task.
+
+override wait
+hidden=true
+runas=currentuser
+wait CMD /C "{ concatenations " && " of ("cd %22" & it & "%22 && grunt " & ( parameter "GruntTask" ) ) of pathnames of (it; folders of it) whose(exists files "Gruntfile.js" whose( exists lines containing "grunt.registerTask(" whose(it contains "'" & ( parameter "GruntTask" ) & "'") of it ) of it) of folders of folders "_Code" of folders "Documents" of (folders it) of unique value of home directories of users of (current users;logged on users) }"
+
+// https://bigfix.me/relevance/details/3020196
+]]></ActionScript>
+			<SuccessCriteria Option="RunToCompletion"></SuccessCriteria>
+		</DefaultAction>
+	</Fixlet>
+</BES>
