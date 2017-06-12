@@ -4,7 +4,7 @@
 	<Fixlet>
 		<Title>bower install if never done for apps in a users _Code folder - Universal  !WorkInProgress!</Title>
 		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
-		<Relevance>/* needs exclusion relevance */ exists (it; folders of it) whose(exists files "bower.json" of it AND not exists folders of folders "app\client\public\lib" of it) of folders of folders "_Code" of folders "Documents" of (folders it) of unique value of home directories of users of (current users;logged on users)</Relevance>
+		<Relevance>exists (it; folders of it) whose(exists files "bower.json" of it AND not exists folders of folders "app\client\public\lib" of it) of folders of folders "_Code" of folders "Documents" of (folders it) of unique value of home directories of users of (current users;logged on users)</Relevance>
 		<Category></Category>
 		<DownloadSize>0</DownloadSize>
 		<Source>Internal</Source>
