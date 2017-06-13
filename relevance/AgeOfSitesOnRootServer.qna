@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: set syntax=xml: -->
+<FixletDebuggerFile>
+	<QnAView>Q: (item 0 of it, now - item 1 of it, item 1 of it) of (name of it, maxima of (it as time) of (it as trimmed string) of following texts of firsts "MODIFIED: " of lines containing "MODIFIED: " of files "__currentFileList" of it) of folders whose(exists files "__currentFileList" of it) of folders "gather" of folders "GatherDBData" of (folders it) of unique values of pathnames whose(it ends with "BES Server") of (it; parent folders of it) of (folders it) of (preceding texts of lasts "\" of it) of values of settings whose(it as string contains "BES Server") of clients
+A: BES Asset Discovery, ( 308 days, 23:12:55 ), ( Mon, 08 Aug 2016 11:00:59 -0700 )
+A: BES Inventory and License, ( 82 days, 06:10:02 ), ( Thu, 23 Mar 2017 04:03:52 -0700 )
+A: BES Support, 18:52:34, ( Mon, 12 Jun 2017 15:21:22 -0700 )
+A: Enterprise Security, 08:06:08, ( Tue, 13 Jun 2017 02:07:50 -0700 )
+A: Patches for Mac OS X, ( 25 days, 09:10:35 ), ( Fri, 19 May 2017 01:03:23 -0700 )
+A: Patches for RHEL 7, ( 5 days, 13:30:56 ), ( Wed, 07 Jun 2017 20:43:02 -0700 )
+A: Patches for Ubuntu 1604, ( 4 days, 09:23:19 ), ( Fri, 09 Jun 2017 00:50:39 -0700 )
+A: Patching Support, 07:46:02, ( Tue, 13 Jun 2017 02:27:57 -0700 )
+A: Updates for Mac Applications, ( 27 days, 09:09:53 ), ( Wed, 17 May 2017 01:04:06 -0700 )
+A: Updates for Windows Applications, ( 4 days, 08:21:06 ), ( Fri, 09 Jun 2017 01:52:53 -0700 )
+T: 5656.836 ms
+
+</QnAView>
+</FixletDebuggerFile>
