@@ -2,7 +2,7 @@
 <!-- vim: set syntax=xml: -->
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
-		<Title>npm install if never done for apps in a users _Code folder - Universal  !WorkInProgress!</Title>
+		<Title>npm install if never done for apps in a users _Code folder - Universal</Title>
 		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
 		<Relevance>exists (it; folders of it) whose(exists files "package.json" of it AND not exists folders "node_modules" of it) of folders of folders "_Code" of folders "Documents" of (folders it) of unique value of home directories of users of (current users;logged on users)</Relevance>
 		<Category></Category>
@@ -15,7 +15,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Sat, 10 Jun 2017 01:24:54 +0000</Value>
+			<Value>Tue, 13 Jun 2017 21:54:45 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -28,27 +28,81 @@
 parameter "Num_Need_NPM_Install_Before" = "{ number of (it; folders of it) whose(exists files "package.json" of it AND not exists folders "node_modules" of it) of folders of folders "_Code" of folders "Documents" of (folders it) of unique values of home directories of users of (current users;logged on users) }"
 parameter "UserCodePathname" = "{ pathnames of folders "_Code" of folders "Documents" of (folders it) of unique value of home directories of users of (current users;logged on users) }"
 
-//    CREATEFILE START
-delete __createfile
-createfile until END_OF_FILE
-
-{ concatenations "%0d%0a" of ( "cd %22" & it & "%22 && npm install" ) of pathnames of (it; folders of it) whose(exists files "package.json" of it AND not exists folders "node_modules" of it) of folders of folders "_Code" of folders "Documents" of (folders it) of unique value of home directories of users of (current users;logged on users) }
-
-END_OF_FILE
-//    CREATEFILE END
-
-delete "{ parameter "UserCodePathname" }\npm_install.bat"
-copy __createfile "{ parameter "UserCodePathname" }\npm_install.bat"
-
 override wait
 hidden=true
 runas=currentuser
-wait CMD /C "{ parameter "UserCodePathname" }\npm_install.bat"
+wait CMD /C "{ concatenations " && " of ( "cd %22" & it & "%22 && npm install" ) of pathnames of (it; folders of it) whose(exists files "package.json" of it AND not exists folders "node_modules" of it) of folders of folders "_Code" of folders "Documents" of (folders it) of unique value of home directories of users of (current users;logged on users) }"
 
 parameter "Num_Need_NPM_Install_After" = "{ number of (it; folders of it) whose(exists files "package.json" of it AND not exists folders "node_modules" of it) of folders of folders "_Code" of folders "Documents" of (folders it) of unique values of home directories of users of (current users;logged on users) }"
 
 exit { (it +  ( (it as integer) of ( parameter "Num_Need_NPM_Install_After" ) ) ) of (it as integer * 10) of ( parameter "Num_Need_NPM_Install_Before" ) }
 ]]></ActionScript>
+			<Settings>
+				<ActionUITitle>Running NPM install on newly cloned repo(s)</ActionUITitle>
+				<PreActionShowUI>false</PreActionShowUI>
+				<HasRunningMessage>true</HasRunningMessage>
+				<RunningMessage>
+					<Text>Running NPM install on newly cloned repo(s)</Text>
+				</RunningMessage>
+				<HasTimeRange>false</HasTimeRange>
+				<HasStartTime>false</HasStartTime>
+				<HasEndTime>false</HasEndTime>
+				<HasDayOfWeekConstraint>false</HasDayOfWeekConstraint>
+				<UseUTCTime>false</UseUTCTime>
+				<ActiveUserRequirement>NoRequirement</ActiveUserRequirement>
+				<ActiveUserType>AllUsers</ActiveUserType>
+				<HasWhose>false</HasWhose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>true</Reapply>
+				<HasReapplyLimit>false</HasReapplyLimit>
+				<HasReapplyInterval>false</HasReapplyInterval>
+				<HasRetry>false</HasRetry>
+				<HasTemporalDistribution>false</HasTemporalDistribution>
+				<ContinueOnErrors>true</ContinueOnErrors>
+				<PostActionBehavior Behavior="Nothing"></PostActionBehavior>
+				<IsOffer>false</IsOffer>
+			</Settings>
+			<SettingsLocks>
+				<ActionUITitle>false</ActionUITitle>
+				<PreActionShowUI>false</PreActionShowUI>
+				<PreAction>
+					<Text>false</Text>
+					<AskToSaveWork>false</AskToSaveWork>
+					<ShowActionButton>false</ShowActionButton>
+					<ShowCancelButton>false</ShowCancelButton>
+					<DeadlineBehavior>false</DeadlineBehavior>
+					<ShowConfirmation>false</ShowConfirmation>
+				</PreAction>
+				<HasRunningMessage>false</HasRunningMessage>
+				<RunningMessage>
+					<Text>false</Text>
+				</RunningMessage>
+				<TimeRange>false</TimeRange>
+				<StartDateTimeOffset>false</StartDateTimeOffset>
+				<EndDateTimeOffset>false</EndDateTimeOffset>
+				<DayOfWeekConstraint>false</DayOfWeekConstraint>
+				<ActiveUserRequirement>false</ActiveUserRequirement>
+				<ActiveUserType>false</ActiveUserType>
+				<Whose>false</Whose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>false</Reapply>
+				<ReapplyLimit>false</ReapplyLimit>
+				<RetryCount>false</RetryCount>
+				<RetryWait>false</RetryWait>
+				<TemporalDistribution>false</TemporalDistribution>
+				<ContinueOnErrors>false</ContinueOnErrors>
+				<PostActionBehavior>
+					<Behavior>false</Behavior>
+					<AllowCancel>false</AllowCancel>
+					<Deadline>false</Deadline>
+					<Title>false</Title>
+					<Text>false</Text>
+				</PostActionBehavior>
+				<IsOffer>false</IsOffer>
+				<AnnounceOffer>false</AnnounceOffer>
+				<OfferCategory>false</OfferCategory>
+				<OfferDescriptionHTML>false</OfferDescriptionHTML>
+			</SettingsLocks>
 		</DefaultAction>
 	</Fixlet>
 </BES>
