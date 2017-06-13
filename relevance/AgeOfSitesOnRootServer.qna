@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- vim: set syntax=xml: -->
 <FixletDebuggerFile>
-	<QnAView>Q: (item 0 of it, now - item 1 of it, item 1 of it) of (name of it, maxima of (it as time) of (it as trimmed string) of following texts of firsts "MODIFIED: " of lines containing "MODIFIED: " of files "__currentFileList" of it) of folders whose(exists files "__currentFileList" of it) of folders "gather" of folders "GatherDBData" of (folders it) of unique values of pathnames whose(it ends with "BES Server") of (it; parent folders of it) of (folders it) of (preceding texts of lasts "\" of it) of values of settings whose(it as string contains "BES Server") of clients
+	<QnAView>
+
+Q: (item 0 of it, now - item 1 of it, item 1 of it) of (name of it, maxima of (it as time) of (it as trimmed string) of following texts of firsts "MODIFIED: " of lines containing "MODIFIED: " of files "__currentFileList" of it) of folders whose(exists files "__currentFileList" of it) of folders "gather" of folders "GatherDBData" of (folders it) of unique values of pathnames whose(it ends with "BES Server") of (it; parent folders of it) of (folders it) of (preceding texts of lasts "\" of it) of values of settings whose(it as string contains "BES Server") of clients
 A: BES Asset Discovery, ( 308 days, 23:12:55 ), ( Mon, 08 Aug 2016 11:00:59 -0700 )
 A: BES Inventory and License, ( 82 days, 06:10:02 ), ( Thu, 23 Mar 2017 04:03:52 -0700 )
 A: BES Support, 18:52:34, ( Mon, 12 Jun 2017 15:21:22 -0700 )
