@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: set syntax=xml: -->
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Open current BES Client Log file - BareTail - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>not exists processes "baretail.exe"</Relevance>
+		<Relevance>exists (it as string) whose(it contains name of logged on users) of members of local groups "Administrators"</Relevance>
+		<Relevance><![CDATA[exists files whose(name of it as lowercase ends with ((current year as string) & (current month as two digits as string) & (current day_of_month as two digits as string) & ".log")) of folders "__Global\Logs" of data folders of client]]></Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2017-06-12</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 14 Jun 2017 17:12:59 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+// TODO: probably need to adjust permissions on the BigFix Logs folder to add read permission for admins if not already there.
+
+prefetch baretail.exe sha1:2aa7d3806d614fd9e1e6b099d134784a98b6dd9e size:225280 https://www.baremetalsoft.com/baretail/download.php?p=m sha256:160d6a3bdc9d64677643376f82e559eb4112289e6b6d722b5b3b32699d18bca9
+
+// This folder should already exist. Not sure if there is a better folder option for this.
+folder create C:\ProgramData\BigFix
+
+delete C:\ProgramData\BigFix\baretail.exe
+
+copy __Download\baretail.exe C:\ProgramData\BigFix\baretail.exe
+
+override run
+runas=currentuser
+run C:\ProgramData\BigFix\baretail.exe "{pathname of files whose(name of it as lowercase ends with ((current year as string) & (current month as two digits as string) & (current day_of_month as two digits as string) & ".log")) of folders "__Global\Logs" of data folders of client}"
+
+// Related:
+// - http://www.baremetalsoft.com/baretail/usage.php
+// - https://bigfix.me/fixlet/details/6090
+// - http://alternativeto.net/software/glogg/
+// - http://alternativeto.net/software/logexpert/
+]]></ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+			<Settings>
+				<ActionUITitle>Open Current BigFix Log with BareTail</ActionUITitle>
+				<PreActionShowUI>false</PreActionShowUI>
+				<HasRunningMessage>false</HasRunningMessage>
+				<HasTimeRange>false</HasTimeRange>
+				<HasStartTime>false</HasStartTime>
+				<HasEndTime>false</HasEndTime>
+				<HasDayOfWeekConstraint>false</HasDayOfWeekConstraint>
+				<UseUTCTime>false</UseUTCTime>
+				<ActiveUserRequirement>NoRequirement</ActiveUserRequirement>
+				<ActiveUserType>AllUsers</ActiveUserType>
+				<HasWhose>false</HasWhose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>true</Reapply>
+				<HasReapplyLimit>false</HasReapplyLimit>
+				<HasReapplyInterval>false</HasReapplyInterval>
+				<HasRetry>true</HasRetry>
+				<RetryCount>10</RetryCount>
+				<RetryWait Behavior="WaitForInterval">PT10M</RetryWait>
+				<HasTemporalDistribution>false</HasTemporalDistribution>
+				<ContinueOnErrors>true</ContinueOnErrors>
+				<PostActionBehavior Behavior="Nothing"></PostActionBehavior>
+				<IsOffer>true</IsOffer>
+				<AnnounceOffer>false</AnnounceOffer>
+				<OfferCategory></OfferCategory>
+				<OfferDescriptionHTML></OfferDescriptionHTML>
+			</Settings>
+			<SettingsLocks>
+				<ActionUITitle>false</ActionUITitle>
+				<PreActionShowUI>false</PreActionShowUI>
+				<PreAction>
+					<Text>false</Text>
+					<AskToSaveWork>false</AskToSaveWork>
+					<ShowActionButton>false</ShowActionButton>
+					<ShowCancelButton>false</ShowCancelButton>
+					<DeadlineBehavior>false</DeadlineBehavior>
+					<ShowConfirmation>false</ShowConfirmation>
+				</PreAction>
+				<HasRunningMessage>false</HasRunningMessage>
+				<RunningMessage>
+					<Text>false</Text>
+				</RunningMessage>
+				<TimeRange>false</TimeRange>
+				<StartDateTimeOffset>false</StartDateTimeOffset>
+				<EndDateTimeOffset>false</EndDateTimeOffset>
+				<DayOfWeekConstraint>false</DayOfWeekConstraint>
+				<ActiveUserRequirement>false</ActiveUserRequirement>
+				<ActiveUserType>false</ActiveUserType>
+				<Whose>false</Whose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>false</Reapply>
+				<ReapplyLimit>false</ReapplyLimit>
+				<RetryCount>false</RetryCount>
+				<RetryWait>false</RetryWait>
+				<TemporalDistribution>false</TemporalDistribution>
+				<ContinueOnErrors>false</ContinueOnErrors>
+				<PostActionBehavior>
+					<Behavior>false</Behavior>
+					<AllowCancel>false</AllowCancel>
+					<Deadline>false</Deadline>
+					<Title>false</Title>
+					<Text>false</Text>
+				</PostActionBehavior>
+				<IsOffer>false</IsOffer>
+				<AnnounceOffer>false</AnnounceOffer>
+				<OfferCategory>false</OfferCategory>
+				<OfferDescriptionHTML>false</OfferDescriptionHTML>
+			</SettingsLocks>
+		</DefaultAction>
+	</Task>
+</BES>
