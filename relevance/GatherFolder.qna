@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<FixletDebuggerFile>
+	<QnAView>
+Q: folders "gather" of folders "GatherDBData" of (folders it) of unique values of pathnames whose(it ends with "BES Server") of (it; parent folders of it) of (folders it) of (preceding text of last "/" of it | preceding text of last "\" of it | it) of values of settings whose(it as string contains "BES Server") of clients
+A: C:\Program Files (x86)\BigFix Enterprise\BES Server\GatherDBData\gather
+T: 9.392 ms
+
+</QnAView>
+</FixletDebuggerFile>
