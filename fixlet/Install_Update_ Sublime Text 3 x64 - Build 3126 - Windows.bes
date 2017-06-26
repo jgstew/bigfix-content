@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: set syntax=xml: -->
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>Install/Update: Sublime Text 3 x64 - Build 3126 - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>x64 of operating system</Relevance>
+		<Relevance><![CDATA[version of operating system >= "5.1"]]></Relevance>
+		<Relevance><![CDATA[not exists (it as string as version) whose(it >= "3126") of values "DisplayName" whose(it as string as lowercase contains "sublime text") of keys of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries; x32 registries)]]></Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2017-06-26</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Mon, 26 Jun 2017 21:44:37 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+prefetch Sublime_Text_x64_Setup.exe sha1:c2aa774771b2086d6ef1769f6dca63809f0c9ed2 size:8460792 https://download.sublimetext.com/Sublime%20Text%20Build%203126%20x64%20Setup.exe sha256:9583c9ad1534d28bbe3d63f57bf0f85d5e5352daba3f5eac3f0ab7a490a7e309
+
+// InnoSetup Example: https://bigfix.me/fixlet/details/3651
+waithidden "{ download path "Sublime_Text_x64_Setup.exe" }" /SP- /VERYSILENT /SUPPRESSMSGBOXES /NOCLOSEAPPLICATIONS /NOCANCEL /NORESTART /NORUN /MERGETASKS="!desktopicon"
+
+</ActionScript>
+		</DefaultAction>
+	</Fixlet>
+</BES>
