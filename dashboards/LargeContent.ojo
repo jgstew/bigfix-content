@@ -24,7 +24,7 @@
 <table id="resultsTable" class="compact display" width="100%">
     <thead><tr><th>Name</th><th>Metadata Size</th></tr></thead>
     <tbody id="results">
-        <?Relevance trs of ( html concatenations of tds of (item 0 of it; item 1 of it as string) of it) of (name of it, lengths of concatenations of (names of it; values of it) of mime fields of it) whose(item 1 of it > 10000) of bes fixlets ?>
+        <?Relevance trs of ( html concatenations of tds of (item 0 of it; item 1 of it as string as html) of it) of (link of it as html, lengths of concatenations of (names of it; values of it) of mime fields of it) whose(item 1 of it > 10000) of bes fixlets ?>
     </tbody>
 </table>
 
