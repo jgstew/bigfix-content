@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<BES>
+  <Wizard>
+    <Title>Custom - Large Content</Title>
+    <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+    <DefaultPage>Page1</DefaultPage>
+    <Page Name="Page1" DocType="HTML5" > 
+        <Title>BigFix Global Search</Title>
+        <Head><![CDATA[
+            <meta http-equiv="X-UA-Compatible" content="IE=11">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/css/jquery.dataTables.min.css" integrity="sha256-+Z1rYa3ys5OdZNUck5G7lBvb8A13OrYwvf+d8PfEaHQ=" crossorigin="anonymous" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" integrity="sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik=" crossorigin="anonymous" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/js/jquery.dataTables.min.js" integrity="sha256-yWA356lDhruy1J8jGncaMWKAPYDbK47OKb0uT/aELLc=" crossorigin="anonymous"></script>
+            <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
+        ]]></Head>
+        <HTML><![CDATA[
+            <script language="javascript">InsertUtilityDiv();</script>
+
+<h2>Large Content</h2>
+
+<table id="resultsTable" class="compact display" width="100%">
+    <thead><tr><th>Name</th></tr></thead>
+    <tbody id="results">
+        <?Relevance trs of tds of names of bes fixlets whose( exists (lengths of concatenations of (names of it; values of it) of mime fields of it) whose(it > 10000) ) ?>
+    </tbody>
+</table>
+
+<style>
+h2 {
+    padding: 0px;
+    margin: 0px 0px 1px 0px;
+    border: 0;
+    text-align: center;
+}
+div.dataTables_filter input {
+    width: 250px;
+}
+</style>
+<script>
+
+$(document).ready(function(){
+
+    // https://legacy.datatables.net/ref#bDestroy
+    var oDataTable = $('#resultsTable').dataTable( {
+        "paging": true,
+        "language": {
+            "zeroRecords": "No content. Nothing to see here."
+        },
+        "pageLength": 25,
+        "searchDelay": 100
+    });
+    
+    // Only trigger event when window stops resizing
+    // http://stackoverflow.com/questions/2854407/javascript-jquery-window-resize-how-to-fire-after-the-resize-is-completed
+    $(window).resize(function() {
+        if(this.resizeTO) clearTimeout(this.resizeTO);
+        this.resizeTO = setTimeout(function() {
+            $(this).trigger('resizeEnd');
+        }, 5);
+    });
+    
+    $(window).bind('resizeEnd', function() {
+        //do something, window hasn't changed size in 5ms
+        oDataTable.fnDraw();
+    });
+    
+});
+
+</script>
+        ]]></HTML>
+    </Page>
+  </Wizard>
+</BES>
