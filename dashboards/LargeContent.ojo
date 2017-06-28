@@ -52,21 +52,6 @@ $(document).ready(function(){
         "pageLength": 25,
         "searchDelay": 100
     });
-    
-    // Only trigger event when window stops resizing
-    // http://stackoverflow.com/questions/2854407/javascript-jquery-window-resize-how-to-fire-after-the-resize-is-completed
-    $(window).resize(function() {
-        if(this.resizeTO) clearTimeout(this.resizeTO);
-        this.resizeTO = setTimeout(function() {
-            $(this).trigger('resizeEnd');
-        }, 5);
-    });
-    
-    $(window).bind('resizeEnd', function() {
-        //do something, window hasn't changed size in 5ms
-        oDataTable.fnDraw();
-    });
-    
 });
 
 </script>
