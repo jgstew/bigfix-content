@@ -22,9 +22,9 @@
 <h2>Large Content</h2>
 
 <table id="resultsTable" class="compact display" width="100%">
-    <thead><tr><th>Name</th></tr></thead>
+    <thead><tr><th>Name</th><th>Metadata Size</th></tr></thead>
     <tbody id="results">
-        <?Relevance trs of tds of names of bes fixlets whose( exists (lengths of concatenations of (names of it; values of it) of mime fields of it) whose(it > 10000) ) ?>
+        <?Relevance trs of ( html concatenations of tds of (item 0 of it; item 1 of it as string) of it) of (name of it, lengths of concatenations of (names of it; values of it) of mime fields of it) whose(item 1 of it > 10000) of bes fixlets ?>
     </tbody>
 </table>
 
