@@ -2,11 +2,11 @@
 <!-- vim: set syntax=xml: -->
 <BES>
   <Wizard>
-    <Title>Custom - Large Content</Title>
+    <Title>Custom - Large Content Warning</Title>
     <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
     <DefaultPage>Page1</DefaultPage>
     <Page Name="Page1" DocType="HTML5" > 
-        <Title>BigFix Global Search</Title>
+        <Title>Large Content Warning</Title>
         <Head><![CDATA[
             <meta http-equiv="X-UA-Compatible" content="IE=11">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/css/jquery.dataTables.min.css" integrity="sha256-+Z1rYa3ys5OdZNUck5G7lBvb8A13OrYwvf+d8PfEaHQ=" crossorigin="anonymous" />
@@ -19,7 +19,7 @@
         <HTML><![CDATA[
             <script language="javascript">InsertUtilityDiv();</script>
 
-<h2>Large Content</h2>
+<h2>Large Content Warning!</h2>
 
 <table id="resultsTable" class="compact display" width="100%">
     <thead><tr><th>Name</th><th>Metadata Size</th></tr></thead>
