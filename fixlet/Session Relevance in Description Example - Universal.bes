@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: set syntax=xml: -->
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Session Relevance in Description Example - Universal</Title>
+		<Description><![CDATA[<P>&nbsp;The following is populated using session relevance: (edit this to see)</P>
+<P><?relevance names of current fixlets?></P>
+<P>&nbsp;</P>]]></Description>
+		<Relevance>true</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2017-06-28</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 29 Jun 2017 05:35:06 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+	</Task>
+</BES>
