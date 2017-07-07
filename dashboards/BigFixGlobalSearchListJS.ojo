@@ -16,7 +16,7 @@
             <script language="javascript">InsertUtilityDiv();</script>
 
 <h2>BigFix Global Search</h2>
-<h3>This is a demo using list.js - The version using datatables works better</h3>
+<h3>This is a demo using list.js - The <a href="https://github.com/jgstew/bigfix-content/blob/master/dashboards/BigFixGlobalSearch.ojo">version using datatables</a> works better</h3>
 
 <div id="globalsearch">
     <input class="search" placeholder="Search" style="width: 500px;" />
