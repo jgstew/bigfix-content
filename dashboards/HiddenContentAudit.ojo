@@ -27,7 +27,7 @@
 <table id="resultsTable" class="compact display">
     <thead><tr><th>#Applicable</th><th>Type</th><th>Hidden Content Name</th><th>ID</th></tr></thead>
     <tbody id="results">
-        <?Relevance trs of ( html concatenations of tds of (applicable computer count of it as string; type of it; name of it; id of it as string) ) of bes fixlets whose(not visible flag of it) ?>
+        <?Relevance trs of ( html concatenations of tds of (applicable computer count of it as string as html; type of it as html; link of it; id of it as string as html) ) of bes fixlets whose(not visible flag of it) ?>
     </tbody>
 </table>
 
