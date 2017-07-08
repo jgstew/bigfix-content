@@ -22,7 +22,8 @@
         <HTML><![CDATA[
             <script language="javascript">InsertUtilityDiv();</script>
 
-<h2>Hidden Content Audit:</h2>
+<button id="filter" style="float: right">Show only applicable</button>
+<h2>Hidden Content Audit:</h2> 
 
 <table id="resultsTable" class="compact display">
     <thead><tr><th>#Applicable</th><th>Type</th><th>Hidden Content Name</th><th>ID</th></tr></thead>
@@ -105,6 +106,25 @@ $(document).ready(function(){
         oDataTable.fnDraw();
     });
     
+    // This will remove entries with no applicable computers or add them back.
+    // https://datatables.net/examples/plug-ins/range_filtering.html
+    $("#filter").click(function() {
+        if ("Show All" == $(this).text() ) {
+            $.fn.dataTable.ext.search.pop();
+            $(this).html('Show only applicable');
+        } else {
+            $.fn.dataTable.ext.search.push(
+                function( settings, data, dataIndex ) {
+                    return parseInt(data[0])>0
+                        ? true
+                        : false
+                }     
+            );
+            $(this).html('Show All');
+        }
+        
+        oDataTable.fnDraw();
+    });
 });
 
     nv.addGraph(function() {
