@@ -29,7 +29,7 @@ Relays</strong> with caches that are definitely too small and should have their 
 
 <table>
 <tr><th>Relay</th><th>Cache</th></tr>
-<?Relevance trs of ( html concatenations of tds of (links of it; (it as html) of (if (0<(it / (1024*1024*1024*1024))) then (it / (1024*1024*1024*1024)) as string & " TB" else if (0<(it / (1024*1024*1024))) then (it / (1024*1024*1024)) as string & " GB" else if (0<(it / (1024*1024))) then (it / (1024*1024)) as string & " MB" else if (0<(it / (1024))) then (it / (1024)) as string & " KB" else (it as string & " B")) of (it as integer * 1024 * 1024) of (preceding text of first " MB" of it) of (unique value of values of results from (bes properties "BES Relay Cache Size") of it | "0 MB") ) of it ) of bes computers whose(relay server flag of it OR root server flag of it) ?>
+<?Relevance trs of ( html concatenations of tds of (links of it; (it as html) of ( unique value of (if (0<(it / (1024*1024*1024*1024))) then (it / (1024*1024*1024*1024)) as string & " TB" else if (0<(it / (1024*1024*1024))) then (it / (1024*1024*1024)) as string & " GB" else if (0<(it / (1024*1024))) then (it / (1024*1024)) as string & " MB" else if (0<(it / (1024))) then (it / (1024)) as string & " KB" else (it as string & " B")) of (it as integer * 1024 * 1024) of (preceding text of first " MB" of it) of values of results from (bes properties "BES Relay Cache Size") of it | "???") ) of it ) of bes computers whose(relay server flag of it OR root server flag of it) ?>
 </table>
 
 <br/><br/>
