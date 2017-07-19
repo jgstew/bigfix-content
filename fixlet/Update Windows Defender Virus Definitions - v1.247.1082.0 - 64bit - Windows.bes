@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: set syntax=xml: -->
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>Update Windows Defender Virus Definitions - v1.247.1082.0 - 64bit - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>x64 of operating system</Relevance>
+		<Relevance><![CDATA[/* Win8.1 or higher */ exists versions whose(it > "6.3.9200") of operating systems]]></Relevance>
+		<Relevance><![CDATA[exists maxima whose(it < "1.247.1082.0") of unique values of (it as string as version) of values whose(name of it = "ASSignatureVersion" OR name of it = "AVSignatureVersion") of keys "Signature Updates" of (keys "Microsoft Antimalware" of it ; keys "Windows Defender" of it) of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft" of native registry]]></Relevance>
+		<Category></Category>
+		<DownloadSize>131255056</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2017-07-19</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 19 Jul 2017 19:18:02 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// https://www.microsoft.com/en-us/wdsi/definitions
+prefetch mpam-fe.exe sha1:d118361ac364a7dd8e78062228f513f22adac505 size:131255056 https://definitionupdates.microsoft.com/download/DefinitionUpdates/VersionedSignatures/AM/1.247.1082.0/amd64/mpam-fe.exe sha256:d9fd34cc92f00d0ae4d0905656dce783c4bc271970bac8608c834f973179863c
+
+wait __Download\mpam-fe.exe /q
+
+//  References:
+//   - http://www.itninja.com/link/install-the-latest-microsoft-security-essentials-definition-updates-get-the-latest-definitions-microsoft-malware-protection-center
+//   - https://bigfix.me/analysis/details/2994634
+//   - https://bigfix.me/analysis/details/2998358
+//   - https://bigfix.me/analysis/details/2996952
+//   - https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832(v=vs.85).aspx</ActionScript>
+		</DefaultAction>
+	</Fixlet>
+</BES>
