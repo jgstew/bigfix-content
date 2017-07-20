@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>WebUI info</Title>
+		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Relevance>exists main gather service</Relevance>
+		<Relevance>exists folders "WebUI" of (folders it) of unique values of pathnames of (it; parent folders of it) of (folders it) of (preceding texts of lasts "\" of it) of values of settings whose(it as string contains "BES Server") of clients</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2017-02-03</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 03 Feb 2017 21:29:51 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="WebUI routes" ID="1" EvaluationPeriod="PT12H">unique values of (it as string as trimmed string) of values of keys "route" of elements of values of keys "tabs" of jsons of files "client.json" of folders of folders of folders "sites" of folders "WebUI" of (folders it) of unique values of pathnames of (it; parent folders of it) of (folders it) of (preceding texts of lasts "\" of it) of values of settings whose(it as string contains "BES Server") of clients</Property>
+		<Property Name="(app, route, name, version) of WebUI apps" ID="2" EvaluationPeriod="PT12H">( name of it, (unique values of (it as string as trimmed string) of values of keys "route" of elements of values of keys "tabs" of jsons of files "client.json" of it), (following text of first "WebUI " of it | it) of preceding texts of firsts "_" of names of parent folders of it, following texts of firsts "_" of names of parent folders of it ) of folders of folders of folders "sites" of folders "WebUI" of (folders it) of unique values of pathnames of (it; parent folders of it) of (folders it) of (preceding texts of lasts "\" of it) of values of settings whose(it as string contains "BES Server") of clients</Property>
+		<Property Name="node.js version" ID="3" EvaluationPeriod="PT12H">unique values of versions of files whose(name of it as lowercase starts with "node") of folders "WebUI" of (folders it) of unique values of pathnames of (it; parent folders of it) of (folders it) of (preceding texts of lasts "\" of it) of values of settings whose(it as string contains "BES Server") of clients</Property>
+		<Property Name="service-app version" ID="4" EvaluationPeriod="PT12H">unique values of (it as string as version) of values of keys "version" of jsons of files "npm-shrinkwrap.json" of folders "service-app" of folders "WebUI" of (folders it) of unique values of pathnames of (it; parent folders of it) of (folders it) of (preceding texts of lasts "\" of it) of values of settings whose(it as string contains "BES Server") of clients</Property>
+		<Property Name="max rows per second of ETL of WebUI" ID="5" EvaluationPeriod="P2D">maxima of (it as integer) of following texts of lasts "(" of preceding texts of lasts " rows per second)" of lines containing " rows per second)" of files whose(name of it = "etl.log.0") of folders "logs" of folders "WebUI" of (folders it) of unique values of pathnames of (it; parent folders of it) of (folders it) of (preceding texts of lasts "\" of it) of values of settings whose(it as string contains "BES Server") of clients</Property>
+	</Analysis>
+</BES>
