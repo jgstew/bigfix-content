@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: set syntax=xml: -->
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>Set BESClient Service to DelayedAutoStart - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists services "besclient"</Relevance>
+		<Relevance>not exists keys whose(name of it as lowercase = "besclient" as lowercase AND exists values "DelayedAutoStart" whose(it as integer = 1) of it AND exists values "Start" whose(it as integer = 2) of it) of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services" of registries</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2017-08-02</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 02 Aug 2017 21:51:13 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+waithidden cmd /C sc config besclient start= delayed-auto
+
+// References:
+//  - http://windowsitpro.com/systems-management/q-how-can-i-set-service-automatic-delayed-start-command-line
+//  - https://bigfix.me/relevance/details/3020297
+//  - https://bigfix.me/relevance/details/3020298
+</ActionScript>
+		</DefaultAction>
+	</Fixlet>
+</BES>
