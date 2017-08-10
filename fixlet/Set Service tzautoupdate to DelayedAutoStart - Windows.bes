@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: set syntax=xml: -->
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>Set Service tzautoupdate to DelayedAutoStart - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists services "tzautoupdate"</Relevance>
+		<Relevance>not exists keys whose(name of it as lowercase = "tzautoupdate" as lowercase AND exists values "DelayedAutoStart" whose(it as integer = 1) of it AND exists values "Start" whose(it as integer = 2) of it) of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services" of registries</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2017-08-04</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 10 Aug 2017 04:16:08 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+waithidden cmd /C sc config tzautoupdate start= delayed-auto
+
+// References:
+//  - https://technet.microsoft.com/en-us/library/cc990290
+//  - https://developer.bigfix.com/relevance/reference/service.html
+//  - https://bigfix.me/relevance/details/3020300
+//  - https://bigfix.me/relevance/details/3020298
+//  - https://bigfix.me/relevance/details/3020297
+</ActionScript>
+		</DefaultAction>
+	</Fixlet>
+</BES>

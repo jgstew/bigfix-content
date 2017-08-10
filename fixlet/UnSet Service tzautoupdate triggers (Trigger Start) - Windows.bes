@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: set syntax=xml: -->
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>UnSet Service tzautoupdate triggers (Trigger Start) - Windows</Title>
+		<Description><![CDATA[<P>WARNING: This is a bad idea to do to a service without understanding the consequences!!!&nbsp; You probably shouldn't do this!</P>
+<P>&nbsp;</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists services "tzautoupdate"</Relevance>
+		<Relevance>exists keys whose(name of it as lowercase = "tzautoupdate" as lowercase AND exists keys "TriggerInfo" whose(exists keys of it) of it AND not exists values "Start" whose(it as integer = 4) of it) of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services" of registries</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2017-08-04</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 10 Aug 2017 04:13:32 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+waithidden cmd /C sc triggerinfo tzautoupdate delete
+
+// References:
+//  - https://technet.microsoft.com/en-us/library/cc990290
+//  - https://developer.bigfix.com/relevance/reference/service.html
+//  - https://serverfault.com/questions/599099/windows-service-trigger-start-difference-manual-vs-automatic
+//  - https://www.tenforums.com/general-support/7464-difference-between-manual-manual-trigger-start-services.html#post924871
+//  - https://bigfix.me/relevance/details/3020300
+//  - https://bigfix.me/relevance/details/3020298
+//  - https://bigfix.me/relevance/details/3020297
+</ActionScript>
+		</DefaultAction>
+	</Fixlet>
+</BES>
