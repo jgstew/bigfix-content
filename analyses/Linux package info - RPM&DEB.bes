@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: set syntax=xml: -->
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title><![CDATA[Linux package info - RPM&DEB]]></Title>
+		<Description>This analysis gathers data from both RPMs and Debianpackages </Description>
+		<Relevance>(if exists properties whose(it as string contains "debianpackage:") then TRUE else if exists properties whose(it as string contains "rpm:") then TRUE else ERROR "The operators are not defined.")</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2016-04-13</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Sat, 17 Sep 2016 06:05:26 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="packages" ID="2" EvaluationPeriod="P2D">packages whose(if exists properties whose(it as string contains "currently installed of ") then (currently installed of it) else TRUE) of (if exists properties whose(it as string contains "debianpackage:") then debianpackages else if exists properties whose(it as string contains "rpm:") then rpms else ERROR "The operators are not defined.")</Property>
+		<Property Name="yum version" ID="3" EvaluationPeriod="PT6H">(it as string) of versions of packages whose("yum" = name of it AND (if exists properties whose(it as string contains "currently installed of ") then (currently installed of it) else TRUE)) of (if exists properties whose(it as string contains "debianpackage:") then debianpackages else if exists properties whose(it as string contains "rpm:") then rpms else ERROR "The operators are not defined.")</Property>
+		<Property Name="apt version" ID="4" EvaluationPeriod="PT6H">(it as string) of versions of packages whose("apt" = name of it AND (if exists properties whose(it as string contains "currently installed of ") then (currently installed of it) else TRUE)) of (if exists properties whose(it as string contains "debianpackage:") then debianpackages else if exists properties whose(it as string contains "rpm:") then rpms else ERROR "The operators are not defined.")</Property>
+		<Property Name="Package Managers" ID="5" EvaluationPeriod="PT12H">packages whose( ("apt" = name of it OR "aptitude" = name of it OR "yum" = name of it OR "emerge" = name of it OR "pacman" = name of it OR "zypp" = name of it OR "dnf" = name of it OR "urpmi" = name of it) AND (if exists properties whose(it as string contains "currently installed of ") then (currently installed of it) else TRUE)) of (if exists properties whose(it as string contains "debianpackage:") then debianpackages else if exists properties whose(it as string contains "rpm:") then rpms else ERROR "The operators are not defined.")</Property>
+		<Property Name="Names of Packages" ID="6" EvaluationPeriod="P2D">unique values of names of packages whose(if exists properties whose(it as string contains "currently installed of ") then (currently installed of it) else TRUE) of (if exists properties whose(it as string contains "debianpackage:") then debianpackages else if exists properties whose(it as string contains "rpm:") then rpms else ERROR "The operators are not defined.")</Property>
+		<Property Name="exists /etc/redhat-release" ID="7" EvaluationPeriod="PT12H">exists files "/etc/redhat-release"</Property>
+		<Property Name="last run of apt-get update" ID="8" EvaluationPeriod="PT12H">modification times of files "/var/lib/apt/periodic/update-success-stamp"</Property>
+	</Analysis>
+</BES>
