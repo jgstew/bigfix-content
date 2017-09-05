@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim: set syntax=xml: -->
+<FixletDebuggerFile>
+	<QnAView>
+
+// https://askubuntu.com/questions/148932/how-can-i-get-a-list-of-all-repositories-and-ppas-from-the-command-line-into-an
+
+Q: lines whose(it does not start with "#" AND it as trimmed string != "") of (files "sources.list" of it; files of folders "sources.list.d" of it) of folders "/etc/apt"
+A: deb http://us.archive.ubuntu.com/ubuntu/ xenial main restricted
+A: deb http://us.archive.ubuntu.com/ubuntu/ xenial-updates main restricted
+A: deb http://us.archive.ubuntu.com/ubuntu/ xenial universe
+A: deb http://us.archive.ubuntu.com/ubuntu/ xenial-updates universe
+A: deb http://us.archive.ubuntu.com/ubuntu/ xenial multiverse
+A: deb http://us.archive.ubuntu.com/ubuntu/ xenial-updates multiverse
+A: deb http://us.archive.ubuntu.com/ubuntu/ xenial-backports main restricted universe multiverse
+A: deb http://security.ubuntu.com/ubuntu xenial-security main restricted
+A: deb http://security.ubuntu.com/ubuntu xenial-security universe
+A: deb http://security.ubuntu.com/ubuntu xenial-security multiverse
+A: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+T: 10074
+I: file line
+
+</QnAView>
+</FixletDebuggerFile>
