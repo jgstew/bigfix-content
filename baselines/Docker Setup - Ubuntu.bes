@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Baseline>
+		<Title>Docker Setup - Ubuntu</Title>
+		<Description><![CDATA[<P>&nbsp;</P>
+<P>This baseline should fully automate the following: <A href="https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/">https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/</A></P>
+<P>&nbsp;</P>]]></Description>
+		<Relevance>unix of operating system</Relevance>
+		<Relevance>exists debianpackages</Relevance>
+		<Relevance>not exists packages "docker-ce" of debianpackages</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2017-09-06</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 06 Sep 2017 18:59:53 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<BaselineComponentCollection>
+			<BaselineComponentGroup>
+				<BaselineComponent Name="remove old versions of docker - Debian/Ubuntu" IncludeInRelevance="false" SourceSiteURL="http://iemdev.jgstew.com:52311/cgi-bin/bfgather.exe/actionsite" SourceID="231" ActionName="Action1">
+					<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+wait bash -c "apt-get remove docker docker-engine docker.io -y"
+</ActionScript>
+					<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+					<Relevance>(((unix of operating system) AND (exists debianpackages)) AND (not exists packages "docker-ce" of debianpackages)) AND (exists (packages "docker" of it; packages "docker-engine" of it; packages "docker.io" of it) of debianpackages)</Relevance>
+				</BaselineComponent>
+				<BaselineComponent Name="Install packages to allow apt to use a repository over HTTPS - Debian/Ubuntu" IncludeInRelevance="false" SourceSiteURL="http://iemdev.jgstew.com:52311/cgi-bin/bfgather.exe/actionsite" SourceID="232" ActionName="Action1">
+					<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+if { not exists absolute values whose(it < 1 * hour) of (now - it) of maxima of modification times of files "/var/lib/apt/periodic/update-success-stamp" }
+  wait bash -c "apt-get update"
+endif
+
+wait bash -c "apt-get install apt-transport-https ca-certificates curl software-properties-common -y"
+
+// https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-using-the-repository
+]]></ActionScript>
+					<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+					<Relevance>((unix of operating system) AND (exists debianpackages)) AND (4 != number of (packages "apt-transport-https" of it; packages "ca-certificates" of it; packages "curl" of it; packages "software-properties-common" of it) of debianpackages)</Relevance>
+				</BaselineComponent>
+				<BaselineComponent Name="Add Docker’s official GPG key - Debian/Ubuntu" IncludeInRelevance="true" SourceSiteURL="http://iemdev.jgstew.com:52311/cgi-bin/bfgather.exe/actionsite" SourceID="233" ActionName="Action1">
+					<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+parameter "AptKeyGPG"="9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88"
+parameter "AptKeyShort"="0EBFCD88"
+
+wait bash -c "apt-key list > {pathname of folders "Logs" of folders "__Global" of data folders of client}/results_AptKeyGPG.txt"
+
+continue if{ not exists lines whose( it contains (parameter "AptKeyShort") ) of files "results_AptKeyGPG.txt" of folders "Logs" of folders "__Global" of data folders of client }
+
+wait bash -c "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -"
+
+wait bash -c "apt-key list > {pathname of folders "Logs" of folders "__Global" of data folders of client}/results_AptKeyGPG.txt"
+wait bash -c "apt-key fingerprint {parameter "AptKeyShort"} > /tmp/_BigFix_DockerGPG.txt"
+
+continue if{ exists contents whose(it contains (parameter "AptKeyGPG") ) of files "/tmp/_BigFix_DockerGPG.txt" }
+
+continue if{ exists lines whose( it contains (parameter "AptKeyShort") ) of files "results_AptKeyGPG.txt" of folders "Logs" of folders "__Global" of data folders of client }
+
+
+// TODO verify GPG key?  9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88  using `sudo apt-key fingerprint 0EBFCD88`
+//   Added to file here:  /etc/apt/trusted.gpg   `gpg --with-fingerprint /etc/apt/trusted.gpg`
+
+// https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-using-the-repository
+// http://manpages.ubuntu.com/manpages/xenial/man8/apt-key.8.html
+]]></ActionScript>
+					<SuccessCriteria Option="RunToCompletion"></SuccessCriteria>
+					<Relevance>((((unix of operating system) AND (exists packages "apt" of debianpackages)) AND (exists packages "curl" of debianpackages)) AND (exists files "/usr/bin/apt-key")) AND (not exists lines whose( it contains "0EBFCD88" ) of files "results_AptKeyGPG.txt" of folders "Logs" of folders "__Global" of data folders of client)</Relevance>
+				</BaselineComponent>
+				<BaselineComponent Name="Add Docker Stable Repository - Ubuntu" IncludeInRelevance="true" SourceSiteURL="http://iemdev.jgstew.com:52311/cgi-bin/bfgather.exe/actionsite" SourceID="240" ActionName="Action1">
+					<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+wait bash -c "add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\""
+
+wait bash -c "apt-get update"
+
+// https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-using-the-repository
+</ActionScript>
+					<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+					<Relevance>((((unix of operating system) AND (exists architectures whose(it = "x86_64") of operating systems)) AND (exists packages "apt" of debianpackages)) AND (exists lines whose( it contains "0EBFCD88" ) of files "results_AptKeyGPG.txt" of folders "Logs" of folders "__Global" of data folders of client)) AND (not exists lines whose(it does not start with "#" AND it contains "https://download.docker.com/linux/ubuntu") of (files "sources.list" of it; files of folders "sources.list.d" of it) of folders "/etc/apt")</Relevance>
+				</BaselineComponent>
+				<BaselineComponent Name="install Docker - Debian/Ubuntu" IncludeInRelevance="true" SourceSiteURL="http://iemdev.jgstew.com:52311/cgi-bin/bfgather.exe/actionsite" SourceID="243" ActionName="Action1">
+					<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+if { not exists absolute values whose(it < 1 * hour) of (now - it) of maxima of modification times of files "/var/lib/apt/periodic/update-success-stamp" }
+  wait bash -c "apt-get update"
+endif
+
+wait bash -c "apt-get install docker-ce -y"
+
+// https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce
+]]></ActionScript>
+					<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+					<Relevance>(((unix of operating system) AND (exists packages "apt" of debianpackages)) AND (exists lines whose(it does not start with "#" AND it contains "https://download.docker.com/linux/") of (files "sources.list" of it; files of folders "sources.list.d" of it) of folders "/etc/apt")) AND (not exists packages "docker-ce" of debianpackages)</Relevance>
+				</BaselineComponent>
+			</BaselineComponentGroup>
+		</BaselineComponentCollection>
+	</Baseline>
+</BES>
