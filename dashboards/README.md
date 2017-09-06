@@ -52,6 +52,7 @@ An even better option: https://github.com/jgstew/bigfix-content/tree/master/fixl
 
 ### Dashboard Ideas:
 
+- Dashboard to help write session relevance for computer reporting: https://bigfix.me/relevance/details/3020326
 - Deploy any fixlet or task or baseline with gradual roll out relevance added automatically
 - MO Console Operator Management
  - help disable users that have not logged in over X days
