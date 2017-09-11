@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<ComputerGroup>
+		<Title>Linux Docker Hosts</Title>
+		<Domain>BESC</Domain>
+		<JoinByIntersection>true</JoinByIntersection>
+		<SearchComponentRelevance Comparison="IsTrue">
+			<Relevance>(unix of operating system) AND ( exists (packages "docker-ce" of it; packages "docker" of it; packages "docker-engine" of it; packages "docker.io" of it) whose(if exists properties whose(it as string contains "currently installed of ") then (currently installed of it) else TRUE) of (if exists properties whose(it as string contains "debianpackage:") then debianpackages else if exists properties whose(it as string contains "rpm:") then rpms else ERROR "The operators are not defined.") )</Relevance>
+		</SearchComponentRelevance>
+	</ComputerGroup>
+</BES>
