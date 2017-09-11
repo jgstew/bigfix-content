@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Docker Host Info - Linux</Title>
+		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Relevance>unix of operating system</Relevance>
+		<Relevance>exists folders "/var/lib/docker/containers" OR ( exists (packages "docker-ce" of it; packages "docker" of it; packages "docker-engine" of it; packages "docker.io" of it) whose(if exists properties whose(it as string contains "currently installed of ") then (currently installed of it) else TRUE) of (if exists properties whose(it as string contains "debianpackage:") then debianpackages else if exists properties whose(it as string contains "rpm:") then rpms else ERROR "The operators are not defined.") )</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2017-09-08</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 08 Sep 2017 21:09:27 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="Containers" ID="1" EvaluationPeriod="PT1H">unique values of names of folders of folders "/var/lib/docker/containers"</Property>
+		<Property Name="Container Hostnames" ID="2" EvaluationPeriod="PT1H">unique values of (it as trimmed string) whose(it != "") of lines of files "hostname" of folders of folders "/var/lib/docker/containers"</Property>
+		<Property Name="Number of Running Containers" ID="3" EvaluationPeriod="PT1H">number of (it as boolean) whose(it) of values of keys "Running" of values of keys "State" of jsons of files "config.v2.json" of folders of folders "/var/lib/docker/containers"</Property>
+		<Property Name="Docker Version" ID="4" EvaluationPeriod="PT12H">unique values of maxima of versions of (packages "docker-ce" of it; packages "docker" of it; packages "docker-engine" of it; packages "docker.io" of it) whose(if exists properties whose(it as string contains "currently installed of ") then (currently installed of it) else TRUE) of (if exists properties whose(it as string contains "debianpackage:") then debianpackages else if exists properties whose(it as string contains "rpm:") then rpms else ERROR "The operators are not defined.")</Property>
+		<Property Name="Number of Containers" ID="5" EvaluationPeriod="PT15M">number of folders of folders "/var/lib/docker/containers"</Property>
+	</Analysis>
+</BES>
