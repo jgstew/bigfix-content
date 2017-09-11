@@ -1,0 +1,13 @@
+
+parameter "FileName"="example_script"
+
+delete __createfile
+
+createfile until _END_OF_FILE_
+{ "" | " This is an example empty file " }
+_END_OF_FILE_
+
+delete /tmp/{parameter "FileName"}
+copy __createfile /tmp/{parameter "FileName"}
+
+wait {if (windows of operating system) then "cmd /S /C " else "bash " } /tmp/{parameter "FileName"}
