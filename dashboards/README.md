@@ -53,11 +53,11 @@ An even better option: https://github.com/jgstew/bigfix-content/tree/master/fixl
 ### Dashboard Ideas:
 
 - Remote Command-Line
- - select computer to target
- - take input of arbitrary commands
- - output results to file
- - attempt to send back results using cURL / WebSocket
- - read back results using BFQuery and/or Analysis
+  - select computer to target
+  - take input of arbitrary commands
+  - output results to file
+  - attempt to send back results using cURL / WebSocket
+  - read back results using BFQuery and/or Analysis
 - Dashboard to help write session relevance for computer reporting: https://bigfix.me/relevance/details/3020326
 - Deploy any fixlet or task or baseline with gradual roll out relevance added automatically
 - MO Console Operator Management
