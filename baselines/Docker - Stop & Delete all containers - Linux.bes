@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Baseline>
+		<Title><![CDATA[Docker - Stop & Delete all containers - Linux]]></Title>
+		<Description><![CDATA[&lt;enter a description of the baseline here&gt; ]]></Description>
+		<Relevance>unix of operating system</Relevance>
+		<Relevance>exists folders of folders "/var/lib/docker/containers"</Relevance>
+		<Relevance>exists (packages "docker-ce" of it; packages "docker" of it; packages "docker-engine" of it; packages "docker.io" of it) whose(if exists properties whose(it as string contains "currently installed of ") then (currently installed of it) else TRUE) of (if exists properties whose(it as string contains "debianpackage:") then debianpackages else if exists properties whose(it as string contains "rpm:") then rpms else ERROR "The operators are not defined.")</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2017-09-14</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 14 Sep 2017 20:28:36 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<BaselineComponentCollection>
+			<BaselineComponentGroup>
+				<BaselineComponent Name="Docker - Stop all running docker containers - Linux" IncludeInRelevance="false" SourceSiteURL="http://iemdev.jgstew.com:52311/cgi-bin/bfgather.exe/actionsite" SourceID="270" ActionName="Action1">
+					<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+parameter "NumRunning"="{ number of (it as boolean) whose(it) of values of keys "Running" of values of keys "State" of jsons of files "config.v2.json" of folders of folders "/var/lib/docker/containers" | 0 }"
+
+wait bash -c "docker stop $(docker ps -a -q)"
+
+exit { (it as integer - (number of (it as boolean) whose(it) of values of keys "Running" of values of keys "State" of jsons of files "config.v2.json" of folders of folders "/var/lib/docker/containers" | 0) ) of (parameter "NumRunning") }
+
+// https://coderwall.com/p/ewk0mq/stop-remove-all-docker-containers
+</ActionScript>
+					<SuccessCriteria Option="RunToCompletion"></SuccessCriteria>
+					<Relevance>(unix of operating system) AND (exists (packages "docker-ce" of it; packages "docker" of it; packages "docker-engine" of it; packages "docker.io" of it) whose(if exists properties whose(it as string contains "currently installed of ") then (currently installed of it) else TRUE) of (if exists properties whose(it as string contains "debianpackage:") then debianpackages else if exists properties whose(it as string contains "rpm:") then rpms else ERROR "The operators are not defined."))</Relevance>
+				</BaselineComponent>
+				<BaselineComponent Name="Docker - Delete all docker containers - Linux" IncludeInRelevance="true" SourceSiteURL="http://iemdev.jgstew.com:52311/cgi-bin/bfgather.exe/actionsite" SourceID="273" ActionName="Action1">
+					<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+action parameter query "DeleteEverything" with description "This is a bad idea! Be very careful! This will permanently delete all containers!!!" and with default value "I really want to delete my containers, stop bugging me!"
+
+parameter "NumContainers"="{ number of folders of folders "/var/lib/docker/containers" | 0 }"
+
+wait bash -c "docker rm $(docker ps -a -q)"
+
+// Exit code should be the number of containers deleted
+exit { (it as integer - ( number of folders of folders "/var/lib/docker/containers" | 0 ) ) of (parameter "NumContainers") }
+
+// https://coderwall.com/p/ewk0mq/stop-remove-all-docker-containers
+</ActionScript>
+					<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+					<Relevance>((unix of operating system) AND (exists (packages "docker-ce" of it; packages "docker" of it; packages "docker-engine" of it; packages "docker.io" of it) whose(if exists properties whose(it as string contains "currently installed of ") then (currently installed of it) else TRUE) of (if exists properties whose(it as string contains "debianpackage:") then debianpackages else if exists properties whose(it as string contains "rpm:") then rpms else ERROR "The operators are not defined."))) AND (exists folders of folders "/var/lib/docker/containers")</Relevance>
+				</BaselineComponent>
+			</BaselineComponentGroup>
+		</BaselineComponentCollection>
+	</Baseline>
+</BES>
