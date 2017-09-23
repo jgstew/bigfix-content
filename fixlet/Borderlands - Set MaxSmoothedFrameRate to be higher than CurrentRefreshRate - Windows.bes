@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Borderlands - Set MaxSmoothedFrameRate to be higher than CurrentRefreshRate - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance><![CDATA[version of operating system > "6.1"]]></Relevance>
+		<Relevance><![CDATA[exists (it as integer) whose(it < maximum of integer values of selects "CurrentRefreshRate FROM Win32_VideoController" of wmis) of keys "MaxSmoothedFrameRate" of sections "Engine.GameEngine" of files whose(name of it ends with ".ini") of folders "Config" of folders of folders "Borderlands" of folders "Steam\steamapps\common" of folders whose(name of it starts with "Program Files") of folders "C:\"]]></Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2017-09-22</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Sat, 23 Sep 2017 03:41:07 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+parameter "FileSection" = "Engine.GameEngine"
+parameter "ConfigPath" = "{ pathnames of files whose(name of it ends with ".ini" AND exists (it as integer) whose(it < maximum of integer values of selects "CurrentRefreshRate FROM Win32_VideoController" of wmis) of keys "MaxSmoothedFrameRate" of sections "Engine.GameEngine" of it) of folders "Config" of folders of folders "Borderlands" of folders "Steam\steamapps\common" of folders whose(name of it starts with "Program Files") of folders "C:\" }"
+
+// TODO: edit INI file
+
+delete __createfile
+
+// http://www.robvanderwoude.com/vbstech_files_ini.php#WriteINI
+// WriteIni "C:\filepath.ini", "section", "key", "value"
+createfile until _END_OF_FILE_
+
+Function ReadIni( myFilePath, mySection, myKey )
+    ' This function returns a value read from an INI file
+    '
+    ' Arguments:
+    ' myFilePath  [string]  the (path and) file name of the INI file
+    ' mySection   [string]  the section in the INI file to be searched
+    ' myKey       [string]  the key whose value is to be returned
+    '
+    ' Returns:
+    ' the [string] value for the specified key in the specified section
+    '
+    ' CAVEAT:     Will return a space if key exists but value is blank
+    '
+    ' Written by Keith Lacelle
+    ' Modified by Denis St-Pierre and Rob van der Woude
+
+    Const ForReading   = 1
+    Const ForWriting   = 2
+    Const ForAppending = 8
+
+    Dim intEqualPos
+    Dim objFSO, objIniFile
+    Dim strFilePath, strKey, strLeftString, strLine, strSection
+
+    Set objFSO = CreateObject( "Scripting.FileSystemObject" )
+
+    ReadIni     = ""
+    strFilePath = Trim( myFilePath )
+    strSection  = Trim( mySection )
+    strKey      = Trim( myKey )
+
+    If objFSO.FileExists( strFilePath ) Then
+        Set objIniFile = objFSO.OpenTextFile( strFilePath, ForReading, False )
+        Do While objIniFile.AtEndOfStream = False
+            strLine = Trim( objIniFile.ReadLine )
+
+            ' Check if section is found in the current line
+            If LCase( strLine ) = "[" & LCase( strSection ) & "]" Then
+                strLine = Trim( objIniFile.ReadLine )
+
+                ' Parse lines until the next section is reached
+                Do While Left( strLine, 1 ) <> "["
+                    ' Find position of equal sign in the line
+                    intEqualPos = InStr( 1, strLine, "=", 1 )
+                    If intEqualPos > 0 Then
+                        strLeftString = Trim( Left( strLine, intEqualPos - 1 ) )
+                        ' Check if item is found in the current line
+                        If LCase( strLeftString ) = LCase( strKey ) Then
+                            ReadIni = Trim( Mid( strLine, intEqualPos + 1 ) )
+                            ' In case the item exists but value is blank
+                            If ReadIni = "" Then
+                                ReadIni = " "
+                            End If
+                            ' Abort loop when item is found
+                            Exit Do
+                        End If
+                    End If
+
+                    ' Abort if the end of the INI file is reached
+                    If objIniFile.AtEndOfStream Then Exit Do
+
+                    ' Continue with next line
+                    strLine = Trim( objIniFile.ReadLine )
+                Loop
+            Exit Do
+            End If
+        Loop
+        objIniFile.Close
+    Else
+        WScript.Echo strFilePath & " doesn't exists. Exiting..."
+        Wscript.Quit 1
+    End If
+End Function
+
+Sub WriteIni( myFilePath, mySection, myKey, myValue )
+    ' This subroutine writes a value to an INI file
+    '
+    ' Arguments:
+    ' myFilePath  [string]  the (path and) file name of the INI file
+    ' mySection   [string]  the section in the INI file to be searched
+    ' myKey       [string]  the key whose value is to be written
+    ' myValue     [string]  the value to be written (myKey will be
+    '                       deleted if myValue is )
+    '
+    ' Returns:
+    ' N/A
+    '
+    ' CAVEAT:     WriteIni function needs ReadIni function to run
+    '
+    ' Written by Keith Lacelle
+    ' Modified by Denis St-Pierre, Johan Pol and Rob van der Woude
+
+    Const ForReading   = 1
+    Const ForWriting   = 2
+    Const ForAppending = 8
+
+    Dim blnInSection, blnKeyExists, blnSectionExists, blnWritten
+    Dim intEqualPos
+    Dim objFSO, objNewIni, objOrgIni, wshShell
+    Dim strFilePath, strFolderPath, strKey, strLeftString
+    Dim strLine, strSection, strTempDir, strTempFile, strValue
+
+    strFilePath = Trim( myFilePath )
+    strSection  = Trim( mySection )
+    strKey      = Trim( myKey )
+    strValue    = Trim( myValue )
+
+    Set objFSO   = CreateObject( "Scripting.FileSystemObject" )
+    Set wshShell = CreateObject( "WScript.Shell" )
+
+    strTempDir  = wshShell.ExpandEnvironmentStrings( "%TEMP%" )
+    strTempFile = objFSO.BuildPath( strTempDir, objFSO.GetTempName )
+
+    Set objOrgIni = objFSO.OpenTextFile( strFilePath, ForReading, True )
+    Set objNewIni = objFSO.CreateTextFile( strTempFile, False, False )
+
+    blnInSection     = False
+    blnSectionExists = False
+    ' Check if the specified key already exists
+    blnKeyExists     = ( ReadIni( strFilePath, strSection, strKey ) <> "" )
+    blnWritten       = False
+
+    ' Check if path to INI file exists, quit if not
+    strFolderPath = Mid( strFilePath, 1, InStrRev( strFilePath, "\" ) )
+    If Not objFSO.FolderExists ( strFolderPath ) Then
+        WScript.Echo "Error: WriteIni failed, folder path (" _
+                   & strFolderPath & ") to ini file " _
+                   & strFilePath & " not found!"
+        Set objOrgIni = Nothing
+        Set objNewIni = Nothing
+        Set objFSO    = Nothing
+        WScript.Quit 1
+    End If
+
+    While objOrgIni.AtEndOfStream = False
+        strLine = Trim( objOrgIni.ReadLine )
+        If blnWritten = False Then
+            If LCase( strLine ) = "[" & LCase( strSection ) & "]" Then
+                blnSectionExists = True
+                blnInSection = True
+            ElseIf InStr( strLine, "[" ) = 1 Then
+                blnInSection = False
+            End If
+        End If
+
+        If blnInSection Then
+            If blnKeyExists Then
+                intEqualPos = InStr( 1, strLine, "=", vbTextCompare )
+                If intEqualPos > 0 Then
+                    strLeftString = Trim( Left( strLine, intEqualPos - 1 ) )
+                    If LCase( strLeftString ) = LCase( strKey ) Then
+                        ' Only write the key if the value isn't empty
+                        ' Modification by Johan Pol
+                        If strValue <> "" Then
+                            objNewIni.WriteLine strKey & "=" & strValue
+                        End If
+                        blnWritten   = True
+                        blnInSection = False
+                    End If
+                End If
+                If Not blnWritten Then
+                    objNewIni.WriteLine strLine
+                End If
+            Else
+                objNewIni.WriteLine strLine
+                    ' Only write the key if the value isn't empty
+                    ' Modification by Johan Pol
+                    If strValue <> "" Then
+                        objNewIni.WriteLine strKey & "=" & strValue
+                    End If
+                blnWritten   = True
+                blnInSection = False
+            End If
+        Else
+            objNewIni.WriteLine strLine
+        End If
+    Wend
+
+    If blnSectionExists = False Then ' section doesn't exist
+        objNewIni.WriteLine
+        objNewIni.WriteLine "[" & strSection & "]"
+            ' Only write the key if the value isn't empty
+            ' Modification by Johan Pol
+            If strValue <> "" Then
+                objNewIni.WriteLine strKey & "=" & strValue
+            End If
+    End If
+
+    objOrgIni.Close
+    objNewIni.Close
+
+    ' Delete old INI file
+    objFSO.DeleteFile strFilePath, True
+    ' Rename new INI file
+    objFSO.MoveFile strTempFile, strFilePath
+
+    Set objOrgIni = Nothing
+    Set objNewIni = Nothing
+    Set objFSO    = Nothing
+    Set wshShell  = Nothing
+End Sub
+
+WriteIni "{ parameter "ConfigPath" }", "{ parameter "FileSection" }", "MaxSmoothedFrameRate", "{ (it + 7) of maximum of integer values of selects "CurrentRefreshRate FROM Win32_VideoController" of wmis }"
+
+_END_OF_FILE_
+
+
+delete editini.vbs
+copy __createfile editini.vbs
+waithidden cmd /c cscript editini.vbs //Nologo
+
+
+// References:
+// - https://msdn.microsoft.com/en-us/library/aa394512(v=vs.85).aspx
+// - https://www.bigfix.me/fixlet/details/21108
+
+// prefetch unzip.exe sha1:e1652b058195db3f5f754b7ab430652ae04a50b8 size:167936 http://software.bigfix.com/download/redist/unzip-5.52.exe sha256:8d9b5190aace52a1db1ac73a65ee9999c329157c8e88f61a772433323d6b7a4a
+// prefetch inifile.zip sha1:415f9a3c6c6f7dae5de7c3dec7fe7cbe0056fc0e size:9059 http://www.horstmuc.de/win/inifile.zip sha256:f205a28cdbd705f49726d83ccd1f9244cf08cb8bad5002c38937c69ef959f7ff
+// prefetch claspak.zip sha1:c117e0bbed33571647fd661591d862b2ab8ae540 size:92171 http://www.jsware.net/jsware/zips/claspak.zip sha256:a0b14b05997ee3a20d576488bd399a669fb8303cc85242c1d94d5ced60911bec
+
+]]></ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
