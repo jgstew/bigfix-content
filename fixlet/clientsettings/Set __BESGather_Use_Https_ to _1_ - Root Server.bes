@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>Set "_BESGather_Use_Https" to "1" - Root Server</Title>
+		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Relevance>exists main gather service</Relevance>
+		<Relevance><![CDATA[version of registration server >= "9.5.0"]]></Relevance>
+		<Relevance>not exists settings "_BESGather_Use_Https" whose("1" = value of it) of client</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2017-10-04</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 04 Oct 2017 19:48:06 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// Available in 9.5.0+
+// https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Tivoli%20Endpoint%20Manager/page/IBM%20BigFix%209.5.0%20Release%20Notes
+// https://www.ibm.com/support/knowledgecenter/en/SSQL82_9.5.0/com.ibm.bigfix.doc/Platform/Config/c_https_gathering.html
+
+setting "_BESGather_Use_Https"="1" on "{ parameter "action issue date" of action}" for client
+
+// May require restart of the BES ROOT SERVICE or the server to take effect.
+// Check C:\Program Files (x86)\BigFix Enterprise\BES Server\BESRelay.log for failures / success
+// Check C:\Program Files (x86)\BigFix Enterprise\BES Server\Mirror Server\Inbox\GatherState.xml for current state of gather
+//  Note: base path to C:\Program Files (x86)\BigFix Enterprise\BES Server\ is different on linux, but otherwise similar.
+</ActionScript>
+		</DefaultAction>
+	</Fixlet>
+</BES>
