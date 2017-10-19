@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Install Docker-Compose - Linux x64</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>unix of operating system</Relevance>
+		<Relevance>x64 of operating system</Relevance>
+		<Relevance>not exists files "/usr/local/bin/docker-compose"</Relevance>
+		<Relevance>exists (packages "docker-ce" of it; packages "docker" of it; packages "docker-engine" of it; packages "docker.io" of it) whose(if exists properties whose(it as string contains "currently installed of ") then (currently installed of it) else TRUE) of (if exists properties whose(it as string contains "debianpackage:") then debianpackages else if exists properties whose(it as string contains "rpm:") then rpms else ERROR "The operators are not defined.")</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2017-10-18</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 19 Oct 2017 03:53:51 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+prefetch docker-compose sha1:e2c7c848e1fa388a2e5b8945fdb2660bf8d8adb1 size:8855632 https://github.com/docker/compose/releases/download/1.16.1/docker-compose-Linux-x86_64 sha256:1804b0ce6596efe707b9cab05d74b161833ed503f0535a937dd5d17bea8fc50a
+
+delete /usr/local/bin/docker-compose
+copy __Download/docker-compose /usr/local/bin/docker-compose
+
+wait chmod +x /usr/local/bin/docker-compose
+
+exit {size of file "/usr/local/bin/docker-compose"}
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
