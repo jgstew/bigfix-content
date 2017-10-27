@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<FixletDebuggerFile>
+	<QnAView>
+
+Q: ( ( ( if exists concatenations whose(it contains "PE%00%00d%86") of lines (0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22) of it then "64bit" else "32bit") ), pathnames of it ) whose(item 0 of it != item 1 of it) of descendants whose(name of it as lowercase ends with ".exe" AND exists contents whose(it contains "PE%00%00") of it) of (folders "C:\Program Files\Internet Explorer"; folders "C:\Program Files (x86)\Internet Explorer")
+A: 64bit, C:\Program Files\Internet Explorer\ExtExport.exe
+A: 64bit, C:\Program Files\Internet Explorer\iediagcmd.exe
+A: 64bit, C:\Program Files\Internet Explorer\ieinstal.exe
+A: 64bit, C:\Program Files\Internet Explorer\ielowutil.exe
+A: 64bit, C:\Program Files\Internet Explorer\iexplore.exe
+A: 32bit, C:\Program Files (x86)\Internet Explorer\ExtExport.exe
+A: 32bit, C:\Program Files (x86)\Internet Explorer\ieinstal.exe
+A: 32bit, C:\Program Files (x86)\Internet Explorer\ielowutil.exe
+A: 32bit, C:\Program Files (x86)\Internet Explorer\iexplore.exe
+T: 16.122 ms
+
+</QnAView>
+</FixletDebuggerFile>
