@@ -8,3 +8,4 @@ Initial testing on Ubuntu Server 16.04
 ### References:
 
 - https://askubuntu.com/questions/898517/closing-lid-problem
+- http://manpages.ubuntu.com/manpages/trusty/man5/logind.conf.5.html
