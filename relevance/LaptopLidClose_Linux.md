@@ -13,3 +13,5 @@ Initial testing on Ubuntu Server 16.04
 
 - https://askubuntu.com/questions/898517/closing-lid-problem
 - http://manpages.ubuntu.com/manpages/trusty/man5/logind.conf.5.html
+- http://manpages.ubuntu.com/manpages/zesty/man8/laptop-detect.8.html
+- https://askubuntu.com/questions/69556/how-to-check-battery-status-using-terminal
