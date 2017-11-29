@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>Set Root User Shell to false to prevent login - Apple Mac OS X</Title>
+		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Relevance>mac of operating system</Relevance>
+		<Relevance>not exists strings 0 whose(it = "/usr/bin/false") of arrays "shell" of dictionaries of files "/var/db/dslocal/nodes/Default/users/root.plist"</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2017-11-28</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 29 Nov 2017 05:35:36 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+if{ not exists strings 0 of arrays "shell" of dictionaries of files "/var/db/dslocal/nodes/Default/users/root.plist" }
+	wait /usr/bin/dscl . -create /Users/root UserShell /usr/bin/false
+else
+	wait /usr/bin/dscl . -change /Users/root UserShell "{ strings 0 of arrays "shell" of dictionaries of files "/var/db/dslocal/nodes/Default/users/root.plist" }" /usr/bin/false
+endif
+
+// https://derflounder.wordpress.com/2017/11/28/blocking-logins-to-the-root-account-on-macos-high-sierra/
+// https://github.com/rtrouton/rtrouton_scripts/blob/master/rtrouton_scripts/block_root_account_login/block_root_account_login.sh
+// https://unix.stackexchange.com/questions/232491/how-to-test-if-root-user-is-enabled-in-mac
+</ActionScript>
+		</DefaultAction>
+	</Fixlet>
+</BES>
