@@ -24,11 +24,11 @@
         <HTML><![CDATA[
             <script language="javascript">InsertUtilityDiv();</script>
 <h2>Property Evaluation Audit</h2>
-
+<p> This dashboard will display every BigFix Custom Property with an evaluation that is every 15 minutes or more frequent. Consider changing the evaluation period to something less often to lower the impact on the reporting computers evaluation loop. </p>
 <table id="resultsTable" class="compact display" width="100%">
     <thead><tr><th>Property</th><th>Source</th><th>Eval Freq</th></tr></thead>
     <tbody id="results">
-		<?Relevance ( trs of concatenations of tds of ( (it as html) of names of it; link of source analyses of it | (it as html) of "Plain Property"; (it as html) of ("Every " & ( if (0=it) then (" Report") else (it as string & " Minutes") ) ) of (it / minute) of evaluation period of it) ) of bes properties whose( (custom flag of it OR (analysis flag of it AND custom flag of source analysis of it) ) AND evaluation period of it <= 15 * minute ) ?>
+		<?Relevance ( trs of concatenations of tds of ( (it as html) of names of it; link of source analyses of it | (it as html) of "Plain Property"; (it as html) of ("Every " & ( if (0=it) then (" Report") else (it as string & " Minutes") ) ) of (it / minute) of evaluation period of it) ) of bes properties whose( (custom flag of it OR (analysis flag of it AND custom flag of source analysis of it AND exists active flags of activations of source analysis of it) ) AND evaluation period of it <= 15 * minute ) ?>
     </tbody>
 </table>
 
