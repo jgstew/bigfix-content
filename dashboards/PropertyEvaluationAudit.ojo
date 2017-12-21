@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<BES>
+  <Wizard>
+    <Title>Custom - Property Evaluation Audit</Title>
+    <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+    <DefaultPage>BaselineStatusResults</DefaultPage>
+    <Page Name="BaselineStatusResults" DocType="HTML5" > 
+        <Title>Baseline Status Results</Title>
+        <Head><![CDATA[
+            <meta http-equiv="X-UA-Compatible" content="IE=11">
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=" crossorigin="anonymous"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" integrity="sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik=" crossorigin="anonymous" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/js/jquery.dataTables.min.js" integrity="sha256-yWA356lDhruy1J8jGncaMWKAPYDbK47OKb0uT/aELLc=" crossorigin="anonymous"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/css/jquery.dataTables.min.css" integrity="sha256-+Z1rYa3ys5OdZNUck5G7lBvb8A13OrYwvf+d8PfEaHQ=" crossorigin="anonymous" />
+
+            <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css" />
+            <script src="https://cdn.datatables.net/buttons/1.2.4/js/dataTables.buttons.min.js"></script>
+            <script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.html5.min.js"></script>
+            
+            <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
+        ]]></Head>
+        <HTML><![CDATA[
+            <script language="javascript">InsertUtilityDiv();</script>
+<h2>Property Evaluation Audit</h2>
+
+<table id="resultsTable" class="compact display" width="100%">
+    <thead><tr><th>Property</th><th>Source</th><th>Eval Freq</th></tr></thead>
+    <tbody id="results">
+		<?Relevance ( trs of concatenations of tds of (names of it; name of source analyses of it | "Plain Property"; ("Every " & ( if (0=it) then (" Report") else (it as string & " Minutes") ) ) of (it / minute) of evaluation period of it) ) of bes properties whose( (custom flag of it OR (analysis flag of it AND custom flag of source analysis of it) ) AND evaluation period of it <= 15 * minute ) ?>
+    </tbody>
+</table>
+
+<br />
+<br />
+<style>
+table {
+    width: 100%;
+}
+</style>
+<script>
+
+</script>
+        ]]></HTML>
+    </Page>
+  </Wizard>
+</BES>
