@@ -28,7 +28,7 @@
 <table id="resultsTable" class="compact display" width="100%">
     <thead><tr><th>Property</th><th>Source</th><th>Eval Freq</th></tr></thead>
     <tbody id="results">
-		<?Relevance ( trs of concatenations of tds of (names of it; name of source analyses of it | "Plain Property"; ("Every " & ( if (0=it) then (" Report") else (it as string & " Minutes") ) ) of (it / minute) of evaluation period of it) ) of bes properties whose( (custom flag of it OR (analysis flag of it AND custom flag of source analysis of it) ) AND evaluation period of it <= 15 * minute ) ?>
+		<?Relevance ( trs of concatenations of tds of ( (it as html) of names of it; link of source analyses of it | (it as html) of "Plain Property"; (it as html) of ("Every " & ( if (0=it) then (" Report") else (it as string & " Minutes") ) ) of (it / minute) of evaluation period of it) ) of bes properties whose( (custom flag of it OR (analysis flag of it AND custom flag of source analysis of it) ) AND evaluation period of it <= 15 * minute ) ?>
     </tbody>
 </table>
 
