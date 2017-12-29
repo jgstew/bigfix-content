@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<BES xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:noNamespaceSchemaLocation='BES.xsd'>
+	<Fixlet>
+        <Title>Install: Identity Finder - Windows   File:TEMPLATE_FILE_NAME</Title>
+        <Description><![CDATA[<P>This is a template. This is not meant to be used directly. Please use this through the Fixlet Maker Dashboard.</P>
+<P>Read more here:&nbsp; <A href="https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Tivoli%20Endpoint%20Manager/page/Creating%20custom%20Fixlets%20by%20using%20the%20Fixlet%20Maker">https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Tivoli%20Endpoint%20Manager/page/Creating%20custom%20Fixlets%20by%20using%20the%20Fixlet%20Maker</A></P>
+<P>If importing into the console, it must be imported into a site called "Fixlet Templates" in order to show up and work in the Fixlet Maker Dashboard.</P>
+<P>&nbsp;</P>]]></Description>        
+        <Relevance>/* Windows Only */ windows of operating system</Relevance>
+        <Relevance><![CDATA[/* Windows XP or Higher */ version of operating system >= "5.1"]]></Relevance>
+        <Relevance>not exists key whose (value "DisplayName" of it as string contains "Identity Finder") of key "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of x32 registry</Relevance>
+        <Category>Generated from Template</Category> 
+        <DownloadSize>123456789</DownloadSize> 
+        <Source>Internal</Source> 
+        <SourceReleaseDate>1900-01-01</SourceReleaseDate>
+                <MIMEField>
+                    <Name>x-fixlet-template_properties</Name>
+
+
+                    <Value>[ 
+					{&quot;name&quot;: &quot;TEMPLATE_FILE&quot;, &quot;type&quot;: &quot;file&quot;, &quot;fileName&quot;: &quot;TEMPLATE_FILE_NAME&quot;, 
+						&quot;fileLink&quot;: &quot;TEMPLATE_FILE_LINK&quot;, &quot;sha1&quot;: &quot;TEMPLATE_FILE_SHA1&quot;, &quot;size&quot;: &quot;123456789&quot;}
+				] 
+			</Value>
+                </MIMEField>
+                <MIMEField>
+                    <Name>x-fixlet-template-os</Name>
+                    <Value>Windows</Value>
+                </MIMEField>
+                <MIMEField>
+                    <Name>x-fixlet-vendor-id</Name>
+                    <Value>IDF</Value>
+                </MIMEField>
+                <MIMEField>
+                    <Name>x-fixlet-template-id</Name>
+                    <Value>idfWinTemplate</Value>
+                </MIMEField>
+                <MIMEField>
+                    <Name>x-fixlet-vendor-name</Name>
+                    <Value>Identity Finder</Value>
+                </MIMEField>
+                <MIMEField>
+                    <Name>x-fixlet-product-name</Name>
+                    <Value>Identity Finder</Value>
+                </MIMEField>
+                <MIMEField>
+                    <Name>x-fixlet-modification-time</Name>
+                    <Value>Fri, 18 Jul 2014 18:22:44 +0000</Value>
+                </MIMEField>
+        <Domain>BESC</Domain> 
+		<DefaultAction ID="Action1">
+            <Description>
+                <PreLink>Click </PreLink>
+                <Link>here</Link>
+                <PostLink> to deploy this action.</PostLink>
+            </Description>
+            <ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+//  This is generated from a template
+//  https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Tivoli%20Endpoint%20Manager/page/Creating%20a%20Fixlet%20template%20for%20the%20Fixlet%20Maker
+// name = "TEMPLATE_FILE"
+// fileName = "TEMPLATE_FILE_NAME"
+// fileLink = "TEMPLATE_FILE_LINK"
+// sha1 = "TEMPLATE_FILE_SHA1"
+// size = "123456789"
+
+prefetch TEMPLATE_FILE_NAME sha1:TEMPLATE_FILE_SHA1 size:123456789 TEMPLATE_FILE_LINK
+wait "{pathname of system folder & "\msiexec.exe"}" /i "{(pathname of file "TEMPLATE_FILE_NAME" of folder "__Download" of client folder of current site)}" /qn /norestart ALLUSERS=2
+
+delete "C:\Users\Public\Desktop\Identity Finder.lnk"
+]]></ActionScript>
+            <SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Fixlet>
+</BES>
