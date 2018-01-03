@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>HP BIOS Config Utility - Get Current Settings - Windows TODO:testing</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists (it as string as trimmed string) whose(it = "HP" OR it contains "Hewlett-Packard") of (values "vendor" of structures "bios_information" of it; values "manufacturer" of structures "base_board_information" of it; values "manufacturer" of structures "system_information" of it) of smbioses</Relevance>
+		<Relevance>not exists files "results_bios_settings_hp.txt" of folders "__BESData\__Global\Logs" of parent folders of client</Relevance>
+		<Category></Category>
+		<DownloadSize>8803216</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2018-01-02</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 03 Jan 2018 06:37:22 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// -- START:DOWNLOADS -----------------------
+
+prefetch 7za.exe sha1:8c7659e6ee9fe5ead17cae2969d3148730be509b size:652800 https://github.com/jgstew/Patching-Tools/blob/95b6a6b5ffa94e889679a42022c9d354afa4e7b3/Downloads/7-Zip/7za.exe?raw=true sha256:e0e2c7d0f740fe2a4e8658ce54dfb6eb3c47c37fe90a44a839e560c685f1f1fa
+
+prefetch hp_bios_config_setup.exe sha1:83f4e5ead59b95e0cb590b1e35716820ed162550 size:8803216 https://ftp.hp.com/pub/softpaq/sp81501-82000/sp81841.exe sha256:373c85eb28b6796386f8b8433e633b285d144c9a36af5a4e509522095096c316
+
+// -- END:DOWNLOADS -------------------------
+
+
+// ADD TO UTILITY CACHE (to use in multiple tasks)
+//utility __Download\7za.exe
+
+waithidden "{ (pathname of file "7za.exe" of folder "__Download" of client folder of current site) }" e -i!*\BiosConfigUtility{if (x64 of operating system) then "64" else ""}.exe -y -o"{pathname of folder "__Download" of client folder of current site}" "{pathname of file "hp_bios_config_setup.exe" of folder "__Download" of client folder of current site}"
+
+waithidden __Download\BiosConfigUtility{if (x64 of operating system) then "64" else ""}.exe /get:"{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\results_bios_settings_hp.txt"
+
+// exit code 23 is a failure: "System not supported. Unable to connect to HP WMI namespace: 'root\HP'" (not sure about other exit codes)
+
+
+// Related:
+//  - https://bigfix.me/fixlet/details/3928
+//  - https://bigfix.me/fixlet/details/3896
+</ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
