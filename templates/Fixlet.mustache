@@ -1,6 +1,6 @@
 ---
 BESType: "Task"
-Title: "Template Demo"
+Title: "Template Demo TODO"
 Relevances: [ {Relevance: "false"}, {Relevance: "mac of operating system"} ]
 ---
 <?xml version="1.0" encoding="UTF-8"?>
@@ -23,7 +23,7 @@ Relevances: [ {Relevance: "false"}, {Relevance: "mac of operating system"} ]
 			<Value>{{modificationtime}}{{^modificationtime}}Mon, 01 Jan 2018 00:00:01 +0000{{/modificationtime}}</Value>
 		</MIMEField>
 		<Domain>{{BESDomain}}{{^BESDomain}}BESC{{/BESDomain}}</Domain>
-		<DefaultAction ID="Action1">
+		<{{Default}}Action ID="Action1">
 			<Description>
 				<PreLink>Click </PreLink>
 				<Link>here</Link>
@@ -32,6 +32,6 @@ Relevances: [ {Relevance: "false"}, {Relevance: "mac of operating system"} ]
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
 {{ActionScript}}{{^ActionScript}}// put action commands here:{{/ActionScript}}
 </ActionScript>
-		</DefaultAction>
+		</{{Default}}Action>
 	</{{BESType}}{{^BESType}}Fixlet{{/BESType}}>
 </BES>
