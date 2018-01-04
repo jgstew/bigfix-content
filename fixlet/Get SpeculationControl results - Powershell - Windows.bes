@@ -42,7 +42,7 @@ utility __Download\unzip.exe
 // EXTRACT using unzip: speculationcontrol
 waithidden __Download\unzip.exe -o "{pathname of file "speculationcontrol.nupkg" of folder "__Download" of client folder of current site}" -d "{pathname of folder "__Download" of client folder of current site}"
 
-// Disable wow64 redirection on x64 OSes
+// Disable wow64 redirection on x64 OSes (might not be needed for this particular action)
 action uses wow64 redirection {not x64 of operating system}
 
 //   Powershell:
