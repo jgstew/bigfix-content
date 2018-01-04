@@ -20,7 +20,7 @@ Relevances: [ {Relevance: "false"}, {Relevance: "mac of operating system"} ]
 		<SANSID>{{SANSID}}</SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Wed, 29 Nov 2017 05:35:36 +0000</Value>
+			<Value>{{modificationtime}}{{^modificationtime}}Mon, 01 Jan 2018 00:00:01 +0000{{/modificationtime}}</Value>
 		</MIMEField>
 		<Domain>{{BESDomain}}{{^BESDomain}}BESC{{/BESDomain}}</Domain>
 		<DefaultAction ID="Action1">
@@ -30,7 +30,7 @@ Relevances: [ {Relevance: "false"}, {Relevance: "mac of operating system"} ]
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
-// put action commands here:
+{{ActionScript}}{{^ActionScript}}// put action commands here:{{/ActionScript}}
 </ActionScript>
 		</DefaultAction>
 	</{{BESType}}{{^BESType}}Fixlet{{/BESType}}>
