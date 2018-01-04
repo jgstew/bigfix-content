@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>SpeculationControl results - Windows</Title>
+		<Description><![CDATA[<P>&nbsp;</P>
+<P>- <A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Get%20SpeculationControl%20results%20-%20Powershell%20-%20Windows.bes">https://github.com/jgstew/bigfix-content/blob/master/fixlet/Get%20SpeculationControl%20results%20-%20Powershell%20-%20Windows.bes</A></P>
+<P>&nbsp;</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2018-01-04</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 04 Jan 2018 21:02:56 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="lines of results_PS_SpeculationControl.txt" ID="1" EvaluationPeriod="P7D">lines of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
+	</Analysis>
+</BES>
