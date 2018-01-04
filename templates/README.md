@@ -12,3 +12,7 @@ Use mustache templates as a standard way to generate bigfix content from templat
 
 - https://cdnjs.com/libraries/mustache.js
 - https://github.com/userpixel/micromustache
+
+## Related:
+
+- https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Tivoli%20Endpoint%20Manager/page/BES.xsd/version/34945b12-3ff5-4a5e-8682-4db87086f448
