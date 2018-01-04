@@ -14,6 +14,6 @@
 			<Value>Thu, 04 Jan 2018 21:02:56 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
-		<Property Name="lines of results_PS_SpeculationControl.txt" ID="1" EvaluationPeriod="P7D">lines of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="lines of results_PS_SpeculationControl.txt" ID="1" EvaluationPeriod="P7D">lines containing ": " of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
 	</Analysis>
 </BES>
