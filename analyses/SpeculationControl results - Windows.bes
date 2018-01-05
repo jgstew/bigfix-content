@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Analysis>
-		<Title>SpeculationControl results - Windows</Title>
-		<Description><![CDATA[<P>&nbsp;</P>
-<P>- <A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Get%20SpeculationControl%20results%20-%20Powershell%20-%20Windows.bes">https://github.com/jgstew/bigfix-content/blob/master/fixlet/Get%20SpeculationControl%20results%20-%20Powershell%20-%20Windows.bes</A></P>
-<P>&nbsp;</P>]]></Description>
+		<Title>Microsoft Meltdown and Spectre Detection Results - Windows</Title>
+		<Description><![CDATA[<P>This Analysis reports on Microsoft suggested actions for the Meltdown and Spectre vulnerabilities. It requires that you first run a powershell script created by Microsoft and made available in the&nbsp;"Run Microsoft Meltdown and Spectre Detection Tool - Windows" that is paired with this Analysis.</P>
+<P>Microsoft has made more information on the suggestions recommended here at the following links for servers ( <A href="https://support.microsoft.com/en-us/help/4072698/windows-server-guidance-to-protect-against-the-speculative-execution">https://support.microsoft.com/en-us/help/4072698/windows-server-guidance-to-protect-against-the-speculative-execution</A> ) and workstations ( <A href="https://support.microsoft.com/en-us/help/4073119/windows-client-guidance-for-it-pros-to-protect-against-speculative-exe">https://support.microsoft.com/en-us/help/4073119/windows-client-guidance-for-it-pros-to-protect-against-speculative-exe</A> ).</P>
+<P><STRONG>BIOS/Firmware update suggested:</STRONG> Microsoft suggests that you install BIOS/firmware updates for machines that report true to this. <BR><STRONG>Windows OS Update suggested:</STRONG> Microsoft suggests you install the latests Windows updates with support for speculation control mitigation if devices return true for this property. <BR><STRONG>Additional Configurations suggested:</STRONG> Microsoft suggests that you follow additional recommendations at the following link for any devices that report true to this property: <A href="https://support.microsoft.com/help/4072698">https://support.microsoft.com/help/4072698</A></P>]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Relevance>
 		<Source>Internal</Source>
 		<SourceReleaseDate>2018-01-04</SourceReleaseDate>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Fri, 05 Jan 2018 00:53:36 +0000</Value>
+			<Value>Fri, 05 Jan 2018 02:34:34 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
-		<Property Name="raw SpeculationControl results" ID="1" EvaluationPeriod="PT1H">lines containing ": " of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
-		<Property Name="raw Suggested actions" ID="2" EvaluationPeriod="PT1H">lines containing " * " of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
-		<Property Name="Needs BIOS/FW Updates" ID="3" EvaluationPeriod="PT1H">exists lines containing "Install BIOS/firmware update provided" of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
-		<Property Name="Needs Windows Updates" ID="4" EvaluationPeriod="PT1H">exists lines containing "Install the latest available updates for Windows" of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
-		<Property Name="Needs Mitigations Enabled" ID="5" EvaluationPeriod="PT1H">exists lines containing "Follow the guidance for enabling Windows support for speculation control mitigations" of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="BIOS/Firmware update suggested" ID="1" EvaluationPeriod="PT1H">exists lines containing "Install BIOS/firmware update provided" of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="Windows Update suggested" ID="2" EvaluationPeriod="PT1H">exists lines containing "Install the latest available updates for Windows" of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="Additional configurations suggested" ID="3" EvaluationPeriod="PT1H">exists lines containing "Follow the guidance for enabling Windows support for speculation control mitigations" of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="Raw suggested actions" ID="4" EvaluationPeriod="PT1H">lines containing " * " of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="Raw SpeculationControl results" ID="5" EvaluationPeriod="PT1H">lines containing ": " of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
 	</Analysis>
 </BES>
