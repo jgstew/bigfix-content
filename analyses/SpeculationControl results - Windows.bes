@@ -11,9 +11,13 @@
 		<SourceReleaseDate>2018-01-04</SourceReleaseDate>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 04 Jan 2018 21:02:56 +0000</Value>
+			<Value>Fri, 05 Jan 2018 00:53:36 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
-		<Property Name="lines of results_PS_SpeculationControl.txt" ID="1" EvaluationPeriod="P7D">lines containing ": " of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="raw SpeculationControl results" ID="1" EvaluationPeriod="PT1H">lines containing ": " of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="raw Suggested actions" ID="2" EvaluationPeriod="PT1H">lines containing " * " of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="Needs BIOS/FW Updates" ID="3" EvaluationPeriod="PT1H">exists lines containing "Install BIOS/firmware update provided" of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="Needs Windows Updates" ID="4" EvaluationPeriod="PT1H">exists lines containing "Install the latest available updates for Windows" of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="Needs Mitigations Settings to be Enabled" ID="5" EvaluationPeriod="PT1H">exists lines containing "Follow the guidance for enabling Windows support for speculation control mitigations" of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
 	</Analysis>
 </BES>
