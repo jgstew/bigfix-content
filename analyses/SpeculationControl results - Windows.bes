@@ -18,6 +18,6 @@
 		<Property Name="raw Suggested actions" ID="2" EvaluationPeriod="PT1H">lines containing " * " of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
 		<Property Name="Needs BIOS/FW Updates" ID="3" EvaluationPeriod="PT1H">exists lines containing "Install BIOS/firmware update provided" of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
 		<Property Name="Needs Windows Updates" ID="4" EvaluationPeriod="PT1H">exists lines containing "Install the latest available updates for Windows" of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
-		<Property Name="Needs Mitigations Settings to be Enabled" ID="5" EvaluationPeriod="PT1H">exists lines containing "Follow the guidance for enabling Windows support for speculation control mitigations" of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="Needs Mitigations Enabled" ID="5" EvaluationPeriod="PT1H">exists lines containing "Follow the guidance for enabling Windows support for speculation control mitigations" of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
 	</Analysis>
 </BES>
