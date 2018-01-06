@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run Microsoft Meltdown and Spectre Detection Tool - Windows  TODO:validation</Title>
+		<Title>Run Microsoft Meltdown and Spectre Detection Tool - Windows</Title>
 		<Description><![CDATA[<P>This Task runs a powershell script created by Microsoft to determine machines' exposure to the Meltdown and Spectre vulnerabilities and provide suggested actions. Running this task will create a text file with the script's results. You will have to activate the paired analysis in order to collect that data.</P>
 <P>More information from Microsoft on the script and recommendations are available at the following links for servers ( <A href="https://support.microsoft.com/en-us/help/4072698/windows-server-guidance-to-protect-against-the-speculative-execution">https://support.microsoft.com/en-us/help/4072698/windows-server-guidance-to-protect-against-the-speculative-execution</A> ) and workstations ( <A href="https://support.microsoft.com/en-us/help/4073119/windows-client-guidance-for-it-pros-to-protect-against-speculative-exe">https://support.microsoft.com/en-us/help/4073119/windows-client-guidance-for-it-pros-to-protect-against-speculative-exe</A> ).</P>]]></Description>
 		<Relevance>windows of operating system</Relevance>
-		<Relevance><![CDATA[exists (it as string as version) whose(it >= "4") of values "PowerShellVersion" of keys "PowerShellEngine" of keys ((it as string) of maximum of (it as integer) of names of keys of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\PowerShell" of (x64 registries;x32 registries)) of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\PowerShell" of (x64 registries;x32 registries)]]></Relevance>
+		<Relevance><![CDATA[exists (it as string as version) whose(it >= "2") of values "PowerShellVersion" of keys "PowerShellEngine" of keys ((it as string) of maximum of (it as integer) of names of keys of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\PowerShell" of (x64 registries;x32 registries)) of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\PowerShell" of (x64 registries;x32 registries)]]></Relevance>
 		<Relevance><![CDATA[not exists (now - it) whose(it < 6*hour) of modification times of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
 		<Category></Category>
 		<DownloadSize>7170</DownloadSize>
@@ -17,7 +17,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Fri, 05 Jan 2018 02:15:32 +0000</Value>
+			<Value>Sat, 06 Jan 2018 01:01:44 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -51,7 +51,7 @@ action uses wow64 redirection {not x64 of operating system}
 //   Powershell:
 // import-module .\SpeculationControl.psm1
 // Get-SpeculationControlSettings
-waithidden cmd /C powershell -ExecutionPolicy Bypass -command "import-module '{pathname of file "SpeculationControl.psm1" of folder "__Download" of client folder of current site}' ; Get-SpeculationControlSettings" > "{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\results_PS_SpeculationControl.txt"
+waithidden cmd /C powershell -ExecutionPolicy Bypass -command "import-module '{pathname of file "SpeculationControl.psm1" of folder "__Download" of client folder of current site}' ; Get-SpeculationControlSettings ; if (test-path variable:\psversiontable) {{ echo ('RanWithPowershellVersion=' + $PSVersionTable.PSVersion.Major) } else {{ 'RanWithPowershellVersion=1' }" > "{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\results_PS_SpeculationControl.txt"
 
 // lines of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client
 
@@ -64,8 +64,8 @@ waithidden cmd /C powershell -ExecutionPolicy Bypass -command "import-module '{p
 //  - https://bigfix.me/fixlet/details/5020
 //  - https://www.powershellgallery.com/api/v2/package/SpeculationControl/1.01
 //  - https://devopsgallerystorage.blob.core.windows.net/packages/speculationcontrol.1.0.1.nupkg
-
 ]]></ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 		<Action ID="Action2">
 			<Description>
@@ -77,7 +77,7 @@ waithidden cmd /C powershell -ExecutionPolicy Bypass -command "import-module '{p
 // -- DOWNLOADS ---------------------------
 
 // https://support.microsoft.com/en-us/help/4072698/windows-server-guidance-to-protect-against-the-speculative-execution
-// https://www.powershellgallery.com/api/v2/package/SpeculationControl/1.01
+// https://www.powershellgallery.com/packages/SpeculationControl/1.0.1
 prefetch speculationcontrol.nupkg sha1:3a2fd13c50e8e331a36831bc9d02a5bd1830f4d7 size:7170 https://devopsgallerystorage.blob.core.windows.net/packages/speculationcontrol.1.0.1.nupkg sha256:f164bb704a3824c04e6f5b678b2776d5fa85ceede362fa9e478710a4f71d15f8
 
 //  - This unzip is a compiled verion of unzip v5.52 fom http://info-zip.org/
@@ -98,7 +98,7 @@ action uses wow64 redirection {not x64 of operating system}
 //   Powershell:
 // import-module .\SpeculationControl.psm1
 // Get-SpeculationControlSettings
-waithidden cmd /C powershell -ExecutionPolicy Bypass -command "import-module '{pathname of file "SpeculationControl.psm1" of folder "__Download" of client folder of current site}' ; Get-SpeculationControlSettings" > "{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\results_PS_SpeculationControl.txt"
+waithidden cmd /C powershell -ExecutionPolicy Bypass -command "import-module '{pathname of file "SpeculationControl.psm1" of folder "__Download" of client folder of current site}' ; Get-SpeculationControlSettings ; if (test-path variable:\psversiontable) {{ echo ('RanWithPowershellVersion=' + $PSVersionTable.PSVersion.Major) } else {{ 'RanWithPowershellVersion=1' }" > "{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\results_PS_SpeculationControl.txt"
 
 // lines of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client
 
@@ -109,7 +109,10 @@ waithidden cmd /C powershell -ExecutionPolicy Bypass -command "import-module '{p
 //  - https://stackoverflow.com/questions/39522436/powershell-use-third-party-module-without-installing-it
 //  - https://bigfix.me/analysis/details/2994540
 //  - https://bigfix.me/fixlet/details/5020
+//  - https://www.powershellgallery.com/api/v2/package/SpeculationControl/1.01
+//  - https://devopsgallerystorage.blob.core.windows.net/packages/speculationcontrol.1.0.1.nupkg
 ]]></ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 			<Settings>
 				<PreActionShowUI>false</PreActionShowUI>
 				<HasRunningMessage>false</HasRunningMessage>
