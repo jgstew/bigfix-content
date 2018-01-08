@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run Microsoft Meltdown and Spectre Detection Tool - Windows</Title>
+		<Title>Run Microsoft Meltdown and Spectre Detection Tool - 1.0.1 - Windows</Title>
 		<Description><![CDATA[<P>This Task runs a powershell script created by Microsoft to determine machines' exposure to the Meltdown and Spectre vulnerabilities and provide suggested actions. Running this task will create a text file with the script's results. You will have to activate the paired analysis in order to collect that data.</P>
 <P>More information from Microsoft on the script and recommendations are available at the following links for servers ( <A href="https://support.microsoft.com/en-us/help/4072698/windows-server-guidance-to-protect-against-the-speculative-execution">https://support.microsoft.com/en-us/help/4072698/windows-server-guidance-to-protect-against-the-speculative-execution</A> ) and workstations ( <A href="https://support.microsoft.com/en-us/help/4073119/windows-client-guidance-for-it-pros-to-protect-against-speculative-exe">https://support.microsoft.com/en-us/help/4073119/windows-client-guidance-for-it-pros-to-protect-against-speculative-exe</A> ).</P>]]></Description>
 		<Relevance>windows of operating system</Relevance>
