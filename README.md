@@ -2,6 +2,8 @@
 a repo to store example bigfix-content
 
 ### Also see:
+
+- https://github.com/bigfix/content
 - https://bigfix.me/user/jgstew
 - https://github.com/jgstew/tools/tree/master/SQL
 
