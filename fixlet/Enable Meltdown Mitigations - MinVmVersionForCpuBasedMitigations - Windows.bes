@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Enable Meltdown Mitigations - MinVmVersionForCpuBasedMitigations - Windows  TODO: Testing Verification</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>/* I think this is only needed if Hyper-V is in use */ exists keys "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Virtualization" of (x64 registries; x32 registries)</Relevance>
+		<Relevance>not exists values "MinVmVersionForCpuBasedMitigations" whose(it as string as version = "1.0") of keys "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Virtualization" of (x64 registries; x32 registries)</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2018-01-08</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 09 Jan 2018 02:39:34 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+regset "[HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Virtualization]" "MinVmVersionForCpuBasedMitigations"="1.0"
+regset64 "[HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Virtualization]" "MinVmVersionForCpuBasedMitigations"="1.0"
+
+//   From: https://support.microsoft.com/en-us/help/4072698/windows-server-guidance-to-protect-against-the-speculative-execution
+// If this is a Hyper-V host: fully shutdown all Virtual Machines.
+// Restart the server for changes to take effect.
+action requires restart
+
+// https://forum.bigfix.com/t/ibm-bigfix-patch-content-released-patches-for-windows-published-2018-01-05/24084/7
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
