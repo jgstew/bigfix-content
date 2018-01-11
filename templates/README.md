@@ -2,6 +2,7 @@
 
 ## Fixlet Maker Dashboard
 
+- https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Tivoli%20Endpoint%20Manager/page/Creating%20a%20Fixlet%20template%20for%20the%20Fixlet%20Maker
 - https://www.bigfix.me/relevance/details/2999022
 - https://www.bigfix.me/fixlet/details/3805
 
