@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Meltdown and Spectre Detection Results - Linux</Title>
+		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Relevance>unix of operating system</Relevance>
+		<Relevance>exists files "results_SH_spectre-meltdown-checker.txt" of folders "Logs" of folders "__Global" of data folders of client</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2018-01-12</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 12 Jan 2018 23:03:48 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="Raw spectre-meltdown-checker.sh Results" ID="1" EvaluationPeriod="PT1H">lines of files "results_SH_spectre-meltdown-checker.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
+	</Analysis>
+</BES>
