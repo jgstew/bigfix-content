@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Run speed47's Meltdown and Spectre Detection Tool - 0.28 - Linux  TODO:validation</Title>
+		<Description><![CDATA[<P>WARNING: This action runs an open source detection tool from an untrusted 3rd party. Please evaluate and validate&nbsp;the code it runs yourself: &nbsp;<A href="https://github.com/speed47/spectre-meltdown-checker/blob/master/spectre-meltdown-checker.sh">https://github.com/speed47/spectre-meltdown-checker/blob/master/spectre-meltdown-checker.sh</A></P>
+<P>&nbsp;</P>]]></Description>
+		<Relevance>unix of operating system</Relevance>
+		<Relevance><![CDATA[not exists (now - it) whose(it < 6*hour) of modification times of files "results_SH_spectre-meltdown-checker.txt" of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2018-01-09</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 12 Jan 2018 22:58:40 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+// https://github.com/speed47/spectre-meltdown-checker/blob/master/spectre-meltdown-checker.sh
+prefetch spectre-meltdown-checker.sh sha1:be4d105c7d2563b374f5d2a30a1940e08449377f size:31879 https://raw.githubusercontent.com/speed47/spectre-meltdown-checker/dce917bfbb4fa5e135b7ed4c84881086766be802/spectre-meltdown-checker.sh sha256:0bcd1824e90da72bc222c596c81337080be1f4bdf21774f02e80cb75bcf2bc5d
+
+wait bash -c "bash '{pathname of file "spectre-meltdown-checker.sh" of folder "__Download" of client folder of current site}' > '{ pathname of folders "Logs" of folders "__Global" of data folders of client }/results_SH_spectre-meltdown-checker.txt'"
+
+// https://www.cyberciti.biz/faq/check-linux-server-for-spectre-meltdown-vulnerability/
+
+]]></ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
