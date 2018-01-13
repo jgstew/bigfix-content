@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run Microsoft Meltdown and Spectre Detection Tool - 1.0.3 - Windows</Title>
+		<Title>Run Microsoft Meltdown and Spectre Detection Tool - 1.0.4 - Windows</Title>
 		<Description><![CDATA[<P>This Task runs a powershell script created by Microsoft to determine machines' exposure to the Meltdown and Spectre vulnerabilities and provide suggested actions. Running this task will create a text file with the script's results. You will have to activate the paired analysis in order to collect that data. The Fixlet and Analysis were made available here: <A href="https://github.com/bigfix/content">https://github.com/bigfix/content</A></P>
 <P>More information from Microsoft on the script and recommendations are available at the following links for servers (&nbsp;<A href="https://support.microsoft.com/help/4073119">https://support.microsoft.com/help/4073119</A> ) and workstations (&nbsp;<A href="https://support.microsoft.com/help/4073119">https://support.microsoft.com/help/4073119</A> ).</P>]]></Description>
 		<Relevance>windows of operating system</Relevance>
@@ -17,7 +17,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 11 Jan 2018 23:45:15 +0000</Value>
+			<Value>Sat, 13 Jan 2018 00:03:03 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -31,7 +31,7 @@
 
 // https://support.microsoft.com/en-us/help/4072698/windows-server-guidance-to-protect-against-the-speculative-execution
 // https://www.powershellgallery.com/packages/SpeculationControl
-prefetch speculationcontrol.nupkg sha1:412dce99506d0eebce51847866236a50fca993ed size:22651 https://devopsgallerystorage.blob.core.windows.net/packages/speculationcontrol.1.0.3.nupkg sha256:45cc911f6a320c0ad6af2cf010fb7a72dfe2145d58164060dc8c4197d91e4179
+prefetch speculationcontrol.nupkg sha1:0c6ed95cc187bcd9ed67f6f6fc71f3a8747aa3f6 size:22979 https://devopsgallerystorage.blob.core.windows.net/packages/speculationcontrol.1.0.4.nupkg sha256:b582b7fa676daeb4e89aec1da0b2684623021f77a4abec9076f8371e7874d443
 
 //  - This unzip is a compiled verion of unzip v5.52 fom http://info-zip.org/
 prefetch unzip.exe sha1:e1652b058195db3f5f754b7ab430652ae04a50b8 size:167936 http://software.bigfix.com/download/redist/unzip-5.52.exe sha256:8d9b5190aace52a1db1ac73a65ee9999c329157c8e88f61a772433323d6b7a4a
@@ -51,7 +51,7 @@ action uses wow64 redirection {not x64 of operating system}
 //   Powershell:
 // import-module .\SpeculationControl.psm1
 // Get-SpeculationControlSettings
-waithidden cmd /C powershell -ExecutionPolicy Bypass -command "import-module '{pathname of file "SpeculationControl.psm1" of folder "__Download" of client folder of current site}' ; Get-SpeculationControlSettings ; echo 'RanWithSpeculationControlVersion=1.0.3' ; if (test-path variable:\psversiontable) {{ echo ('RanWithPowershellVersion=' + $PSVersionTable.PSVersion.Major) } else {{ 'RanWithPowershellVersion=1' }" > "{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\results_PS_SpeculationControl.txt"
+waithidden cmd /C powershell -ExecutionPolicy Bypass -command "import-module '{pathname of file "SpeculationControl.psm1" of folder "__Download" of client folder of current site}' ; Get-SpeculationControlSettings ; echo 'RanWithSpeculationControlVersion=1.0.4' ; if (test-path variable:\psversiontable) {{ echo ('RanWithPowershellVersion=' + $PSVersionTable.PSVersion.Major) } else {{ 'RanWithPowershellVersion=1' }" > "{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\results_PS_SpeculationControl.txt"
 
 // lines of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client
 
@@ -78,7 +78,7 @@ waithidden cmd /C powershell -ExecutionPolicy Bypass -command "import-module '{p
 
 // https://support.microsoft.com/en-us/help/4072698/windows-server-guidance-to-protect-against-the-speculative-execution
 // https://www.powershellgallery.com/packages/SpeculationControl
-prefetch speculationcontrol.nupkg sha1:412dce99506d0eebce51847866236a50fca993ed size:22651 https://devopsgallerystorage.blob.core.windows.net/packages/speculationcontrol.1.0.3.nupkg sha256:45cc911f6a320c0ad6af2cf010fb7a72dfe2145d58164060dc8c4197d91e4179
+prefetch speculationcontrol.nupkg sha1:0c6ed95cc187bcd9ed67f6f6fc71f3a8747aa3f6 size:22979 https://devopsgallerystorage.blob.core.windows.net/packages/speculationcontrol.1.0.4.nupkg sha256:b582b7fa676daeb4e89aec1da0b2684623021f77a4abec9076f8371e7874d443
 
 //  - This unzip is a compiled verion of unzip v5.52 fom http://info-zip.org/
 prefetch unzip.exe sha1:e1652b058195db3f5f754b7ab430652ae04a50b8 size:167936 http://software.bigfix.com/download/redist/unzip-5.52.exe sha256:8d9b5190aace52a1db1ac73a65ee9999c329157c8e88f61a772433323d6b7a4a
@@ -98,7 +98,7 @@ action uses wow64 redirection {not x64 of operating system}
 //   Powershell:
 // import-module .\SpeculationControl.psm1
 // Get-SpeculationControlSettings
-waithidden cmd /C powershell -ExecutionPolicy Bypass -command "import-module '{pathname of file "SpeculationControl.psm1" of folder "__Download" of client folder of current site}' ; Get-SpeculationControlSettings ; echo 'RanWithSpeculationControlVersion=1.0.3' ; if (test-path variable:\psversiontable) {{ echo ('RanWithPowershellVersion=' + $PSVersionTable.PSVersion.Major) } else {{ 'RanWithPowershellVersion=1' }" > "{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\results_PS_SpeculationControl.txt"
+waithidden cmd /C powershell -ExecutionPolicy Bypass -command "import-module '{pathname of file "SpeculationControl.psm1" of folder "__Download" of client folder of current site}' ; Get-SpeculationControlSettings ; echo 'RanWithSpeculationControlVersion=1.0.4' ; if (test-path variable:\psversiontable) {{ echo ('RanWithPowershellVersion=' + $PSVersionTable.PSVersion.Major) } else {{ 'RanWithPowershellVersion=1' }" > "{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\results_PS_SpeculationControl.txt"
 
 // lines of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client
 
