@@ -8,16 +8,16 @@
 		<Relevance><![CDATA[exists (it as string as version) whose(it >= "2") of values "PowerShellVersion" of keys "PowerShellEngine" of keys ((it as string) of maximum of (it as integer) of names of keys of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\PowerShell" of (x64 registries;x32 registries)) of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\PowerShell" of (x64 registries;x32 registries)]]></Relevance>
 		<Relevance><![CDATA[not exists (now - it) whose(it < 6*hour) of modification times of files "results_PS_SpeculationControl.txt" of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
 		<Category></Category>
-		<DownloadSize>22651</DownloadSize>
+		<DownloadSize>22979</DownloadSize>
 		<Source>Internal</Source>
 		<SourceID>jgstew</SourceID>
-		<SourceReleaseDate>2018-01-09</SourceReleaseDate>
+		<SourceReleaseDate>2018-01-12</SourceReleaseDate>
 		<SourceSeverity>Important</SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Sat, 13 Jan 2018 00:03:03 +0000</Value>
+			<Value>Sat, 13 Jan 2018 00:23:06 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
