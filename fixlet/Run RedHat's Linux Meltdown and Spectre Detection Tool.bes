@@ -2,19 +2,21 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Run RedHat's Linux Meltdown and Spectre Detection Tool - RHEL / CentOS  TODO:testing</Title>
-		<Description>Manual Caching Required!</Description>
+		<Description>Manual Caching Required! </Description>
 		<Relevance>unix of operating system</Relevance>
 		<Relevance>name of operating system starts with "Linux Red Hat" OR name of operating system starts with "Linux CentOS"</Relevance>
+		<Relevance><![CDATA[not exists (now - it) whose(it < 6*hour) of modification times of files "results_SH_redhat_spectre_meltdown.txt" of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
 		<Category></Category>
+		<DownloadSize>11273</DownloadSize>
 		<Source>Internal</Source>
-		<SourceID></SourceID>
+		<SourceID>jgstew</SourceID>
 		<SourceReleaseDate>2018-01-16</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Wed, 17 Jan 2018 01:50:01 +0000</Value>
+			<Value>Fri, 19 Jan 2018 00:37:52 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -33,6 +35,7 @@ wait bash -c "bash '{pathname of file "redhat_spectre_meltdown.sh" of folder "__
 
 // https://forum.bigfix.com/t/january-intel-meltdown-patches/24077
 ]]></ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>
 </BES>
