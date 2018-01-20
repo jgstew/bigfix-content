@@ -13,7 +13,7 @@
 			<Value>Fri, 19 Jan 2018 15:45:57 0800</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
-		<Property Name="Firmware version" ID="1" EvaluationPeriod="PT1H">following texts of firsts "Firmware version : " of lines containing "Firmware version : " of files "results_SH_get-fw-version.txt" of folders "Logs" of folders "__Global" of data folders of client|error "invalid or missing script output"</Property>
-		<Property Name="Raw fw version results" ID="2" EvaluationPeriod="PT1H">lines of files "results_SH_get-fw-version.txt" of folders "Logs" of folders "__Global" of data folders of client|error "Get Power Firmware Version task output not found"</Property>
+		<Property Name="Firmware version" ID="1" EvaluationPeriod="PT1H">following texts of firsts "Firmware version : " of lines containing "Firmware version : " of files "results_SH_get-fw-version.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="Raw fw version results" ID="2" EvaluationPeriod="PT1H">lines of files "results_SH_get-fw-version.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
 	</Analysis>
 </BES>
