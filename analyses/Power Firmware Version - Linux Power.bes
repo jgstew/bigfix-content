@@ -2,14 +2,15 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Analysis>
 		<Title>Power Firmware Version - Linux Power</Title>
-		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
-		<Relevance>unix of operating system</Relevance>
+		<Description><![CDATA[<P>Reports the running firmware version of Linux systems on Power (PPC) hardware, and the raw results from the firmware detection script.</P><P>The corresponding <STRONG>"Get Power Firmware Version - Linux Power"</STRONG> task must be run in order to see results in this analysis.</P>]]></Description>
+		<Relevance>name of operating system starts with "Linux"</Relevance>
+		<Relevance>architecture of operating system starts with "ppc64"</Relevance>
 		<Relevance>exists files "results_SH_get-fw-version.txt" of folders "Logs" of folders "__Global" of data folders of client</Relevance>
 		<Source>Internal</Source>
 		<SourceReleaseDate>2018-01-18</SourceReleaseDate>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Fri, 19 Jan 2018 01:59:57 +0000</Value>
+			<Value>Fri, 19 Jan 2018 15:45:57 0800</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<Property Name="Firmware version" ID="1" EvaluationPeriod="PT1H">following texts of firsts "Firmware version : " of lines containing "Firmware version : " of files "results_SH_get-fw-version.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
