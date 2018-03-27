@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>python</Title>
+		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Relevance>true</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2018-03-26</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 27 Mar 2018 00:01:54 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="PATH" ID="1" EvaluationPeriod="P2D">unique values of pathnames of it whose(name of it = "python" OR name of it = "python.exe") of files of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments</Property>
+		<Property Name="Windows Registry" ID="2" EvaluationPeriod="P2D">unique values of pathnames of (files it) whose(name of it as lowercase is "python.exe") of (it as string) of values "DisplayIcon" of keys whose(value "DisplayName" of it as string as lowercase starts with "python ") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries; x32 registries)</Property>
+		<Property Name="Combined" ID="3" EvaluationPeriod="P2D">unique values of pathnames of ( ( if (windows of operating system) then ( (files it) whose(name of it as lowercase is "python.exe") of (it as string) of values "DisplayIcon" of keys whose(value "DisplayName" of it as string as lowercase starts with "python ") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries; x32 registries) ) else NOTHINGS ) ; ( it whose(name of it = "python" OR name of it = "python.exe") of files of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments ) )</Property>
+	</Analysis>
+</BES>
