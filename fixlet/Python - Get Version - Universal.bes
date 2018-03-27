@@ -3,19 +3,19 @@
 	<Task>
 		<Title>Python - Get Version - Universal</Title>
 		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
-		<Relevance>windows of operating system /* for some reason this doesn't yet work on non-windows */</Relevance>
 		<Relevance>not exists lines containing "." of files "python_version.log" of folders "Logs" of folders "__Global" of data folders of client</Relevance>
-		<Relevance>( if (windows of operating system) then ( exists (files it) whose(name of it as lowercase is "python.exe") of (it as string) of values "DisplayIcon" of keys whose(value "DisplayName" of it as string as lowercase starts with "python ") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries; x32 registries) ) else FALSE ) OR ( exists it whose(name of it = "python" OR name of it = "python.exe") of files of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments )</Relevance>
+		<Relevance>(exists files "/usr/bin/python") OR ( if (windows of operating system) then ( exists (files it) whose(name of it as lowercase is "python.exe") of (it as string) of values "DisplayIcon" of keys whose(value "DisplayName" of it as string as lowercase starts with "python ") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries; x32 registries) ) else FALSE ) OR ( exists it whose(name of it = "python" OR name of it = "python.exe") of files of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments )</Relevance>
 		<Category></Category>
+		<DownloadSize>0</DownloadSize>
 		<Source>Internal</Source>
-		<SourceID></SourceID>
+		<SourceID>jgstew</SourceID>
 		<SourceReleaseDate>2018-03-26</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Tue, 27 Mar 2018 01:14:01 +0000</Value>
+			<Value>Tue, 27 Mar 2018 05:53:22 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -25,11 +25,17 @@
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+// The following gets the location of the Python Binary from the PATH or the Windows Registry.
+// WARNING: getting Python from the PATH is slow for applicability relevance (it matters much less in actionscript)
 parameter "PythonBin"="{ unique value of pathnames of ( ( if (windows of operating system) then ( (files it) whose(name of it as lowercase is "python.exe") of (it as string) of values "DisplayIcon" of keys whose(value "DisplayName" of it as string as lowercase starts with "python ") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries; x32 registries) ) else NOTHINGS ) ; ( it whose(name of it = "python" OR name of it = "python.exe") of files of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments ) ) }"
 
-wait {if (windows of operating system) then "cmd /S /C " else "sh -c " } ""{parameter "PythonBin"}" -c "import sys; print(sys.version)" > {(concatenations (if windows of operating system then "^ " else "\ ") of substrings separated by " " of it) of pathname of folders "Logs" of folders "__Global" of data folders of client}{if windows of operating system then "\" else "/"}python_version.log"
+parameter "LogFolder"="{(concatenations (if windows of operating system then "^ " else "\ ") of substrings separated by " " of it) of pathname of folders "Logs" of folders "__Global" of data folders of client}{if windows of operating system then "\" else "/"}"
 
-exit { (it as integer) of preceding texts of firsts "." of lines containing "." of files "python_version.log" of folders "Logs" of folders "__Global" of data folders of client }
+delete "{pathname of folders "Logs" of folders "__Global" of data folders of client}{if windows of operating system then "\" else "/"}python_version.log"
+
+wait {if (windows of operating system) then "cmd /C " else "bash -c " } "{parameter "PythonBin"} -c { concatenations (if windows of operating system then "^%22" else "\%22") of ("";"import sys; print(sys.version)";"") } > {parameter "LogFolder"}python_version.log"
+
+exit { unique value of (it as integer) of it whose(exists it as integer) of preceding texts of firsts "." of lines containing "." of files "python_version.log" of folders "Logs" of folders "__Global" of data folders of client | 999 }
 
 // https://bigfix.me/fixlet/details/20464
 // https://wiki.python.org/moin/Powerful%20Python%20One-Liners
