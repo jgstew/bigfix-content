@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Test Fixlet Evaluation-Period</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>exists files "true.bigfix" of (folders "C:\Windows\Temp"; folders "/tmp")</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2018-03-27</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 28 Mar 2018 00:08:22 +0000</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>X-Relevance-Evaluation-Period</Name>
+			<Value>24:00:00</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// test of the fixlet header `X-Relevance-Evaluation-Period`
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
