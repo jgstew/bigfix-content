@@ -17,7 +17,7 @@
 		</MIMEField>
 		<MIMEField>
 			<Name>x-relevance-evaluation-period</Name>
-			<Value>24:00:00</Value>
+			<Value>01:00:00</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
