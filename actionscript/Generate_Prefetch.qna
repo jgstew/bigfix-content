@@ -8,7 +8,11 @@ download now {parameter "URL"}
 
 parameter "prefetch"="{ ( "prefetch " &amp; (name of it) &amp; " sha1:" &amp; (sha1 of it as string) &amp; " size:" &amp; (size of it as string) &amp; " " &amp; (parameter "URL") &amp; " sha256:" &amp; (sha256 of it as string) ) of items 0 of (files of it, maximum of modification times of files of it) whose(modification time of item 0 of it = item 1 of it) of folders "__FixletDebugger\__Download" of data folders of clients }"
 
+// save prefetch to text file
 dos echo {parameter "prefetch"} >> prefetches.txt
+
+// open CWD in Explorer
+dos start .
 
 // https://bigfix.me/relevance/details/2998744
 </Actions>
