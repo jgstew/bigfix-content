@@ -39,8 +39,6 @@ override run
 runas=currentuser
 run "{ pathname of folders "tmp" of folders "BigFix" of (csidl folders 35 /* ProgramData */) }\DNSBench.exe"
 
-// take at least 5 seconds total to stay in higher speed eval mode for a bit (I'm not sure this does anything useful)
-pause while{ (absolute value of (now - (active start time of active action))) < 5 * second }
 ]]></ActionScript>
 			<Settings>
 				<ActionUITitle>Run GRC's DNSBench</ActionUITitle>
