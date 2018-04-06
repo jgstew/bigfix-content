@@ -6,7 +6,9 @@ parameter "URL" = "https://example.exe"
 
 download now {parameter "URL"}
 
-parameter "prefetch"="{ ( "prefetch " &amp; (name of it) &amp; " sha1:" &amp; (sha1 of it as string) &amp; " size:" &amp; (size of it as string) &amp; " " &amp; (parameter "URL") &amp; " sha256:" &amp; (sha256 of it as string) ) of files of folders "__FixletDebugger\__Download" of data folders of clients}"</Actions>
-
+parameter "prefetch"="{ ( "prefetch " & (name of it) & " sha1:" & (sha1 of it as string) & " size:" & (size of it as string) & " " & (parameter "URL") & " sha256:" & (sha256 of it as string) ) of items 0 of (files of it, maximum of modification times of files of it) whose(modification time of item 0 of it = item 1 of it) of folders "__FixletDebugger\__Download" of data folders of clients }"
+		
 // https://bigfix.me/relevance/details/2998744
+		
+	</Actions>
 </FixletDebuggerFile>
