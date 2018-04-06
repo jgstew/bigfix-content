@@ -2,10 +2,13 @@
 <!-- vim: set syntax=xml: -->
 <FixletDebuggerFile>
 	<Actions>
+// replace `https://example.exe` with the desired file download URL to generate the prefetch from.
 parameter "URL" = "https://example.exe"
 
+// Download the file above
 download now {parameter "URL"}
 
+// Generate_Prefetch
 parameter "prefetch"="{ ( "prefetch " &amp; (name of it) &amp; " sha1:" &amp; (sha1 of it as string) &amp; " size:" &amp; (size of it as string) &amp; " " &amp; (parameter "URL") &amp; " sha256:" &amp; (sha256 of it as string) ) of items 0 of (files of it, maximum of modification times of files of it) whose(modification time of item 0 of it = item 1 of it) of folders "__FixletDebugger\__Download" of data folders of clients }"
 
 // save prefetch to text file
