@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Install/Update Dell Command Configure 4.0 - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance><![CDATA[not exists keys whose(value "DisplayName" of it as string as trimmed string starts with "Dell Command | Configure" AND value "DisplayVersion" of it as string as version >= "4.0.0.391") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries; x32 registries)]]></Relevance>
+		<Relevance>/* DELL Only */ exists values "vendor" whose(it as string as uppercase contains "DELL") of structures "bios_information" of smbios</Relevance>
+		<Relevance>/* check for supported model: OptiPlex, Latitude, Precision, Venue Tablets, XPS */ exists ((value "product_name" of structures "system_information" of smbios) as string as uppercase) whose(it starts with "OPTIPLEX" OR it starts with "LATITUDE" OR it starts with "PRECISION" OR it starts with "XPS" OR it starts with "VENUE")</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2018-04-09</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Mon, 09 Apr 2018 18:43:14 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+prefetch Dell-Command-Configure.EXE sha1:7a985576601abbb928e9437b5dcc78a35e1cd8c7 size:42877776 https://downloads.dell.com/FOLDER04708723M/1/Dell-Command-Configure_RJF4F_WIN_4.0.0.391_A00.EXE sha256:f32ceacb98863aa2cb560881e82acf54b2ff29d593e98670a02ca5b1e3fd1249 
+
+wait __Download\Dell-Command-Configure.EXE /s
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
