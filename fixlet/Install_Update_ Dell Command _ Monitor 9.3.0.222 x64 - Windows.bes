@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Install/Update: Dell Command | Monitor 9.3.0.222 x64 - Windows</Title>
+		<Description></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance><![CDATA[ /* Windows XP or Higher */ version of operating system >= "5.1"]]></Relevance>
+		<Relevance>x64 of operating system</Relevance>
+		<Relevance> /* DELL Only */ exists values "vendor" whose(it as string as uppercase contains "DELL") of structures "bios_information" of smbios</Relevance>
+		<Relevance> /* check for supported model: OptiPlex, Latitude, Precision, Venue Tablets, XPS */ exists ((value "product_name" of structures "system_information" of smbios) as string as uppercase) whose(it starts with "OPTIPLEX" OR it starts with "LATITUDE" OR it starts with "PRECISION" OR it starts with "XPS" OR it starts with "VENUE")</Relevance>
+		<Relevance><![CDATA[not exists keys whose(value "DisplayName" of it as string as trimmed string starts with "Dell Command | Monitor" AND value "DisplayVersion" of it as string as version >= "9.3.0.222") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries; x32 registries)]]></Relevance>
+		<Category>OpenManage Systems Management</Category>
+		<DownloadSize>31024096</DownloadSize>
+		<Source>RESTAPI: Generate tasks for DellCommandUpdate application results - Windows</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2015-07-16</SourceReleaseDate>
+		<SourceSeverity>Recommended</SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Mon, 09 Apr 2018 23:57:54 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to Install.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">prefetch Dell-Command-Monitor.EXE sha1:cbcb3b2ad6a08852d90a75fc303b41b47c837460 size:25284016 https://downloads.dell.com/FOLDER04450833M/1/Dell-Command-Monitor_M6NJD_WIN_9.3.0.222_A00.EXE sha256:4e8329ca5c01849163573f5bf6b6b37b74ff2ead68b5cd719808461d47f3d945
+
+// INSTALL: Dell Command | Monitor
+wait __Download\Dell-Command-Monitor.EXE /s
+</ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
