@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Remove Dock Item - Calendar - dockutil - Mac</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>mac of operating system</Relevance>
+		<Relevance>exists unique values whose(it = "Calendar") of strings "file-label" of dictionaries "tile-data" of dictionaries of values of arrays "persistent-apps" of dictionaries of files "Library/Preferences/com.apple.dock.plist" of folders of folders "/Users"</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2018-04-11</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 12 Apr 2018 02:02:58 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+prefetch dockutil.py sha1:690d345dfc790db2d49e7f45c057c111202b15b5 size:31761 https://raw.githubusercontent.com/kcrawford/dockutil/26b13d380f67dc79251cf0ea6280dbaa603308be/scripts/dockutil sha256:c49ba68db90f7ac3a50a490e597078df6de6a8feba16c24ccced7b34d84f705e
+
+wait bash -c "python '{pathname of folder "__Download" of client folder of current site}/dockutil.py' --remove 'Calendar' --allhomes"
+</ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
