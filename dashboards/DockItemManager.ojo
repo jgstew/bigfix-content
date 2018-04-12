@@ -1,0 +1,260 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<BES>
+  <Wizard>
+    <Title>Custom - Mac - Dock Item Manager</Title>
+    <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+    <DefaultPage>DockItemManager</DefaultPage>
+    <Page Name="DockItemManager" DocType="HTML5" > 
+        <Title>Mac - Dock Item Manager</Title>
+        <Head><![CDATA[
+            <meta http-equiv="X-UA-Compatible" content="IE=11">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" integrity="sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik=" crossorigin="anonymous" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/css/jquery.dataTables.min.css" integrity="sha256-+Z1rYa3ys5OdZNUck5G7lBvb8A13OrYwvf+d8PfEaHQ=" crossorigin="anonymous" />
+            
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/js/jquery.dataTables.min.js" integrity="sha256-yWA356lDhruy1J8jGncaMWKAPYDbK47OKb0uT/aELLc=" crossorigin="anonymous"></script>
+            
+            <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
+        ]]></Head>
+        <HTML><![CDATA[
+            <script language="javascript">InsertUtilityDiv();</script>
+
+<h2>Dock Item Manager</h2>
+
+<p> The goal of this dashboard is to add buttons to quickly create tasks or actions to configure the Mac dock.</p>
+
+<table id="resultsTable" class="compact display" width="100%">
+    <thead><tr><th># of each</th><th>Dock Item</th><th>Remove</th></tr></thead>
+    <tbody id="results">
+    </tbody>
+</table>
+
+<br />
+<br />
+<br />
+<hr />
+
+<p><strong>NOTE: This is an early work in progress.</strong></p>
+<p><strong>Known Issue: throws an error if value is invalid JSON. TODO: Need to escape some chars? ("\)</strong></p>
+<p><strong>Known Issue: TakeAction currently only works for master operators. Work in Progress.</strong></p>
+<p><strong>TODO: add option to add the dock item</strong></p>
+
+<div id="chart" style="position: absolute; z-index: 3; top: -38px; right: 0px;">
+  <svg style="width: 270px; height: 270px;"></svg>
+</div>
+
+<style>
+body {
+  overflow-y: scroll;
+}
+h2 {
+    padding: 0px;
+    margin: 0px 0px 1px 0px;
+    border: 0;
+    text-align: center;
+}
+.dataTables_wrapper {
+    width: 90%;
+    margin:1px auto;
+}
+/* https://datatables.net/forums/discussion/32210/can-i-move-the-search-box-to-the-left */
+div.dataTables_filter {
+    float: left !important;
+}
+div.dataTables_filter input {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    width: 250px;
+}
+</style>
+<script>
+
+/***********************************************/
+// the following is taken from bigfixme-api.0.0.1.js
+
+var bigfix = bigfix?bigfix:{};
+bigfix.relevance = {};
+
+	bigfix.relevance.evaluate = function(relevance, callbackObj) {
+	
+		if(callbackObj !== undefined && callbackObj !== null) {
+			var results;
+			
+			if(callbackObj.failure !== undefined && callbackObj.failure !== null) {
+				callbackObj.failure = bigfix.relevance.errorWrapper(relevance, callbackObj.failure);
+			} else {
+				callbackObj.failure = bigfix.relevance.errorWrapper(relevance, bigfix.relevance.defaultErrorHandler);
+			}
+			
+			try {
+				results = Relevance(relevance, callbackObj);
+			} catch (e2) {
+				return undefined;
+			}	
+			
+			return results;
+		} else {
+			var results;
+					
+			try {
+				results = EvaluateRelevance(relevance);
+			} catch (e2) {
+				return undefined;
+			}	
+			
+			return results;
+		}
+	};
+
+	bigfix.relevance.errorWrapper = function(relevance, customErrorHandler) {
+		if(customErrorHandler !== undefined && customErrorHandler != null) {
+			return function(errorMessage){
+				customErrorHandler(relevance, new Error(errorMessage));
+			};
+		}
+		
+		return function(errorMessage){
+			bigfix.relevance.defaultErrorHandler(relevance, new Error(errorMessage));
+		};
+	};
+
+
+	bigfix.relevance.defaultErrorHandler = function(relevance, error){
+		// rethrow error
+		throw error;
+	};
+/***********************************************/
+
+function fnGetDataTablesDataAjax(data, callback, settings) {
+    callback(
+        JSON.parse(bigfix.relevance.evaluate(' ("{ %22data%22: [ " & it & " ] }") of concatenations ", " of ( (it as string) of jsons of ("["&it&"]") of concatenations ", " of ("%22" & it & "%22") of (tuple string items of it) ) of (it as string) of (multiplicities of item 1 of it, (it as html as string) of items 1 of it, (if (item 1 of it is contained by item 0 of it) then "<button>TakeAction</button>" else "<button>CreateTask</button>") ) of ( ( sets of (it as trimmed string) of preceding texts of lasts " - dockutil - Mac" of following texts of firsts "Remove Dock Item - " of names of custom bes fixlets whose("Configuration" = category of it AND name of it starts with "Remove Dock Item - " AND name of it ends with " - dockutil - Mac") ), (unique values of (it as trimmed string) of values of results of bes properties "User Dock Items") ) '))
+    );
+}
+
+// https://github.com/jgstew/tools/blob/master/JS/createActionClientSettings.js
+function fnCreateTaskXML(name, dateRelease, userName) {
+	// http://www.codereadability.com/javascript-default-parameters-with-or-operator/
+	if (dateRelease === undefined) {
+		dateRelease = new Date();
+	}
+	if (userName === undefined) {
+		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch
+		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError
+		try {
+			// https://developer.bigfix.com/relevance/reference/bes-user.html#current-console-user-bes-user
+			// https://developer.bigfix.com/relevance/reference/string.html#bes-current-wruser-string
+			testGetUserName = bigfix.relevance.evaluate(' if (in web reports context AND exists properties "bes current wruser") then (bes current wruser) else (name of current console user | "") ');
+      if (testGetUserName !== "jgstew") {
+				userName=testGetUserName;
+      }
+		} catch (e) {
+			if (e instanceof ReferenceError && e.message == "bigfix is not defined"){
+				// pass
+			} else {
+				throw(e);
+			}
+		}
+	}
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
+  // following return statement compiled by http://babeljs.io/
+	return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<BES xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"BES.xsd\">\n\t<Task>\n\t\t<Title>Remove Dock Item - " + name + " - dockutil - Mac</Title>\n\t\t<Description></Description>\n\t\t<Relevance>mac of operating system</Relevance>\n\t\t<Relevance>exists unique values whose(it = \"" + name + "\") of strings \"file-label\" of dictionaries \"tile-data\" of dictionaries of values of arrays \"persistent-apps\" of dictionaries of files \"Library/Preferences/com.apple.dock.plist\" of folders of folders \"/Users\"</Relevance>\n\t\t<Category></Category>\n\t\t<Source>Internal</Source>\n\t\t<SourceID></SourceID>\n\t\t<SourceReleaseDate>2018-04-11</SourceReleaseDate>\n\t\t<SourceSeverity></SourceSeverity>\n\t\t<CVENames></CVENames>\n\t\t<SANSID></SANSID>\n\t\t<MIMEField>\n\t\t\t<Name>x-fixlet-modification-time</Name>\n\t\t\t<Value>Thu, 12 Apr 2018 02:02:58 +0000</Value>\n\t\t</MIMEField>\n\t\t<MIMEField>\n\t\t\t<Name>x-relevance-evaluation-period</Name>\n\t\t\t<Value>06:00:00</Value>\n\t\t</MIMEField>\n\t\t<Domain>BESC</Domain>\n\t\t<DefaultAction ID=\"Action1\">\n\t\t\t<Description>\n\t\t\t\t<PreLink>Click </PreLink>\n\t\t\t\t<Link>here</Link>\n\t\t\t\t<PostLink> to deploy this action.</PostLink>\n\t\t\t</Description>\n\t\t\t<ActionScript MIMEType=\"application/x-Fixlet-Windows-Shell\">\nprefetch dockutil.py sha1:690d345dfc790db2d49e7f45c057c111202b15b5 size:31761 https://raw.githubusercontent.com/kcrawford/dockutil/26b13d380f67dc79251cf0ea6280dbaa603308be/scripts/dockutil sha256:c49ba68db90f7ac3a50a490e597078df6de6a8feba16c24ccced7b34d84f705e\n\nwait bash -c \"python '{pathname of folder \"__Download\" of client folder of current site}/dockutil.py' --remove '" + name + "' --allhomes\"\n</ActionScript>\n\t\t\t<SuccessCriteria Option=\"OriginalRelevance\"></SuccessCriteria>\n\t\t</DefaultAction>\n\t</Task>\n</BES>\n";
+}
+
+// This is a global variable to contain the combobox selection / new selection.
+var sSelection = "";
+var sUserActionSite = "";
+
+$(document).ready(function(){
+    // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
+    // https://datatables.net/plug-ins/api/fnSortNeutral
+    // https://cdn.datatables.net/plug-ins/1.10.13/api/fnSortNeutral.js
+    //  - Author: https://datatables.net/forums/profile/1/allan
+    jQuery.fn.dataTableExt.oApi.fnSortNeutral = function (oSettings)
+    {
+        /* Remove any current sorting */
+        oSettings.aaSorting = [];
+
+        /* Sort display arrays so we get them in numerical order */
+        oSettings.aiDisplay.sort( function (x,y) {
+            return x - y;
+        });
+        oSettings.aiDisplayMaster.sort( function (x,y) {
+            return x - y;
+        });
+
+        /* Redraw */
+        oSettings.oApi._fnReDraw(oSettings);
+    };
+    
+    // load initial datatable with settings
+    // https://legacy.datatables.net/ref#bDestroy
+    oDataTable = $("#resultsTable").dataTable( {
+        "scrollY": "70vh",
+        "scrollCollapse": true,
+        "paging": false,
+        "bDestroy": true,
+        "order": [[ 0, 'desc' ]],
+        "language": {
+            "zeroRecords": "No content, make a choice above.",
+            "info": "Showing _TOTAL_ values",
+            "infoEmpty": "No values to show",
+            "search": "Search values:"
+        },
+        "ajax": fnGetDataTablesDataAjax,
+        "columnDefs": [
+            {"width": "6em", "targets": 0},
+            {"targets": 1, "searchable": true},
+            // the following is used to set an empty value when no value is returned (null)
+            {"targets": 1, "defaultContent": ""},
+            {"targets": 2, "defaultContent": ""},
+            {"targets": 2, "className": "dt-body-center"},
+            {"targets": 2, "width": "4em"}
+        ],
+        "dom": '<"toolbar">frtip'
+    });
+    
+    // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
+    //  - Author: https://datatables.net/forums/profile/6627/manifestinteractive
+    $(".sorting, .sorting_asc, .sorting_desc").dblclick(function(){
+        oDataTable.fnSortNeutral();
+        return false;
+    });
+    
+    // http://api.jquery.com/on/
+    // https://datatables.net/examples/ajax/null_data_source.html
+    $("#resultsTable tbody").on( "click", "button", function() {
+        var dataRow = $(".dataTable").DataTable().row( $(this).parents("tr") ).data();
+        
+        // TODO: create task if button contains "Create", Take action if button contains "Take"
+        //alert( $(this).html() ); // get name of button
+
+        if( $(this).html() === "CreateTask" ) {
+            // https://bigfix.me/relevance/details/3019354
+            // ImportXML(xml, openDocuments, siteName, computerIDs)
+            ImportXML(fnCreateTaskXML(dataRow[1]), false, "<?Relevance ( tuple string item 0 of concatenations ", " of names of (bes custom sites whose( (name of it as lowercase contains "mac" OR name of it as lowercase contains "config") AND exists writer whose(it = current console user) of it)) ) | "" ?>" );
+
+            // reload table to show that the new task exists
+            $(".dataTable").DataTable().ajax.reload();
+        } else {
+            // https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Tivoli%20Endpoint%20Manager/page/IEM%20Console%20JavaScript%20_%20Relevance
+            // TakeFixletAction(id, siteID, contentID, parameters, callback);
+            TakeFixletAction( bigfix.relevance.evaluate(' minimum of ids of custom bes fixlets whose("Configuration" = category of it AND name of it = "Remove Dock Item - ' + dataRow[1] + ' - dockutil - Mac") '), sUserActionSite, "Action1" );
+        }
+    });
+
+    if(sUserActionSite === "") {
+        sUserActionSite = bigfix.relevance.evaluate(' id of action site of current console user ');
+    }
+});
+
+// unique values of (it as trimmed string) of values of results of bes properties "User Dock Items"
+// sets of (it as trimmed string) of preceding texts of lasts " - dockutil - Mac" of following texts of firsts "Remove Dock Item - " of names of custom bes fixlets whose("Configuration" = category of it AND name of it starts with "Remove Dock Item - " AND name of it ends with " - dockutil - Mac")
+// ("{ %22data%22: [ " & it & " ] }") of concatenations ", " of ( (it as string) of jsons of ("["&it&"]") of concatenations ", " of ("%22" & it & "%22") of (tuple string items of it) ) of (it as string) of (multiplicity of it, it as html as string ) of unique values of (it as trimmed string) of values of results of bes properties "User Dock Items"
+// (multiplicities of item 1 of it, (it as html as string) of items 1 of it, (if (item 1 of it is contained by item 0 of it) then "<button>TakeAction</button>" else "<button>CreateTask</button>") ) of ( ( sets of (it as trimmed string) of preceding texts of lasts " - dockutil - Mac" of following texts of firsts "Remove Dock Item - " of names of custom bes fixlets whose("Configuration" = category of it AND name of it starts with "Remove Dock Item - " AND name of it ends with " - dockutil - Mac") ), (unique values of (it as trimmed string) of values of results of bes properties "User Dock Items") )
+</script>
+        ]]></HTML>
+    </Page>
+  </Wizard>
+</BES>
