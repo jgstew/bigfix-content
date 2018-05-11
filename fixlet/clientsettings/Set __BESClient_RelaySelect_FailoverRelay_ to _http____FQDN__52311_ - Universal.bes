@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Set "_BESClient_RelaySelect_FailoverRelay" to "http://_FQDN_:52311" - Universal</Title>
+		<Description><![CDATA[<P>This task will set a client setting</P>
+<P>This task was automatically generated using the task: "RESTAPI: Generate tasks to set client settings on target computer - Windows"</P>
+<P>&nbsp;</P>]]></Description>
+		<Relevance>not exists settings "_BESClient_RelaySelect_FailoverRelay" whose("http:/_FQDN_:52311" = value of it) of client</Relevance>
+		<Category>Configuration: Client Settings</Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>RESTAPI: Generate tasks to set client settings on target computer - Windows</Source>
+		<SourceID>https://forum.bigfix.com/users/jgstew</SourceID>
+		<SourceReleaseDate>2015-10-18</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 11 May 2018 01:03:21 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to set the Client Setting</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">setting "_BESClient_RelaySelect_FailoverRelay"="http://_FQDN_:52311" on "{ parameter "action issue date" of action}" for client</ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
