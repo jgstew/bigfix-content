@@ -5,7 +5,7 @@
 		<Description><![CDATA[<P>This task will set a client setting</P>
 <P>This task was automatically generated using the task: "RESTAPI: Generate tasks to set client settings on target computer - Windows"</P>
 <P>&nbsp;</P>]]></Description>
-		<Relevance>not exists settings "_BESClient_RelaySelect_FailoverRelay" whose("http:/_FQDN_:52311" = value of it) of client</Relevance>
+		<Relevance>not exists settings "_BESClient_RelaySelect_FailoverRelay" whose("http://_FQDN_:52311" = value of it) of client</Relevance>
 		<Category>Configuration: Client Settings</Category>
 		<DownloadSize>0</DownloadSize>
 		<Source>RESTAPI: Generate tasks to set client settings on target computer - Windows</Source>
