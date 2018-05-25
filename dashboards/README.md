@@ -52,6 +52,7 @@ An even better option: https://github.com/jgstew/bigfix-content/tree/master/fixl
 
 ### Dashboard Ideas:
 
+- Delete help duplicate computers
 - Remote Command-Line
   - select computer to target
   - take input of arbitrary commands
