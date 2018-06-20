@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Set "_BESClient_Download_CheckAvailabilitySeconds" to "120" - Universal</Title>
+		<Description><![CDATA[<P>This task will set a client setting to cause the client to check every 2 minutes for a download to be available, instead of the default of 10 minutes.</P>
+<P>- <A href="https://forum.bigfix.com/t/downloadsavailable-false-action-id-xxx/15716/7">https://forum.bigfix.com/t/downloadsavailable-false-action-id-xxx/15716/7</A></P>
+<P>&nbsp;</P>]]></Description>
+		<Relevance>not exists settings "_BESClient_Download_CheckAvailabilitySeconds" whose("120" = value of it) of client</Relevance>
+		<Category>Configuration: Client Settings</Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>https://forum.bigfix.com/users/jgstew</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2017-07-24</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Mon, 24 Jul 2017 22:25:06 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to set the Client Setting</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">setting "_BESClient_Download_CheckAvailabilitySeconds"="120" on "{ parameter "action issue date" of action}" for client</ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
