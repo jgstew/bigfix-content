@@ -30,6 +30,7 @@ setting "{ parameter "SettingName" }"="{ value of settings whose( (parameter "Se
 
 parameter "NumSettingsAfter"="{ number of settings whose(not exists effective date of it AND name of it does not start with "__") of clients }"
 
+// exit code ending in 1 is a success, ending in 0 is a failure. exit code is the number of settings left * 10 + number changed.
 exit { (it * 10 + ( ((it as integer) of parameter "NumSettings") - it ) ) of number of settings whose(not exists effective date of it AND name of it does not start with "__") of clients }
 </ActionScript>
 			<SuccessCriteria Option="CustomRelevance">(parameter "NumSettings") = (parameter "NumSettingsAfter")</SuccessCriteria>
