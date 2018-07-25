@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Set "_BESRelay_RelaysFileUpdater_RefreshSeconds" to "21600" - Universal</Title>
+		<Description><![CDATA[<P>This task will set a client setting, in this case, only on a root server. This will set `_BESRelay_RelaysFileUpdater_RefreshSeconds` to 6 hours. ( 21600 seconds )</P>
+<P>This setting affects how frequently the root server publishes a new actionsite version to update Relays.dat with new info when new relays are created. The default is 60 seconds, which can be far too frequent for large deployments or scenerios where relays are created and destroyed frequently, like Docker relays.</P>
+<P>This task was automatically generated using the Dashboard: "Custom - Client Settings Manager"</P>
+<P>&nbsp;</P>]]></Description>
+		<Relevance>exists main gather service</Relevance>
+		<Relevance><![CDATA[version of registration server >= "8.1"]]></Relevance>
+		<Relevance>not exists settings "_BESRelay_RelaysFileUpdater_RefreshSeconds" whose("21600" = value of it) of client</Relevance>
+		<Category>Configuration: Client Settings</Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Custom Dashboard - Client Settings Manager</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2018-07-25</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 25 Jul 2018 18:26:17 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to set the Client Setting</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// The Default is 60 seconds
+// This setting affects how frequently the root server publishes a new actionsite version to update Relays.dat with new info when new relays are created.
+setting "_BESRelay_RelaysFileUpdater_RefreshSeconds"="21600" on "{ parameter "action issue date" of action}" for client
+
+</ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
