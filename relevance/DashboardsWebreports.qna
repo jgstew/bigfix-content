@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<FixletDebuggerFile>
+	<QnAView>
+  
+Q: unique values of following texts of firsts "\Sites\" of pathnames of files whose( ( (it as lowercase) of (following text of first "." of name of it | "") ) is contained by set of ("ojo";"besrpt";"webreport";"beswrpt") ) of folders of folders "Sites" of folders of folders of folders "AppData\Local\BigFix\Enterprise Console" of folders of folders "C:\Users"
+A: BES Asset Discovery\NmapWizard.ojo
+A: BES Inventory and License\AdobeAuthoringProductDetectionWindows.beswrpt
+A: BES Inventory and License\AdobeClientProductDetectionWindows.beswrpt
+
+</QnAView>
+</FixletDebuggerFile>
