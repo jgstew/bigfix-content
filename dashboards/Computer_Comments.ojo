@@ -29,7 +29,7 @@
 <table id="resultsTable" class="compact display" width="100%">
     <thead><tr><th>Computer</th><th>Comments</th></tr></thead>
     <tbody id="results">
-		<?Relevance ( trs of html concatenations of ( tds of link of it; tds of html concatenations "<br/>" of (htmls it) of (if (exists comments of it) then (((if length of it = 1 then "0" & it as string else it as string) of (month of it as integer as string) & "-" & (if length of it = 1 then "0" & it as string else it as string) of (day_of_month of it as integer as string) & "-" & (year of it as string)) of date (local time zone) of timestamp of it & ": " & text of it) of comments of it else "No Comment")) ) of bes computers whose(exists comments of it) ?>
+		<?Relevance ( trs of html concatenations of ( tds of link of it; tds of html concatenations "<br/>" of (htmls it) of (if (exists comments of it) then (((if length of it = 1 then "0" & it as string else it as string) of (month of it as integer as string) & "-" & (if length of it = 1 then "0" & it as string else it as string) of (day_of_month of it as integer as string) & "-" & (year of it as string)) of date (local time zone) of timestamp of it & ": (" & name of author of it & ") " & text of it) of comments of it else "No Comment")) ) of bes computers whose(exists comments of it) ?>
     </tbody>
 </table>
 
