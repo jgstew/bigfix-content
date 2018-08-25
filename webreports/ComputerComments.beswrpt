@@ -1,0 +1,68 @@
+<!-- vim: set syntax=html: -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=" crossorigin="anonymous"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" integrity="sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik=" crossorigin="anonymous" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/js/jquery.dataTables.min.js" integrity="sha256-yWA356lDhruy1J8jGncaMWKAPYDbK47OKb0uT/aELLc=" crossorigin="anonymous"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/css/jquery.dataTables.min.css" integrity="sha256-+Z1rYa3ys5OdZNUck5G7lBvb8A13OrYwvf+d8PfEaHQ=" crossorigin="anonymous" />
+
+<h2>Computer Comments</h2>
+<table id="resultsTable" class="compact display" width="100%">
+    <thead><tr><th>Computer</th><th>Comments</th><th>Current Users</th></tr></thead>
+    <tbody id="results">
+		<?Relevance ( trs of html concatenations of ( tds of link of it; tds of html concatenations "<br/>" of (htmls it) of (if (exists comments of it) then (((if length of it = 1 then "0" & it as string else it as string) of (month of it as integer as string) & "-" & (if length of it = 1 then "0" & it as string else it as string) of (day_of_month of it as integer as string) & "-" & (year of it as string)) of date (local time zone) of timestamp of it & ": (" & name of author of it & ") " & text of it) of comments of it else "No Comment") ; ( tds of concatenations ", " of unique values of values of results from (bes properties "User Name") of it ) ) ) of bes computers whose(exists comments of it) ?>
+    </tbody>
+</table>
+<style>
+table {
+    width: 100%;
+}
+h2 {
+    padding: 0px;
+    margin: 0px 0px 1px 0px;
+    border: 0;
+    text-align: center;
+}
+div.dataTables_filter input {
+    width: 250px;
+}
+</style>
+<script language="javascript">
+$(document).ready(function(){
+    
+	// https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
+    // https://datatables.net/plug-ins/api/fnSortNeutral
+    // https://cdn.datatables.net/plug-ins/1.10.13/api/fnSortNeutral.js
+    //  - Author: https://datatables.net/forums/profile/1/allan
+    jQuery.fn.dataTableExt.oApi.fnSortNeutral = function ( oSettings )
+    {
+        /* Remove any current sorting */
+        oSettings.aaSorting = [];
+        /* Sort display arrays so we get them in numerical order */
+        oSettings.aiDisplay.sort( function (x,y) {
+            return x-y;
+        } );
+        oSettings.aiDisplayMaster.sort( function (x,y) {
+            return x-y;
+        } );
+        /* Redraw */
+        oSettings.oApi._fnReDraw( oSettings );
+    };
+	
+    // load initial datatable with settings
+    // https://legacy.datatables.net/ref#bDestroy
+    oDataTable = $('#resultsTable').dataTable( {
+        "scrollY": '70vh',
+        "scrollCollapse": true,
+        "paging": false,
+        "bDestroy": true,
+        "order": [[ 1, 'desc' ]]
+    });
+	
+    // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
+    //  - Author: https://datatables.net/forums/profile/6627/manifestinteractive
+    $('.sorting, .sorting_asc, .sorting_desc').dblclick(function(){
+        oDataTable.fnSortNeutral();
+        return false;
+    });
+});
+</script>
