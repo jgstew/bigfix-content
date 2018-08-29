@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>Remove Microsoft XPS Printer - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists selects "Name from Win32_Printer where Name like 'Microsoft XPS Document Writer'" of wmis</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2018-08-28</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 29 Aug 2018 02:55:52 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+
+waithidden printui.exe /dl /n "Microsoft XPS Document Writer"
+
+// optional further removal: Dism /online /Disable-Feature /FeatureName:Printing-XPSServices-Features
+
+// https://www.msftnext.com/remove-xps-writer-windows-10/
+// https://bigfix.slack.com/archives/C03U4LJHU/p1535484777000100
+
+
+</ActionScript>
+		</DefaultAction>
+	</Fixlet>
+</BES>
