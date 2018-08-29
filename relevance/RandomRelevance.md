@@ -6,4 +6,4 @@
 
 ### Session Relevance:
 
-1. `unique values of (it as trimmed string) of substrings separated by "; " of unique values of cve id lists of fixlets of bes site whose(name of it = "Enterprise Security")`
+1. CVEs in Windows OS Patch site: `unique values of (it as trimmed string) of substrings separated by "; " of unique values of cve id lists of fixlets of bes site whose(name of it = "Enterprise Security")`
