@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<BES>
+  <Wizard>
+    <Title>Custom - Computer Group Temp</Title>
+    <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+    <DefaultPage>DefaultPage</DefaultPage>
+    <Page Name="DefaultPage" DocType="HTML5" >
+        <Title>IE11 Dashboard Template</Title>
+        <Head><![CDATA[
+            <meta http-equiv="X-UA-Compatible" content="IE=11">
+            <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
+        ]]></Head>
+        <HTML><![CDATA[
+<script language="javascript">InsertUtilityDiv();</script>
+
+<h2>Computer Group Temp</h2>
+
+<p>this will make a temporary computer group. If you see this, right click, and select reload.</p>
+
+<script language="javascript">
+<?Relevance javascript array "ComputerIDs" of ids whose(0 = it mod 5) of bes computers ?>
+OpenComputerGroup( ComputerIDs );
+</script>
+
+
+
+        ]]></HTML>
+        </Page>
+    </Wizard>
+</BES>
