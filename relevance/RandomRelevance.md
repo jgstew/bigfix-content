@@ -1,6 +1,6 @@
 
 **See also:**
-- https://www.google.com/search?q=Relevance+https%3A%2F%2Fbigfix.me%2Fuser%2Fjgstew+site%3Abigfix.me
+- https://www.google.com/search?q=Relevance+bigfix.me%2Fuser%2Fjgstew+site%3Abigfix.me
 - https://github.com/jgstew/bigfix-content/tree/master/relevance
 
 ### Client Relevance: 
