@@ -1,8 +1,9 @@
 
+### Client Relevance: 
 1. `(it as trimmed string) of following texts of firsts ":" of lines whose(it starts with "q:" OR it starts with "Q:") of files "C:\Users\jgstew\Documents\_Code\sample_qna.txt"`
 1. `sets of (it as trimmed string) of following texts of firsts ":" of lines whose(it starts with "q:" OR it starts with "Q:") of files "C:\Users\jgstew\Documents\_Code\sample_qna.txt"`
 1. `("<Property Name=%22QnA%22 ID=%221%22 EvaluationPeriod=%22PT12H%22>" & it & "</Property>") of (it as trimmed string) of following texts of firsts ":" of lines whose(it starts with "q:" OR it starts with "Q:") of files "C:\Users\jgstew\Documents\_Code\sample_qna.txt"`
-
+1. WinHTTP Proxy Settings - https://bigfix.me/relevance/details/3021642 - `unique values of following texts of lasts "%00%00%00" of preceding texts of lasts "%00%00%00%00" of (hexadecimal strings it) of unique values of (it as string) of values "WinHttpSettings" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Connections" of (x64 registries; x32 registries)`
 
 ### Session Relevance:
 
