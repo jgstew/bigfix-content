@@ -42,7 +42,7 @@ h2 {
     text-align: center;
 }
 div.dataTables_filter input {
-    width: 250px;
+    width: 350px;
 }
 </style>
 <script language="javascript">
@@ -71,11 +71,12 @@ $(document).ready(function(){
     // load initial datatable with settings
     // https://legacy.datatables.net/ref#bDestroy
     oDataTable = $('#resultsTable').dataTable( {
-        "scrollY": '70vh',
+        "scrollY": '80vh',
         "scrollCollapse": true,
-        "paging": false,
+        "paging": true,
+        "pageLength": 25,
         "bDestroy": true,
-        "order": [[ 1, 'desc' ]]
+        "order": [[ 2, 'asc' ]]
     });
 	
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
