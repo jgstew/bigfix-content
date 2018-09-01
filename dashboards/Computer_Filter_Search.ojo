@@ -76,7 +76,8 @@ $(document).ready(function(){
         "paging": true,
         "pageLength": 25,
         "bDestroy": true,
-        "order": [[ 2, 'asc' ]]
+        "order": [[ 2, 'asc' ]],
+        searchDelay: 333
     });
 	
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
