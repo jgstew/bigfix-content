@@ -2,6 +2,7 @@
 **See also:**
 - https://www.google.com/search?q=Relevance+bigfix.me%2Fuser%2Fjgstew+site%3Abigfix.me
 - https://github.com/jgstew/bigfix-content/tree/master/relevance
+- https://github.com/jgstew/bigfix-content/blob/master/session_relevance/README.md
 
 ### Client Relevance: 
 1. `(it as trimmed string) of following texts of firsts ":" of lines whose(it starts with "q:" OR it starts with "Q:") of files "C:\Users\jgstew\Documents\_Code\sample_qna.txt"`
