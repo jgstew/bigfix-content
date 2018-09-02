@@ -16,25 +16,27 @@
             <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/js/jquery.dataTables.min.js" integrity="sha256-yWA356lDhruy1J8jGncaMWKAPYDbK47OKb0uT/aELLc=" crossorigin="anonymous"></script>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/css/jquery.dataTables.min.css" integrity="sha256-+Z1rYa3ys5OdZNUck5G7lBvb8A13OrYwvf+d8PfEaHQ=" crossorigin="anonymous" />
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+            
             <script src="https://use.fontawesome.com/releases/v5.3.1/js/all.js" data-auto-replace-svg="nest"></script>
+
             <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
         ]]></Head>
         <HTML><![CDATA[
 <script language="javascript">InsertUtilityDiv();</script>
 
-<h2 title="Updated 2018-09-01">Computers - Filter and Search</h2>
+<h2 title="Updated 2018-09-02">Computers - Filter and Search</h2>
 
 <table id="resultsTable" class="compact display" width="100%">
-    <thead><tr><th><i class="fas fa-lock" title="Locked?"></i></th><th><i class="fas fa-desktop" title="Computer Type"></i></th><th>Computer</th><th>ID</th><th>Operating System</th><th>Last Report Time</th><th>IP</th><th>Recent Users</th></tr></thead>
+    <thead><tr><th title="Locked?"><i class="fas fa-lock"></i></th><th title="Computer Type"><i class="fas fa-desktop"></i></th><th>Computer</th><th title="BigFix Computer ID">ID</th><th>Operating System</th><th>Last Report Time</th><th>IP</th><th>Recent Users</th></tr></thead>
     <tbody id="results">
 		<?Relevance html concatenations of ( trs of html concatenations of ( ( html tags ("td", (attr lists of ("title", (if it then "Locked" else "Unlocked") )), ( if it then html "<span hidden>Locked</span><i class=%22fas fa-lock%22></i>" else html "<span hidden>Unlocked</span><i class=%22fas fa-unlock%22></i>" ) ) ) of locked flag of it; ( html tags ("td", ( attr lists of ("title", it) ), (if it="Desktop" then html "<span hidden>Desktop</span><i class='fas fa-desktop'></i>" else if it="Laptop" then html "<span hidden>Laptop</span><i class='fas fa-laptop'></i>" else if it="Server" then html "<span hidden>Server</span><i class='fas fa-server'></i>" else if it="Mobile" then html "<span hidden>Mobile</span><i class='fas fa-mobile-alt'></i>" else html "<span hidden>Unknown</span><i class='fas fa-question-circle'></i>") of it ) ) of device types of it; tds of link of it; tds of (it as string as html) of (id of it|0); tds of (if it starts with "Win" then (html "<i class=%22fab fa-windows%22></i>&nbsp;" & it) else if it starts with "Mac" then (html "<i class=%22fab fa-apple%22></i>&nbsp;" & it) else if it contains "Linux" then (html "<i class=%22fab fa-linux%22></i>&nbsp;" & it) else if it contains "Unix" then (html "<i class=%22fab fa-underline%22></i>&nbsp;" & it) else (html "<i class=%22fab fa-question-circle%22></i>&nbsp;" & it)) of (operating system of it | "<none>"); tds ( ("title='" & (it as string) & "' data-sort='" & (it / second) as string & "'") of (if it < 1 * second then 1 * second else it) of (now - it as time) ) of following texts of firsts ", " of (it as string) of (last report time of it); ( tds of html concatenations "<br/>" of (it as string as html) of unique values of ip addresses of it); ( tds of html concatenations "<br/>" of (it as string as html) of unique values of values of results from (bes properties "User Name") of it) ) ) of bes computers ?>
     </tbody>
 </table>
 
 <div style="text-align:center;<?Relevance if (NOT in web reports context) then "" else "display: none;" ?>">
-<strong> View Ad-Hoc Group of Computers:&nbsp;</strong>
-<button type="button" onclick="OpenComputerGroup( oDataTable.api().column( 3, {search:'applied'} ).data() )"><i class="fas fa-search"></i> Searched</button>
-<button type="button" onclick="OpenComputerGroup( oDataTable.api().column( 3, {search:'removed'} ).data() )"><i class="fas fa-filter"></i> Filtered</button>
+    <strong> View Ad-Hoc Group of Computers:&nbsp;</strong>
+    <button type="button" onclick="OpenComputerGroup( oDataTable.api().column( 3, {search:'applied'} ).data() )"><i class="fas fa-search"></i> Searched</button>
+    <button type="button" onclick="OpenComputerGroup( oDataTable.api().column( 3, {search:'removed'} ).data() )"><i class="fas fa-filter"></i> Filtered</button>
 </div>
 
 <style>
@@ -49,6 +51,9 @@ h2 {
 }
 div.dataTables_filter input {
     width: 350px;
+}
+.text-center {
+    text-align: center;
 }
 div#wr_datapage > br + br {
     display: none;
@@ -91,7 +96,13 @@ $(document).ready(function(){
         "pageLength": 25,
         "bDestroy": true,
         "order": [[ 2, 'asc' ]],
-        searchDelay: 333
+        searchDelay: 333,
+        "columnDefs": [
+            {
+                "className": "text-center",
+                "targets": [0, 1]
+            }
+        ]
     });
 	
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
@@ -101,13 +112,6 @@ $(document).ready(function(){
         return false;
     });
 
-    //alert( Object.getOwnPropertyNames(oDataTable )  );
-    // alert( oDataTable.api().column( 3, {search:'applied'} ).data()[0] );
-    // https://stackoverflow.com/questions/25207147/datatable-vs-datatable-why-is-there-a-difference-and-how-do-i-make-them-w
-    // The following line opens a view of all of the computers in the table: (those that have not been filtered out by search)
-    //OpenComputerGroup( oDataTable.api().column( 3, {search:'applied'} ).data() );
-    // The following line opens a view of all of the computers NOT in the table: (only those that HAVE been filtered out by search)
-    //OpenComputerGroup( oDataTable.api().column( 3, {search:'removed'} ).data() );
 });
 
 </script>
