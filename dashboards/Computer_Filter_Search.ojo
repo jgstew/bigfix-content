@@ -70,7 +70,8 @@ $(document).ready(function(){
 	
     // load initial datatable with settings
     // https://legacy.datatables.net/ref#bDestroy
-    oDataTable = $('#resultsTable').dataTable( {
+    //  made the following line use `.DataTable(` instead of `.dataTable(` for the sake of `var oDataTable` but might have other consequences 
+    var oDataTable = $('#resultsTable').DataTable( {
         "scrollY": '80vh',
         "scrollCollapse": true,
         "paging": true,
@@ -87,6 +88,9 @@ $(document).ready(function(){
         oDataTable.fnSortNeutral();
         return false;
     });
+
+    // The following line opens a view of all of the computers in the table:
+    //OpenComputerGroup( oDataTable.column( 3, {search:'applied'} ).data() );
 });
 
 </script>
