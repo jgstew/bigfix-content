@@ -31,7 +31,7 @@
     </tbody>
 </table>
 
-<div style="text-align:center;">
+<div style="text-align:center;<?Relevance if (NOT in web reports context) then "" else "display: none;" ?>">
 <strong> View Ad-Hoc Group of Computers:&nbsp;</strong>
 <button type="button" onclick="OpenComputerGroup( oDataTable.api().column( 3, {search:'applied'} ).data() )"><i class="fas fa-search"></i> Searched</button>
 <button type="button" onclick="OpenComputerGroup( oDataTable.api().column( 3, {search:'removed'} ).data() )"><i class="fas fa-filter"></i> Filtered</button>
