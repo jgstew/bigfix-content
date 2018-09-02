@@ -70,8 +70,8 @@ $(document).ready(function(){
 	
     // load initial datatable with settings
     // https://legacy.datatables.net/ref#bDestroy
-    //  made the following line use `.DataTable(` instead of `.dataTable(` for the sake of `var oDataTable` but might have other consequences 
-    var oDataTable = $('#resultsTable').DataTable( {
+    // https://stackoverflow.com/questions/25207147/datatable-vs-datatable-why-is-there-a-difference-and-how-do-i-make-them-w
+    var oDataTable = $('#resultsTable').dataTable( {
         "scrollY": '80vh',
         "scrollCollapse": true,
         "paging": true,
@@ -89,6 +89,9 @@ $(document).ready(function(){
         return false;
     });
 
+    //alert( Object.getOwnPropertyNames(oDataTable )  );
+    // alert( oDataTable.api().column( 3, {search:'applied'} ).data()[0] );
+    // https://stackoverflow.com/questions/25207147/datatable-vs-datatable-why-is-there-a-difference-and-how-do-i-make-them-w
     // The following line opens a view of all of the computers in the table:
     //OpenComputerGroup( oDataTable.column( 3, {search:'applied'} ).data() );
 });
