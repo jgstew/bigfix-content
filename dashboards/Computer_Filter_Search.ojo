@@ -22,14 +22,21 @@
         <HTML><![CDATA[
 <script language="javascript">InsertUtilityDiv();</script>
 
-<h2>Computers - Filter and Search</h2>
+<h2 title="Updated 2018-09-01">Computers - Filter and Search</h2>
 
 <table id="resultsTable" class="compact display" width="100%">
-    <thead><tr><th><i class="fas fa-lock" title="Locked?"></i></th><th><i class="fas fa-desktop" title="Computer Type"></i></th><th>Computer</th><th>ID</th><th>OS</th><th>Last Report Time</th><th>IP</th><th>Current Users</th></tr></thead>
+    <thead><tr><th><i class="fas fa-lock" title="Locked?"></i></th><th><i class="fas fa-desktop" title="Computer Type"></i></th><th>Computer</th><th>ID</th><th>Operating System</th><th>Last Report Time</th><th>IP</th><th>Current Users</th></tr></thead>
     <tbody id="results">
 		<?Relevance ( trs of html concatenations of (tds of ( html tags ("span", ( attr lists of ("title", (if it then "Locked" else "Unlocked") ) ), ( if it then html "<i class=%22fas fa-lock%22></i>" else html "<i class=%22fas fa-unlock%22></i>" ) ) ) of locked flag of it; tds of ( html tags ("span", ( attr lists of ("title", it) ), (it as html) of firsts 1 of it) ) of device types of it; tds of link of it; tds of (it as string as html) of (id of it|0); tds of (if it starts with "Win" then (html "<i class=%22fab fa-windows%22></i>&nbsp;" & it) else if it starts with "Mac" then (html "<i class=%22fab fa-apple%22></i>&nbsp;" & it) else if it contains "Linux" then (html "<i class=%22fab fa-linux%22></i>&nbsp;" & it) else if it contains "Unix" then (html "<i class=%22fab fa-underline%22></i>&nbsp;" & it) else (html "<i class=%22fab fa-question-circle%22></i>&nbsp;" & it)) of (operating system of it | "<none>"); tds ( ("title='" & (it as string) & "' data-sort='" & (it / second) as string & "'") of (if it < 1 * second then 1 * second else it) of (now - it as time) ) of following texts of firsts ", " of (it as string) of (last report time of it); ( tds of html concatenations "<br/>" of (it as string as html) of unique values of ip addresses of it); ( tds of html concatenations "<br/>" of (it as string as html) of unique values of values of results from (bes properties "User Name") of it) ) ) of bes computers ?>
     </tbody>
 </table>
+
+<div style="text-align:center;">
+<strong> View Ad-Hoc Group of Computers:&nbsp;</strong>
+<button type="button" onclick="OpenComputerGroup( oDataTable.api().column( 3, {search:'applied'} ).data() )"><i class="fas fa-search"></i> Searched</button>
+<button type="button" onclick="OpenComputerGroup( oDataTable.api().column( 3, {search:'removed'} ).data() )"><i class="fas fa-filter"></i> Filtered</button>
+<button type="button" disabled title="Not Implemented Yet! TODO"><i class="fas fa-mouse-pointer"></i> Selected</button>
+</div>
 
 <style>
 table#resultsTable {
@@ -46,6 +53,9 @@ div.dataTables_filter input {
 }
 </style>
 <script language="javascript">
+
+// Needed Scope for Buttons `onclick`
+var oDataTable;
 
 $(document).ready(function(){
     
@@ -71,7 +81,7 @@ $(document).ready(function(){
     // load initial datatable with settings
     // https://legacy.datatables.net/ref#bDestroy
     // https://stackoverflow.com/questions/25207147/datatable-vs-datatable-why-is-there-a-difference-and-how-do-i-make-them-w
-    var oDataTable = $('#resultsTable').dataTable( {
+    oDataTable = $('#resultsTable').dataTable( {
         "scrollY": '80vh',
         "scrollCollapse": true,
         "paging": true,
@@ -92,9 +102,9 @@ $(document).ready(function(){
     //alert( Object.getOwnPropertyNames(oDataTable )  );
     // alert( oDataTable.api().column( 3, {search:'applied'} ).data()[0] );
     // https://stackoverflow.com/questions/25207147/datatable-vs-datatable-why-is-there-a-difference-and-how-do-i-make-them-w
-    // The following line opens a view of all of the computers in the table:
+    // The following line opens a view of all of the computers in the table: (those that have not been filtered out by search)
     //OpenComputerGroup( oDataTable.api().column( 3, {search:'applied'} ).data() );
-    // The following line opens a view of all of the computers NOT in the table:
+    // The following line opens a view of all of the computers NOT in the table: (only those that HAVE been filtered out by search)
     //OpenComputerGroup( oDataTable.api().column( 3, {search:'removed'} ).data() );
 });
 
