@@ -51,7 +51,11 @@ h2 {
 div.dataTables_filter input {
     width: 350px;
 }
+br + br {
+    display: none;
+}
 </style>
+
 <script language="javascript">
 
 // Needed Scope for Buttons `onclick`
