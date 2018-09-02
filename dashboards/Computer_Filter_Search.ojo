@@ -35,7 +35,6 @@
 <strong> View Ad-Hoc Group of Computers:&nbsp;</strong>
 <button type="button" onclick="OpenComputerGroup( oDataTable.api().column( 3, {search:'applied'} ).data() )"><i class="fas fa-search"></i> Searched</button>
 <button type="button" onclick="OpenComputerGroup( oDataTable.api().column( 3, {search:'removed'} ).data() )"><i class="fas fa-filter"></i> Filtered</button>
-<button type="button" disabled title="Not Implemented Yet! TODO"><i class="fas fa-mouse-pointer"></i> Selected</button>
 </div>
 
 <style>
@@ -92,8 +91,7 @@ $(document).ready(function(){
         "pageLength": 25,
         "bDestroy": true,
         "order": [[ 2, 'asc' ]],
-        searchDelay: 333,
-        responsive: true
+        searchDelay: 333
     });
 	
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
