@@ -93,7 +93,7 @@ $(document).ready(function(){
         "scrollY": '80vh',
         "scrollCollapse": true,
         "paging": true,
-        "pageLength": 25,
+        "pageLength": 10,
         "bDestroy": true,
         "order": [[ 2, 'asc' ]],
         searchDelay: 333,
@@ -113,9 +113,11 @@ $(document).ready(function(){
     });
     
     // https://stackoverflow.com/questions/185423/how-can-i-open-a-link-in-the-default-web-browser-from-an-hta
-    // Open link in another window
+    // Open link in default browser:
     //var shell = new ActiveXObject("WScript.Shell");
     //shell.run("http://www.google.com");
+    // Open link in IE: (if in winConsole)
+    //window.open("https://www.w3schools.com");
 });
 
 </script>
