@@ -28,8 +28,9 @@
 
 <br />
 
-<table id="resultsTable" class="compact display">
-    <thead><tr><th id="lastQuery" title="Session Relevance Query:"></th></tr></thead>
+<table id="resultsTable" class="compact display" style="min-width:100px">
+    <colgroup span="999"></colgroup>
+    <thead><tr><th colspan="999" id="lastQuery" title="Session Relevance Query:"></th></tr></thead>
     <tbody id="results">
     </tbody>
 </table>
@@ -41,6 +42,12 @@ h2 {
     margin: 0px 0px 1px 0px;
     border: 0;
     text-align: center;
+}
+table {
+    border-collapse: collapse;
+}
+table, th, td {
+    border: 1px solid black;
 }
 </style>
 <script language="javascript">
