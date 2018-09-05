@@ -29,6 +29,7 @@
 <br />
 
 <table id="resultsTable" class="compact display">
+    <thead><tr><th id="lastQuery" title="Session Relevance Query:"></th></tr></thead>
     <tbody id="results">
     </tbody>
 </table>
@@ -112,9 +113,9 @@ $(document).ready(function(){
         if( thisQuery != "" && thisQuery != lastQuery)
         {
             lastQuery = thisQuery;
-            //alert( thisQuery );
-            // TODO: do the relevance eval here:
-            $('#results').html( bigfix.relevance.evaluate( "html concatenations of trs of (html concatenations of tds of tuple string items of (it as string) of it) of ( " + thisQuery + " )" ) );
+            $('#lastQuery').html( lastQuery );
+            $('#results').html("");
+            $('#results').html( bigfix.relevance.evaluate( "it whose(it as string != \"\") of html concatenation of trs of (html concatenations of tds of tuple string items of (it as string) of it) of ( " + thisQuery + " ) | html \"!ERROR!\"" ) );
         }
     });
     $('#relevance').keyup(function(e){
