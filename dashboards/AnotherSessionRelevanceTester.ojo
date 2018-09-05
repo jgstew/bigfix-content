@@ -122,7 +122,7 @@ $(document).ready(function(){
             lastQuery = thisQuery;
             $('#lastQuery').html( lastQuery );
             $('#results').html("");
-            $('#results').html( bigfix.relevance.evaluate( "it whose(it as string != \"\") of html concatenation of trs of (html concatenations of tds of tuple string items of (it as string) of it) of ( " + thisQuery + " ) | html \"!ERROR!\"" ) );
+            $('#results').html( bigfix.relevance.evaluate( "html concatenation of trs of (html concatenations of tds of tuple string items of (it as string) of it) of ( " + thisQuery + " ) | html \"!ERROR!\"" ) );
         }
     });
     $('#relevance').keyup(function(e){
