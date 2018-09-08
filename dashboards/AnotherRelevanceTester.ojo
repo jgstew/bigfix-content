@@ -73,16 +73,11 @@ $(document).ready(function(){
             
             // TODO: make async
             while (0 === shellRun.Status) {
-                alert("waiting");
+                //alert("waiting");
             }
 
             // TODO: readline is probably better for parsing: https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/windows-scripting/h7se9d4f%28v%3dvs.84%29
-            //alert( shellRun.StdOut.ReadAll() );
             $('#results').html( shellRun.StdOut.ReadAll() );
-
-            //shell.Run('"CMD" "/C" echo ' + thisQuery + ' | "C:\\Program Files (x86)\\BigFix Enterprise\\BES Client\\qna" -t -showtypes" && timeout 5');
-            
-            // TODO? https://ss64.com/nt/start.html
         }
     });
     $('#relevance').keyup(function(e){
