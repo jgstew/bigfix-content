@@ -76,7 +76,7 @@ $(document).ready(function(){
                 alert("waiting");
             }
 
-            // TODO: readline is probably better for parsing
+            // TODO: readline is probably better for parsing: https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/windows-scripting/h7se9d4f%28v%3dvs.84%29
             //alert( shellRun.StdOut.ReadAll() );
             $('#results').html( shellRun.StdOut.ReadAll() );
 
