@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<BES>
+  <Wizard>
+    <Title>Custom - Another Relevance Tester</Title>
+    <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+    <DefaultPage>Page1</DefaultPage>
+    <Page Name="Page1" DocType="HTML5" >
+        <Title>Another Relevance Tester</Title>
+        <Head><![CDATA[
+            <meta http-equiv="X-UA-Compatible" content="IE=11">
+                   
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+          
+            <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
+        ]]></Head>
+        <HTML><![CDATA[
+<script language="javascript">InsertUtilityDiv();</script>
+
+<h2>Another Relevance Tester</h2>
+
+<br />
+
+<div class="ui-widget">
+    <label for="relevance">Relevance:</label>
+    <input id="relevance" style="width: 80vw;"></input>
+</div>
+
+<br />
+
+<table id="resultsTable" class="compact display" style="min-width:100px">
+    <colgroup span="999"></colgroup>
+    <thead><tr><th colspan="999" id="lastQuery" title="Relevance Query:"></th></tr></thead>
+    <tbody id="results">
+    </tbody>
+</table>
+
+
+<style>
+h2 {
+    padding: 0px;
+    margin: 0px 0px 1px 0px;
+    border: 0;
+    text-align: center;
+}
+table {
+    border-collapse: collapse;
+}
+table, th, td {
+    border: 1px solid black;
+}
+</style>
+<script language="javascript">
+
+var lastQuery = "";
+// https://stackoverflow.com/questions/15351508/using-a-wscript-shell-activex-to-execute-a-command-line
+var shell = new ActiveXObject("WScript.Shell");
+
+$(document).ready(function(){
+
+    $('#relevance').on("focusout enterKey",function(event){
+        // trim whitespaces around query
+        var thisQuery = $(this).val().trim();
+        
+        // make sure it is not empty and not the same as the previous query
+        if( thisQuery != "" && thisQuery != lastQuery)
+        {
+            lastQuery = thisQuery;
+            $('#lastQuery').html( lastQuery );
+            $('#results').html("");
+            //$('#results').html( "TODO: need to set it to the results of the query" );
+            shell.Run('"CMD" "/C" echo ' + thisQuery + ' | "C:\\Program Files (x86)\\BigFix Enterprise\\BES Client\\qna" -t -showtypes" && pause')
+        }
+    });
+    $('#relevance').keyup(function(e){
+        if(e.keyCode == 13)
+        {
+            $(this).trigger("enterKey");
+        }
+    });
+});
+
+</script>
+        ]]></HTML>
+        </Page>
+    </Wizard>
+</BES>
