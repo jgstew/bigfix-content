@@ -69,7 +69,7 @@ $(document).ready(function(){
             $('#lastQuery').html( lastQuery );
             $('#results').html("");
             //$('#results').html( "TODO: need to set it to the results of the query" );
-            shell.Run('"CMD" "/C" echo ' + thisQuery + ' | "C:\\Program Files (x86)\\BigFix Enterprise\\BES Client\\qna" -t -showtypes" && pause')
+            shell.Run('"CMD" "/C" echo ' + thisQuery + ' | "C:\\Program Files (x86)\\BigFix Enterprise\\BES Client\\qna" -t -showtypes" && timeout 5')
         }
     });
     $('#relevance').keyup(function(e){
