@@ -68,8 +68,21 @@ $(document).ready(function(){
             lastQuery = thisQuery;
             $('#lastQuery').html( lastQuery );
             $('#results').html("");
-            //$('#results').html( "TODO: need to set it to the results of the query" );
-            shell.Run('"CMD" "/C" echo ' + thisQuery + ' | "C:\\Program Files (x86)\\BigFix Enterprise\\BES Client\\qna" -t -showtypes" && timeout 5')
+            // https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/windows-scripting/ateytk4a%28v%3dvs.84%29
+            var shellRun = shell.Exec('"CMD" "/C" echo ' + thisQuery + ' | "C:\\Program Files (x86)\\BigFix Enterprise\\BES Client\\qna" -t -showtypes"');
+            
+            // TODO: make async
+            while (0 === shellRun.Status) {
+                alert("waiting");
+            }
+
+            // TODO: readline is probably better for parsing
+            //alert( shellRun.StdOut.ReadAll() );
+            $('#results').html( shellRun.StdOut.ReadAll() );
+
+            //shell.Run('"CMD" "/C" echo ' + thisQuery + ' | "C:\\Program Files (x86)\\BigFix Enterprise\\BES Client\\qna" -t -showtypes" && timeout 5');
+            
+            // TODO? https://ss64.com/nt/start.html
         }
     });
     $('#relevance').keyup(function(e){
