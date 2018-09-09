@@ -65,6 +65,7 @@ $(document).ready(function(){
         // make sure it is not empty and not the same as the previous query
         if( thisQuery != "" && thisQuery != lastQuery)
         {
+            var results = new Array();
             lastQuery = thisQuery;
             $('#lastQuery').html( lastQuery );
             $('#results').html("");
@@ -76,8 +77,15 @@ $(document).ready(function(){
                 //alert("waiting");
             }
 
-            // TODO: readline is probably better for parsing: https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/windows-scripting/h7se9d4f%28v%3dvs.84%29
-            $('#results').html( shellRun.StdOut.ReadAll() );
+            // readline is better for parsing: https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/windows-scripting/h7se9d4f%28v%3dvs.84%29
+            var i = 0;
+            while (!shellRun.StdOut.AtEndOfStream)
+            {
+                results[i] = shellRun.StdOut.ReadLine();
+                i++;
+            }
+            
+            $('#results').html( results );
         }
     });
     $('#relevance').keyup(function(e){
