@@ -61,7 +61,12 @@ var arrayToTableRows = function (data) {
     var rows = [], row;
     for (i = 0; i < data.length; i = i + 1) {
         row = $('<tr />');
-        row.append($('<td />').html(data[i]));
+        // Only add the item if it is an answer:
+        if( data[i].indexOf("A: ") != -1 )
+        {
+            row.append($('<td />').html(data[i]));
+        }
+        // TODO: add handler for execution time and return type
         rows.push(row);
     }
     return rows;
@@ -78,7 +83,7 @@ $(document).ready(function(){
         {
             var results = new Array();
             lastQuery = thisQuery;
-            $('#lastQuery').html( lastQuery );
+            $('#lastQuery').html( "Q: " + lastQuery );
             $('#results').html("");
             // https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/windows-scripting/ateytk4a%28v%3dvs.84%29
             var shellRun = shell.Exec('"CMD" "/C" echo ' + thisQuery + ' | "C:\\Program Files (x86)\\BigFix Enterprise\\BES Client\\qna" -t -showtypes"');
@@ -96,6 +101,8 @@ $(document).ready(function(){
                 i++;
             }
             
+            // Remove extra `Q: ` from first answer:
+            results[0] = results[0].replace("Q: ", "");
             $('#results').html( arrayToTableRows(results) );
         }
     });
