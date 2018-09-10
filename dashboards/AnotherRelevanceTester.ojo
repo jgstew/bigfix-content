@@ -56,6 +56,17 @@ var lastQuery = "";
 // https://stackoverflow.com/questions/15351508/using-a-wscript-shell-activex-to-execute-a-command-line
 var shell = new ActiveXObject("WScript.Shell");
 
+// https://gist.github.com/veganista/6413299
+var arrayToTableRows = function (data) {
+    var rows = [], row;
+    for (i = 0; i < data.length; i = i + 1) {
+        row = $('<tr />');
+        row.append($('<td />').html(data[i]));
+        rows.push(row);
+    }
+    return rows;
+};
+
 $(document).ready(function(){
 
     $('#relevance').on("focusout enterKey",function(event){
@@ -85,7 +96,7 @@ $(document).ready(function(){
                 i++;
             }
             
-            $('#results').html( results );
+            $('#results').html( arrayToTableRows(results) );
         }
     });
     $('#relevance').keyup(function(e){
