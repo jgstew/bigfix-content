@@ -21,17 +21,18 @@
 
 <br />
 
-<div class="ui-widget">
+<div class="ui-widget" style="width: 100vw">
     <label for="relevance">Relevance:</label>
-    <input id="relevance" style="width: 80vw;"></input>
+    <input id="relevance" style="width: 92%"></input>
 </div>
 
 <br />
 
 <table id="resultsTable" class="compact display" style="min-width:100px">
     <colgroup span="999"></colgroup>
-    <thead><tr><th colspan="999" id="lastQuery" title="Relevance Query:"></th></tr></thead>
+    <thead><tr><th colspan="999" id="lastQuery" title="Relevance Query:">Q: </th></tr></thead>
     <tbody id="results">
+        <tr><td>A: </td></tr>
     </tbody>
 </table>
 
@@ -48,6 +49,8 @@ table {
 }
 table, th, td {
     border: 1px solid black;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 </style>
 <script language="javascript">
