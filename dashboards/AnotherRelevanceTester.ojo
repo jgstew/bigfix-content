@@ -28,7 +28,7 @@
 
 <br />
 
-<table id="resultsTable" class="compact display" style="min-width:100px">
+<table id="resultsTable" class="compact display">
     <colgroup span="999"></colgroup>
     <thead><tr><th colspan="999" id="lastQuery" title="Relevance Query:">Q: </th></tr></thead>
     <tbody id="results">
@@ -46,6 +46,9 @@ h2 {
 }
 table {
     border-collapse: collapse;
+    min-width: 100px;
+    position: relative;
+    left: 78px;
 }
 table, th, td {
     border: 1px solid black;
