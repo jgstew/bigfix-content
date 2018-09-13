@@ -1,0 +1,20 @@
+
+// Make sure __createfile doesn't already exist
+delete __createfile
+
+// generate __createfile contents: (must escape {})
+createfile until _END_OF_FILE_
+#!/usr/bin/env bash
+
+echo "Do Stuff:"
+
+_END_OF_FILE_
+
+// delete destination of __createfile to be sure it doesn't already exist
+delete /tmp/run.sh
+
+// put file in place to run:
+copy __createfile /tmp/run.sh
+
+// run it:
+wait bash /tmp/run.sh
