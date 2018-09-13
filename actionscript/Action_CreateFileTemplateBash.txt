@@ -17,4 +17,6 @@ delete /tmp/run.sh
 copy __createfile /tmp/run.sh
 
 // run it:
+override wait
+timeout_seconds=1800
 wait bash /tmp/run.sh
