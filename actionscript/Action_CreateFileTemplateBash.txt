@@ -16,7 +16,7 @@ delete /tmp/run.sh
 // put file in place to run:
 copy __createfile /tmp/run.sh
 
-// run it:
+// run it, waiting a maximum of 30 minutes:
 override wait
 timeout_seconds=1800
 wait bash /tmp/run.sh
