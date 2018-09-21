@@ -15,6 +15,7 @@
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" integrity="sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik=" crossorigin="anonymous" />
             <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/js/jquery.dataTables.min.js" integrity="sha256-yWA356lDhruy1J8jGncaMWKAPYDbK47OKb0uT/aELLc=" crossorigin="anonymous"></script>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/css/jquery.dataTables.min.css" integrity="sha256-+Z1rYa3ys5OdZNUck5G7lBvb8A13OrYwvf+d8PfEaHQ=" crossorigin="anonymous" />
+            <script src="https://cdn.datatables.net/plug-ins/1.10.19/dataRender/ellipsis.js"></script>
 
             <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
         ]]></Head>
@@ -23,7 +24,7 @@
 
 <h2 title="Updated 2018-09-21">Dashboard Variables</h2>
 
-<table id="resultsTable" class="compact display">
+<table id="resultsTable" class="compact display" width="100%">
     <thead><tr><th>Dashboard</th><th>Variable</th><th>Value</th></tr></thead>
     <tbody id="results">
 		<?Relevance html concatenations of ( trs of html concatenations of tds of (name of wizard of it; name of it; value of it | "Unknown")) of (shared variables of it; private variables of it) of bes wizards ?>
@@ -31,9 +32,6 @@
 </table>
 
 <style>
-table#resultsTable {
-    width: 100%;
-}
 h2 {
     padding: 0px;
     margin: 0px 0px 1px 0px;
@@ -87,7 +85,13 @@ $(document).ready(function(){
         "bDestroy": true,
         "order": [[ 0, 'desc' ]],
         searchDelay: 100,
-        rowsGroup: [0]
+        rowsGroup: [0],
+        "columnDefs": [
+            {
+                "targets": [2],
+                render: $.fn.dataTable.render.ellipsis( 111 )
+            }
+        ]
     });
 	
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
