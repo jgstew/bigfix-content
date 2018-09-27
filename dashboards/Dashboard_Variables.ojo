@@ -25,9 +25,9 @@
 <h2 title="Updated 2018-09-21">Dashboard Variables</h2>
 
 <table id="resultsTable" class="compact display" width="100%">
-    <thead><tr><th>Dashboard</th><th>Variable</th><th>Value</th></tr></thead>
+    <thead><tr><th>Dashboard</th><th>Variable</th><th>Value</th><th>Shared?</th></tr></thead>
     <tbody id="results">
-		<?Relevance html concatenations of ( trs of html concatenations of tds of (name of wizard of it; name of it; value of it | "Unknown")) of (shared variables of it; private variables of it) of bes wizards ?>
+		<?Relevance html concatenations of ( trs of html concatenations of tds of (name of wizard of it; name of it; value of it | "Unknown"; (if private flag of it then "P" else "S") of it)) of (variables of it) of bes wizards ?>
     </tbody>
 </table>
 
