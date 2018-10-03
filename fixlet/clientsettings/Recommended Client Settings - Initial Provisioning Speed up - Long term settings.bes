@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Recommended Client Settings - Initial Provisioning Speed up - Long term settings</Title>
+		<Description>This task is designed to run against all new computers at least once and set client settings that are not set already to recommended values for client speed up. If a clientsettings.cfg or another action is used to set any of these settings, then this will not overwrite them. This does not have relevance to cause it to only run if the settings are unset on purpose so that it can run against machines early and quickly. All of these settings should be safe to leave in place forever. </Description>
+		<Relevance><![CDATA[(3*day) > (now - minimum of subscribe times of sites) /* No real relevance is being used so that this may effect slow clients ASAP without requiring evaulation. Normally relevance would be included so that the action only ran against clients that need it. */]]></Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>https://github.com/jgstew</SourceID>
+		<SourceReleaseDate>2018-10-02</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 03 Oct 2018 01:26:28 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+//begin: set recommended client settings - only if these settings are not set.
+
+if {not exists settings "_BESClient_Resource_StartupNormalSpeed" of client}
+    setting "_BESClient_Resource_StartupNormalSpeed"="1" on "{parameter "action issue date" of action}" for client
+endif
+if {not exists settings "_BESClient_Download_RetryMinutes" of client}
+    setting "_BESClient_Download_RetryMinutes"="1" on "{parameter "action issue date" of action}" for client
+endif
+if {not exists settings "_BESClient_Download_DownloadsCacheLimitMB" of client}
+    setting "_BESClient_Download_DownloadsCacheLimitMB"="8000" on "{parameter "action issue date" of action}" for client
+endif
+if {not exists settings "_BESClient_Comm_CommandPollEnable" of client}
+    setting "_BESClient_Comm_CommandPollEnable"="1" on "{parameter "action issue date" of action}" for client
+endif
+if {not exists settings "_BESClient_Comm_CommandPollIntervalSeconds" of client}
+    setting "_BESClient_Comm_CommandPollIntervalSeconds"="3600" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_Log_Days" of client }
+    setting "_BESClient_Log_Days"="30" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_Log_MaxSize" of client }
+    setting "_BESClient_Log_MaxSize"="1536000" on "{parameter "action issue date" of action}" for client
+endif
+if {not exists settings "_BESClient_Download_UtilitiesCacheLimitMB" whose( (it >= 200) of (it as string as integer) of values of it ) of client}
+    setting "_BESClient_Download_UtilitiesCacheLimitMB"="200" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_Comm_WakeOnLanForwardingEnable" of client }
+    setting "_BESClient_Comm_WakeOnLanForwardingEnable"="1" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_Download_CheckAvailabilitySeconds" of client }
+    setting "_BESClient_Download_CheckAvailabilitySeconds"="120" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_Comm_EnableConnectionTriggers" of client }
+    setting "_BESClient_Comm_EnableConnectionTriggers"="1" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_Report_Encryption" of client }
+    setting "_BESClient_Report_Encryption"="optional" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_Query_NMOMaxQueryTime" of client }
+    setting "_BESClient_Query_NMOMaxQueryTime"="30" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_Query_WorkTime" of client }
+    setting "_BESClient_Query_WorkTime"="250" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_Query_SleepTime" of client }
+    setting "_BESClient_Query_SleepTime"="500" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_Resource_AccelerateForPendingMessage" of client }
+    setting "_BESClient_Resource_AccelerateForPendingMessage"="1" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_ActionManager_HistoryKeepDays" of client }
+    setting "_BESClient_ActionManager_HistoryKeepDays"="1825" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_ActionManager_HistoryDisplayDaysTech" of client }
+    setting "_BESClient_ActionManager_HistoryDisplayDaysTech"="90" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_ActionManager_CompletionDialogTimeoutSeconds" of client }
+    setting "_BESClient_ActionManager_CompletionDialogTimeoutSeconds"="30" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_Inspector_ActiveDirectory_Cache_MaxUsers" of client }
+    setting "_BESClient_Inspector_ActiveDirectory_Cache_MaxUsers"="10" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_Inspector_ActiveDirectory_UserRefresh_Seconds" of client }
+    setting "_BESClient_Inspector_ActiveDirectory_UserRefresh_Seconds"="129600" on "{parameter "action issue date" of action}" for client
+endif
+
+//end: set recommended client settings
+
+]]></ActionScript>
+			<Settings>
+				<PreActionShowUI>false</PreActionShowUI>
+				<HasRunningMessage>false</HasRunningMessage>
+				<HasTimeRange>false</HasTimeRange>
+				<HasStartTime>false</HasStartTime>
+				<HasEndTime>false</HasEndTime>
+				<HasDayOfWeekConstraint>false</HasDayOfWeekConstraint>
+				<UseUTCTime>false</UseUTCTime>
+				<ActiveUserRequirement>NoRequirement</ActiveUserRequirement>
+				<ActiveUserType>AllUsers</ActiveUserType>
+				<HasWhose>false</HasWhose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>false</Reapply>
+				<HasReapplyLimit>true</HasReapplyLimit>
+				<ReapplyLimit>3</ReapplyLimit>
+				<HasReapplyInterval>false</HasReapplyInterval>
+				<HasRetry>false</HasRetry>
+				<HasTemporalDistribution>false</HasTemporalDistribution>
+				<ContinueOnErrors>true</ContinueOnErrors>
+				<PostActionBehavior Behavior="Nothing"></PostActionBehavior>
+				<IsOffer>false</IsOffer>
+			</Settings>
+			<SettingsLocks>
+				<ActionUITitle>false</ActionUITitle>
+				<PreActionShowUI>false</PreActionShowUI>
+				<PreAction>
+					<Text>false</Text>
+					<AskToSaveWork>false</AskToSaveWork>
+					<ShowActionButton>false</ShowActionButton>
+					<ShowCancelButton>false</ShowCancelButton>
+					<DeadlineBehavior>false</DeadlineBehavior>
+					<ShowConfirmation>false</ShowConfirmation>
+				</PreAction>
+				<HasRunningMessage>false</HasRunningMessage>
+				<RunningMessage>
+					<Text>false</Text>
+				</RunningMessage>
+				<TimeRange>false</TimeRange>
+				<StartDateTimeOffset>false</StartDateTimeOffset>
+				<EndDateTimeOffset>false</EndDateTimeOffset>
+				<DayOfWeekConstraint>false</DayOfWeekConstraint>
+				<ActiveUserRequirement>false</ActiveUserRequirement>
+				<ActiveUserType>false</ActiveUserType>
+				<Whose>false</Whose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>false</Reapply>
+				<ReapplyLimit>false</ReapplyLimit>
+				<RetryCount>false</RetryCount>
+				<RetryWait>false</RetryWait>
+				<TemporalDistribution>false</TemporalDistribution>
+				<ContinueOnErrors>false</ContinueOnErrors>
+				<PostActionBehavior>
+					<Behavior>false</Behavior>
+					<AllowCancel>false</AllowCancel>
+					<Deadline>false</Deadline>
+					<Title>false</Title>
+					<Text>false</Text>
+				</PostActionBehavior>
+				<IsOffer>false</IsOffer>
+				<AnnounceOffer>false</AnnounceOffer>
+				<OfferCategory>false</OfferCategory>
+				<OfferDescriptionHTML>false</OfferDescriptionHTML>
+			</SettingsLocks>
+		</DefaultAction>
+	</Task>
+</BES>
