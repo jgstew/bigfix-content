@@ -16,3 +16,4 @@ a place for session relevance queries
 - bes wizards string properties: `(dashboard id of it | "unknown", display name of it | "unknown", name of it | "unknown", navbar name of it | "unknown", database name of it | "unknown", menu path of it | "unknown", default page name of it | "unknown") of bes wizards`
 - bes wizards string properties auto-generated: `( name of it | "unknown", display name of it | "unknown", dashboard id of it | "unknown", database name of it | "unknown", default page name of it | "unknown", url of it | "unknown", charset of it | "unknown", navbar name of it | "unknown", menu path of it | "unknown", link href of it | "unknown" ) of bes wizards`
   - boolean, integer, time
+- get properties of bes wizards that are easy-ish to report on: `(it as string as trimmed string) whose(it contains "<bes wizard>" AND it does not contain "> of <" AND it does not contain ">: bes " AND it does not end with ">: html") of properties`
