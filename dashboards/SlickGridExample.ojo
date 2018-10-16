@@ -34,7 +34,8 @@
   var grid;
   var columns = [
     {id: "name", name: "Computer Name", field: "name"},
-    {id: "besid", name: "ID", field: "besid", sortable: "true"}
+    {id: "besid", name: "ID", field: "besid", sortable: "true"},
+    {id: "cves", name: "# of CVEs", field: "numcves", sortable: "true"}
   ];
   var options = {
     enableCellNavigation: true,
@@ -42,7 +43,7 @@
     multiColumnSort: true
   };
   $(function () {
-    var data = <?Relevance ("[{" & it & "}]") of concatenations "} , {" of (it as string) of ( "name: '" & name of it & "'", "besid: " & id of it as string) of bes computers ?>;
+    var data = <?Relevance ("[{" & it & "}]") of concatenations "} , {" of (it as string) of ( "name: '" & name of it & "'", "besid: " & id of it as string, "numcves: " & (it as string) of number of unique values of (it as trimmed string) of substrings separated by ";" of substrings separated by "," of cve id lists whose(exists (it as trimmed string) whose(it != "" AND it != "N/A" AND it != "Unspecified") ) of relevant fixlets of it) of bes computers ?>;
 
     grid = new Slick.Grid("#myGrid", data, columns, options);
 
