@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<BES>
+  <Wizard>
+    <Title>Custom - Slick Grid Example</Title>
+    <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+    <DefaultPage>DefaultPage</DefaultPage>
+    <Page Name="DefaultPage" DocType="HTML5" >
+        <Title>Slick Grid Example</Title>
+        <Head><![CDATA[
+            <meta http-equiv="X-UA-Compatible" content="IE=11">
+            
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/6pac-slickgrid/2.4.0/slick.grid.css" integrity="sha256-KkeUmOINB0VR3JCT0jydI/wnXzSRpQYmTPk2oWe6s2g=" crossorigin="anonymous" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/6pac-slickgrid/2.4.0/slick-default-theme.css" integrity="sha256-58nXXUgdwr1n7rTpPg2Xc1g6BPIj/yI3XpG5A8ljDXI=" crossorigin="anonymous" />
+            
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/6pac-slickgrid/2.4.0/lib/jquery.event.drag-2.3.0.min.js" integrity="sha256-NBMIcjslekU0pAFZ4eYX06+Mw8CyBDcVElrIhLh1lig=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/6pac-slickgrid/2.4.0/slick.core.js" integrity="sha256-IB78hh7gIPNrtjhoQ21te7/+c3rlO0Sm7tkXNXjvQa8=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/6pac-slickgrid/2.4.0/slick.grid.js" integrity="sha256-O6OrBbkwNdvda7an1E+CtRq+zCzgBixD+g/Wi3rEdYc=" crossorigin="anonymous"></script>
+            
+            <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
+        ]]></Head>
+        <HTML><![CDATA[
+<script language="javascript">InsertUtilityDiv();</script>
+
+<h2>Slick Grid Example</h2>
+
+<div id="myGrid" style="width:600px;height:500px;"></div>
+
+<script language="javascript">
+// https://github.com/mleibman/SlickGrid/blob/gh-pages/examples/example1-simple.html
+
+  var grid;
+  var columns = [
+    {id: "title", name: "Title", field: "title"},
+    {id: "duration", name: "Duration", field: "duration"},
+    {id: "%", name: "% Complete", field: "percentComplete"},
+    {id: "start", name: "Start", field: "start"},
+    {id: "finish", name: "Finish", field: "finish"},
+    {id: "effort-driven", name: "Effort Driven", field: "effortDriven"}
+  ];
+  var options = {
+    enableCellNavigation: true,
+    enableColumnReorder: false
+  };
+  $(function () {
+    var data = [];
+    for (var i = 0; i < 500; i++) {
+      data[i] = {
+        title: "Task " + i,
+        duration: "5 days",
+        percentComplete: Math.round(Math.random() * 100),
+        start: "01/01/2009",
+        finish: "01/05/2009",
+        effortDriven: (i % 5 == 0)
+      };
+    }
+    grid = new Slick.Grid("#myGrid", data, columns, options);
+  })
+
+</script>
+
+        ]]></HTML>
+        </Page>
+    </Wizard>
+</BES>
