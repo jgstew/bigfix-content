@@ -9,11 +9,14 @@
         <Title>Slick Grid Example</Title>
         <Head><![CDATA[
             <meta http-equiv="X-UA-Compatible" content="IE=11">
-            
+
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" integrity="sha256-p6xU9YulB7E2Ic62/PX+h59ayb3PBJ0WFTEQxq0EjHw=" crossorigin="anonymous" />
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/6pac-slickgrid/2.4.0/slick.grid.css" integrity="sha256-KkeUmOINB0VR3JCT0jydI/wnXzSRpQYmTPk2oWe6s2g=" crossorigin="anonymous" />
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/6pac-slickgrid/2.4.0/slick-default-theme.css" integrity="sha256-58nXXUgdwr1n7rTpPg2Xc1g6BPIj/yI3XpG5A8ljDXI=" crossorigin="anonymous" />
             
             <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js" integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sortable/0.9.13/jquery-sortable.js" integrity="sha256-8VDFcSO9pvcZSTr/Pvx1kBfY867GBVbboLOdokqr8cc=" crossorigin="anonymous"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/6pac-slickgrid/2.4.0/lib/jquery.event.drag-2.3.0.min.js" integrity="sha256-NBMIcjslekU0pAFZ4eYX06+Mw8CyBDcVElrIhLh1lig=" crossorigin="anonymous"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/6pac-slickgrid/2.4.0/slick.core.js" integrity="sha256-IB78hh7gIPNrtjhoQ21te7/+c3rlO0Sm7tkXNXjvQa8=" crossorigin="anonymous"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/6pac-slickgrid/2.4.0/slick.grid.js" integrity="sha256-O6OrBbkwNdvda7an1E+CtRq+zCzgBixD+g/Wi3rEdYc=" crossorigin="anonymous"></script>
@@ -41,7 +44,7 @@
   ];
   var options = {
     enableCellNavigation: true,
-    enableColumnReorder: false
+    enableColumnReorder: true
   };
   $(function () {
     var data = [];
