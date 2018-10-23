@@ -21,6 +21,11 @@
 // get the IE effective documentMode
 document.getElementById('resultDocMode').innerHTML = document.documentMode;
 </script>
+<style>
+div#wr_datapage > br + br {
+    display: none;
+}
+</style>
         ]]></HTML>
         </Page>
     </Wizard>
