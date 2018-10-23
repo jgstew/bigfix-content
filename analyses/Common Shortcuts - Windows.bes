@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Common Shortcuts - Windows</Title>
+		<Description><![CDATA[<P>&nbsp;</P>
+<P>
+<DIV class=relevanceDefault>unique values <SPAN class=relevanceKeyword>of</SPAN> values <SPAN class=relevanceKeyword>of</SPAN> results <SPAN class=relevanceKeyword>of</SPAN> bes properties <SPAN class=relevanceString>"Common Desktop and Start Menu Shortcuts"</SPAN></DIV>
+<STYLE type=text/css>.relevanceConstant,.relevanceDefault,.relevanceIgnored,.relevanceKeyword,.relevanceOperator,.relevanceString{font-family:Courier New;font-size:10pt;background:#fff}.relevanceDefault{color:#000}.relevanceKeyword{color:#00f}.relevanceIgnored{color:#a9a9a9}.relevanceOperator{color:#00f}.relevanceString{color:teal}.relevanceConstant{color:purple}.relevanceMatchingParen,.relevanceUnmatchedParen{font-weight:700;color:#fff;font-family:Courier New;font-size:10pt}.relevanceMatchingParen{background:#ff9632}.relevanceUnmatchedParen{background:red}.relevanceAnswer,.relevanceQuestion{font-family:Courier New;font-size:10pt;color:red;background:#fff}.relevanceIllegalCharacter{font-family:Courier New;font-size:10pt;color:#fff;background:red}.relevanceComment{font-family:Courier New;font-size:10pt;color:green;background:#fff}.relevanceItColorized{font-family:Courier New;font-size:10pt;color:#000;background:#afffaa}</STYLE>
+
+<P></P>
+<P>&nbsp;</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2018-10-22</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 23 Oct 2018 01:25:06 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="Common Desktop and Start Menu Shortcuts" ID="1" EvaluationPeriod="PT12H">pathnames of descendants whose(name of it as lowercase ends with ".lnk") of (folders it) of unique values of (it as string as trimmed string) of (values "Common Desktop" of it; values "Common Start Menu" of it) of keys "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" of (x64 registries; x32 registries)</Property>
+	</Analysis>
+</BES>
