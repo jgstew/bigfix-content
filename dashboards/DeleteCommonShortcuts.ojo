@@ -36,10 +36,11 @@
 var oDataTable;
 $(document).ready(function(){
     function fnUpdateTable(){
+        // load in results html: (this should be done async using a callback instead, but datatables mostly makes this irrelevant)
+        $('#results').html( EvaluateRelevance('html concatenations of trs of tds of unique values of values of results of bes properties "Common Desktop and Start Menu Shortcuts"') );
         // incase there is an existing table, destroy it:
         $("#resultsTable").dataTable().fnDestroy();
-        // load in results html:
-        $('#results').html( EvaluateRelevance('html concatenations of trs of tds of unique values of values of results of bes properties "Common Desktop and Start Menu Shortcuts"') );
+        // create datatable from new results:
         oDataTable = $('#resultsTable').dataTable( {
             "scrollY": '80vh',
             "scrollCollapse": true,
