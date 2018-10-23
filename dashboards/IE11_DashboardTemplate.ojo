@@ -14,8 +14,6 @@
         <HTML><![CDATA[
 <script language="javascript">InsertUtilityDiv();</script>
 
-
-
 <h2>IE11 Dashboard Template</h2>
 <h3><span>IE DocumentMode: </span> <span id="resultDocMode">detecting…</span></h3>
 
@@ -23,9 +21,6 @@
 // get the IE effective documentMode
 document.getElementById('resultDocMode').innerHTML = document.documentMode;
 </script>
-
-
-
         ]]></HTML>
         </Page>
     </Wizard>
