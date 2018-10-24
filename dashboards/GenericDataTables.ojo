@@ -27,6 +27,7 @@
 </div>
 
 <script language="javascript">
+// provide scope for the fnSortNeutral()
 var oDataTable;
 
 $(document).ready(function(){
@@ -34,7 +35,7 @@ $(document).ready(function(){
         // incase there is an existing datatable, destroy it:
         $("#resultsTable").dataTable().fnDestroy();
         // load in results html: (this should be done async using a callback instead)
-        $('#TableDiv').html( EvaluateRelevance( 'tables "id=\'resultsTable\' class=\'compact display\' width=\'100%25\'" of html concatenations of ( theads of trs of html concatenations of tds of ("Data") of substrings "</td>" of preceding texts of firsts "</tr>" of (it as string) ; tbodys of it ) of html concatenations of trs of ( html concatenations of tds of (names of it; ids of it as string; agent types of it as string) ) of (bes computers;bes computers)' ) );
+        $('#TableDiv').html( EvaluateRelevance( 'tables "id=\'resultsTable\' class=\'compact display\' width=\'100%25\'" of html concatenations of ( theads of trs of html concatenations of tds of ("Data") of substrings "</td>" of preceding texts of firsts "</tr>" of (it as string) ; tbodys of it ) of html concatenations of trs of ( html concatenations of tds of (names of it; ids of it as string) ) of bes computers' ) );        
         // create datatable from new results:
         oDataTable = $('#resultsTable').dataTable( {
             "scrollY": '80vh',
@@ -48,32 +49,6 @@ $(document).ready(function(){
         });
     }
 
-	// https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
-    // https://datatables.net/plug-ins/api/fnSortNeutral
-    // https://cdn.datatables.net/plug-ins/1.10.13/api/fnSortNeutral.js
-    //  - Author: https://datatables.net/forums/profile/1/allan
-    jQuery.fn.dataTableExt.oApi.fnSortNeutral = function ( oSettings )
-    {
-        /* Remove any current sorting */
-        oSettings.aaSorting = [];
-        /* Sort display arrays so we get them in numerical order */
-        oSettings.aiDisplay.sort( function (x,y) {
-            return x-y;
-        } );
-        oSettings.aiDisplayMaster.sort( function (x,y) {
-            return x-y;
-        } );
-        /* Redraw */
-        oSettings.oApi._fnReDraw( oSettings );
-    };
-	
-    // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
-    //  - Author: https://datatables.net/forums/profile/6627/manifestinteractive
-    $('.sorting, .sorting_asc, .sorting_desc').dblclick(function(){
-        oDataTable.fnSortNeutral();
-        return false;
-    });
-    
     // initial table:
     fnUpdateTable();
 });
