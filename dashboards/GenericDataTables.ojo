@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<BES>
+  <Wizard>
+    <Title>Custom - Generic Results Table</Title>
+    <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+    <DefaultPage>DefaultPage</DefaultPage>
+    <Page Name="DefaultPage" DocType="HTML5" >
+        <Title>Generic Results Table</Title>
+        <Head><![CDATA[
+            <meta http-equiv="X-UA-Compatible" content="IE=11">
+
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/css/jquery.dataTables.min.css" integrity="sha256-+Z1rYa3ys5OdZNUck5G7lBvb8A13OrYwvf+d8PfEaHQ=" crossorigin="anonymous" />
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/js/jquery.dataTables.min.js" integrity="sha256-yWA356lDhruy1J8jGncaMWKAPYDbK47OKb0uT/aELLc=" crossorigin="anonymous"></script>
+
+            <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
+        ]]></Head>
+        <HTML><![CDATA[
+<script language="javascript">InsertUtilityDiv();</script>
+
+<h2>Generic Results Table</h2>
+
+<div id="TableDiv">
+
+</div>
+
+<script language="javascript">
+var oDataTable;
+
+$(document).ready(function(){
+    function fnUpdateTable(){
+        // incase there is an existing datatable, destroy it:
+        $("#resultsTable").dataTable().fnDestroy();
+        // load in results html: (this should be done async using a callback instead)
+        $('#TableDiv').html( EvaluateRelevance( 'tables "id=\'resultsTable\' class=\'compact display\' width=\'100%25\'" of html concatenations of ( theads of trs of html concatenations of tds of ("Data") of substrings "</td>" of preceding texts of firsts "</tr>" of (it as string) ; tbodys of it ) of html concatenations of trs of ( html concatenations of tds of (names of it; ids of it as string; agent types of it as string) ) of (bes computers;bes computers)' ) );
+        // create datatable from new results:
+        oDataTable = $('#resultsTable').dataTable( {
+            "scrollY": '80vh',
+            "scrollCollapse": true,
+            "paging": false,
+            "bDestroy": true,
+            searchDelay: 100,
+            "columnDefs": [
+                { "title": "Data", "targets": "_all" }
+            ]
+        });
+    }
+
+	// https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
+    // https://datatables.net/plug-ins/api/fnSortNeutral
+    // https://cdn.datatables.net/plug-ins/1.10.13/api/fnSortNeutral.js
+    //  - Author: https://datatables.net/forums/profile/1/allan
+    jQuery.fn.dataTableExt.oApi.fnSortNeutral = function ( oSettings )
+    {
+        /* Remove any current sorting */
+        oSettings.aaSorting = [];
+        /* Sort display arrays so we get them in numerical order */
+        oSettings.aiDisplay.sort( function (x,y) {
+            return x-y;
+        } );
+        oSettings.aiDisplayMaster.sort( function (x,y) {
+            return x-y;
+        } );
+        /* Redraw */
+        oSettings.oApi._fnReDraw( oSettings );
+    };
+	
+    // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
+    //  - Author: https://datatables.net/forums/profile/6627/manifestinteractive
+    $('.sorting, .sorting_asc, .sorting_desc').dblclick(function(){
+        oDataTable.fnSortNeutral();
+        return false;
+    });
+    
+    // initial table:
+    fnUpdateTable();
+});
+
+</script>
+<style>
+div#wr_datapage > br + br {
+    display: none;
+}
+</style>
+        ]]></HTML>
+        </Page>
+    </Wizard>
+</BES>
