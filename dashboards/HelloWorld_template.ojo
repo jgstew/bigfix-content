@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<BES>
+  <Wizard>
+    <Title>Custom - Hello World</Title>
+    <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+    <DefaultPage>DefaultPage</DefaultPage>
+    <Page Name="DefaultPage" DocType="HTML5" >
+        <Title>Hello World</Title>
+        <Head><![CDATA[
+            <meta http-equiv="X-UA-Compatible" content="IE=11">
+            <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
+        ]]></Head>
+        <HTML><![CDATA[
+<script language="javascript">InsertUtilityDiv();</script>
+
+<h2>Hello World</h2>
+
+<?Relevance ps of concatenations of ("Number of Computers: ";it as string) of number of bes computers ?>
+
+<div id="result"/>
+
+<script language="javascript">
+    document.getElementById('result').innerHTML = EvaluateRelevance('tables of tbodys of html concatenations of ( trs of html concatenations of tds of (names of it; ids of it as string; operating system of it) of it) of (bes computers)');
+</script>
+<style>
+div#wr_datapage > br + br {
+    display: none;
+}
+table {
+    border-collapse: collapse
+}
+table, th, td {
+    border: 1px solid black;
+    padding: 5px;
+}
+</style>
+        ]]></HTML>
+        </Page>
+    </Wizard>
+</BES>
