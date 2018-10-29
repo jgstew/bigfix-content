@@ -27,8 +27,7 @@
 </div>
 
 <script language="javascript">
-// provide scope for the fnSortNeutral()
-var oDataTable;
+var SessionRelevanceQuery = '( html concatenations of tds of (name of it; id of it as string) ) of bes tasks';
 
 $(document).ready(function(){
     // initial table:
@@ -42,10 +41,10 @@ function fnUpdateTable(){
         $("#resultsTable").dataTable().fnDestroy();
     }
     // load in results html: (this should probably be done async using a callback instead)
-    $('#TableDiv').html( EvaluateRelevance( 'tables "id=\'resultsTable\' class=\'compact display\' width=\'100%25\'" of html concatenations of ( theads of trs of html concatenations of tds of ("Data") of substrings "</td>" of preceding texts of firsts "</tr>" of (it as string) ; tbodys of it ) of html concatenations of trs of ( html concatenations of tds of (name of it; id of it as string) ) of bes tasks' ) );        
+    $('#TableDiv').html( EvaluateRelevance( 'tables "id=\'resultsTable\' class=\'compact display\' width=\'100%25\'" of html concatenations of ( theads of trs of html concatenations of tds of ("Data") of substrings "</td>" of preceding texts of firsts "</tr>" of (it as string) ; tbodys of it ) of html concatenations of trs of ' + SessionRelevanceQuery ) );        
     // create datatable from new results:
     if (jQuery().dataTable) {
-        oDataTable = $('#resultsTable').dataTable( {
+        $('#resultsTable').dataTable( {
             "scrollY": '80vh',
             "scrollCollapse": true,
             "paging": true,
