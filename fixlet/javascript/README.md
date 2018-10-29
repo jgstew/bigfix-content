@@ -7,7 +7,7 @@ I'm changing up this a bit to a newer convention because I may use it for CSS or
 - Must be a Task: (Not a Fixlet)  `<BES><Task></Task></BES>`
  - This is to optimize the session relevance because there are generally very few tasks compared to fixlets.
 - Title (Name): Must contain `Shared Library`
- - Title should follow convension: `Shared Library - Javascript - _JS_LIBRARY_NAME_.js - _JS_LIBRARY_VERSION_`
+ - Title should follow convention: `Shared Library - Javascript - _JS_LIBRARY_NAME_.js - _JS_LIBRARY_VERSION_`
 - MIMEField `version` must contain `_JS_LIBRARY_VERSION_`
 - MIMEField `name` is `_JS_LIBRARY_NAME_.js`
 
