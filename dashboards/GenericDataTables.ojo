@@ -10,10 +10,10 @@
         <Head><![CDATA[
             <meta http-equiv="X-UA-Compatible" content="IE=11">
 
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/css/jquery.dataTables.min.css" integrity="sha256-+Z1rYa3ys5OdZNUck5G7lBvb8A13OrYwvf+d8PfEaHQ=" crossorigin="anonymous" />
-
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/jquery.dataTables.min.js" integrity="sha256-t5ZQTZsbQi8NxszC10CseKjJ5QeMw5NINtOXQrESGSU=" crossorigin="anonymous"></script>
+            <?Relevance /* jquery.dataTables.min.css */ (html it) of "<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/css/jquery.dataTables.min.css' />" ?>
+            
+            <?Relevance /* jquery.min.js */ (html it) of ( ( unique value of (it as string) of ( html tag ("script", attr list of ("title", item 0 of it & " " & item 1 of it), (html it) of item 2 of it ) ) of (name of mime fields whose(name of it ends with ".js") of it, mime field "version" of it, value of mime fields whose(name of it ends with ".js") of it) of bes tasks whose(exists mime fields "version" whose(it="3.1.1") of it AND name of it starts with "Shared Javascript Library" AND exists mime fields whose("jquery.min.js" = name of it) of it) ) | "<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>" ) ?>
+            <?Relevance /* jquery.dataTables.min.js */ (html it) of ( ( unique value of (it as string) of ( html tag ("script", attr list of ("title", item 0 of it & " " & item 1 of it), (html it) of item 2 of it ) ) of (name of mime fields whose(name of it ends with ".js") of it, mime field "version" of it, value of mime fields whose(name of it ends with ".js") of it) of bes tasks whose(exists mime fields "version" whose(it="1.10.19") of it AND name of it starts with "Shared Javascript Library" AND exists mime fields whose("jquery.dataTables.min.js" = name of it) of it) ) | "<script src='https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/jquery.dataTables.min.js'></script>" ) ?>
 
             <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
         ]]></Head>
