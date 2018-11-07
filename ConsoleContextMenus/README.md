@@ -4,4 +4,4 @@
 
 
 TODO: 
-- Dell Warranty Check not excluding non-dell systems ``
+- Dell Warranty Check not excluding non-dell systems `exists unique value of values whose(it as lowercase contains \"dell\") of property results whose (name of property of it = \"Computer Manufacturer - Windows\" ) of current computer`
