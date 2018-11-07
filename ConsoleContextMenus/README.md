@@ -4,4 +4,4 @@
 
 
 TODO: 
-- Dell Warranty`https://www.dell.com/support/home/uk/en/ukbsdt1/product-support/servicetag/" & value & "/warranty?ref=captchasuccess`
+- Dell Warranty Check not excluding non-dell systems ``
