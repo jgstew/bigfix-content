@@ -28,7 +28,7 @@
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
 // exit code of -999 means NO last command time value returned at all
-exit { (it / minute) of (now - (last command time of client | now + (999 * minute) ) ) }
+exit { (it / minute) of (now - (last command time of client | ( now + (999 * minute) ) ) ) }
 </ActionScript>
 		</DefaultAction>
 	</Task>
