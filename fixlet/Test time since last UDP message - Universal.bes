@@ -27,7 +27,7 @@
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
-// exit code of 9999 means NO last command time value returned at all
+// exit code of -999 means NO last command time value returned at all
 exit { (it / minute) of (now - (last command time of client | now + (999 * minute) ) ) }
 </ActionScript>
 		</DefaultAction>
