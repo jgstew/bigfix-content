@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Test time since last UDP message - Universal</Title>
+		<Description><![CDATA[<P>&nbsp;</P>
+<P>The exit code should give the time in minutes&nbsp;since last UDP notification or -999 if no last UDP time. </P>
+<P>If a system is running this action very soon after recieving the UDP, then the result should be 0 +/- a little bit, which should be the case for most systems that do get UDP.</P>
+<P>&nbsp;</P>]]></Description>
+		<Relevance>true</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2018-11-14</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 14 Nov 2018 19:26:25 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// exit code of 9999 means NO last command time value returned at all
+exit { (it / minute) of (now - (last command time of client | now + (999 * minute) ) ) }
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
