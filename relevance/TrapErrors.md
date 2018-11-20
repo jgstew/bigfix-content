@@ -5,7 +5,7 @@ This is a method that can be used to try to force a boolean result on error: (re
   
 Examples:
 
-- https://github.com/jgstew/remote-relevance/blob/master/Remote_Relevance_Action_TEMPLATE.bes.xml#L9
 - https://forum.bigfix.com/t/deal-with-non-existing-plural-values-in-relevance-language/19297/3
+- https://github.com/jgstew/remote-relevance/blob/master/Remote_Relevance_Action_TEMPLATE.bes.xml#L9
 
 This works both in Client Relevance & Session Relevance
