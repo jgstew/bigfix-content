@@ -9,3 +9,8 @@ Examples:
 - https://github.com/jgstew/remote-relevance/blob/master/Remote_Relevance_Action_TEMPLATE.bes.xml#L9
 
 This works both in Client Relevance & Session Relevance
+
+
+Related:
+
+- https://www.ibm.com/developerworks/community/blogs/e9d21113-aa93-467e-ac77-a0d20a21eaec/entry/BigFix_Relevance_Guard_or_Guarded_Relevance?lang=es
