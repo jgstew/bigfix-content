@@ -35,26 +35,33 @@ $(document).ready(function(){
 });
 
 function fnUpdateTable(){
+    function fnEvalRelCallback(strRelResult){
+        //console.log("inside Callback", JSON.stringify(strRelResult, null, 2) );
+        $('#TableDiv').html( strRelResult["0"] );        
+        // create datatable from new results:
+        if ( jQuery().dataTable) {
+            $('#resultsTable').dataTable( {
+                "scrollY": '80vh',
+                "scrollCollapse": true,
+                "paging": true,
+                "bDestroy": true,
+                searchDelay: 100,
+                "columnDefs": [
+                    { "title": "Data", "targets": "_all" }
+                ]
+            });
+        }
+    }
+
     // check that datatable library present
     if (jQuery().dataTable) {
         // incase there is an existing datatable, destroy it:
         $("#resultsTable").dataTable().fnDestroy();
     }
+    
+    Relevance( 'tables "id=\'resultsTable\' class=\'compact display\' width=\'100%25\'" of html concatenations of ( theads of trs of html concatenations of tds of ("Data") of substrings "</td>" of preceding texts of firsts "</tr>" of (it as string) ; tbodys of it ) of html concatenations of trs of ' + SessionRelevanceQuery, {success: fnEvalRelCallback, failure: fnEvalRelCallback} )
+    //console.log("after Relevance(");
     // load in results html: (this should probably be done async using a callback instead)
-    $('#TableDiv').html( EvaluateRelevance( 'tables "id=\'resultsTable\' class=\'compact display\' width=\'100%25\'" of html concatenations of ( theads of trs of html concatenations of tds of ("Data") of substrings "</td>" of preceding texts of firsts "</tr>" of (it as string) ; tbodys of it ) of html concatenations of trs of ' + SessionRelevanceQuery ) );        
-    // create datatable from new results:
-    if (jQuery().dataTable) {
-        $('#resultsTable').dataTable( {
-            "scrollY": '80vh',
-            "scrollCollapse": true,
-            "paging": true,
-            "bDestroy": true,
-            searchDelay: 100,
-            "columnDefs": [
-                { "title": "Data", "targets": "_all" }
-            ]
-        });
-    }
 }
 </script>
 <style>
