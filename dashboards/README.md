@@ -1,3 +1,10 @@
+
+## Try these self directed Dashboard Labs:
+
+- https://github.com/jgstew/jgstew.github.io/blob/master/_posts/2018-10-29-Debug-Dashboard-In-BigFix-Console.md
+
+This is probably the quickest way to get started with Dashboards and learn about them. 
+
 ## This folder contains Dashboards / Wizards for the BigFix Console.
 
 **What is a Dashboard?**
