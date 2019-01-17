@@ -74,20 +74,11 @@ An even better option: https://github.com/jgstew/bigfix-content/tree/master/fixl
 - Dashboard to help write session relevance for computer reporting: https://bigfix.me/relevance/details/3020326
 - Deploy any fixlet or task or baseline with gradual roll out relevance added automatically
 - MO Console Operator Management
- - help disable users that have not logged in over X days
- - delete console users that have been disabled for X days
- - help manage roles
- - help provision users
- - help with computer assignments
-- [Client Settings Manager](https://github.com/jgstew/bigfix-content/blob/master/dashboards/ClientSettingsManager.ojo)
- - Help set client settings with drop downs
- - Help delete/unset client settings
- - What client settings exist only on a very small number of endpoints, which could be misconfigurations
-  - https://bigfix.me/relevance/details/3019347
-  - https://bigfix.me/relevance/details/3019348
- - Detect conflicting policy actions that set client settings (reapplication count? actionscript parsing?)
- - Detect overuse of clientsettings (too many unique setting names or name/value pairs)
-  - client settings are gathered every report, which can be a problem
+  - help disable users that have not logged in over X days
+  - delete console users that have been disabled for X days
+  - help manage roles
+  - help provision users
+  - help with computer assignments
 - Improved Fixlet Maker Dashboard - something to make content from templates
 - Dashboard to help make parameterized fixlets
 - "Computer Controller" - pick a particular computer from a table, then control it specifically
