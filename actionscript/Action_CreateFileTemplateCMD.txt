@@ -1,0 +1,22 @@
+
+// Make sure __createfile doesn't already exist
+delete __createfile
+
+// generate __createfile contents: (must escape {})
+createfile until _END_OF_FILE_
+
+echo Hello World!
+
+_END_OF_FILE_
+
+// delete destination of __createfile to be sure it doesn't already exist
+delete C:\Windows\Temp\_BigFix_Command.bat
+
+// put file in place to run:
+copy __createfile C:\Windows\Temp\_BigFix_Command.bat
+
+// run it, waiting a maximum of 3 minutes:
+override wait
+timeout_seconds=180
+wait CMD /C C:\Windows\Temp\_BigFix_Command.bat > C:\Windows\Temp\_BigFix_Command_01.log
+
