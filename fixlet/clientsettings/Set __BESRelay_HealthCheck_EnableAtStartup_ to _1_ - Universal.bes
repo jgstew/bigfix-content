@@ -7,6 +7,7 @@
 <P>&nbsp;</P>]]></Description>
 		<Relevance>exists relay service OR exists main gather service</Relevance>
 		<Relevance>not exists settings "_BESRelay_HealthCheck_EnableAtStartup" whose("1" = value of it) of client</Relevance>
+		<Relevance><![CDATA[exists versions whose(it >= "9.2") of relay services]]></Relevance>
 		<Category>Configuration: Client Settings</Category>
 		<DownloadSize>0</DownloadSize>
 		<Source>Custom Dashboard - Client Settings Manager</Source>
@@ -17,7 +18,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Fri, 22 Feb 2019 00:51:46 +0000</Value>
+			<Value>Fri, 22 Feb 2019 00:53:45 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
