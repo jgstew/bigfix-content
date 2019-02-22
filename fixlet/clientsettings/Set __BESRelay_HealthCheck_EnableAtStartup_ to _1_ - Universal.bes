@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Set "_BESRelay_HealthCheck_EnableAtStartup" to "1" - Universal</Title>
+		<Description><![CDATA[<P>This task will set a client setting</P>
+<P>This task was automatically generated using the Dashboard: "Custom - Client Settings Manager"</P>
+<P>&nbsp;</P>]]></Description>
+		<Relevance>exists relay service OR exists main gather service</Relevance>
+		<Relevance>not exists settings "_BESRelay_HealthCheck_EnableAtStartup" whose("1" = value of it) of client</Relevance>
+		<Category>Configuration: Client Settings</Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Custom Dashboard - Client Settings Manager</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2019-02-22</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 22 Feb 2019 00:51:46 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to set the Client Setting</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+setting "_BESRelay_HealthCheck_EnableAtStartup"="1" on "{ parameter "action issue date" of action}" for client
+			</ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+			<Settings>
+				<PreActionShowUI>false</PreActionShowUI>
+				<HasRunningMessage>false</HasRunningMessage>
+				<HasTimeRange>false</HasTimeRange>
+				<HasStartTime>false</HasStartTime>
+				<HasEndTime>false</HasEndTime>
+				<HasDayOfWeekConstraint>false</HasDayOfWeekConstraint>
+				<UseUTCTime>false</UseUTCTime>
+				<ActiveUserRequirement>NoRequirement</ActiveUserRequirement>
+				<ActiveUserType>AllUsers</ActiveUserType>
+				<HasWhose>false</HasWhose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>false</Reapply>
+				<HasReapplyLimit>true</HasReapplyLimit>
+				<ReapplyLimit>3</ReapplyLimit>
+				<HasReapplyInterval>false</HasReapplyInterval>
+				<HasRetry>false</HasRetry>
+				<HasTemporalDistribution>false</HasTemporalDistribution>
+				<ContinueOnErrors>true</ContinueOnErrors>
+				<PostActionBehavior Behavior="Nothing"></PostActionBehavior>
+				<IsOffer>false</IsOffer>
+			</Settings>
+			<SettingsLocks>
+				<ActionUITitle>false</ActionUITitle>
+				<PreActionShowUI>false</PreActionShowUI>
+				<PreAction>
+					<Text>false</Text>
+					<AskToSaveWork>false</AskToSaveWork>
+					<ShowActionButton>false</ShowActionButton>
+					<ShowCancelButton>false</ShowCancelButton>
+					<DeadlineBehavior>false</DeadlineBehavior>
+					<ShowConfirmation>false</ShowConfirmation>
+				</PreAction>
+				<HasRunningMessage>false</HasRunningMessage>
+				<RunningMessage>
+					<Text>false</Text>
+				</RunningMessage>
+				<TimeRange>false</TimeRange>
+				<StartDateTimeOffset>false</StartDateTimeOffset>
+				<EndDateTimeOffset>false</EndDateTimeOffset>
+				<DayOfWeekConstraint>false</DayOfWeekConstraint>
+				<ActiveUserRequirement>false</ActiveUserRequirement>
+				<ActiveUserType>false</ActiveUserType>
+				<Whose>false</Whose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>false</Reapply>
+				<ReapplyLimit>false</ReapplyLimit>
+				<RetryCount>false</RetryCount>
+				<RetryWait>false</RetryWait>
+				<TemporalDistribution>false</TemporalDistribution>
+				<ContinueOnErrors>false</ContinueOnErrors>
+				<PostActionBehavior>
+					<Behavior>false</Behavior>
+					<AllowCancel>false</AllowCancel>
+					<Deadline>false</Deadline>
+					<Title>false</Title>
+					<Text>false</Text>
+				</PostActionBehavior>
+				<IsOffer>false</IsOffer>
+				<AnnounceOffer>false</AnnounceOffer>
+				<OfferCategory>false</OfferCategory>
+				<OfferDescriptionHTML>false</OfferDescriptionHTML>
+			</SettingsLocks>
+		</DefaultAction>
+	</Task>
+</BES>
