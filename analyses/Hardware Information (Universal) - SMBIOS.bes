@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Hardware Information (Universal) - SMBIOS</Title>
+		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Relevance>exists smbios</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2019-02-26</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 26 Feb 2019 22:00:25 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="All SMBIOS values" ID="1" EvaluationPeriod="P2D"><![CDATA[unique values of ( ( item 0 of it & name of item 1 of it as trimmed string & "=" & ( (item 1 of it as string as trimmed string) | (item 1 of it as hexadecimal) | "ErrorUnknownValue" ) ) | "ErrorUnknownName") of (name of it & ": ", values of it) of structures of smbios]]></Property>
+	</Analysis>
+</BES>
