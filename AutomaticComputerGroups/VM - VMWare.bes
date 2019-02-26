@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<ComputerGroup>
+		<Title>VM - VMWare</Title>
+		<Domain>BESC</Domain>
+		<JoinByIntersection>true</JoinByIntersection>
+		<SearchComponentRelevance Comparison="IsTrue">
+			<Relevance>exists (it as string) whose(it starts with "VMware Virtual Platform") of values "product_name" of structures "system_information" of smbioses</Relevance>
+		</SearchComponentRelevance>
+	</ComputerGroup>
+</BES>
