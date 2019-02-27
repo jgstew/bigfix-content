@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Get Azure Metadata - Universal</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance> /* isAzure? */ exists ( (it as string) of values "manufacturer" of it, (it as string) of values "product_name" of it, (it as string) of values "version" of it ) whose(item 0 of it starts with "Microsoft" AND item 1 of it starts with "Virtual" AND item 2 of it does not start with "Hyper-V") of structures "system_information" of smbioses</Relevance>
+		<Relevance><![CDATA[not exists files whose(name of it as lowercase starts with "azure_metadata.json" AND (now - modification time of it) < 1*day ) of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
+		<Relevance>exists files whose(name of it as lowercase = "curl" OR name of it as lowercase = "curl.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2019-02-26</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 27 Feb 2019 01:58:47 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+
+// https://azure.microsoft.com/en-us/blog/announcing-general-availability-of-azure-instance-metadata-service/
+
+parameter "MetadataURL" = "http://169.254.169.254/metadata/instance?api-version=2017-04-02"
+parameter "ArgHeader" = "{ if (windows of operating system) then "@{‘Metadata’=’true’}}" else "Metadata:true" }"
+
+wait curl -H {parameter "ArgHeader"} {parameter "MetadataURL"} -o "{pathname of folders "Logs" of folders "__Global" of data folders of client}{if windows of operating system then "\" else "/"}azure_metadata.json"
+
+// https://curl.haxx.se/libcurl/c/libcurl-errors.html
+
+continue if{ exists exit codes whose(0=it) of active actions }
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
