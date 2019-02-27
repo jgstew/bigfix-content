@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Azure Metadata - Universal</Title>
+		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Relevance>exists files whose(name of it as lowercase starts with "azure_metadata.json") of folders "Logs" of folders "__Global" of data folders of client</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2019-02-26</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 27 Feb 2019 01:34:03 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="azure_metadata" ID="1" EvaluationPeriod="PT12H">lines of files whose(name of it as lowercase starts with "azure_metadata.json") of folders "Logs" of folders "__Global" of data folders of client</Property>
+	</Analysis>
+</BES>
