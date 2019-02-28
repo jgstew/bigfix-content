@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Collect BES Relay Health Dashboard Cache Metric - Improved</Title>
+		<Description><![CDATA[<TABLE>
+<TBODY>
+<TR>
+<TD>The original analysis did not collect this data from the root server, but this one has been rewritten to work with both root and relay. </TD></TR></TBODY></TABLE>]]></Description>
+		<Relevance><![CDATA[version of client >= "5.1"]]></Relevance>
+		<Relevance>exists relay services OR exists main gather services</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2018-09-06</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-first-propagation</Name>
+			<Value>Tue, 18 Dec 2018 16:03:16 +0000</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 28 Feb 2019 19:58:39 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="Oldest Access to Cached File" ID="1" EvaluationPeriod="PT6H">unique values of (it as string as integer) of rows of statements "select cast((julianday() - julianday(datetime(MIN(LastAccessed)/1000000,'unixepoch','localtime'))) as int) from FILES" of sqlite databases of files "DownloadCache.db" of folders "config" of folders "Mirror Server" of ( folders "/var/opt/BESRelay"; folders "/var/opt/BESServer"; (if (windows of operating system) then ( (parent folders of regapps "BESRelay.exe") ; ( (folder it) of (it as string) of values "StoragePath" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server\GlobalOptions" of (x64 registries; x32 registries) ) ) else NOTHINGS) )</Property>
+		<Property Name="Cache Size" ID="2" EvaluationPeriod="PT6H">unique values of (it as string as integer) of rows of statements "select cast(sum(Size)/(1024 * 1024) as int) from FILES" of sqlite databases of files "DownloadCache.db" of folders "config" of folders "Mirror Server" of ( folders "/var/opt/BESRelay"; folders "/var/opt/BESServer"; (if (windows of operating system) then ( (parent folders of regapps "BESRelay.exe") ; ( (folder it) of (it as string) of values "StoragePath" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server\GlobalOptions" of (x64 registries; x32 registries) ) ) else NOTHINGS) )</Property>
+		<Property Name="Maximum Cache Size" ID="3" EvaluationPeriod="PT1H">unique value of values of settings "_BESGather_Download_CacheLimitMB" of clients | "1024"</Property>
+	</Analysis>
+</BES>
