@@ -17,3 +17,4 @@
 ### Session Relevance:
 
 1. CVEs in Windows OS Patch site: `unique values of (it as trimmed string) of substrings separated by "; " of unique values of cve id lists of fixlets of bes site whose(name of it = "Enterprise Security")`
+1. number of patch items using officec2rclient: `number of scripts whose(it as lowercase contains "OfficeC2RClient" as lowercase) of actions of fixlets of bes sites whose(name of it = "Enterprise Security" OR name of it = "Updates for Windows Applications")`
