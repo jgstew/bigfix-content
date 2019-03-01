@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title><![CDATA[Modern Metro UWP Store Apps - Windows & WinRT]]></Title>
+		<Description><![CDATA[<P>&nbsp;</P>
+<UL>
+<LI><A href="https://www.reddit.com/r/Windows10/comments/404kxx/where_are_windows_store_apps_executable_files/">https://www.reddit.com/r/Windows10/comments/404kxx/where_are_windows_store_apps_executable_files/</A> 
+<LI><A href="https://technet.microsoft.com/en-us/library/hh824882.aspx">https://technet.microsoft.com/en-us/library/hh824882.aspx</A> 
+<LI>`C:\Windows\SystemApps` 
+<LI><A href="https://forum.bigfix.com/t/universal-windows-platform-uwp-apps-inspector/20571/9">https://forum.bigfix.com/t/universal-windows-platform-uwp-apps-inspector/20571/9</A> 
+<LI></LI></UL>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance><![CDATA[version of operating system >= "6.2"]]></Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2017-08-20</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 06 Sep 2017 04:49:23 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="winrt packages" ID="1" EvaluationPeriod="P2D">number of winrt packages</Property>
+		<Property Name="# Unique Per User All Users - Folders" ID="2" EvaluationPeriod="P1D">number of unique values whose(it contains "_") of names of folders of folders "AppData\Local\Packages" of folders of folders "C:\Users"</Property>
+		<Property Name="# in WindowsApps Staging" ID="3" EvaluationPeriod="P2D">number of unique values of names of folders whose(name of it contains "_") of folders "WindowsApps" of folders whose(name of it starts with "Program Files") of folders "C:\"</Property>
+		<Property Name="Names of Infused Windows Store Apps" ID="4" EvaluationPeriod="P1D">unique values of (it as string) of node values of selects "/Bundle/Identity/@Name" of xml documents of files "AppxBundleManifest.xml" of folders "AppxMetadata" of folders of folders "InfusedApps\Applications" of windows folder</Property>
+		<Property Name="# Unique Per User All Users - Registry" ID="5">number of unique values of names of keys of keys "Software\Classes\ActivatableClasses\Package" of keys of keys "HKEY_USERS" of (x64 registries; x32 registries)</Property>
+		<Property Name="Unique names of WindowsApps in Staging" ID="6" EvaluationPeriod="P2D">unique values of node values of selects "/Package/Identity/@Name" of xml documents of files "AppxManifest.xml" of folders whose(name of it contains "_" AND name of it does not start with "Microsoft.NET.Native." AND name of it does not start with "Microsoft.VCLibs.") of folders "WindowsApps" of folders whose(name of it starts with "Program Files") of folders "C:\"</Property>
+	</Analysis>
+</BES>
