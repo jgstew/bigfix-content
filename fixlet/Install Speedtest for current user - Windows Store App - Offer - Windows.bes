@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Install Speedtest for current user - Windows Store App - Offer - Windows</Title>
+		<Description>Install Windows Store App for current user. Has Icon metadata for new Self Service UI. </Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>1 = number of folders "AppData\Local\Packages" of (folders it) of unique values of home directories of users of (current users;logged on users)</Relevance>
+		<Relevance>not exists folders whose(name of it starts with "Ookla.SpeedtestbyOokla_") of folders "AppData\Local\Packages" of (folders it) of unique values of home directories of users of (current users;logged on users)</Relevance>
+		<Category>Offer</Category>
+		<DownloadSize>104632873</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2019-02-19</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>action-ui-metadata</Name>
+			<Value>{"version": "1.6.108.0", "size": "104632873", "icon": "data:image/png;base64,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"}</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 06 Mar 2019 01:29:38 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+parameter "AppxFile" = "Ookla.SpeedtestbyOokla_neutral___43tkc6nmykmb6.AppxBundle"
+
+
+prefetch Ookla.SpeedtestbyOokla_neutral___43tkc6nmykmb6.AppxBundle sha1:df25327bffd243a29df911c64593f0103d1d9ea1 size:104632873 https://f001.backblazeb2.com/file/BigFix/Ookla.SpeedtestbyOokla_1.6.108.0_neutral___43tkc6nmykmb6.AppxBundle sha256:6d47655d3cfe8ded97ad32b7030cca529b36948de3e6285a0fd1919d495547a6
+
+parameter "CurrentUserTempFolder" = "{ pathnames of folders "AppData\Local\Temp" of (folders it) of unique value of home directories of users of (current users;logged on users) }\BES"
+
+if{ not exists folders (parameter "CurrentUserTempFolder") }
+folder create {parameter "CurrentUserTempFolder"}
+endif
+
+
+delete "{parameter "CurrentUserTempFolder"}\{parameter "AppxFile"}"
+copy "__Download\{parameter "AppxFile"}" "{parameter "CurrentUserTempFolder"}\{parameter "AppxFile"}"
+
+override wait
+RunAs=currentuser
+Hidden=true
+wait powershell -ExecutionPolicy Bypass -command "Add-AppxPackage -Path '{parameter "CurrentUserTempFolder"}\{parameter "AppxFile"}'"
+
+// cleanup
+//  does this need a pause while before cleanup?
+delete "{parameter "CurrentUserTempFolder"}\{parameter "AppxFile"}"
+</ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+			<Settings>
+				<ActionUITitle>Install Speedtest</ActionUITitle>
+				<PreActionShowUI>false</PreActionShowUI>
+				<HasRunningMessage>false</HasRunningMessage>
+				<HasTimeRange>false</HasTimeRange>
+				<HasStartTime>false</HasStartTime>
+				<HasEndTime>false</HasEndTime>
+				<HasDayOfWeekConstraint>false</HasDayOfWeekConstraint>
+				<UseUTCTime>false</UseUTCTime>
+				<ActiveUserRequirement>NoRequirement</ActiveUserRequirement>
+				<ActiveUserType>AllUsers</ActiveUserType>
+				<HasWhose>false</HasWhose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>true</Reapply>
+				<HasReapplyLimit>false</HasReapplyLimit>
+				<HasReapplyInterval>false</HasReapplyInterval>
+				<HasRetry>true</HasRetry>
+				<RetryCount>5</RetryCount>
+				<RetryWait Behavior="WaitForReboot">PT1H</RetryWait>
+				<HasTemporalDistribution>false</HasTemporalDistribution>
+				<ContinueOnErrors>true</ContinueOnErrors>
+				<PostActionBehavior Behavior="Nothing"></PostActionBehavior>
+				<IsOffer>true</IsOffer>
+				<AnnounceOffer>false</AnnounceOffer>
+				<OfferCategory></OfferCategory>
+				<OfferDescriptionHTML>Install Speedtest</OfferDescriptionHTML>
+			</Settings>
+			<SettingsLocks>
+				<ActionUITitle>false</ActionUITitle>
+				<PreActionShowUI>false</PreActionShowUI>
+				<PreAction>
+					<Text>false</Text>
+					<AskToSaveWork>false</AskToSaveWork>
+					<ShowActionButton>false</ShowActionButton>
+					<ShowCancelButton>false</ShowCancelButton>
+					<DeadlineBehavior>false</DeadlineBehavior>
+					<ShowConfirmation>false</ShowConfirmation>
+				</PreAction>
+				<HasRunningMessage>false</HasRunningMessage>
+				<RunningMessage>
+					<Text>false</Text>
+				</RunningMessage>
+				<TimeRange>false</TimeRange>
+				<StartDateTimeOffset>false</StartDateTimeOffset>
+				<EndDateTimeOffset>false</EndDateTimeOffset>
+				<DayOfWeekConstraint>false</DayOfWeekConstraint>
+				<ActiveUserRequirement>false</ActiveUserRequirement>
+				<ActiveUserType>false</ActiveUserType>
+				<Whose>false</Whose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>false</Reapply>
+				<ReapplyLimit>false</ReapplyLimit>
+				<RetryCount>false</RetryCount>
+				<RetryWait>false</RetryWait>
+				<TemporalDistribution>false</TemporalDistribution>
+				<ContinueOnErrors>false</ContinueOnErrors>
+				<PostActionBehavior>
+					<Behavior>false</Behavior>
+					<AllowCancel>false</AllowCancel>
+					<Deadline>false</Deadline>
+					<Title>false</Title>
+					<Text>false</Text>
+				</PostActionBehavior>
+				<IsOffer>false</IsOffer>
+				<AnnounceOffer>false</AnnounceOffer>
+				<OfferCategory>false</OfferCategory>
+				<OfferDescriptionHTML>false</OfferDescriptionHTML>
+			</SettingsLocks>
+		</DefaultAction>
+	</Task>
+</BES>
