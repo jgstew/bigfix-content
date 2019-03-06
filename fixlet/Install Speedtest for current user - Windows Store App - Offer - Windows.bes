@@ -20,7 +20,7 @@
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Wed, 06 Mar 2019 01:29:38 +0000</Value>
+			<Value>Wed, 06 Mar 2019 01:39:37 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -37,6 +37,7 @@ prefetch Ookla.SpeedtestbyOokla_neutral___43tkc6nmykmb6.AppxBundle sha1:df25327b
 
 parameter "CurrentUserTempFolder" = "{ pathnames of folders "AppData\Local\Temp" of (folders it) of unique value of home directories of users of (current users;logged on users) }\BES"
 
+// NOTE: this folder should generally already exist for the Client UI / Self Service UI
 if{ not exists folders (parameter "CurrentUserTempFolder") }
 folder create {parameter "CurrentUserTempFolder"}
 endif
@@ -53,6 +54,12 @@ wait powershell -ExecutionPolicy Bypass -command "Add-AppxPackage -Path '{parame
 // cleanup
 //  does this need a pause while before cleanup?
 delete "{parameter "CurrentUserTempFolder"}\{parameter "AppxFile"}"
+
+// action-ui-metadata info found in the manual steps for new self service UI offer setup https://www.ibm.com/support/knowledgecenter/en/SS63NW_9.5.0/com.ibm.bigfix.lifecycle.doc/SelfServiceApp_Install_Config.pdf
+// (I did not use fiddler or this method exactly to get the download URL, file likely in a cache too)  http://woshub.com/how-to-download-appx-installation-file-for-any-windows-store-app/
+// https://docs.microsoft.com/en-us/powershell/module/appx/add-appxpackage?view=win10-ps
+// https://docs.microsoft.com/en-us/powershell/module/dism/add-appxprovisionedpackage?view=win10-ps
+
 </ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 			<Settings>
