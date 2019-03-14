@@ -15,7 +15,7 @@
 		<SourceReleaseDate>2017-08-20</SourceReleaseDate>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Wed, 06 Sep 2017 04:49:23 +0000</Value>
+			<Value>Wed, 06 Mar 2019 02:34:54 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<Property Name="winrt packages" ID="1" EvaluationPeriod="P2D">number of winrt packages</Property>
@@ -24,5 +24,7 @@
 		<Property Name="Names of Infused Windows Store Apps" ID="4" EvaluationPeriod="P1D">unique values of (it as string) of node values of selects "/Bundle/Identity/@Name" of xml documents of files "AppxBundleManifest.xml" of folders "AppxMetadata" of folders of folders "InfusedApps\Applications" of windows folder</Property>
 		<Property Name="# Unique Per User All Users - Registry" ID="5">number of unique values of names of keys of keys "Software\Classes\ActivatableClasses\Package" of keys of keys "HKEY_USERS" of (x64 registries; x32 registries)</Property>
 		<Property Name="Unique names of WindowsApps in Staging" ID="6" EvaluationPeriod="P2D">unique values of node values of selects "/Package/Identity/@Name" of xml documents of files "AppxManifest.xml" of folders whose(name of it contains "_" AND name of it does not start with "Microsoft.NET.Native." AND name of it does not start with "Microsoft.VCLibs.") of folders "WindowsApps" of folders whose(name of it starts with "Program Files") of folders "C:\"</Property>
+		<Property Name="Unique names of UWP apps from PowerShell probes" ID="7" EvaluationPeriod="PT1H">unique values of (it as trimmed string) of lines of (files "Get-AppXProvisionedPackages.txt" of it; files "Get-AppxPackages.txt" of it) of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="exists winrt packages?" ID="8" EvaluationPeriod="PT6H">exists winrt packages</Property>
 	</Analysis>
 </BES>
