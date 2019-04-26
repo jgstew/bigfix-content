@@ -15,6 +15,10 @@ Example for BESTools logs:
 
 `( (now - item 1 of it) / item 0 of it) of (number of elements of it, minima of modification times of (files it) of elements of it) of sets of pathnames of files whose(name of it starts with "BESTools." AND name of it contains ".log") of ( folders "/var/log" ; (folders "BES Server" of it; folders "BES Relay" of it) of folders "C:\Program Files (x86)\BigFix Enterprise" )`
 
+Approximate bytes written per day:
+
+`( item 0 of it / ((now - item 1 of it) / day) ) of (sums of sizes of (files it) of elements of it, minima of modification times of (files it) of elements of it) of sets of pathnames of files whose(name of it starts with "server_audit." AND name of it contains ".log") of ( folders "/var/log" ; (folders "BES Server" of it; folders "BES Relay" of it) of folders "C:\Program Files (x86)\BigFix Enterprise" )`
+
 
 ### References:
 
