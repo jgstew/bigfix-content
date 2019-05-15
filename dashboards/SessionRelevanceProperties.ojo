@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<BES>
+  <Wizard>
+    <Title>Custom - Session Relevance Properties</Title>
+    <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+    <DefaultPage>DefaultPage</DefaultPage>
+    <Page Name="DefaultPage" DocType="HTML5" >
+        <Title>Session Relevance Properties</Title>
+        <Head><![CDATA[
+            <meta http-equiv="X-UA-Compatible" content="IE=11">
+            <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
+        ]]></Head>
+        <HTML><![CDATA[
+<script language="javascript">InsertUtilityDiv();</script>
+<?Relevance /* jquery.dataTables.min.css */ (html it) of ( ( unique value of (it as string) of ( html tag ("style", attr list of ("title", item 0 of it & " " & item 1 of it), (html it) of item 2 of it ) ) of (name of mime fields whose(name of it ends with ".css") of it, mime field "version" of it, value of mime fields whose(name of it ends with ".css") of it) of bes tasks whose(exists mime fields "version" whose(it="1.10.19") of it AND name of it starts with "Shared CSS Library" AND exists mime fields whose("jquery.dataTables.min.css" = name of it) of it) ) | "<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/css/jquery.dataTables.min.css' />" ) ?>
+<?Relevance /* jquery.min.js */ (html it) of ( ( unique value of (it as string) of ( html tag ("script", attr list of ("title", item 0 of it & " " & item 1 of it), (html it) of item 2 of it ) ) of (name of mime fields whose(name of it ends with ".js") of it, mime field "version" of it, value of mime fields whose(name of it ends with ".js") of it) of bes tasks whose(exists mime fields "version" whose(it="3.1.1") of it AND name of it starts with "Shared Javascript Library" AND exists mime fields whose("jquery.min.js" = name of it) of it) ) | "<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>" ) ?>
+<?Relevance /* jquery.dataTables.min.js */ (html it) of ( ( unique value of (it as string) of ( html tag ("script", attr list of ("title", item 0 of it & " " & item 1 of it), (html it) of item 2 of it ) ) of (name of mime fields whose(name of it ends with ".js") of it, mime field "version" of it, value of mime fields whose(name of it ends with ".js") of it) of bes tasks whose(exists mime fields "version" whose(it="1.10.19") of it AND name of it starts with "Shared Javascript Library" AND exists mime fields whose("jquery.dataTables.min.js" = name of it) of it) ) | "<script src='https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/jquery.dataTables.min.js'></script>" ) ?>
+
+<div id="TableDiv">
+
+<table id="resultsTable" class="compact display" width="100%">
+    <thead><tr><th>Property</th><th>Return Type</th><th>Link to Docs</th></tr></thead>
+    <tbody id="results">
+        <?Relevance html concatenations of (trs of html concatenations of tds of ( (it as html) of preceding texts of firsts ": " of it; (it as html) of following texts of firsts ": " of it; (html tags it) of ("a", attr list of ("href", "https://developer.bigfix.com/relevance/reference/" & item 1 of it & ".html#" & item 2 of it), item 0 of it as html) of ( it, concatenations "-" of it whose(it as trimmed string != "") of substrings separated by "," of substrings separated by "(" of substrings separated by ")" of substrings separated by ":" of substrings separated by ">" of substrings separated by "<" of substrings separated by " " of following texts of firsts ": " of it, (concatenations "-" of it whose(it as trimmed string != "") of substrings separated by "," of substrings separated by "(" of substrings separated by ")" of substrings separated by ":" of substrings separated by ">" of substrings separated by "<" of substrings separated by " " of it ) ) ) ) of (it as string as trimmed string) whose("" != it) of properties ?>
+    </tbody>
+</table>
+
+</div>
+<script language="javascript">
+$(document).ready(function(){
+    if (jQuery().dataTable) {
+        $('#resultsTable').dataTable( {
+            "scrollY": '80vh',
+            "scrollCollapse": true,
+            "paging": true,
+            "bDestroy": true,
+            searchDelay: 100
+        });
+    }
+});
+</script>
+<style>
+div#wr_datapage > br + br {
+    display: none;
+}
+div.dataTables_filter input {
+    width: 250px;
+}
+</style>
+        ]]></HTML>
+        </Page>
+    </Wizard>
+</BES>
