@@ -28,6 +28,10 @@
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
 // test of the fixlet header `X-Relevance-Evaluation-Period` "MIMEField"
+				
+// Related Session Relevance:
+//   names of bes fixlets whose( exists names whose(it as lowercase = "x-relevance-evaluation-period") of mime fields of it )
+//   (multiplicity of it, it) of unique values of names of mime fields of bes fixlets
 </ActionScript>
 		</DefaultAction>
 	</Task>
