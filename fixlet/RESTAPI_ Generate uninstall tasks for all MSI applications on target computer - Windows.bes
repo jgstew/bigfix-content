@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>RESTAPI: Generate uninstall tasks for all MSI applications on target computer - Windows</Title>
+		<Description><![CDATA[<P>This task will generate uninstall tasks for all of the MSIs on the target computer in the same site as this task is run from using the current console operator username and password and the REST API. This task uses secure parameters so the password is encrypted.</P>
+<P>&nbsp;</P>
+<P><STRONG>References:</STRONG></P>
+<P><A href="http://superuser.com/questions/149329/what-is-the-curl-command-line-syntax-to-do-a-post-request">http://superuser.com/questions/149329/what-is-the-curl-command-line-syntax-to-do-a-post-request</A></P>
+<P><A href="https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Tivoli%20Endpoint%20Manager/page/RESTAPI%20Task">https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Tivoli%20Endpoint%20Manager/page/RESTAPI%20Task</A></P>
+<P><A href="https://github.com/bigfix/restapi-examples/tree/master/evaluate-relevance/cURL">https://github.com/bigfix/restapi-examples/tree/master/evaluate-relevance/cURL</A></P>
+<P>&nbsp;</P>
+<P><STRONG>Parameter Values:&nbsp;&nbsp; (queried using JavaScript &amp; console based session relevance)</STRONG></P>
+<P><script>document.write("<p>RootServer&Port:  " + Relevance('following text of first "/" of following text of first "/" of url of current bes server') + "</p>" );
+document.write("<p>CurrentConsoleUser:  " + Relevance('name of current console user') + "</p>" );
+document.write("<p>CurrentConsoleUserHasWritePrivledges:  " + Relevance('exists explicit writers whose(it = current console user) of site of current fixlet OR exists explicit owners whose(it = current console user) of site of current fixlet') + "</p>" );
+document.write("<p>CurrentSiteName:  " + Relevance('name of site of current fixlet') + "</p>" );
+document.write("<p>CurrentSiteType:  " + Relevance('(if (operator site flag of it) then "operator" else if (custom site flag of it) then "custom" else "<invalid>") of site of current fixlet') + "</p>" );
+document.write("<p>REST_URL: https://" + Relevance('following text of first "/" of following text of first "/" of url of current bes server') + "/api/tasks/" + Relevance('(if (operator site flag of it) then "operator" else if (custom site flag of it) then "custom" else "<invalid>") of site of current fixlet') + "/" + Relevance('name of site of current fixlet') +"</p>" );
+
+document.body.ontakeaction = function() {
+  var theSecret = prompt("Enter your console password.", "password");
+
+  if (theSecret!=null && theSecret!="") {
+    TakeSecureFixletAction( Relevance('id of current fixlet'), Relevance('id of current bes site'), "Action1", {}, { secret: theSecret, currentConsoleUser: Relevance('name of current console user'), RootServerURL:  Relevance('following text of first "/" of following text of first "/" of url of current bes server'), currentSiteName: Relevance('name of site of current fixlet'), currentSiteType: Relevance('(if (operator site flag of it) then "operator" else if (custom site flag of it) then "custom" else ERROR "none") of site of current fixlet') } );
+  }
+
+  return false;
+}
+</script></P>]]></Description>
+		<Relevance>/* Windows Only */ windows of operating system</Relevance>
+		<Relevance><![CDATA[/* Windows XP or Higher */ version of operating system >= "5.1"]]></Relevance>
+		<Relevance><![CDATA[version of client >= "9.0" as version]]></Relevance>
+		<Relevance><![CDATA[not exists files whose(name of it starts with "RESTAPI_ImportedTasks_" AND name of it as lowercase ends with ".log" AND (now - modification time of it < 7*day) ) of folder "__BESData\__Global\Logs" of parent folder of client]]></Relevance>
+		<Category>Configuration</Category>
+		<DownloadSize>0</DownloadSize>
+		<Source></Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2014-10-09</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Sat, 27 Jun 2015 23:15:38 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+// DEBUGGING: The following is for debugging
+//  	appendfile {parameter "RootServerURL"}
+//  	appendfile {parameter "currentSiteName"}
+//		appendfile {parameter "currentSiteType"}
+//		appendfile {parameter "currentConsoleUser"}
+//		move __appendfile __Download\parameters.txt
+// parameter "secret" of action
+
+// -- START:DOWNLOADS -------------------------
+
+//  - This is the commandline 7zip console which is use to unpack installers
+//  - https://www.virustotal.com/en/file/2a3afe19c180f8373fa02ff00254d5394fec0349f5804e0ad2f6067854ff28ac/analysis
+prefetch 7za.zip sha1:9ce9ce89ebc070fea5d679936f21f9dde25faae0 size:384846 http://iweb.dl.sourceforge.net/project/sevenzip/7-Zip/9.20/7za920.zip
+
+//  - This unzip is a compiled verion of unzip v5.52 fom http://info-zip.org/
+//  - https://www.virustotal.com/en/file/8d9b5190aace52a1db1ac73a65ee9999c329157c8e88f61a772433323d6b7a4a/analysis
+prefetch unzip.exe sha1:e1652b058195db3f5f754b7ab430652ae04a50b8 size:167936 http://software.bigfix.com/download/redist/unzip-5.52.exe
+
+// Download CURL  http://curl.haxx.se/download.html
+//  - Analysis of the CURL.exe inside:  https://www.virustotal.com/en/file/7e4379dc72cc25e8d546b3f4b4305b93b6521aaae47c1ea2ee49e4cc4ce8b033/analysis/
+prefetch curl.cab sha1:1d104ff75f52718709307ba03af0fcad17c1237a size:1435991 http://skanthak.homepage.t-online.de/download/curl-7.43.0.cab
+
+// -- END:DOWNLOADS ---------------------------
+
+
+// ADD TO UTILITY CACHE: unzip,7zip,curl
+utility __Download\unzip.exe
+utility __Download\7za.zip
+utility __Download\curl.cab
+
+// EXTRACT using unzip: the 7zip command line utility
+waithidden __Download\unzip.exe -o "{pathname of file "7za.zip" of folder "__Download" of client folder of current site}" 7za.exe -d "{pathname of folder "__Download" of client folder of current site}"
+
+// EXTRACT using 7zip: CURL
+waithidden "{ (pathname of file "7za.exe" of folder "__Download" of client folder of current site) }" e -i!I386\Curl.EXE -y -o"{pathname of folder "__Download" of client folder of current site}" "{pathname of file "curl.cab" of folder "__Download" of client folder of current site}"
+
+
+// VERIFY: Make sure the parameters are set
+continue if { (parameter "currentSiteName" as trimmed string != "") AND (parameter "currentSiteType" as trimmed string != "") AND (parameter "RootServerURL" as trimmed string != "") }
+
+// REST API
+waithidden "{ (pathname of file "Curl.EXE" of folder "__Download" of client folder of current site) }" -k -o "{pathname of folder "__Download" of client folder of current site}\Tasks_{parameter "currentSiteName"}.xml" --user {parameter "currentConsoleUser"}:{parameter "secret"} https://{parameter "RootServerURL"}/api/tasks/{parameter "currentSiteType"}/{parameter "currentSiteName"}
+
+// query system for all MSIs not already in existing uninstall tasks & generate uninstall tasks
+delete __createfile
+delete UninstallMSI_Tasks.bes
+
+//    CREATEFILE 
+createfile until END_OF_FILE
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+{ /* Generate MSI Uninstall Tasks */  ( ("	<Task><Title>Uninstall: MSI - " & it & " - Windows</Title><Description><![CDATA[<P>This task will uninstall the MSI: " & it & "</P><P>This task was automatically generated using the task: %22RESTAPI: Generate uninstall tasks for all MSI applications on target computer - Windows%22</P><P>&nbsp;</P>%5d%5d></Description><Relevance>/* Windows Only */ windows of operating system</Relevance><Relevance><![CDATA[/* Windows XP or later */ version of operating system >= %225.1%22%5d%5d></Relevance><Relevance>/* Only run if " & it & " is installed */ exists keys whose( (exists values %22DisplayName%22 whose(it as string as lowercase starts with %22" & it & "%22 as lowercase) of it) AND (exists values whose(it as string as lowercase starts with %22msiexec%22) of it) ) of keys %22HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall%22 of ( x64 registries; x32 registries )</Relevance><Category>Software Sharing</Category><DownloadSize>0</DownloadSize><Source>RESTAPI: Generate uninstall tasks for all MSI applications on target computer - Windows</Source><SourceID>jgstew</SourceID><SourceReleaseDate>" & ( ((year of it as string &"-"& month of it as two digits &"-"& day_of_month of it as two digits) of date (local time zone) of it) of now ) & "</SourceReleaseDate><SourceSeverity></SourceSeverity><CVENames></CVENames><SANSID></SANSID><MIMEField><Name>x-fixlet-modification-time</Name><Value>" & (now as string) & "</Value></MIMEField><Domain>BESC</Domain><DefaultAction ID=%22Action1%22><Description><PreLink>Click </PreLink><Link>here</Link><PostLink> to uninstall " & it & "</PostLink></Description><ActionScript MIMEType=%22application/x-Fixlet-Windows-Shell%22>waithidden msiexec.exe /X %7b name of keys whose( (exists values %22DisplayName%22 whose(it as string as lowercase starts with %22" & it & "%22 as lowercase) of it) AND (exists values whose(it as string as lowercase starts with %22msiexec%22) of it) ) of keys %22HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall%22 of ( x64 registries; x32 registries ) %7d /qn</ActionScript><SuccessCriteria Option=%22OriginalRelevance%22></SuccessCriteria></DefaultAction></Task>") of ( ( (if (it contains "%a9") then (preceding text of first "%a9" of it) else it) of (if (it contains "™") then (preceding text of first "™" of it) else it) of (if (it contains "%ae") then (preceding text of first "%ae" of it) else it) of unique values of (it as string) of values "DisplayName" of keys whose(exists values whose(it as string as lowercase starts with "msiexec") of it) of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of ( registry; (if (x64 of operating system) then (x64 registry) else NOTHING ) ) ) whose ( not exists (it, ( (preceding text of last " - Windows" of following text of first "Uninstall: MSI - " of it) of node values whose(it starts with "Uninstall: MSI - " AND it contains " - Windows") of xpaths "/BESAPI/Task/Name/text()" of xml documents of files whose( (name of it as lowercase ends with ".xml") AND (exists lines whose(it as lowercase starts with "<?xml") of it) AND (exists lines whose(it as uppercase starts with "<BESAPI") of it) AND (exists xml documents of it) ) of folders "__Download" of client folders of current sites ) ) whose(item 1 of it = item 0 of it) ) ) ) }
+</BES>
+END_OF_FILE
+
+move __createfile __Download\UninstallMSI_Tasks.bes
+
+// Import UninstallMSI_Tasks.bes into custom site using API if there is at least one task inside (use secure parameter for user password)
+if{ (exists files "UninstallMSI_Tasks.bes" whose(exists contents whose(it contains "<Task>") of it) of folder "__Download" of client folder of current site) }
+	// IMPORT
+	waithidden "{ (pathname of file "Curl.EXE" of folder "__Download" of client folder of current site) }" -k -X POST -d @"{pathname of file "UninstallMSI_Tasks.bes" whose(exists contents whose(it contains "<Task>") of it) of folder "__Download" of client folder of current site}" --header "Content-Type:text/xml" -o "{(pathname of folder "__BESData\__Global\Logs" of parent folder of client)}\RESTAPI_ImportedTasks_{parameter "currentSiteName"}.log" --user {parameter "currentConsoleUser"}:{parameter "secret"} https://{parameter "RootServerURL"}/api/tasks/{parameter "currentSiteType"}/{parameter "currentSiteName"}
+endif
+
+// VERIFY: Check if tasks were actually imported
+//    TODO:  Need to add a check to see if the log file was created after the action started running (See adobe CC template for an example)
+continue if{exists files whose((name of it = ("RESTAPI_ImportedTasks_" & (parameter "currentSiteName") & ".log")) AND exists lines whose(it contains "</Task>") of it) of folder "__BESData\__Global\Logs" of parent folder of client}
+
+// NOT BEING USED:
+
+// query custom site for all existing uninstall tasks
+//    starts with "Uninstall: MSI - "
+// https://github.com/bigfix/restapi-examples/tree/master/evaluate-relevance/cURL
+//  curl --data-urlencode "relevance=RELEVANCE" --user username:password https://server:port/api/query
+//  (preceding text of last " - Windows" of following text of first "Uninstall: MSI - " of it) of names of custom bes fixlets whose( (name of it starts with "Uninstall: MSI - ") AND (name of it contains " - Windows") AND (source of it = "Configuration: Generate uninstall tasks for all MSI applications on target computer - Windows") )
+//  (preceding%20text%20of%20last%20%22%20-%20Windows%22%20of%20following%20text%20of%20first%20%22Uninstall%3A%20MSI%20-%20%22%20of%20it)%20of%20names%20of%20custom%20bes%20fixlets%20whose(%20(name%20of%20it%20starts%20with%20%22Uninstall%3A%20MSI%20-%20%22)%20AND%20(name%20of%20it%20contains%20%22%20-%20Windows%22)%20AND%20(source%20of%20it%20%3D%20%22Configuration%3A%20Generate%20uninstall%20tasks%20for%20all%20MSI%20applications%20on%20target%20computer%20-%20Windows%22)%20)
+]]></ActionScript>
+		</DefaultAction>
+	</Fixlet>
+</BES>
