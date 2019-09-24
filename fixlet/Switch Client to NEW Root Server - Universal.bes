@@ -34,6 +34,8 @@ parameter "MastheadLocation"="{pathname of (file "/etc/opt/BESClient/actionsite.
 // only continue if new masthead file exists
 continue if {exists lines whose(it contains "_NEW_ROOT_SERVER_:52311") of file "masthead.afxm" of folder "__Download" of client folder of current site}
 
+// TODO: test connectivity to new server: download now as resultRegisterMe.txt https://_NEW_ROOT_SERVER_:52311/cgi-bin/bfenterprise/clientregister.exe?RequestType=RegisterMe
+
 // delete old masthead
 delete "{parameter "MastheadLocation"}"
 
