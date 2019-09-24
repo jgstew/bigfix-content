@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Switch Client to NEW Root Server - Universal</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>not exists relay service and not exists main gather service</Relevance>
+		<Relevance><![CDATA[version of client >= "9.0"]]></Relevance>
+		<Relevance><![CDATA[version of registration server >= "9.0"]]></Relevance>
+		<Relevance>(if exists property "in proxy agent context" then ( not in proxy agent context ) else true )</Relevance>
+		<Relevance>not exists lines whose(it contains "_NEW_ROOT_SERVER_:52311") of (file "/etc/opt/BESClient/actionsite.afxm" | file "actionsite.afxm" of storage folder of client)</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2019-09-23</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Mon, 23 Sep 2019 16:49:41 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+prefetch masthead.afxm sha1:__ size:99 http://localhost:52311/Uploads/NEW_actionsite.afxm sha256:___
+
+parameter "MastheadLocation"="{pathname of (file "/etc/opt/BESClient/actionsite.afxm" | file "actionsite.afxm" of storage folder of client) }"
+
+// only continue if new masthead file exists
+continue if {exists lines whose(it contains "_NEW_ROOT_SERVER_:52311") of file "masthead.afxm" of folder "__Download" of client folder of current site}
+
+// delete old masthead
+delete "{parameter "MastheadLocation"}"
+
+// copy new masthead into place
+move "{pathname of file "masthead.afxm" of folder "__Download" of client folder of current site}" "{parameter "MastheadLocation"}"
+
+// check for success
+continue if { exists lines whose(it contains "_NEW_ROOT_SERVER_:52311") of file (parameter "MastheadLocation") }
+
+
+
+// pause so the Client has an chance to report back status
+parameter "start" = "{now}"
+
+pause while{ now - (it as time) of (parameter "start") < 60 * second }
+
+
+// restart bigfix client
+client restart
+]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
