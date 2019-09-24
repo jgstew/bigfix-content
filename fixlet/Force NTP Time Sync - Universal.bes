@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Force NTP Time Sync - Universal</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>true</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2019-09-19</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 19 Sep 2019 12:02:31 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+
+if{ windows of operating system }
+
+// https://serverfault.com/questions/294787/how-do-i-force-sync-the-time-on-windows-workstation-or-server
+
+wait CMD /C w32tm /resync
+
+endif
+
+
+if{ mac of operating system }
+// https://superuser.com/questions/155785/mac-os-x-date-time-synchronization
+
+// if mojave or later:
+wait sntp -sS $(systemsetup -getnetworktimeserver|awk '{print $4}')
+
+endif
+
+
+if{ unix of operating system }
+
+// https://askubuntu.com/questions/254826/how-to-force-a-clock-update-using-ntp
+wait ntpd -gq
+
+endif
+
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
