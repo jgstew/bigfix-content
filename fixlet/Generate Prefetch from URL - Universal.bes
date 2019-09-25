@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Generate Prefetch from URL - Universal</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>true</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2019-09-25</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 25 Sep 2019 20:34:22 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+action parameter query "Download_URL" with description "Enter the download URL of the file:" and with default value "http://"
+
+download now {parameter "Download_URL"}
+
+delete __createfile
+createfile until END_OF_FILE
+{ concatenations "%0d%0a" of ( "prefetch " & (name of it) & " sha1:" & (sha1 of it as string) & " size:" & (size of it as string) & " " & (parameter "Download_URL") & " sha256:" & (sha256 of it as string) ) of files of folders "__Download" of client folders of current sites }
+END_OF_FILE
+
+delete __Download\prefetch.txt
+move __createfile __Download\prefetch.txt
+
+// open prefetch.txt on target system (really only useful for the IT admins own system)
+]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
