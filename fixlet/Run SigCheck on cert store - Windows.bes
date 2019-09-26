@@ -6,7 +6,7 @@
 <P>This is designed to run as a policy action targeting all windows machines, running once every 30 days by default. It does require an internet connection.</P>
 <P>See the "Sigcheck Results - Windows" for results, if any.</P>]]></Description>
 		<Relevance>windows of operating system</Relevance>
-		<Relevance><![CDATA[ /* Run at most once a week */ not exists files "resuls_sigcheck_certs.csv" whose((now - it < 7 * day) of modification time of it) of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
+		<Relevance><![CDATA[ /* Run at most once a week */ not exists files "results_sigcheck_certs.csv" whose((now - it < 7 * day) of modification time of it) of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
 		<Category></Category>
 		<DownloadSize>818361</DownloadSize>
 		<Source>Internal</Source>
@@ -49,7 +49,7 @@ waithidden __Download\unzip.exe -o "{pathname of files "Sigcheck.zip" of folders
 action launch preference low-priority
 
 // NOTE: this will try to download the currently valid Root store from Microsoft and requires the device have an internet connection (alternatively an existing copy could be prefetch'd instead)
-waithidden cmd /S /C "__Download\sigcheck.exe -accepteula -c -nobanner -tv * -u > {(concatenations (if windows of operating system then "^ " else "\ ") of substrings separated by " " of it) of pathname of folders "Logs" of folders "__Global" of data folders of client}{if windows of operating system then "\" else "/"}resuls_sigcheck_certs.csv"]]></ActionScript>
+waithidden cmd /S /C "__Download\sigcheck.exe -accepteula -c -nobanner -tv * -u > {(concatenations (if windows of operating system then "^ " else "\ ") of substrings separated by " " of it) of pathname of folders "Logs" of folders "__Global" of data folders of client}{if windows of operating system then "\" else "/"}results_sigcheck_certs.csv"]]></ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 			<Settings>
 				<PreActionShowUI>false</PreActionShowUI>
