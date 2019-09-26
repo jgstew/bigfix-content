@@ -28,6 +28,7 @@
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // https://github.com/jgstew/bigfix-content/issues/9
+action parameter query "EULA" with description "In using this action, you agree to the SysInternals EULA: https://docs.microsoft.com/en-us/sysinternals/license-terms" with default "I Agree"
 
 // https://docs.microsoft.com/en-us/sysinternals/downloads/sigcheck
 prefetch Sigcheck.zip sha1:8154a0f6b056a84be242e8e71ec1202a4258394d size:818361 https://download.sysinternals.com/files/Sigcheck.zip sha256:77df9c6b52d8defbad793569439b7d3c6b5e34f95ee12d0aac815b20ce0bba95
