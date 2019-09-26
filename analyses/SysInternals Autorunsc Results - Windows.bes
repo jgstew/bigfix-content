@@ -2,14 +2,14 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Analysis>
 		<Title>SysInternals Autorunsc Results - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Description><![CDATA[Show&nbsp;flagged results of running "Run SysInternals Autorunsc - Windows"]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance><![CDATA[ /* don't report results unless flagged by more than 1 engine in VirusTotal */ exists (it as integer) whose(it > 1) of following texts of lasts "," of preceding texts of firsts "|" of lines containing "|" of files "resuls_autorunsc.csv" of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
 		<Source>Internal</Source>
 		<SourceReleaseDate>2019-09-26</SourceReleaseDate>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 26 Sep 2019 15:23:35 +0000</Value>
+			<Value>Thu, 26 Sep 2019 15:26:08 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<Property Name="Max of VirusTotal Flags" ID="1" EvaluationPeriod="PT1H">maxima of (it as integer) whose(it != 0) of following texts of lasts "," of preceding texts of firsts "|" of lines containing "|" of files "resuls_autorunsc.csv" of folders "Logs" of folders "__Global" of data folders of client</Property>
