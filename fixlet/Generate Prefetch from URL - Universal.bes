@@ -28,11 +28,11 @@ action parameter query "Download_URL" with description "Enter the download URL o
 download now {parameter "Download_URL"}
 
 delete __createfile
+delete __Download\prefetch.txt
 createfile until END_OF_FILE
 { concatenations "%0d%0a" of ( "prefetch " & (name of it) & " sha1:" & (sha1 of it as string) & " size:" & (size of it as string) & " " & (parameter "Download_URL") & " sha256:" & (sha256 of it as string) ) of files of folders "__Download" of client folders of current sites }
 END_OF_FILE
 
-delete __Download\prefetch.txt
 move __createfile __Download\prefetch.txt
 
 // open prefetch.txt on target system (really only useful for the IT admins own system)
