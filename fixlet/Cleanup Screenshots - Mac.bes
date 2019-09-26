@@ -29,7 +29,7 @@
 
 parameter "file_to_move" = "{ /* get a single file if multiple results: */ tuple string items 0 of concatenations ", " of pathnames of files whose(name of it starts with "Screen Shot " AND name of it ends with ".png" AND ( (now - it > 2 * day) of modification time of it ) ) of folders "Desktop" whose(1 = number of folders whose(name of it contains "Screenshots") of it) of folders of folders "/Users" }"
 
-parameter "folder_to_move_to" = "{ pathname of folders whose(name of it contains "Screenshots") of parent folders of (files it) of tuple string items 0 of concatenations ", " of pathnames of files whose(name of it starts with "Screen Shot " AND name of it ends with ".png" AND ( (now - it > 2 * day) of modification time of it ) ) of folders "Desktop" whose(1 = number of folders whose(name of it contains "Screenshots") of it) of folders of folders "/Users" }"
+parameter "folder_to_move_to" = "{ pathname of folders whose(name of it contains "Screenshots") of parent folders of (files it) of (parameter "file_to_move") }"
 
 // TODO: test
 // copy "{ parameter "file_to_move" }" "{ parameter "folder_to_move_to" }/{ name of (files it) of (parameter "file_to_move") }"
