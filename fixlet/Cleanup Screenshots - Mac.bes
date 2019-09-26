@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Cleanup Screenshots - Mac</Title>
+		<Description>This will move screenshots taken by the user on the mac on the Desktop Folder into a folder on the Desktop Folder that contains "screenshots" in the name.</Description>
+		<Relevance>mac of operating system</Relevance>
+		<Relevance><![CDATA[exists files whose(name of it starts with "Screen Shot " AND name of it ends with ".png" AND ( (now - it > 2 * day) of modification time of it ) ) of folders "Desktop" whose(1 = number of folders whose(name of it contains "Screenshots") of it) of folders of folders "/Users"]]></Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2019-09-25</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 26 Sep 2019 02:05:26 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+// TODO: Move screenshot file
+
+parameter "file_to_move" = "{ /* get a single file if multiple results: */ tuple string items 0 of concatenations ", " of pathnames of files whose(name of it starts with "Screen Shot " AND name of it ends with ".png" AND ( (now - it > 2 * day) of modification time of it ) ) of folders "Desktop" whose(1 = number of folders whose(name of it contains "Screenshots") of it) of folders of folders "/Users" }"
+
+parameter "folder_to_move_to" = "{ pathname of folders whose(name of it contains "Screenshots") of parent folders of (files it) of tuple string items 0 of concatenations ", " of pathnames of files whose(name of it starts with "Screen Shot " AND name of it ends with ".png" AND ( (now - it > 2 * day) of modification time of it ) ) of folders "Desktop" whose(1 = number of folders whose(name of it contains "Screenshots") of it) of folders of folders "/Users" }"
+
+// TODO: test
+// copy "{ parameter "file_to_move" }" "{ parameter "folder_to_move_to" }/{ name of (files it) of (parameter "file_to_move") }"
+
+// delete "{ parameter "file_to_move" }"]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
