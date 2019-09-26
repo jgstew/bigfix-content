@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Run SysInternals Autorunsc - Windows</Title>
+		<Description><![CDATA[<P>This will enumerate all Windows AutoRun entries, hash them, and check VirusTotal to see if the hashes are flagged as a virus, and save the results to CSV. </P>
+<P>See results in the analysis: "SysInternals Autorunsc Results - Windows"</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance><![CDATA[not exists files "resuls_autorunsc.csv" whose((now - it < 7 * day) of modification time of it) of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2019-09-26</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 26 Sep 2019 15:46:22 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+action parameter query "EULA" with description "In using this action, you agree to the SysInternals EULA as well as the VirusTotal terms of service: https://docs.microsoft.com/en-us/sysinternals/license-terms AND https://www.virustotal.com/en/about/terms-of-service/" with default "I Agree"
+
+prefetch Autoruns.zip sha1:f9290bf8498e2de6c185c080df62f72b815d8c77 size:1728127 https://download.sysinternals.com/files/Autoruns.zip sha256:fe16235b91a0d9aec0ccce88b0024070d82576a574227a3dffeb3a53498d2331
+
+//  - This unzip is a compiled verion of unzip v5.52 fom http://info-zip.org/
+//  - https://www.virustotal.com/en/file/8d9b5190aace52a1db1ac73a65ee9999c329157c8e88f61a772433323d6b7a4a/analysis
+prefetch unzip.exe sha1:e1652b058195db3f5f754b7ab430652ae04a50b8 size:167936 http://software.bigfix.com/download/redist/unzip-5.52.exe
+
+continue if { parameter "EULA" contains "I Agree" }
+
+// ADD TO UTILITY CACHE: unzip
+utility __Download\unzip.exe
+utility __Download\Autoruns.zip
+
+waithidden __Download\unzip.exe -o "{pathname of files "Autoruns.zip" of folders "__Download" of client folders of current site}" autorunsc.exe -d "{pathname of folders "__Download" of client folders of current site}"
+
+// https://developer.bigfix.com/action-script/reference/execution/action-launch-preference-low-priority.html
+action launch preference low-priority
+
+// WARNING: this can be slow, and it will submit hashes to VirusTotal to check for flagged files
+waithidden cmd /S /C "__Download\autorunsc.exe -accepteula -a * -c -h -m -s -t -v -vt * > {(concatenations (if windows of operating system then "^ " else "\ ") of substrings separated by " " of it) of pathname of folders "Logs" of folders "__Global" of data folders of client}{if windows of operating system then "\" else "/"}resuls_autorunsc.csv"
+
+// verify exit code of autorunsc.exe above
+continue if {exit code of action = 0}
+
+// return the number of flagged results as exit code  Related: https://bigfix.me/fixlet/details/5020
+//   NOTE: exit code of 1 seems to be due to false positives
+exit {(maximum of (it as integer) whose(it != 0) of following texts of lasts "," of preceding texts of firsts "|" of lines containing "|" of files "resuls_autorunsc.csv" of folders "Logs" of folders "__Global" of data folders of client) | 0}
+]]></ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+			<Settings>
+				<PreActionShowUI>false</PreActionShowUI>
+				<HasRunningMessage>false</HasRunningMessage>
+				<HasTimeRange>false</HasTimeRange>
+				<HasStartTime>false</HasStartTime>
+				<HasEndTime>false</HasEndTime>
+				<HasDayOfWeekConstraint>false</HasDayOfWeekConstraint>
+				<UseUTCTime>false</UseUTCTime>
+				<ActiveUserRequirement>NoRequirement</ActiveUserRequirement>
+				<ActiveUserType>AllUsers</ActiveUserType>
+				<HasWhose>false</HasWhose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>true</Reapply>
+				<HasReapplyLimit>false</HasReapplyLimit>
+				<HasReapplyInterval>true</HasReapplyInterval>
+				<ReapplyInterval>P30D</ReapplyInterval>
+				<HasRetry>true</HasRetry>
+				<RetryCount>3</RetryCount>
+				<RetryWait Behavior="WaitForReboot">PT1H</RetryWait>
+				<HasTemporalDistribution>true</HasTemporalDistribution>
+				<TemporalDistribution>PT16H40M</TemporalDistribution>
+				<ContinueOnErrors>true</ContinueOnErrors>
+				<PostActionBehavior Behavior="Nothing"></PostActionBehavior>
+				<IsOffer>false</IsOffer>
+			</Settings>
+			<SettingsLocks>
+				<ActionUITitle>false</ActionUITitle>
+				<PreActionShowUI>false</PreActionShowUI>
+				<PreAction>
+					<Text>false</Text>
+					<AskToSaveWork>false</AskToSaveWork>
+					<ShowActionButton>false</ShowActionButton>
+					<ShowCancelButton>false</ShowCancelButton>
+					<DeadlineBehavior>false</DeadlineBehavior>
+					<ShowConfirmation>false</ShowConfirmation>
+				</PreAction>
+				<HasRunningMessage>false</HasRunningMessage>
+				<RunningMessage>
+					<Text>false</Text>
+				</RunningMessage>
+				<TimeRange>true</TimeRange>
+				<StartDateTimeOffset>true</StartDateTimeOffset>
+				<EndDateTimeOffset>true</EndDateTimeOffset>
+				<DayOfWeekConstraint>true</DayOfWeekConstraint>
+				<ActiveUserRequirement>false</ActiveUserRequirement>
+				<ActiveUserType>false</ActiveUserType>
+				<Whose>true</Whose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>false</Reapply>
+				<ReapplyLimit>true</ReapplyLimit>
+				<RetryCount>false</RetryCount>
+				<RetryWait>true</RetryWait>
+				<TemporalDistribution>false</TemporalDistribution>
+				<ContinueOnErrors>false</ContinueOnErrors>
+				<PostActionBehavior>
+					<Behavior>false</Behavior>
+					<AllowCancel>false</AllowCancel>
+					<Deadline>false</Deadline>
+					<Title>false</Title>
+					<Text>false</Text>
+				</PostActionBehavior>
+				<IsOffer>false</IsOffer>
+				<AnnounceOffer>false</AnnounceOffer>
+				<OfferCategory>false</OfferCategory>
+				<OfferDescriptionHTML>false</OfferDescriptionHTML>
+			</SettingsLocks>
+		</DefaultAction>
+		<Action ID="Action2">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to view the SysInternals EULA.</PostLink>
+			</Description>
+			<ActionScript MIMEType="text/x-uri">https://docs.microsoft.com/en-us/sysinternals/license-terms</ActionScript>
+		</Action>
+		<Action ID="Action3">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to view the VirusTotal terms of service.</PostLink>
+			</Description>
+			<ActionScript MIMEType="text/x-uri">https://www.virustotal.com/en/about/terms-of-service/</ActionScript>
+		</Action>
+	</Task>
+</BES>
