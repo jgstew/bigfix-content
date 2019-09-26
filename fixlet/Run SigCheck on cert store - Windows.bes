@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run SigCheck on cert store - Windows</Title>
+		<Title>Run SysInternals SigCheck on cert store - Windows</Title>
 		<Description><![CDATA[<P>This task will run the SysInternals SigCheck tool against the Root / CA certificate store checking for Certs that are not in the Microsoft default root of trust. </P>
 <P>This is designed to run as a policy action targeting all windows machines, running once every 30 days by default. It does require an internet connection.</P>
 <P>See the "Sigcheck Results - Windows" for results, if any.</P>]]></Description>
@@ -17,7 +17,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 26 Sep 2019 14:10:55 +0000</Value>
+			<Value>Thu, 26 Sep 2019 15:21:09 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -37,11 +37,16 @@ prefetch Sigcheck.zip sha1:8154a0f6b056a84be242e8e71ec1202a4258394d size:818361 
 //  - https://www.virustotal.com/en/file/8d9b5190aace52a1db1ac73a65ee9999c329157c8e88f61a772433323d6b7a4a/analysis
 prefetch unzip.exe sha1:e1652b058195db3f5f754b7ab430652ae04a50b8 size:167936 http://software.bigfix.com/download/redist/unzip-5.52.exe
 
+continue if { parameter "EULA" contains "I Agree" }
+
 // ADD TO UTILITY CACHE: unzip
 utility __Download\unzip.exe
 utility __Download\Sigcheck.zip
 
 waithidden __Download\unzip.exe -o "{pathname of files "Sigcheck.zip" of folders "__Download" of client folders of current site}" sigcheck.exe -d "{pathname of folders "__Download" of client folders of current site}"
+
+// https://developer.bigfix.com/action-script/reference/execution/action-launch-preference-low-priority.html
+action launch preference low-priority
 
 // NOTE: this will try to download the currently valid Root store from Microsoft and requires the device have an internet connection (alternatively an existing copy could be prefetch'd instead)
 waithidden cmd /S /C "__Download\sigcheck.exe -accepteula -c -nobanner -tv * -u > {(concatenations (if windows of operating system then "^ " else "\ ") of substrings separated by " " of it) of pathname of folders "Logs" of folders "__Global" of data folders of client}{if windows of operating system then "\" else "/"}resuls_sigcheck_certs.csv"]]></ActionScript>
