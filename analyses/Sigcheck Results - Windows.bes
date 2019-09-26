@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Sigcheck Results - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists files "resuls_sigcheck_certs.csv" whose(not exists lines containing "No certificates found." of it) of folders "Logs" of folders "__Global" of data folders of client</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2019-09-26</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 26 Sep 2019 13:58:13 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="SigCheck Bad Certs" ID="1" EvaluationPeriod="P2D">lines of files "resuls_sigcheck_certs.csv" whose(not exists lines containing "No certificates found." of it) of folders "Logs" of folders "__Global" of data folders of client</Property>
+	</Analysis>
+</BES>
