@@ -4,7 +4,7 @@
 		<Title>Sigcheck Results - Windows</Title>
 		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
 		<Relevance>windows of operating system</Relevance>
-		<Relevance>exists files "resuls_sigcheck_certs.csv" whose(not exists lines containing "No certificates found." of it) of folders "Logs" of folders "__Global" of data folders of client</Relevance>
+		<Relevance>exists files "results_sigcheck_certs.csv" whose(not exists lines containing "No certificates found." of it) of folders "Logs" of folders "__Global" of data folders of client</Relevance>
 		<Source>Internal</Source>
 		<SourceReleaseDate>2019-09-26</SourceReleaseDate>
 		<MIMEField>
@@ -12,6 +12,6 @@
 			<Value>Thu, 26 Sep 2019 13:58:13 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
-		<Property Name="SigCheck Bad Certs" ID="1" EvaluationPeriod="P2D">lines of files "resuls_sigcheck_certs.csv" whose(not exists lines containing "No certificates found." of it) of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="SigCheck Bad Certs" ID="1" EvaluationPeriod="P2D">lines of files "results_sigcheck_certs.csv" whose(not exists lines containing "No certificates found." of it) of folders "Logs" of folders "__Global" of data folders of client</Property>
 	</Analysis>
 </BES>
