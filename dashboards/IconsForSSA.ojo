@@ -56,8 +56,8 @@ $(document).ready(function(){
 </div>
 <div id="Icons">
 <table>
-    <tr><th>Fixlet</th><th>Icon</th></tr>
-    <?Relevance trs of ( concatenations of tds of (item 1 of it; (html it) of item 0 of it) ) of ( ("<img class='icon' alt='icon' height='64' src='" & it as string & "'>") of values of keys "icon" of jsons of mime fields "action-ui-metadata" of it, links of it) of custom bes fixlets ?>
+    <tr><th>Icon</th><th>Fixlet</th></tr>
+    <?Relevance trs of ( concatenations of tds of ((html it) of item 0 of it ; item 1 of it) ) of ( ("<img class='icon' alt='icon' height='64' src='" & it as string & "'>") of values of keys "icon" of jsons of mime fields "action-ui-metadata" of it, links of it) of custom bes fixlets ?>
 </table>
 </div>
         ]]></HTML>
