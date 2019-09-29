@@ -27,7 +27,7 @@
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
 // PG279Q
 // http://dlcdnet.asus.com/pub/ASUS/LCD%20Monitors/PG279/PG279Q_English.pdf
-prefetch PG279Q_English.pdf sha1:656d11f09ca1ef93bbd6284d83d987ad0334f019 size:4130370 http://dlcdnet.asus.com/pub/ASUS/LCD%20Monitors/PG279/PG279Q_English.pdf sha256:e6511edba3065b94e2d2ddd8b0b7757b4a6800309c1d436b03c9227d7b4a3206
+prefetch PG279Q_English.pdf sha1:985f2e5b3aff6cac912d883cc99a3dac2ca1654a size:4123590 https://dlcdnets.asus.com/pub/ASUS/LCD%20Monitors/PG279/PG279_English.pdf sha256:8cd8762e9c38122dcce219ba36ddde08bbf9dc9be466b975b8a42598c7eb58bb
 
 parameter "DestinationFile"="C:\Users\Public\Documents\Monitor_Manual_PG279Q.pdf"
 
