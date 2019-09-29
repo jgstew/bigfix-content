@@ -4,9 +4,10 @@
 		<Title>Open Monitor Manual - PG279Q - Windows</Title>
 		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
 		<Relevance>windows of operating system</Relevance>
-		<Relevance>1 = number of unique values of names of user keys of (current users; logged on users)</Relevance>
+		<Relevance>exists (current users; logged on users)</Relevance>
 		<Relevance>exists string values whose(it contains "PG279Q") of selects "MonitorType from Win32_DesktopMonitor" of wmis</Relevance>
 		<Category></Category>
+		<DownloadSize>4123590</DownloadSize>
 		<Source>Internal</Source>
 		<SourceID>jgstew</SourceID>
 		<SourceReleaseDate>2017-09-23</SourceReleaseDate>
@@ -19,7 +20,7 @@
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Sat, 23 Sep 2017 17:01:17 +0000</Value>
+			<Value>Sun, 29 Sep 2019 02:56:19 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
