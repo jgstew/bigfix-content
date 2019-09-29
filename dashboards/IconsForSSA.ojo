@@ -32,6 +32,7 @@ th, td {
 }
 #Fullscreen img {
     height: auto;
+    min-height: 256px;
     display: block;
     margin: 50px auto;
 }
