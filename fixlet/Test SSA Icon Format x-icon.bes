@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Test SSA Icon Format x-icon</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>true</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2019-09-28</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>action-ui-metadata</Name>
+			<Value>{"version":"2019.09.29","size":0,"icon":"data:image/x-icon;base64,AAABAAEAICAQAAAAAADoAgAAFgAAACgAAAAgAAAAQAAAAAEABAAAAAAAgAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAACAAAAAgIAAgAAAAIAAgACAgAAAgICAAMDAwAAAAP8AAP8AAAD//wD/AAAA/wD/AP//AAD///8AAAAAAAD///////8AAAAAAAAAAAD//////////wAAAAAAAAD///h3d3d3j///AAAAAAAP//d3d3d3d3f///AAAAAA//h3d3d3d3d3////AAAAD/93d3d3d3d3f/////AAAP/3d3d3d3d3d3//////AAD/h3d3d3d3d3f//////wAP/3d3d3d3d3d3////h//wD/d3d3d3d3d3f///93d/8P/3d3d3d3j//4//+Hd3f///h3d3d3f//////4d3d3j//3d3d3d//3d3//d3d3d4//93d3d3j/d3d3/4d3eP////d3d3d/93eId3/4///////3d3d3f/d4/4d////////////////3eP+Hf/d3d3d///////+P93eId3/3d3d3f////4d3eP93d3f/h3d3d3//+Hd3d3f/93d//3d3d3d///h3d3eP//////d3d3d3j///d3d4//+P//h3d3d3d//w/3d3////d3d3d3d3d3f/AP/3j///93d3d3d3d3d//wAP//////d3d3d3d3d3j/AAD/////93d3d3d3d3d//wAAD/////d3d3d3d3d3//AAAAD///93d3d3d3d3j/8AAAAAD///d3d3d3d3f//wAAAAAAD///h3d3d3j///AAAAAAAAAP//////////AAAAAAAAAAAA////////AAAAAAD/wAP//wAA//wAAD/4AAAf8AAAD+AAAAfAAAADwAAAA4AAAAGAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAYAAAAHAAAADwAAAA+AAAAfwAAAP+AAAH/wAAD//AAD//8AD/w=="}</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Sun, 29 Sep 2019 03:46:18 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// No Action, just testing
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
