@@ -33,7 +33,7 @@ th, td {
 #Fullscreen img {
     height: auto;
     display: block;
-    margin: 0 auto;
+    margin: 50px auto;
 }
 </style>
 <script>
