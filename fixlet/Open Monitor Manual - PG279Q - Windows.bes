@@ -44,7 +44,7 @@ run explorer.exe {parameter "DestinationFile"}
 // - https://stackoverflow.com/questions/6557920/how-to-open-a-pdf-in-fullscreen-view-via-command-line
 </ActionScript>
 			<Settings>
-				<ActionUITitle>Open Monitor Manuel - PG279Q</ActionUITitle>
+				<ActionUITitle>Open Monitor Manual - PG279Q</ActionUITitle>
 				<PreActionShowUI>false</PreActionShowUI>
 				<HasRunningMessage>false</HasRunningMessage>
 				<HasTimeRange>false</HasTimeRange>
