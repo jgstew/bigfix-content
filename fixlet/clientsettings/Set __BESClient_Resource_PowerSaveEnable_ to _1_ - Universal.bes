@@ -6,6 +6,7 @@
 <P>This task was automatically generated using the task: "RESTAPI: Generate tasks to set client settings on target computer - Windows"</P>
 <P>&nbsp;</P>]]></Description>
 		<Relevance>not exists settings "_BESClient_Resource_PowerSaveEnable" whose("1" = value of it) of client</Relevance>
+		<Relevance>NOT exists relay service AND NOT exists main gather service</Relevance>
 		<Category>Configuration: Client Settings</Category>
 		<DownloadSize>0</DownloadSize>
 		<Source>RESTAPI: Generate tasks to set client settings on target computer - Windows</Source>
