@@ -14,7 +14,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Wed, 02 Oct 2019 14:41:08 +0000</Value>
+			<Value>Wed, 02 Oct 2019 16:13:04 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -26,14 +26,9 @@
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 prefetch osxiconutils.zip sha1:f55c0628914a3e50306c7ab5d613896aead0be9f size:82663 https://sveinbjorn.org/files/software/osxiconutils.zip sha256:d7a58dc32a5a8596973c2aee3c5698d28ca5df7650882b18e9bfa295a5241f83
 
-//delete /tmp/osxiconutils.zip
-//copy __Download/osxiconutils.zip /tmp/osxiconutils.zip
-
 wait /usr/bin/unzip -qu __Download/osxiconutils.zip -d /tmp
 
 // https://sveinbjorn.org/files/manpages/icns2image.man.html
-
-//wait bash -c "/tmp/bin/icns2image -r 128 -t png /Applications/App\ Store.app/Contents/Resources/AppIcon.icns /tmp/Icon_AppStore.png"
 
 folder create /tmp/_BigFix/Icons
 
@@ -48,15 +43,38 @@ createfile until _END_OF_FILE_
 _END_OF_FILE_
 
 // delete destination of __createfile to be sure it doesn't already exist
-delete /tmp/run.sh
+delete /tmp/run_icns2image.sh
 
 // put file in place to run:
-copy __createfile /tmp/run.sh
+copy __createfile /tmp/run_icns2image.sh
 
 // run it, waiting a maximum of 30 minutes:
 override wait
 timeout_seconds=1800
-wait bash /tmp/run.sh
+wait bash /tmp/run_icns2image.sh
+
+// ToDo: Base64 the icon files on the command line
+
+// Make sure __createfile doesn't already exist
+delete __createfile
+
+// generate __createfile contents: (must escape {})
+createfile until _END_OF_FILE_
+#!/usr/bin/env bash
+
+{ concatenations "%0a" of ("bash -c %22base64 " & it & " > " & it & ".base64%22") of (concatenations (if windows of operating system then "^ " else "\ ") of substrings separated by " " of it) of pathnames of files ending in ".png" of folders "/tmp/_BigFix/Icons" }
+_END_OF_FILE_
+
+// delete destination of __createfile to be sure it doesn't already exist
+delete /tmp/run_base64_encode.sh
+
+// put file in place to run:
+copy __createfile /tmp/run_base64_encode.sh
+
+// run it, waiting a maximum of 30 minutes:
+override wait
+timeout_seconds=1800
+wait bash /tmp/run_base64_encode.sh
 
 // https://bigfix.me/relevance/details/3016285
 // https://github.com/jgstew/bigfix-content/blob/master/actionscript/Action_CreateFileTemplateBash.txt
