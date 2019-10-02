@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Get PNG From ICNS File - MacOS</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>mac of operating system</Relevance>
+		<Category></Category>
+		<DownloadSize>82663</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2019-10-02</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 02 Oct 2019 05:57:21 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+prefetch osxiconutils.zip sha1:f55c0628914a3e50306c7ab5d613896aead0be9f size:82663 https://sveinbjorn.org/files/software/osxiconutils.zip sha256:d7a58dc32a5a8596973c2aee3c5698d28ca5df7650882b18e9bfa295a5241f83
+
+//delete /tmp/osxiconutils.zip
+//copy __Download/osxiconutils.zip /tmp/osxiconutils.zip
+
+wait /usr/bin/unzip -qn __Download/osxiconutils.zip -d /tmp
+
+// https://sveinbjorn.org/files/manpages/icns2image.man.html
+
+wait bash -c "/tmp/bin/icns2image -r 128 -t png /Applications/App\ Store.app/Contents/Resources/AppIcon.icns /tmp/Icon_AppStore.png"
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
