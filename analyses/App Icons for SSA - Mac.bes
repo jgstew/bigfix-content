@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>App Icons for SSA - Mac</Title>
+		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Relevance>mac of operating system</Relevance>
+		<Relevance>exists files ending in ".png.base64" of folders "/tmp/_BigFix/Icons"</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2019-10-02</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 03 Oct 2019 02:14:27 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="Number of Icons" ID="1" EvaluationPeriod="P2D">number of files ending in ".png.base64" of folders "/tmp/_BigFix/Icons"</Property>
+		<Property Name="Names of Icons" ID="2" EvaluationPeriod="P2D">preceding texts of lasts ".png.base64" of names of files ending in ".png.base64" of folders "/tmp/_BigFix/Icons"</Property>
+		<Property Name="base64 of Icons" ID="3" EvaluationPeriod="P2D">( (if length of it = 2048 then (substrings (0, length of it / 2) of it ; substrings (length of it / 2, length of it / 2 + (it mod 2) of length of it) of it) of it else ( (substrings (0, length of it / 2) of it ; substrings (length of it / 2, length of it / 2 + (it mod 2) of length of it) of it) of it ) ; ";;" ) of lines of it) of files ending in ".png.base64" of folders "/tmp/_BigFix/Icons"</Property>
+	</Analysis>
+</BES>
