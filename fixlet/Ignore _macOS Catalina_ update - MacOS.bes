@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Ignore "macOS Catalina" update - MacOS</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>mac of operating system</Relevance>
+		<Relevance><![CDATA[exists version whose(it < "10.15") of operating system]]></Relevance>
+		<Relevance>not exists strings whose(it = "macOS Catalina") of values of arrays "InactiveUpdates" of dictionaries of files "/Library/Preferences/com.apple.SoftwareUpdate.plist"</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2019-10-08</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 08 Oct 2019 19:36:39 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// TODO: test this part
+wait softwareupdate --ignore "macOS Catalina"
+
+// Related:
+//  - https://bigfix.me/relevance/details/3022811
+//  - https://babodee.wordpress.com/2018/12/11/ignore-a-specific-macos-update-using-softwareupdate/
+</ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
