@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<SingleAction>
+		<Title>Get Icon PNG from all Application Icons using SIPS - Apple MacOS</Title>
+		<Relevance>mac of operating system</Relevance>
+		<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+// sips -s format png --resampleHeight 128 AutoDMG.icns --out /tmp/AutoDMG.icns128.png
+
+// ( (concatenations (if windows of operating system then "^ " else "\ ") of substrings separated by " " of it) of (pathname of folders "Resources" of folders "Contents" of items 0 of it & "/" & item 1 of it) of (it, (it & ".icns") of (preceding text of last ".icns" of it | it) of strings "CFBundleIconFile" of dictionaries of files "Contents/Info.plist" of it) of it , (concatenations (if windows of operating system then "^ " else "\ ") of substrings separated by " " of it) of preceding texts of lasts ".app" of names of it ) of folders whose(name of it as lowercase ends with ".app") of folders "/Applications"
+
+// concatenations "%0a" of ("bash -c %22sips -s format png --resampleHeight 128 " & item 0 of it & " --out /tmp/_BigFix/Icons/" & item 1 of it & ".png%22") of ( (concatenations (if windows of operating system then "^ " else "\ ") of substrings separated by " " of it) of (pathname of folders "Resources" of folders "Contents" of items 0 of it & "/" & item 1 of it) of (it, (it & ".icns") of (preceding text of last ".icns" of it | it) of strings "CFBundleIconFile" of dictionaries of files "Contents/Info.plist" of it) of it , (concatenations (if windows of operating system then "^ " else "\ ") of substrings separated by " " of it) of preceding texts of lasts ".app" of names of it ) of folders whose(name of it as lowercase ends with ".app") of folders "/Applications"
+
+folder create /tmp/_BigFix/Icons
+
+// Make sure __createfile doesn't already exist
+delete __createfile
+
+// generate __createfile contents: (must escape {})
+createfile until _END_OF_FILE_
+#!/usr/bin/env bash
+
+{ concatenations "%0a" of ("bash -c %22sips -s format png --resampleHeight 128 " & item 0 of it & " --out /tmp/_BigFix/Icons/" & item 1 of it & ".png%22") of ( (concatenations (if windows of operating system then "^ " else "\ ") of substrings separated by " " of it) of (pathname of folders "Resources" of folders "Contents" of items 0 of it & "/" & item 1 of it) of (it, (it & ".icns") of (preceding text of last ".icns" of it | it) of strings "CFBundleIconFile" of dictionaries of files "Contents/Info.plist" of it) of it , (concatenations (if windows of operating system then "^ " else "\ ") of substrings separated by " " of it) of preceding texts of lasts ".app" of names of it ) of folders whose(name of it as lowercase ends with ".app") of folders "/Applications" }
+_END_OF_FILE_
+
+// delete destination of __createfile to be sure it doesn't already exist
+delete /tmp/run_sips2png.sh
+
+// put file in place to run:
+copy __createfile /tmp/run_sips2png.sh
+
+// run it, waiting a maximum of 30 minutes:
+override wait
+timeout_seconds=1800
+wait bash /tmp/run_sips2png.sh
+
+// ToDo: Base64 the icon files on the command line
+
+// Make sure __createfile doesn't already exist
+delete __createfile
+
+// generate __createfile contents: (must escape {})
+createfile until _END_OF_FILE_
+#!/usr/bin/env bash
+
+{ concatenations "%0a" of ("bash -c %22base64 " & it & " > " & it & ".base64%22") of (concatenations (if windows of operating system then "^ " else "\ ") of substrings separated by " " of it) of pathnames of files ending in ".png" of folders "/tmp/_BigFix/Icons" }
+_END_OF_FILE_
+
+// delete destination of __createfile to be sure it doesn't already exist
+delete /tmp/run_base64_encode.sh
+
+// put file in place to run:
+copy __createfile /tmp/run_base64_encode.sh
+
+// run it, waiting a maximum of 30 minutes:
+override wait
+timeout_seconds=1800
+wait bash /tmp/run_base64_encode.sh
+
+// https://bigfix.me/relevance/details/3016285
+// https://github.com/jgstew/bigfix-content/blob/master/actionscript/Action_CreateFileTemplateBash.txt
+
+]]></ActionScript>
+		<SuccessCriteria Option="RunToCompletion"></SuccessCriteria>
+		<Settings>
+			<PreActionShowUI>false</PreActionShowUI>
+			<HasRunningMessage>false</HasRunningMessage>
+			<HasTimeRange>false</HasTimeRange>
+			<HasStartTime>false</HasStartTime>
+			<HasEndTime>true</HasEndTime>
+			<EndDateTimeLocalOffset>P2D</EndDateTimeLocalOffset>
+			<HasDayOfWeekConstraint>false</HasDayOfWeekConstraint>
+			<UseUTCTime>false</UseUTCTime>
+			<ActiveUserRequirement>NoRequirement</ActiveUserRequirement>
+			<ActiveUserType>AllUsers</ActiveUserType>
+			<HasWhose>false</HasWhose>
+			<PreActionCacheDownload>false</PreActionCacheDownload>
+			<Reapply>false</Reapply>
+			<HasReapplyLimit>true</HasReapplyLimit>
+			<ReapplyLimit>3</ReapplyLimit>
+			<HasReapplyInterval>false</HasReapplyInterval>
+			<HasRetry>false</HasRetry>
+			<HasTemporalDistribution>false</HasTemporalDistribution>
+			<ContinueOnErrors>true</ContinueOnErrors>
+			<PostActionBehavior Behavior="Nothing"></PostActionBehavior>
+			<IsOffer>false</IsOffer>
+		</Settings>
+		<SettingsLocks>
+			<ActionUITitle>false</ActionUITitle>
+			<PreActionShowUI>false</PreActionShowUI>
+			<PreAction>
+				<Text>false</Text>
+				<AskToSaveWork>false</AskToSaveWork>
+				<ShowActionButton>false</ShowActionButton>
+				<ShowCancelButton>false</ShowCancelButton>
+				<DeadlineBehavior>false</DeadlineBehavior>
+				<ShowConfirmation>false</ShowConfirmation>
+			</PreAction>
+			<HasRunningMessage>false</HasRunningMessage>
+			<RunningMessage>
+				<Text>false</Text>
+			</RunningMessage>
+			<TimeRange>false</TimeRange>
+			<StartDateTimeOffset>false</StartDateTimeOffset>
+			<EndDateTimeOffset>false</EndDateTimeOffset>
+			<DayOfWeekConstraint>false</DayOfWeekConstraint>
+			<ActiveUserRequirement>false</ActiveUserRequirement>
+			<ActiveUserType>false</ActiveUserType>
+			<Whose>false</Whose>
+			<PreActionCacheDownload>false</PreActionCacheDownload>
+			<Reapply>false</Reapply>
+			<ReapplyLimit>false</ReapplyLimit>
+			<RetryCount>false</RetryCount>
+			<RetryWait>false</RetryWait>
+			<TemporalDistribution>false</TemporalDistribution>
+			<ContinueOnErrors>false</ContinueOnErrors>
+			<PostActionBehavior>
+				<Behavior>false</Behavior>
+				<AllowCancel>false</AllowCancel>
+				<Deadline>false</Deadline>
+				<Title>false</Title>
+				<Text>false</Text>
+			</PostActionBehavior>
+			<IsOffer>false</IsOffer>
+			<AnnounceOffer>false</AnnounceOffer>
+			<OfferCategory>false</OfferCategory>
+			<OfferDescriptionHTML>false</OfferDescriptionHTML>
+		</SettingsLocks>
+		<IsUrgent>false</IsUrgent>
+	</SingleAction>
+</BES>
