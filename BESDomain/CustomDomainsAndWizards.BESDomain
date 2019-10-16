@@ -11,13 +11,11 @@
   <Console>
    <DomainBar>
 	<Tree>
-	 <Folder Title="Custom Wizards and Dashboards">
       <List Title="Custom Wizards and Dashboards" Type="Wizard">
        <FilterRelevance>
          set of bes wizards whose(exists sites whose(custom site flag of it) of it)
        </FilterRelevance>
       </List> 
-    </Folder>
 	</Tree>
    </DomainBar>
   </Console>
