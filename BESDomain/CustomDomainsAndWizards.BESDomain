@@ -8,7 +8,7 @@
 <Domains xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BESDomain_1_1.xsd">
  <!-- Important - the "ID" must be exactly 4 characters -->
  <Domain ID="DASH" Title="Custom Dashboards and Wizards">
-  <Console>
+  <Console Icon="&BESCConsoleIcon;">
    <DomainBar>
 	<Tree>
       <List Title="Custom Wizards and Dashboards" Type="Wizard">
