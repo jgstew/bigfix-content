@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE Domains
+[
+ <!ENTITY % GeneralContentInclude SYSTEM "DomainContent.xml">
+ %GeneralContentInclude;
+]>
+
+<Domains xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BESDomain_1_1.xsd">
+ <!-- Important - the "ID" must be exactly 4 characters -->
+ <Domain ID="DASH" Title="Custom Dashboards and Wizards">
+  <Console>
+   <DomainBar>
+	<Tree>
+	 <Folder Title="Custom Wizards and Dashboards">
+      <List Title="Custom Wizards and Dashboards" Type="Wizard">
+       <FilterRelevance>
+         set of bes wizards whose(exists sites whose(custom site flag of it) of it)
+       </FilterRelevance>
+      </List> 
+    </Folder>
+	</Tree>
+   </DomainBar>
+  </Console>
+ </Domain>
+</Domains>
