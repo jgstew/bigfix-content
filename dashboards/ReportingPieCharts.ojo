@@ -7,7 +7,13 @@
     <DefaultPage>ReportingPieCharts</DefaultPage>
     <Page Name="ReportingPieCharts" DocType="HTML5" > 
         <Title>Relay Cache Sizing</Title>
-        <Head><![CDATA[<meta http-equiv="X-UA-Compatible" content="IE=9"><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/5.0.6/highcharts.js" integrity="sha256-QwUrND/LJhYUBcYRAAxtMNWjZhZI+Yr8N7fpvHSFd4E=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/5.0.6/js/modules/data.js" integrity="sha256-AK2WbpyP70279punWOM2OSKsO5eN4QDIjJCxNXBTpe4=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/5.0.6/js/modules/exporting.js" integrity="sha256-rw4LEW/jjb9Bh4Az8wyu58bFgq4pbniE4g76HQeneuY=" crossorigin="anonymous"></script>]]></Head>
+        <Head><![CDATA[
+          <meta http-equiv="X-UA-Compatible" content="IE=9">
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/5.0.6/highcharts.js" integrity="sha256-QwUrND/LJhYUBcYRAAxtMNWjZhZI+Yr8N7fpvHSFd4E=" crossorigin="anonymous"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/5.0.6/js/modules/data.js" integrity="sha256-AK2WbpyP70279punWOM2OSKsO5eN4QDIjJCxNXBTpe4=" crossorigin="anonymous"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/5.0.6/js/modules/exporting.js" integrity="sha256-rw4LEW/jjb9Bh4Az8wyu58bFgq4pbniE4g76HQeneuY=" crossorigin="anonymous"></script>
+        ]]></Head>
         <HTML><![CDATA[
 <h2>Reporting - Pie Charts</h2>
 
