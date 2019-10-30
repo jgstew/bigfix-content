@@ -51,7 +51,7 @@ $(document).ready(function(){
             .showLegend(true);
 
         d3.select("#chart svg")
-            .datum( <?Relevance ("[ " & it & " ]") of concatenations ", " of (html it) of ("{ %22label%22: %22" & item 0 of it & "%22, %22value%22: " & item 1 of it as string & " }") of (it, multiplicity of it as string) of unique values of (it as trimmed string) of agent versions of bes computers ?> )
+            .datum( <?Relevance ("[ " & it & " ]") of concatenations ", " of (html it) of ("{ %22label%22: %22" & item 0 of it & "%22, %22value%22: " & item 1 of it as string & " }") of (it, multiplicity of it as string) of unique values of (it as trimmed string) of Device Types of bes computers ?> )
             .transition().duration(30)
             .call(chart);
 
