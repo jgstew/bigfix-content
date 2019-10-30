@@ -1,0 +1,66 @@
+<?xml version="1.0" standalone="no" ?>
+<!-- vim: set syntax=xml: -->
+<BES>
+  <Wizard>
+    <Title>Custom - Device Type Chart</Title>
+    <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+    <DefaultPage>Device Type Chart</DefaultPage>
+    <Page Name="Device Type Chart" DocType="HTML5" > 
+        <Title>Device Type Chart</Title>
+        <Head><![CDATA[
+            <meta http-equiv="X-UA-Compatible" content="IE=11">
+            <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
+        ]]></Head>
+        <HTML><![CDATA[
+<script language="javascript">InsertUtilityDiv();</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" integrity="sha256-gfQwA6PlkZsLqWu4bU4hXPrbTqzixm0B5MdvBLI+Oas=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.css" integrity="sha256-R2jMs9TISUBFqVTr3Tfh2ChO3bK75hs0FBwshlxrUUw=" crossorigin="anonymous" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.js" integrity="sha256-lYa1oow3mJv8AcE44iQ5PoqmTOwP1mUzcuom5btzetg=" crossorigin="anonymous"></script>
+
+<h2>Device Type Chart</h2> 
+
+<div id="chart" style="z-index: 3; top: 0px; right: 10px;">
+  <svg></svg>
+</div>
+
+<style>
+table {
+    width: 100%;
+}
+h2 {
+    padding: 10px;
+    margin: 0px 0px 1px 0px;
+    border: 0;
+}
+#chart svg {
+  width: 600px;
+  height: 600px;
+}
+</style>
+<script>
+
+$(document).ready(function(){
+
+    nv.addGraph(function() {
+        var chart = nv.models.pieChart()
+            .x(function(d) { return d.label })
+            .y(function(d) { return d.value })
+            .showLabels(false)
+            .showLegend(true);
+
+        d3.select("#chart svg")
+            .datum( <?Relevance ("[ " & it & " ]") of concatenations ", " of (html it) of ("{ %22label%22: %22" & item 0 of it & "%22, %22value%22: " & item 1 of it as string & " }") of (it, multiplicity of it as string) of unique values of (it as trimmed string) of agent versions of bes computers ?> )
+            .transition().duration(30)
+            .call(chart);
+
+        return chart;
+    });
+});
+</script>
+
+        ]]></HTML>
+    </Page>
+  </Wizard>
+</BES>
