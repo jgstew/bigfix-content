@@ -2,11 +2,11 @@
 <!-- vim: set syntax=xml: -->
 <BES>
   <Wizard>
-    <Title>Custom - Hidden Content Chart</Title>
+    <Title>Custom - Operating Systems Chart</Title>
     <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
-    <DefaultPage>HiddenContentChart</DefaultPage>
-    <Page Name="HiddenContentChart" DocType="HTML5" > 
-        <Title>Hidden Content Chart</Title>
+    <DefaultPage>OperatingSystemsChart</DefaultPage>
+    <Page Name="OperatingSystemsChart" DocType="HTML5" > 
+        <Title>Operating Systems Chart</Title>
         <Head><![CDATA[
             <meta http-equiv="X-UA-Compatible" content="IE=11">
             <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.css" integrity="sha256-R2jMs9TISUBFqVTr3Tfh2ChO3bK75hs0FBwshlxrUUw=" crossorigin="anonymous" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.js" integrity="sha256-lYa1oow3mJv8AcE44iQ5PoqmTOwP1mUzcuom5btzetg=" crossorigin="anonymous"></script>
 
-<h2>Hidden Content Chart</h2> 
+<h2>Operating Systems Chart</h2> 
 
 <div id="chart" style="z-index: 3; top: 0px; right: 10px;">
   <svg></svg>
@@ -51,7 +51,7 @@ $(document).ready(function(){
             .showLegend(true);
 
         d3.select("#chart svg")
-            .datum( <?Relevance ("[ " & it & " ]") of concatenations ", " of (html it) of ("{ %22label%22: %22" & item 0 of it & "%22, %22value%22: " & item 1 of it as string & " }") of ( ( "Globally Hidden", number of bes fixlets whose(not globally visible flag of it) );( "Locally Hidden", number of bes fixlets whose(not locally visible flag of it) ) ) ?> )
+            .datum( <?Relevance ("[ " & it & " ]") of concatenations ", " of (html it) of ("{ %22label%22: %22" & item 0 of it & "%22, %22value%22: " & item 1 of it as string & " }") of (it, multiplicity of it as string) of unique values of (it as trimmed string) of (preceding text of last " " of it | it) of operating systems of bes computers ?> )
             .transition().duration(30)
             .call(chart);
 
