@@ -4,8 +4,8 @@
   <Wizard>
     <Title>Custom - Client Settings Manager</Title>
     <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
-    <DefaultPage>BaselineStatusResults</DefaultPage>
-    <Page Name="BaselineStatusResults" DocType="HTML5" > 
+    <DefaultPage>ClientSettingsManager</DefaultPage>
+    <Page Name="ClientSettingsManager" DocType="HTML5" > 
         <Title>Client Settings Manager</Title>
         <Head><![CDATA[
             <meta http-equiv="X-UA-Compatible" content="IE=11">
