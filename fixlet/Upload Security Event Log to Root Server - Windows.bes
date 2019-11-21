@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Upload Security Event Log to Root Server - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists files "C:\Windows\Temp\EventLogBackupSecurity.evt"</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2019-11-21</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 21 Nov 2019 18:45:14 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+setting "_BESClient_ArchiveManager_MaxArchiveSize"="91041152" on "{parameter "action issue date" of action}" for client
+setting "_BESClient_ArchiveManager_OperatingMode"="2" on "{parameter "action issue date" of action}" for client
+setting "_BESClient_ArchiveManager_FileSet-logs"="C:\Windows\Temp\EventLogBackupSecurity.evt" on "{parameter "action issue date" of action}" for client
+
+archive now
+
+// NOTE:  _BESRelay_UploadManager_CompressedFileMaxSize   may need adjusted on the root server
+//    https://github.com/jgstew/bigfix-content/blob/master/fixlet/clientsettings/Set%20__BESRelay_UploadManager_CompressedFileMaxSize_%20to%20_100000000_%20-%20Universal.bes</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
