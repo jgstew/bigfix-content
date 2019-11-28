@@ -2,7 +2,9 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Probe HP Smart Storage Info - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>&nbsp;</P>
+<P>Based upon @cjwolford 's work here: <A href="https://forum.bigfix.com/t/hp-enterprise-ssd-critical-firmware-update/32247/2?u=jgstew">https://forum.bigfix.com/t/hp-enterprise-ssd-critical-firmware-update/32247/2?u=jgstew</A></P>
+<P>&nbsp;</P>]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists folders "C:\Windows\Temp"</Relevance>
 		<Relevance>exists files "C:\Program Files\Smart Storage Administrator\ssacli\bin\ssacli.exe"</Relevance>
@@ -16,7 +18,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 28 Nov 2019 18:06:15 +0000</Value>
+			<Value>Thu, 28 Nov 2019 18:09:15 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
