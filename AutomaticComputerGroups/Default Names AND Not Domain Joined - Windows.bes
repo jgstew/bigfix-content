@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<ComputerGroup>
+		<Title>Default Names AND Not Domain Joined - Windows</Title>
+		<Domain>BESC</Domain>
+		<JoinByIntersection>true</JoinByIntersection>
+		<SearchComponentRelevance Comparison="IsTrue">
+			<Relevance>(windows of operating systems) AND (not exists distinguished names of local computers of active directories) AND (computer name as lowercase starts with "desktop-")</Relevance>
+		</SearchComponentRelevance>
+	</ComputerGroup>
+</BES>
