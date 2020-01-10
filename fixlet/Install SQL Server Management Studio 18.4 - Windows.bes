@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Install SQL Server Management Studio 18.4 - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance><![CDATA[version of operating system >= "6.1"]]></Relevance>
+		<Relevance>not exists keys whose(value "DisplayName" of it as string contains "SQL Server Management Studio") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries;x32 registries)</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2019-11-04</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 10 Jan 2020 17:17:58 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+//Release number: 18.4
+//Build number: 15.0.18206.0
+//Release date: November 04, 2019
+
+// Download:
+prefetch SSMS-Setup-ENU.exe sha1:395e7ce8322fb5e59eaccaed67eecb1f3e34c487 size:564770960 https://download.microsoft.com/download/1/9/4/1949aa9c-6536-48f2-81fa-e7bb07410b36/SSMS-Setup-ENU.exe sha256:5a0bcf1665c56b4ee839361cd1ab44ab7864a9361bc60c508b0100d00e58a5e2
+
+// Install:
+waithidden __Download\SSMS-Setup-ENU.exe /install /quiet /norestart
+
+// https://svenaelterman.wordpress.com/2016/05/23/performing-a-silent-install-of-sql-server-management-studio-2016/
+// https://msdn.microsoft.com/en-us/library/mt238290.aspx
+// https://go.microsoft.com/fwlink/?linkid=837453
+// https://download.microsoft.com/download/3/1/D/31D734E0-BFE8-4C33-A9DE-2392808ADEE6/SSMS-Setup-ENU.exe</ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
