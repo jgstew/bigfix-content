@@ -4,8 +4,7 @@
 		<Title>Get AWS Metadata - dynamic document - Universal</Title>
 		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
 		<Relevance> /* isAWS? */ exists ( (it as string) of values "manufacturer" of it, (it as string) of values "version" of it ) whose(item 0 of it starts with "Xen" AND item 1 of it as lowercase contains "amazon") of structures "system_information" of smbioses</Relevance>
-		<Relevance><![CDATA[not exists files whose(name of it as lowercase starts with "aws_metadata_dynamic-doc.txt" AND (now - modification time of it) < 3*day ) of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
-		<Relevance>exists files "/usr/bin/curl" OR exists files "C:\Windows\System32\curl.exe" OR exists files "C:\ProgramData\chocolatey\bin\curl.exe" OR ( exists files whose(name of it as lowercase = "curl" OR name of it as lowercase = "curl.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments )</Relevance>
+		<Relevance><![CDATA[not exists files whose(name of it as lowercase starts with "aws_metadata_dynamic-doc.json" AND (now - modification time of it) < 3*day ) of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
 		<Category></Category>
 		<DownloadSize>0</DownloadSize>
 		<Source>Internal</Source>
@@ -16,7 +15,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Mon, 18 Mar 2019 23:31:48 +0000</Value>
+			<Value>Tue, 21 Jan 2020 20:52:15 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -31,11 +30,13 @@
 
 parameter "MetadataURL" = "http://169.254.169.254/latest/dynamic/instance-identity/document"
 
-wait curl {parameter "MetadataURL"} -o "{pathname of folders "Logs" of folders "__Global" of data folders of client}{if windows of operating system then "\" else "/"}aws_metadata_dynamic-doc.txt"
+delete __Download/document
 
-// https://curl.haxx.se/libcurl/c/libcurl-errors.html
+download now {parameter "MetadataURL"}
 
-continue if{ exists exit codes whose(0=it) of active actions }
+delete "{pathname of folders "Logs" of folders "__Global" of data folders of client}{if windows of operating system then "\" else "/"}aws_metadata_dynamic-doc.json"
+
+copy __Download/document "{pathname of folders "Logs" of folders "__Global" of data folders of client}{if windows of operating system then "\" else "/"}aws_metadata_dynamic-doc.json"
 </ActionScript>
 			<Settings>
 				<PreActionShowUI>false</PreActionShowUI>
