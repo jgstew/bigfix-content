@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Generate Self-Signed Certificate for Testing - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2020-01-22</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 22 Jan 2020 18:49:47 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// https://4sysops.com/archives/create-a-self-signed-certificate-with-powershell/
+
+action parameter query "CertFQDN"
+
+// Disable wow64 redirection on x64 OSes
+action uses wow64 redirection {not x64 of operating system}
+
+delete __createfile
+
+createfile until _END_OF_FILE_
+# Create and export a self-signed certificate
+# Script by Tim Buntrock  https://4sysops.com/archives/create-a-self-signed-certificate-with-powershell/
+ 
+# Define certificate name
+$Certname = "{ parameter "CertFQDN" }"
+# Define expiration
+$YearsToExpire = "100"
+Write-Host "Creating Certifcate $Certname" -ForegroundColor Green
+# Create certificate
+$Cert = New-SelfSignedCertificate -certstorelocation cert:\localmachine\my -dnsname $Certname -NotAfter (Get-Date).AddYears($YearsToExpire)
+Write-Host "Exporting Certificate $Certname to C:\Windows\Temp\$Certname.pfx" -ForegroundColor Green
+# Set password to export certificate
+$pw = ConvertTo-SecureString -String "MyBadPassword" -Force -AsPlainText
+# Get thumbprint
+$thumbprint = $Cert.Thumbprint
+# Export certificate
+Export-PfxCertificate -cert cert:\localMachine\my\$thumbprint -FilePath C:\Windows\Temp\$Certname.pfx -Password $pw
+
+# Cleanup:
+#Delete by thumbprint
+Get-ChildItem Cert:\LocalMachine\My\$thumbprint | Remove-Item
+_END_OF_FILE_
+
+delete C:\Windows\Temp\GenSelfSignedCert.ps1
+
+copy __createfile C:\Windows\Temp\GenSelfSignedCert.ps1
+
+waithidden powershell -ExecutionPolicy Bypass -File C:\Windows\Temp\GenSelfSignedCert.ps1
+
+// Cleanup:
+delete C:\Windows\Temp\GenSelfSignedCert.ps1
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
