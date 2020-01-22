@@ -13,7 +13,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Wed, 22 Jan 2020 18:49:47 +0000</Value>
+			<Value>Wed, 22 Jan 2020 19:02:07 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -22,7 +22,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // https://4sysops.com/archives/create-a-self-signed-certificate-with-powershell/
 
 action parameter query "CertFQDN"
@@ -60,11 +60,11 @@ delete C:\Windows\Temp\GenSelfSignedCert.ps1
 
 copy __createfile C:\Windows\Temp\GenSelfSignedCert.ps1
 
-waithidden powershell -ExecutionPolicy Bypass -File C:\Windows\Temp\GenSelfSignedCert.ps1
+waithidden CMD /C "powershell -ExecutionPolicy Bypass -File C:\Windows\Temp\GenSelfSignedCert.ps1" > C:\Windows\Temp\_BigFix_PowerShell.log 2>&1
 
 // Cleanup:
 delete C:\Windows\Temp\GenSelfSignedCert.ps1
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>
