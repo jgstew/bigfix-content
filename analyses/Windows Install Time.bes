@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Windows Install Time</Title>
+		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2020-02-19</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 19 Feb 2020 18:03:52 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="Combined Minimum" ID="1" EvaluationPeriod="PT12H">"TBD" /* this is a placeholder */</Property>
+		<Property Name="InstallDate (registry)" ID="2" EvaluationPeriod="PT6H">unique values of (it * second + "01 Jan 1970 00:00:00" as local time) of (it as string as trimmed string as integer) whose(0 != it) of values "InstallDate" of keys "HKLM\Software\Microsoft\Windows NT\CurrentVersion" of (x64 registries;x32 registries)  /* https://bigfix.me/relevance/details/2199 */</Property>
+		<Property Name="Mod Time of WindowsCSC" ID="3" EvaluationPeriod="PT12H">modification times of folders "C:\Windows\CSC"  /* https://community.spiceworks.com/topic/2076966-how-to-find-windows-10-original-install-date-not-the-last-updated-date */</Property>
+		<Property Name="Oldest Software Install Time" ID="4" EvaluationPeriod="PT6H">minima of (it as integer) of values "InstallDate" whose(exists it as integer) of keys of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries; x32 registries)</Property>
+		<Property Name="Oldest Patch Install Time" ID="5" EvaluationPeriod="P2D"><![CDATA[minima of (it as date) of ( ((it as integer as string) of preceding text of last "/" of following text of first "/" of it ) &" "& (preceding text of first "/" of it as integer as month as three letters) & " " & (following text of last "/" of it as integer as string) ) of unique values whose(it != "") of string values of selects "InstalledOn from win32_quickfixengineering" of wmis]]></Property>
+		<Property Name="OOBE EndTime" ID="6" EvaluationPeriod="P2D">/* There must be a better way to get this: */ (it as trimmed string) of following texts of firsts "OOBE end time: " of lines containing "OOBE end time: " of files "C:\Windows\Logs\SetupCleanupTask\setupact.log"</Property>
+		<Property Name="Min ModTime of SWIDtag" ID="7" EvaluationPeriod="PT12H">minima of modification times of (it; files of it) of folders "C:\ProgramData\regid.1991-06.com.microsoft"</Property>
+	</Analysis>
+</BES>
