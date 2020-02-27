@@ -38,6 +38,7 @@ endif
 if { mac of operating system }
 
 // TODO: Open Mac System Update
+// run open "/System/Library/CoreServices/Software Update.app"
 
 endif
 
