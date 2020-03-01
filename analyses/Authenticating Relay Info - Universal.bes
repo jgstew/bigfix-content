@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Authenticating Relay Info - Universal</Title>
+		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Relevance>exists relay service</Relevance>
+		<Relevance>exists values of (settings "_BESRelay_Comm_KeyExchangePassword" of it ; settings "_BESRelay_Comm_Authenticating" of it) of client</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2020-03-01</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Sun, 01 Mar 2020 02:06:06 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="Authenticating?" ID="2" EvaluationPeriod="PT1H">values of settings "_BESRelay_Comm_Authenticating" of client</Property>
+		<Property Name="SHA256 of KeyExchangePassword" ID="3" EvaluationPeriod="PT1H">sha256s of settings "_BESRelay_Comm_KeyExchangePassword" of client</Property>
+	</Analysis>
+</BES>
