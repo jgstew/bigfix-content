@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Windows Event Logs</Title>
+		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2020-03-19</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 19 Mar 2020 16:14:13 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="Retain Log Files::Security" ID="1" EvaluationPeriod="PT6H">(it as integer) of value "AutoBackupLogFiles" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Eventlog\Security" of registries | (it as integer) of value "AutoBackupLogFiles" of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\EventLog\Security" of registries | ERROR "NoValue"</Property>
+		<Property Name="Retain Log Files::System" ID="2" EvaluationPeriod="PT6H">(it as integer) of value "AutoBackupLogFiles" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Eventlog\System" of registries | (it as integer) of value "AutoBackupLogFiles" of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\EventLog\System" of registries | ERROR "NoValue"</Property>
+		<Property Name="Retain Log Files::Application" ID="3" EvaluationPeriod="PT6H">(it as integer) of value "AutoBackupLogFiles" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Eventlog\Application" of registries | (it as integer) of value "AutoBackupLogFiles" of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\EventLog\Application" of registries | ERROR "NoValue"</Property>
+		<Property Name="Max Log Size::Security" ID="4" EvaluationPeriod="PT6H">(it as integer) of value "MaxSize" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Eventlog\Security" of registries | (it / 1024) of (it as integer) of value "MaxSize" of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\EventLog\Security" of registries | ERROR "NoValue"</Property>
+		<Property Name="Max Log Size::System" ID="5" EvaluationPeriod="PT6H">(it as integer) of value "MaxSize" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Eventlog\System" of registries | (it / 1024) of (it as integer) of value "MaxSize" of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\EventLog\System" of registries | ERROR "NoValue"</Property>
+		<Property Name="Max Log Size::Application" ID="6" EvaluationPeriod="PT6H">(it as integer) of value "MaxSize" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Eventlog\Application" of registries | (it / 1024) of (it as integer) of value "MaxSize" of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\EventLog\Application" of registries | ERROR "NoValue"</Property>
+		<Property Name="Total Size of All Logs (MB)" ID="7" EvaluationPeriod="PT6H">(it / 1024 / 1024) of sums of sizes of files of (x64 folders it; folders it) of "C:\Windows\System32\winevt\Logs"</Property>
+	</Analysis>
+</BES>
