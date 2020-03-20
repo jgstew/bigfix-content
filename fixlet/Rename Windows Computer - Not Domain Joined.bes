@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Rename Windows Computer - Not Domain Joined</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>not exists distinguished names of local computers of active directories</Relevance>
+		<Relevance>exists files "wmic.exe" of folders "wbem" of system folders</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2020-03-20</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 20 Mar 2020 21:02:26 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+action parameter query "newComputerName" with description "Enter a new computer name:" and with default value ""
+
+parameter "oldComputerName"="{computer name}"
+
+// use WMI to change the name
+waithidden wmic computersystem where caption='{parameter "oldComputerName"}' call rename '{parameter "newComputerName"}'
+
+continue if {exit code of action = 0}
+
+action requires restart
+
+// Related: https://bigfix.me/fixlet/details/1393
+</ActionScript>
+			<SuccessCriteria Option="CustomRelevance">computer name = parameter "oldComputerName"</SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
