@@ -8,12 +8,13 @@
 		<SourceReleaseDate>2020-03-26</SourceReleaseDate>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 02 Apr 2020 13:33:06 +0000</Value>
+			<Value>Thu, 02 Apr 2020 13:55:16 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<Property Name="Lines of rsyslog.conf" ID="1" EvaluationPeriod="PT6H">(it as trimmed string) whose (it does not start with "#" AND it != "") of lines of files "/etc/rsyslog.conf"</Property>
 		<Property Name="Include Conf in rsyslog.conf" ID="4" EvaluationPeriod="PT6H">(it as trimmed string) of ( (preceding texts of firsts "%22 " of following texts of firsts "include(file=%22" of it) ; (following texts of firsts "$IncludeConfig " of it) ) of lines whose(it starts with "include(file=%22" OR it starts with "$IncludeConfig ") of files "/etc/rsyslog.conf"</Property>
 		<Property Name="config files in rsyslog.d" ID="6" EvaluationPeriod="PT6H">files whose(name of it as lowercase ends with ".conf") of folders "/etc/rsyslog.d"</Property>
 		<Property Name="remote forwarding rule" ID="7" EvaluationPeriod="PT6H">unique values of (it as trimmed string) of lines whose(it starts with "*.*" AND (it contains "@" OR it contains "target")) of (files "/etc/rsyslog.conf"; files whose(name of it as lowercase ends with ".conf") of folders "/etc/rsyslog.d")</Property>
+		<Property Name="rsyslog package info" ID="8" EvaluationPeriod="PT6H">packages "rsyslog" whose(if exists properties whose(it as string contains "currently installed of ") then (currently installed of it) else TRUE) of (if exists properties whose(it as string contains "debianpackage:") then debianpackages else if exists properties whose(it as string contains "rpm:") then rpms else ERROR "The operators are not defined.")</Property>
 	</Analysis>
 </BES>
