@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Analysis>
-		<Title>Linux Log Settings</Title>
+		<Title>Log Info - Linux Unix</Title>
 		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
 		<Relevance>unix of operating system</Relevance>
 		<Relevance>exists files "/etc/logrotate.conf"</Relevance>
@@ -9,9 +9,10 @@
 		<SourceReleaseDate>2020-03-23</SourceReleaseDate>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Mon, 23 Mar 2020 21:55:41 +0000</Value>
+			<Value>Tue, 24 Mar 2020 21:57:17 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<Property Name="Number of Weeks of Logs" ID="1" EvaluationPeriod="PT1H">(it as trimmed string) of following texts of firsts "rotate " of lines whose(it as lowercase starts with "rotate ") of files "/etc/logrotate.conf"</Property>
+		<Property Name="(Number, RootName) of Logs" ID="2" EvaluationPeriod="PT6H">(multiplicity of it, it) of unique values of (preceding text of first matches (regex "-[0-9]"; regex "\.[0-9]") of it | it) of (preceding text of first ".log" of it | it) of names of files of (folders "log" of it; /* Unix Log Folder: */ folders "adm" of it) of folders "/var"</Property>
 	</Analysis>
 </BES>
