@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Compress and Upload System Logs - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Category></Category>
+		<DownloadSize>384846</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2020-04-07</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 07 Apr 2020 22:31:39 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+
+prefetch 7za.zip sha1:9ce9ce89ebc070fea5d679936f21f9dde25faae0 size:384846 https://www.7-zip.org/a/7za920.zip sha256:2a3afe19c180f8373fa02ff00254d5394fec0349f5804e0ad2f6067854ff28ac
+
+action parameter query "WARNING" with default "I Understand" with description "This action could result in large storage usage on the BigFix root server, use with caution on limited number of systems!!!"
+
+// Add to the client utility cache
+utility __Download\7za.zip
+
+delete __createfile
+createfile until _END_OF_FILE_
+' zipExtract.vbs
+' Written by James Stewart ( @jgstew )
+' Public Domain - use at your own risk
+
+' Dim to declare variables isn't required in VBScript except to make them available across all procedures within the script
+Dim strZipFilePath, objOutputFolder, objCurrentFolder, objFSO, objShell
+
+Set objFSO = CreateObject("Scripting.FileSystemObject")
+Set objShell = CreateObject( "Shell.Application" )
+
+' http://blogs.technet.com/b/heyscriptingguy/archive/2006/04/05/how-can-i-determine-the-path-to-the-folder-where-a-script-is-running.aspx
+' http://stackoverflow.com/questions/4200028/vbscript-list-all-pdf-files-in-folder-and-subfolders
+Set objCurrentFolder = objFSO.GetFolder( CreateObject("Wscript.Shell").CurrentDirectory )
+
+' https://technet.microsoft.com/en-us/library/ee156618.aspx
+If 1 = WScript.Arguments.Unnamed.Count Then
+	strZipFilePath = WScript.Arguments.Unnamed.Item(0)
+Else
+	' operating on an ZIP in the current folder ( if there are multiple, the first one will be used )
+	For Each objFile in objCurrentFolder.Files
+		If UCase( objFSO.GetExtensionName(objFile.name)) = "ZIP" Then
+			strZipFilePath = objFile.Path
+			
+			' https://blogs.technet.microsoft.com/heyscriptingguy/2005/05/04/how-can-i-exit-a-for-each-loop/
+			Exit For
+		End If
+	Next
+	
+	If IsEmpty( strZipFilePath ) Then
+		Wscript.Echo
+		Wscript.Echo "-ERROR-"
+		Wscript.Echo "  Usage: zipGetFilesList.vbs ""PATH\TO\FILE.ZIP""  [/OutDir:OutputDirectoryPath]"
+		Wscript.Quit
+	End If
+End If
+
+' output zip file path (debugging)
+'Wscript.Echo strZipFilePath
+
+' http://stackoverflow.com/questions/4100506/check-if-an-object-exists-in-vbscript
+'If WScript.Arguments.Named.Count = 1 Then
+If NOT IsEmpty( WScript.Arguments.Named.Item("OutDir") ) Then
+	objOutputFolder = objFSO.GetAbsolutePathName( WScript.Arguments.Named.Item("OutDir") )
+Else
+	objOutputFolder = objCurrentFolder
+End If
+
+' TODO: Check to make sure output directory exists!
+' TODO: Check to make sure the ZIP file exists!  (particularly if specified as parameter)
+
+'  Extract the Files:
+' https://asmand.wordpress.com/2015/06/15/unzip-with-vbscript/
+' https://www.symantec.com/connect/forums/vbscript-extract-zip
+objShell.NameSpace( objOutputFolder ).copyHere ( objShell.NameSpace( objFSO.GetAbsolutePathName( strZipFilePath ) ).Items() ), 1044
+' https://msdn.microsoft.com/en-us/library/windows/desktop/bb787866(v=vs.85).aspx
+_END_OF_FILE_
+
+delete __Download\zipExtract.vbs
+copy __createfile __Download\zipExtract.vbs
+
+// need to switch directories to __Download so that zipExtract will find the zip file within the current folder
+wait CMD /C cd __Download && cscript //nologo zipExtract.vbs
+
+// "sysnative" whose(x64 of operating system) | "System32"
+// 7za.exe a C:\Windows\Temp\_WinLogs.7z C:\Windows\sysnative\winevt\Logs\Archive-*
+
+action uses wow64 redirection false
+
+// Make copies of important in-use log files:
+delete "C:\Windows\Temp\Application.evtx"
+
+copy "{ pathname of (x64 file it) of expand environment strings of (it as string) of values "File" of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\EventLog\Application" of registries }" "C:\Windows\Temp\Application.evtx"
+
+delete "C:\Windows\Temp\System.evtx"
+
+copy "{ pathname of (x64 file it) of expand environment strings of (it as string) of values "File" of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\EventLog\System" of registries }" "C:\Windows\Temp\System.evtx"
+
+delete "C:\Windows\Temp\Security.evtx"
+
+copy "{ pathname of (x64 file it) of expand environment strings of (it as string) of values "File" of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\EventLog\Security" of registries }" "C:\Windows\Temp\Security.evtx"
+
+
+// compress logs into archive:
+parameter "archive"="C:\Windows\Temp\_Logs_{(current year as string) & (current month as two digits) & (current day_of_month as two digits) & "_" & computer name}.7z"
+delete "{parameter "archive"}"
+wait __Download\7za.exe a -mmt=off "{parameter "archive"}" C:\Windows\sysnative\winevt\Logs\Archive-* C:\Windows\Temp\Application.evtx C:\Windows\Temp\System.evtx C:\Windows\Temp\Security.evtx
+
+// cleanup:
+delete "C:\Windows\Temp\Security.evtx"
+delete "C:\Windows\Temp\System.evtx"
+delete "C:\Windows\Temp\Application.evtx"
+
+
+// Upload:
+
+if { not exists (it as integer) whose(it > 1000 + size of files ( parameter "archive" )) of values of settings "_BESClient_ArchiveManager_MaxArchiveSize" of client }
+setting "_BESClient_ArchiveManager_MaxArchiveSize"="{1000 + size of files ( parameter "archive" )}" on "{parameter "action issue date" of action}" for client
+endif
+
+setting "_BESClient_ArchiveManager_OperatingMode"="2" on "{parameter "action issue date" of action}" for client
+
+setting "_BESClient_ArchiveManager_FileSet-SystemLogs_{(current year as string) & (current month as two digits) & (current day_of_month as two digits)}"="{ parameter "archive" }" on "{parameter "action issue date" of action}" for client
+
+archive now
+]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
