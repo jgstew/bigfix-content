@@ -119,6 +119,8 @@ copy "{ pathname of (x64 file it) of expand environment strings of (it as string
 // compress logs into archive:
 parameter "archive"="C:\Windows\Temp\_Logs_{(current year as string) & (current month as two digits) & (current day_of_month as two digits) & "_" & computer name}.7z"
 delete "{parameter "archive"}"
+// https://developer.bigfix.com/action-script/reference/execution/action-launch-preference-low-priority.html
+action launch preference low-priority
 wait __Download\7za.exe a -mmt=off "{parameter "archive"}" C:\Windows\sysnative\winevt\Logs\Archive-* C:\Windows\Temp\Application.evtx C:\Windows\Temp\System.evtx C:\Windows\Temp\Security.evtx
 
 // cleanup:
