@@ -32,6 +32,10 @@
 // Related Session Relevance:
 //   names of bes fixlets whose( exists names whose(it as lowercase = "x-relevance-evaluation-period") of mime fields of it )
 //   (multiplicity of it, it) of unique values of names of mime fields of bes fixlets
+
+// Related Links:
+// - https://forum.bigfix.com/t/heartbeat-setting/9737/7
+// - https://forum.bigfix.com/t/pre-announcement-superseded-patch-changes-for-patches-for-windows/23780/2
 </ActionScript>
 		</DefaultAction>
 	</Task>
