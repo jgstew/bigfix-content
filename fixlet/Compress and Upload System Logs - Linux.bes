@@ -17,6 +17,10 @@
 			<Name>x-fixlet-modification-time</Name>
 			<Value>Fri, 10 Apr 2020 16:12:18 +0000</Value>
 		</MIMEField>
+		<MIMEField>
+			<Name>X-Relevance-Evaluation-Period</Name>
+			<Value>12:00:00</Value>
+		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
 			<Description>
