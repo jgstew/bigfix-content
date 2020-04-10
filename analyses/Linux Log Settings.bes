@@ -9,12 +9,12 @@
 		<SourceReleaseDate>2020-03-23</SourceReleaseDate>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Fri, 10 Apr 2020 14:03:36 +0000</Value>
+			<Value>Fri, 10 Apr 2020 14:25:55 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<Property Name="Number of Weeks of Logs" ID="1" EvaluationPeriod="PT1H">(it as trimmed string) of following texts of firsts "rotate " of lines whose(it as lowercase starts with "rotate ") of files "/etc/logrotate.conf"</Property>
 		<Property Name="(Number, RootName) of Logs" ID="2" EvaluationPeriod="PT6H">(multiplicity of it, it) of unique values of (preceding text of first matches (regex "-[0-9]"; regex "\.[0-9]") of it | it) of (preceding text of first ".log" of it | it) of names of files of (folders "log" of it; /* Unix Log Folder: */ folders "adm" of it) of folders "/var"</Property>
-		<Property Name="Size, Path of Messages" ID="3" EvaluationPeriod="PT6H">(sizes of it, pathnames of it) of files "messages" of (folders "adm" of it; folders "log" of it) of folders "/var"</Property>
-		<Property Name="Size, Path of Audit.Log" ID="4" EvaluationPeriod="PT6H">(sizes of it, pathnames of it) of (files "audit.log" of it; files "auth.log" of it) of (folders "audit" of it; folders "authlog" of it; it) of folders "/var/log"</Property>
+		<Property Name="Size, Path of Messages" ID="3" EvaluationPeriod="PT6H">(sizes of it, pathnames of it) of files whose(name of it starts with "messages") of (folders "adm" of it; folders "log" of it) of folders "/var"</Property>
+		<Property Name="Size, Path of Audit.Log" ID="4" EvaluationPeriod="PT6H">(sizes of it, pathnames of it) of (files whose(exists (it as lowercase) whose( (it starts with "audit" OR it starts with "auth") AND it contains ".log") of name of it) of it) of (folders "audit" of it; folders "authlog" of it; it) of folders "/var/log"</Property>
 	</Analysis>
 </BES>
