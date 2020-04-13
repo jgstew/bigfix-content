@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Add RSysLog Forwarding Config - Linux Unix</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>exists files "/etc/rsyslog.conf"</Relevance>
+		<Relevance>exists folders "/etc/rsyslog.d"</Relevance>
+		<Relevance>not exists files "/etc/rsyslog.d/zz-custom-forwarding.conf"</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2020-03-27</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 02 Apr 2020 14:05:46 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+action parameter query "syslog_server" with default "192.168.0.1"
+
+continue if{ length of parameter "syslog_server" > 3 }
+
+// Make sure __createfile doesn't already exist
+delete __createfile
+
+// generate __createfile contents: (must escape {})
+createfile until _END_OF_FILE_
+# ### begin forwarding rule ###
+# The statement between the begin ... end define a SINGLE forwarding
+# rule. They belong together, do NOT split them. If you create multiple
+# forwarding rules, duplicate the whole block!
+# Remote Logging (we use TCP for reliable delivery)
+#
+# An on-disk queue is created for this action. If the remote host is
+# down, messages are spooled to disk and sent when it is up again.
+
+$ActionQueueFileName fwdRuleZZ # unique name prefix for spool files
+$ActionQueueMaxDiskSpace 1g # 1gb space limit (use as much as possible)
+$ActionQueueSaveOnShutdown on # save messages to disk on shutdown
+$ActionQueueType LinkedList # run asynchronously
+$ActionResumeRetryCount -1 # infinite retries if host is down
+
+# remote host is: name/ip:port, e.g. 192.168.0.1:514, port optional
+# send logs to SIEM
+*.* @@{parameter "syslog_server"}:514
+_END_OF_FILE_
+
+// delete destination of __createfile to be sure it doesn't already exist
+delete /etc/rsyslog.d/zz-custom-forwarding.conf
+
+// put file in place to run:
+copy __createfile /etc/rsyslog.d/zz-custom-forwarding.conf
+
+notify client ForceRefresh
+
+// restart rsyslog service
+run bash -c "service rsyslog restart"
+]]></ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
