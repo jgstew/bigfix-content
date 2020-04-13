@@ -2,12 +2,11 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Configure SysLog-NG Forwarding - Linux Unix</Title>
-		<Description><![CDATA[<P>&nbsp;</P>
-<P>This is not relevant on Mac or Solaris systems due to differences in configuration on those OSes.</P>
+		<Description><![CDATA[<P>&nbsp;Configure SysLog-NG Forwarding</P>
 <P>&nbsp;</P>]]></Description>
-		<Relevance>exists lines containing "src" whose(it starts with "source") of files "/etc/syslog-ng.conf"</Relevance>
+		<Relevance>exists lines containing "src" whose(it starts with "source") of (files "/etc/syslog-ng.conf"; files "/etc/syslog-ng/syslog-ng.conf")</Relevance>
 		<Relevance>not exists files "/etc/rsyslog.conf"</Relevance>
-		<Relevance>not exists lines containing "port(" whose(it starts with "destination") of files "/etc/syslog-ng.conf"</Relevance>
+		<Relevance>not exists lines containing "port(" whose(it starts with "destination") of (files "/etc/syslog-ng.conf"; files "/etc/syslog-ng/syslog-ng.conf")</Relevance>
 		<Category></Category>
 		<Source>Internal</Source>
 		<SourceID></SourceID>
@@ -17,7 +16,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Mon, 13 Apr 2020 16:21:42 +0000</Value>
+			<Value>Mon, 13 Apr 2020 16:43:07 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -29,17 +28,19 @@
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 action parameter query "syslog_server" with default "192.168.0.1"
 
+parameter "syslog-ng-config"="{ unique value of pathnames of (files "/etc/syslog-ng.conf"; files "/etc/syslog-ng/syslog-ng.conf") }"
+
 continue if{ length of parameter "syslog_server" > 3 }
 
 // backup original config
 
-delete "/etc/syslog-ng.conf.backup.{ (current year as string) & (current month as two digits) & (current day_of_month as two digits) }"
+delete "{pathname of folders "/etc/syslog-ng" | pathname of folders "/etc"}/syslog-ng.conf.backup.{ (current year as string) & (current month as two digits) & (current day_of_month as two digits) }"
 
-copy "/etc/syslog-ng.conf" "/etc/syslog-ng.conf.backup.{ (current year as string) & (current month as two digits) & (current day_of_month as two digits) }"
+copy "{parameter "syslog-ng-config"}" "{pathname of folders "/etc/syslog-ng" | pathname of folders "/etc"}/syslog-ng.conf.backup.{ (current year as string) & (current month as two digits) & (current day_of_month as two digits) }"
 
 // append config:
-wait bash -c "echo 'destination d_SIEM {{ tcp(\"{ parameter "syslog_server" }\" port(514)); };' >> '/etc/syslog-ng.conf'"
-wait bash -c "echo 'log {{ source(src); destination(d_SIEM); };' >> '/etc/syslog-ng.conf'"
+wait bash -c "echo 'destination d_SIEM {{ tcp(\"{ parameter "syslog_server" }\" port(514)); };' >> '{parameter "syslog-ng-config"}'"
+wait bash -c "echo 'log {{ source(src); destination(d_SIEM); };' >> '{parameter "syslog-ng-config"}'"
 
 
 // restart service
