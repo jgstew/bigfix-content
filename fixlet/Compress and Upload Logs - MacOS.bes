@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Compress and Upload Logs - MacOS</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>mac of operating system</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2020-04-13</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Mon, 13 Apr 2020 16:06:10 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+
+// syslog -d /var/log/asl > /tmp/asl.log
+// praudit -x /var/audit/2020* > /tmp/audit_logs.xml
+// /var/log/install.log
+// /var/log/system.log*
+
+// zip -X -u -9 /tmp/logs.zip /var/log/system.log*
+// zip -X -u -9 /tmp/logs.zip /var/log/install.log
+// zip -X -u -9 /tmp/logs.zip /tmp/audit_logs.xml
+// zip -X -u -9 /tmp/logs.zip /tmp/asl.log
+
+
+parameter "archive"="{(current year as string) & (current month as two digits) & (current day_of_month as two digits)}_logs.zip"
+
+// delete any existing log file
+delete "/tmp/{ parameter "archive" }"
+
+if{ exists files of folders "/var/log/asl" }
+
+wait syslog -d /var/log/asl > /tmp/asl.log
+wait zip -X -u -9 "/tmp/{ parameter "archive" }" /tmp/asl.log
+delete /tmp/asl.log
+
+endif
+
+wait praudit -x /var/audit/2020* > /tmp/audit_logs.xml
+wait zip -X -u -9 "/tmp/{ parameter "archive" }" /tmp/audit_logs.xml
+delete /tmp/audit_logs.xml
+
+wait zip -X -u -9 "/tmp/{ parameter "archive" }" /var/log/install.log
+wait zip -X -u -9 "/tmp/{ parameter "archive" }" /var/log/system.log*
+
+if { not exists (it as integer) whose(it > 1000 + sum of sizes of files whose( name of it starts with (parameter "archive") ) of folders "/tmp") of values of settings "_BESClient_ArchiveManager_MaxArchiveSize" of client }
+setting "_BESClient_ArchiveManager_MaxArchiveSize"="{1000 + sum of sizes of files whose( name of it starts with (parameter "archive") ) of folders "/tmp"}" on "{parameter "action issue date" of action}" for client
+endif
+
+setting "_BESClient_ArchiveManager_OperatingMode"="2" on "{parameter "action issue date" of action}" for client
+setting "_BESClient_ArchiveManager_FileSet-Logs_{ concatenations "" of substrings separated by "'"  of concatenations "_" of substrings separated by " "  of computer names }"="/tmp/{ parameter "archive" }" on "{parameter "action issue date" of action}" for client
+archive now
+
+// https://apple.stackexchange.com/questions/356445/how-do-i-decode-the-contents-of-apple-system-logs-in-var-log-diagnosticmessages
+
+]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
