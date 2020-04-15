@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Restore Backup SysLog.Conf - Solaris</Title>
+		<Description><![CDATA[<P>&nbsp;</P>
+<P>&nbsp;</P>]]></Description>
+		<Relevance>exists files "/etc/syslog.conf"</Relevance>
+		<Relevance>exists names whose(it contains "Solaris") of operating systems</Relevance>
+		<Relevance>exists files whose(name of it starts with "syslog.conf.backup.") of folders "/etc"</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2020-04-13</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 15 Apr 2020 15:13:38 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+parameter "backup_conf"="{ pathname of files whose( name of it starts with "syslog.conf.backup." AND name of it contains (it as string) of maximum of (it as integer) of following texts of firsts ".conf.backup." of names of files whose(name of it starts with "syslog.conf.backup.") of folders "/etc" ) of folders "/etc" }"
+
+move "/etc/syslog.conf" "/etc/syslog.conf.wrong.{ (current year as string) & (current month as two digits) & (current day_of_month as two digits) }"
+
+copy "{ parameter "backup_conf" }" "/etc/syslog.conf"
+
+
+// restart service
+run bash -c "svcadm enable svc:/system/system-log:default"
+
+
+// exists lines containing " @" whose(it starts with "*.") of files "/etc/syslog.conf"
+]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
