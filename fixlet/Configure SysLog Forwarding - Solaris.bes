@@ -6,7 +6,7 @@
 <P>&nbsp;</P>]]></Description>
 		<Relevance>exists files "/etc/syslog.conf"</Relevance>
 		<Relevance>not exists files "/etc/rsyslog.conf"</Relevance>
-		<Relevance>exists names whose(it contains "Solaris") of operating systems</Relevance>
+		<Relevance>exists names whose(it contains "Solaris" OR it contains "SunOS") of operating systems</Relevance>
 		<Relevance>not exists lines containing "@" whose(it starts with "*.") of files "/etc/syslog.conf"</Relevance>
 		<Category></Category>
 		<Source>Internal</Source>
