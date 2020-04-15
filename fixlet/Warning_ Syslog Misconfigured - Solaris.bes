@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Warning: Syslog Misconfigured - Solaris</Title>
+		<Description>NOTE: Solaris requires TAB characters between items in syslog.conf</Description>
+		<Relevance>exists names whose(it contains "Solaris") of operating systems</Relevance>
+		<Relevance>/* check for TAB characters */ exists preceding texts whose(it does not contain "%09") of firsts "@" of lines containing "@" whose(it starts with "*.") of files "syslog.conf" of folders "/etc"</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2020-04-15</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 15 Apr 2020 15:25:05 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// NOTE: Solaris requires TAB characters between items in syslog.conf
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
