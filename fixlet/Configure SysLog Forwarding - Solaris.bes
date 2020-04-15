@@ -3,7 +3,6 @@
 	<Task>
 		<Title>Configure SysLog Forwarding - Solaris</Title>
 		<Description><![CDATA[<P>&nbsp;</P>
-<P>This is not relevant on Mac or Solaris systems due to differences in configuration on those OSes.</P>
 <P>&nbsp;</P>]]></Description>
 		<Relevance>exists files "/etc/syslog.conf"</Relevance>
 		<Relevance>not exists files "/etc/rsyslog.conf"</Relevance>
@@ -18,7 +17,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Mon, 13 Apr 2020 14:24:30 +0000</Value>
+			<Value>Wed, 15 Apr 2020 13:40:27 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -38,13 +37,14 @@ delete "/etc/syslog.conf.backup.{ (current year as string) & (current month as t
 
 copy "/etc/syslog.conf" "/etc/syslog.conf.backup.{ (current year as string) & (current month as two digits) & (current day_of_month as two digits) }"
 
-wait bash -c "echo '*.alert @{parameter "syslog_server"}' >> '/etc/syslog.conf'"
-wait bash -c "echo '*.err @{parameter "syslog_server"}' >> '/etc/syslog.conf'"
-wait bash -c "echo '*.crit @{parameter "syslog_server"}' >> '/etc/syslog.conf'"
-wait bash -c "echo '*.emerg @{parameter "syslog_server"}' >> '/etc/syslog.conf'"
-wait bash -c "echo '*.info @{parameter "syslog_server"}' >> '/etc/syslog.conf'"
-wait bash -c "echo '*.warning @{parameter "syslog_server"}' >> '/etc/syslog.conf'"
-wait bash -c "echo '*.notice @{parameter "syslog_server"}' >> '/etc/syslog.conf'"
+// There MUST be a tab character before the @ sign:
+wait bash -c "echo '*.alert	@{parameter "syslog_server"}' >> '/etc/syslog.conf'"
+wait bash -c "echo '*.err	@{parameter "syslog_server"}' >> '/etc/syslog.conf'"
+wait bash -c "echo '*.crit	@{parameter "syslog_server"}' >> '/etc/syslog.conf'"
+wait bash -c "echo '*.emerg	@{parameter "syslog_server"}' >> '/etc/syslog.conf'"
+wait bash -c "echo '*.info	@{parameter "syslog_server"}' >> '/etc/syslog.conf'"
+wait bash -c "echo '*.warning	@{parameter "syslog_server"}' >> '/etc/syslog.conf'"
+wait bash -c "echo '*.notice	@{parameter "syslog_server"}' >> '/etc/syslog.conf'"
 
 // restart service
 run bash -c "svcadm enable svc:/system/system-log:default"
