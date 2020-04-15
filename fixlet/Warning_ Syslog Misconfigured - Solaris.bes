@@ -3,7 +3,7 @@
 	<Task>
 		<Title>Warning: Syslog Misconfigured - Solaris</Title>
 		<Description>NOTE: Solaris requires TAB characters between items in syslog.conf</Description>
-		<Relevance>exists names whose(it contains "Solaris") of operating systems</Relevance>
+		<Relevance>exists names whose(it contains "Solaris" OR it contains "SunOS") of operating systems</Relevance>
 		<Relevance>/* check for TAB characters */ exists preceding texts whose(it does not contain "%09") of firsts "@" of lines containing "@" whose(it starts with "*.") of files "syslog.conf" of folders "/etc"</Relevance>
 		<Category></Category>
 		<Source>Internal</Source>
