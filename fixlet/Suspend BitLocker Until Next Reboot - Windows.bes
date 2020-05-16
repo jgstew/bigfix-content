@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Suspend BitLocker Until Next Reboot - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[&lt;enter a description of the task here&gt;  ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists it whose(exists integer values whose(it = 1) of properties "ProtectionStatus" of it OR exists integer values whose(it = 1 OR it = 2 OR it = 4) of properties "ConversionStatus" of it) of select objects "ConversionStatus, ProtectionStatus, DriveLetter from Win32_EncryptableVolume" whose(string value of property "DriveLetter" of it starts with (name of drive of system folder)) of wmis "root\CIMv2\Security\MicrosoftVolumeEncryption"</Relevance>
 		<Category></Category>
