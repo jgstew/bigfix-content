@@ -29,15 +29,15 @@ action uses wow64 redirection {not x64 of operating system}
 
 if { exists files "manage-bde.exe" of (system folders; system x64 folders) }
 // Suspend BitLocker Using: `manage-bde`
-wait manage-bde -protectors -disable C:{ if (version of operating system < "6.2.0.0") then "" else " -RebootCount 1" }
+wait manage-bde -protectors -disable { /* C: */ name of drive of system folder}{ if (version of operating system < "6.2.0.0") then "" else " -RebootCount 1" }
 else
 // Suspend BitLocker Using Powershell: `Suspend-BitLocker`
-wait powershell -ExecutionPolicy Bypass -command "Suspend-BitLocker -mountpoint 'C:'{ if (version of operating system < "6.2.0.0") then "" else " -rebootcount 1" }"
+wait powershell -ExecutionPolicy Bypass -command "Suspend-BitLocker -mountpoint '{ /* C: */ name of drive of system folder}'{ if (version of operating system < "6.2.0.0") then "" else " -rebootcount 1" }"
 endif
 
 // Handle BitLocker Resume after reboot for Win7 and Win2008R2
 if {version of operating system < "6.2.0.0"}
-regset64 "[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce]" "ResumeBitLocker"="manage-bde -protectors -enable C:"
+regset64 "[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce]" "ResumeBitLocker"="manage-bde -protectors -enable { /* C: */ name of drive of system folder}"
 endif
 
 // Check exit code: Should be 0
