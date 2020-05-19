@@ -24,7 +24,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 action uses wow64 redirection {not x64 of operating system}
 
 // Handle BitLocker Resume after reboot for Win7 and Win2008R2
@@ -47,7 +47,7 @@ continue if {exit code of action = 0}
 continue if{ not exists integer values whose(it = 1) of properties "ProtectionStatus" of select objects "ProtectionStatus, DriveLetter from Win32_EncryptableVolume" whose(string value of property "DriveLetter" of it starts with (name of drive of system folder) ) of wmis "root\CIMv2\Security\MicrosoftVolumeEncryption" }
 
 // https://docs.microsoft.com/en-us/windows/win32/secprov/getconversionstatus-win32-encryptablevolume
-</ActionScript>
+]]></ActionScript>
 			<SuccessCriteria Option="CustomRelevance">exists integer values whose(it = 1) of properties "ProtectionStatus" of select objects "ProtectionStatus, DriveLetter from Win32_EncryptableVolume" whose(string value of property "DriveLetter" of it starts with (name of drive of system folder) ) of wmis "root\CIMv2\Security\MicrosoftVolumeEncryption"</SuccessCriteria>
 		</DefaultAction>
 	</Task>
