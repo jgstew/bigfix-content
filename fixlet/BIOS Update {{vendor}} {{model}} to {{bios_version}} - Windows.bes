@@ -2,8 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>BIOS Update {{vendor}} {{model}} to {{bios_version}} - Windows</Title>
-		<Description><![CDATA[<P>This task will suspend BitLocker if applicable, and update the BIOS for {{vendor}} {{model}} to {{bios_version}}<BR><BR>BIOS Passwords are not CURRENTLY handled by this task. Dell Command Monitor or similar vendor software is required to populate `wmis "ROOT\DCIM\SYSMAN"` in order to detect if the BIOS password is set properly, otherwise it is assumed the BIOS Password is NOT set.</P>
-<P>NOTE: Windows Vista,7,2008,2008R2&nbsp;will NOT resume BitLocker protections after reboot! (TODO: address with RunOnce key)<BR><BR>NOTE: Windows Vista and 2008 use a different command to manage BitLocker, not currently tested there. This should work on those OSes as long as BitLocker is not enabled.<BR></P>]]></Description>
+		<Description><![CDATA[<P>This task will suspend BitLocker if applicable, and update the BIOS for {{vendor}} {{model}} to {{bios_version}}<BR><BR>BIOS Passwords are not CURRENTLY handled by this task. Dell Command Monitor or similar vendor software is required to populate `wmis "ROOT\DCIM\SYSMAN"` in order to detect if the BIOS password is set properly, otherwise it is assumed the BIOS Password is NOT set.<BR><BR>NOTE: Windows Vista and 2008 use a different command to manage BitLocker, not currently tested there. This should work on those OSes as long as BitLocker is not enabled.<BR></P>]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance><![CDATA[/* Windows XP or Higher */ version of operating system >= "5.1"]]></Relevance>
 		<Relevance>/* Check Vendor */ exists values "vendor" whose(it as string as trimmed string as uppercase contains "{{vendor}}" as trimmed string as uppercase) of structures "bios_information" of smbios</Relevance>
@@ -19,7 +18,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Tue, 19 May 2020 15:25:45 +0000</Value>
+			<Value>Tue, 19 May 2020 17:47:47 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -28,7 +27,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // -- START:DOWNLOADS -------------------------
 
 // {{BIOS_Update_Prefetch}}
@@ -45,12 +44,17 @@ action uses wow64 redirection {not x64 of operating system}
 // Suspend BitLocker (if applicable)
 if { exists it whose( exists integer values whose(it = 1) of properties "ProtectionStatus" of it OR ( exists integer values whose(it = 0) of properties "ProtectionStatus" of it AND exists integer values whose(it = 2 OR it = 4) of properties "ConversionStatus" of it ) ) of select objects "ConversionStatus, ProtectionStatus, DriveLetter from Win32_EncryptableVolume" whose(string value of property "DriveLetter" of it starts with (name of drive of system folder)) of wmis "root\CIMv2\Security\MicrosoftVolumeEncryption" }
 
+// Handle BitLocker Resume after reboot for Win7 and Win2008R2
+if {version of operating system < "6.2.0.0"}
+regset64 "[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce]" "ResumeBitLocker"="manage-bde -protectors -enable { /* C: */ name of drive of system folder}"
+endif
+
 if { exists files "manage-bde.exe" of (system folders; system x64 folders) }
 // Suspend BitLocker Using: `manage-bde`
-wait manage-bde -protectors -disable C: -RebootCount 1
+wait manage-bde -protectors -disable { /* C: */ name of drive of system folder}{ if (version of operating system < "6.2.0.0") then "" else " -RebootCount 1" }
 else
 // Suspend BitLocker Using Powershell: `Suspend-BitLocker`
-wait powershell -ExecutionPolicy Bypass -command "Suspend-BitLocker -mountpoint 'C:' -rebootcount 1"
+wait powershell -ExecutionPolicy Bypass -command "Suspend-BitLocker -mountpoint '{ /* C: */ name of drive of system folder}'{ if (version of operating system < "6.2.0.0") then "" else " -rebootcount 1" }"
 endif
 
 // Check exit code: Should be 0
@@ -81,8 +85,7 @@ endif
 
 // Optional: force update of analysis properties:
 // notify client ForceRefresh
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>
- 
