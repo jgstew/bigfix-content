@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Test Action Header Info - Universal</Title>
+		<Description><![CDATA[<P>WARNING: This should only be run for on a system for testing what data is available. This should not be deployed to user systems. This could be useful as an offer only available to Admins for debugging.</P>
+<P>This will dump a bunch of data to a file. This is useful for seeing what data is available internally for introspection and use. On Windows, this action&nbsp;can open the resulting file in Notepad by specifying a logged on current user. (currently hard coded to "jgstew")</P>
+<P>&nbsp;</P>]]></Description>
+		<Relevance>true</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2015-08-27</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 20 May 2020 18:40:16 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+//  https://support.bigfix.com/inspectors/Fixlet%20Objects_Any.html
+//  https://support.bigfix.com/inspectors/Action%20Objects_Any.html
+//  https://forum.bigfix.com/t/action-parameters-in-actionscript/3345/2
+//  https://forum.bigfix.com/t/newer-actionscript-commands/11677
+// http://www-01.ibm.com/support/knowledgecenter/SS63NW_9.2.0/com.ibm.tivoli.tem.doc_9.2/Platform/Action/c_override.html
+
+
+// ----------------------------------------------------------------------
+//   How do I get these values?
+//  Fixlet:
+// x-bes-textfields-hash: sha256,?????
+// Content-Type: text/html; charset=us-ascii
+//  Action:
+// mime-version: ??
+// Content-Type: application/x-Fixlet-Windows-Shell
+// fixlet-context: ????
+// action-parameter: "action issue date"="???"
+
+parameter "start" = "{now}"
+parameter "test" = "testing"
+
+//pause while{ now - (it as time) of (parameter "start") < 2 * second }
+
+delete __createfile
+
+createfile until END_OF_FILE
+// NOTE: most of this info is not accurate when executed through a baseline
+
+Time from last UDP to execute: { (it / minute) of (now - last command time of client) | ERROR "Unknown" } minutes
+
+ID: {id of active action}
+origin fixlet id: {origin fixlet id of active action}
+
+is this a multi-action group leader? : { group leader of active action }
+
+is this an offer? : { offer of active action }
+  offer accepted? : { offer accepted of active action }
+
+IDs of Actions:
+{ concatenations "%0d%0a" of (it as string) of ids of actions }
+
+Action Headers:
+{ concatenation "%0d%0a" of (name of it & " = " & value of it) of headers of action | "ERROR" }
+
+Fixlet Headers: 
+{ concatenation "%0d%0a" of (name of it & " = " & value of it) of headers of fixlets whose(id of it = origin fixlet id of active action) of current sites | "ERROR" }
+
+
+Current Site info:
+--------------------
+Name: { concatenation ";" of names of current sites | "ERROR" }
+tag: { concatenation ";" of site tags of current sites | "ERROR" }
+type: { concatenation ";" of types of current sites | "ERROR" }
+url: { concatenation ";" of urls of current sites | "ERROR" }
+gather schedule authority: { unique value of gather schedule authoritys of current sites | "ERROR" }
+gather schedule time interval: { concatenation ";" of (it as string) of gather schedule time interval of current sites | "ERROR" }
+# of relevant fixlets: { (it as string) of number of relevant fixlets of current sites | "ERROR" }
+# of relevant offer actions: { (it as string) of number of relevant offer actions of current sites | "ERROR" }
+
+All Sites info:
+--------------------
+# of all relevant offer actions: { (it as string) of sum of number of relevant offer actions of sites | "ERROR" }
+# of relevant fixlets: { (it as string) of sum of number of relevant fixlets of sites | "ERROR" }
+
+
+Timing Info:
+--------------------
+
+now: {now}
+
+pending time: {pending time of active action}
+
+Action Taken Time: {parameter "action issue date" of action}
+(now - Action_Taken_Time): { now - ( (it as time) of parameter "action issue date" of action ) }
+
+Active_Start_Time: {active start time of active action}
+
+(Active_Start_Time - Action_Taken_Time): { (active start time of active action) - ( (it as time) of parameter "action issue date" of action ) }
+
+  Total Execution Time, with 2 second pause:
+(now - Active_Start_Time): { now - (active start time of active action) }
+
+
+Action Parameters:
+--------------------
+Names:
+{ concatenation "%0d%0a" of unique values of preceding texts of firsts "%22" of following texts of firsts "%22" of lines containing "parameter" whose(it contains "%22" AND exists (it as lowercase) whose(it starts with "parameter" OR it starts with "action-parameter" OR it starts with "action parameter query") ) of files whose(name of it = "Action " & (id of active action as string) & ".fxf") of folders whose(name of it as lowercase contains "site" AND name of it does not start with "CustomSite_") of data folders of clients }
+
+Values:
+{ concatenation "%0d%0a" of parameters (unique values of preceding texts of firsts "%22" of following texts of firsts "%22" of lines containing "parameter" whose(it contains "%22" AND exists (it as lowercase) whose(it starts with "parameter" OR it starts with "action-parameter" OR it starts with "action parameter query") ) of files whose(name of it = "Action " & (id of active action as string) & ".fxf") of folders whose(name of it as lowercase contains "site" AND name of it does not start with "CustomSite_") of data folders of clients) of actions }
+
+
+Action FXF:
+--------------------
+{ "RemovedThisToSeeFullFXF |" | concatenation "%0d%0a" of lines of files whose(name of it = "Action " & (id of active action as string) & ".fxf") of folders whose(name of it as lowercase contains "site" AND name of it does not start with "CustomSite_") of data folders of clients | ERROR "Unknown" }
+
+Origin Fixlet FXF:
+--------------------
+{ concatenation "%0d%0a" of lines of files whose(name of it = "Fixlet " & (origin fixlet id of active action as string) & ".fxf") of items 1 of ( (following texts of lasts "/" of values of headers "site-context" of actions) , folders of data folders of clients ) whose(name of item 1 of it = item 0 of it) | ERROR "Unknown" }
+
+END_OF_FILE
+
+if { windows of operating system }
+
+delete C:\Users\Public\Documents\action_header_info.txt
+copy __createfile C:\Users\Public\Documents\action_header_info.txt
+
+if { exists names whose(it = "jgstew") of (current users; logged on users) }
+override run
+runas=currentuser
+run notepad C:\Users\Public\Documents\action_header_info.txt
+endif
+
+else
+
+delete /tmp/action_header_info.txt
+copy __createfile /tmp/action_header_info.txt
+
+endif
+
+]]></ActionScript>
+			<Settings>
+				<PreActionShowUI>false</PreActionShowUI>
+				<HasRunningMessage>false</HasRunningMessage>
+				<HasTimeRange>false</HasTimeRange>
+				<HasStartTime>true</HasStartTime>
+				<StartDateTimeLocalOffset>PT0S</StartDateTimeLocalOffset>
+				<HasEndTime>true</HasEndTime>
+				<EndDateTimeLocalOffset>P2D</EndDateTimeLocalOffset>
+				<HasDayOfWeekConstraint>false</HasDayOfWeekConstraint>
+				<UseUTCTime>false</UseUTCTime>
+				<ActiveUserRequirement>NoRequirement</ActiveUserRequirement>
+				<ActiveUserType>AllUsers</ActiveUserType>
+				<HasWhose>false</HasWhose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>true</Reapply>
+				<HasReapplyLimit>true</HasReapplyLimit>
+				<ReapplyLimit>2</ReapplyLimit>
+				<HasReapplyInterval>true</HasReapplyInterval>
+				<ReapplyInterval>PT15M</ReapplyInterval>
+				<HasRetry>false</HasRetry>
+				<HasTemporalDistribution>false</HasTemporalDistribution>
+				<ContinueOnErrors>true</ContinueOnErrors>
+				<PostActionBehavior Behavior="Nothing"></PostActionBehavior>
+				<IsOffer>false</IsOffer>
+			</Settings>
+			<SettingsLocks>
+				<ActionUITitle>false</ActionUITitle>
+				<PreActionShowUI>false</PreActionShowUI>
+				<PreAction>
+					<Text>false</Text>
+					<AskToSaveWork>false</AskToSaveWork>
+					<ShowActionButton>false</ShowActionButton>
+					<ShowCancelButton>false</ShowCancelButton>
+					<DeadlineBehavior>false</DeadlineBehavior>
+					<ShowConfirmation>false</ShowConfirmation>
+				</PreAction>
+				<HasRunningMessage>false</HasRunningMessage>
+				<RunningMessage>
+					<Text>false</Text>
+				</RunningMessage>
+				<TimeRange>false</TimeRange>
+				<StartDateTimeOffset>false</StartDateTimeOffset>
+				<EndDateTimeOffset>false</EndDateTimeOffset>
+				<DayOfWeekConstraint>false</DayOfWeekConstraint>
+				<ActiveUserRequirement>false</ActiveUserRequirement>
+				<ActiveUserType>false</ActiveUserType>
+				<Whose>false</Whose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>false</Reapply>
+				<ReapplyLimit>false</ReapplyLimit>
+				<RetryCount>false</RetryCount>
+				<RetryWait>false</RetryWait>
+				<TemporalDistribution>false</TemporalDistribution>
+				<ContinueOnErrors>false</ContinueOnErrors>
+				<PostActionBehavior>
+					<Behavior>false</Behavior>
+					<AllowCancel>false</AllowCancel>
+					<Deadline>false</Deadline>
+					<Title>false</Title>
+					<Text>false</Text>
+				</PostActionBehavior>
+				<IsOffer>false</IsOffer>
+				<AnnounceOffer>false</AnnounceOffer>
+				<OfferCategory>false</OfferCategory>
+				<OfferDescriptionHTML>false</OfferDescriptionHTML>
+			</SettingsLocks>
+		</DefaultAction>
+	</Task>
+</BES>
