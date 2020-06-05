@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Cleanup old files from UploadManager_BufferDirectory - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance> /* Root Server Only */ exists main gather service</Relevance>
+		<Relevance><![CDATA[exists files whose(name of it != "Index.txt" AND exists (now - it) whose(it > 15 * day) of maxima of (creation times of it; modification times of it) of it) of folders of folders of folders "sha1" of (folders it) of values of settings "_BESRelay_UploadManager_BufferDirectory" of client]]></Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2020-06-04</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>X-Relevance-Evaluation-Period</Name>
+			<Value>48:00:00</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 05 Jun 2020 15:03:42 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+action parameter query "Confirm" with description "This will delete files! You should make sure the files to be deleted does not include any you wish to keep! You must enter `Yes` to actually delete the files automatically." with default value "No"
+
+parameter "ScriptFile" = "delFiles.bat"
+
+delete __createfile
+
+createfile until _END_OF_FILE_
+{ /* Use Relevance to dynamically generate file to delete old files in root server UploadManager_BufferDirectory */ concatenations "%0d%0a" of ("DEL /Q %22" & it & "%22") of pathnames of files whose(name of it != "Index.txt" AND exists (now - it) whose(it > 15 * day) of maxima of (creation times of it; modification times of it) of it) of folders of folders of folders "sha1" of (folders it) of values of settings "_BESRelay_UploadManager_BufferDirectory" of client }
+_END_OF_FILE_
+
+delete __Download\{parameter "ScriptFile"}
+
+copy __createfile __Download\{parameter "ScriptFile"}
+
+// need to switch directories to __Download in some cases
+// CMD /C "cd __Download && delFiles.bat"
+if { parameter "Confirm" starts with "Yes" }
+	wait CMD /C "cd __Download && {parameter "ScriptFile"}"
+endif
+
+// pathnames of files whose(name of it != "Index.txt" AND exists (now - it) whose(it > 15 * day) of maxima of (creation times of it; modification times of it) of it) of folders of folders of folders "sha1" of (folders it) of values of settings "_BESRelay_UploadManager_BufferDirectory" of client
+
+
+// Related:
+// - https://stackoverflow.com/questions/3205027/maximum-length-of-command-line-string
+// - https://bigfix.me/relevance/details/2999306
+// - https://bigfix.me/fixlet/details/3657
+// - https://ss64.com/nt/del.html
+]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
