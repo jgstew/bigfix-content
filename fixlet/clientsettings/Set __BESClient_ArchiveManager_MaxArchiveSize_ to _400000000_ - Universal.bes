@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Set "_BESClient_ArchiveManager_MaxArchiveSize" to "400000000" - Universal</Title>
+		<Description><![CDATA[<P>This task will set a client setting</P>
+<P>This task was automatically generated using the Dashboard: "Custom - Client Settings Manager"</P>
+<P>&nbsp;</P>]]></Description>
+		<Relevance>not exists settings "_BESClient_ArchiveManager_MaxArchiveSize" whose("500000000" = value of it) of client</Relevance>
+		<Category>Configuration: Client Settings</Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Custom Dashboard - Client Settings Manager</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2020-06-05</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 05 Jun 2020 14:56:03 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to set the Client Setting</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+setting "_BESClient_ArchiveManager_MaxArchiveSize"="400000000" on "{ parameter "action issue date" of action}" for client
+			</ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
