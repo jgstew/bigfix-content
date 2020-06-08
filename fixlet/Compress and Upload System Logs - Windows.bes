@@ -137,7 +137,7 @@ endif
 
 setting "_BESClient_ArchiveManager_OperatingMode"="2" on "{parameter "action issue date" of action}" for client
 
-setting "_BESClient_ArchiveManager_FileSet-SystemLogs_{(current year as string) & (current month as two digits) & (current day_of_month as two digits)}"="{ parameter "archive" }" on "{parameter "action issue date" of action}" for client
+setting "_BESClient_ArchiveManager_FileSet-SystemLogs"="{ parameter "archive" }" on "{parameter "action issue date" of action}" for client
 
 archive now
 ]]></ActionScript>
