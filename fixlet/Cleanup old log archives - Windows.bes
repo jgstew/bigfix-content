@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Cleanup old log archives - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance><![CDATA[2 <= number of files whose(name of it starts with "_Logs_" AND name of it ends with ".7z") of folders "C:\Windows\Temp"]]></Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2020-06-08</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>X-Relevance-Evaluation-Period</Name>
+			<Value>48:00:00</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Mon, 08 Jun 2020 20:50:29 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+action parameter query "Confirm" with description "This will delete files! You should make sure the files to be deleted does not include any you wish to keep! You must enter `Yes` to actually delete the files automatically." with default value "No"
+
+parameter "ScriptFile" = "delFiles.bat"
+
+parameter "NumFiles" = "{ number of items 1 of (it, files whose(name of it starts with "_Logs_" AND name of it ends with ".7z")  of folders "C:\Windows\Temp") whose(item 0 of it != creation time of item 1 of it) of maxima of creation times of files whose(name of it starts with "_Logs_" AND name of it ends with ".7z") of folders "C:\Windows\Temp" }"
+
+delete __createfile
+
+createfile until _END_OF_FILE_
+{ concatenations "%0d%0a" of ("DEL /Q %22" & it & "%22") of pathnames of items 1 of (it, files whose(name of it starts with "_Logs_" AND name of it ends with ".7z")  of folders "C:\Windows\Temp") whose(item 0 of it != creation time of item 1 of it) of maxima of creation times of files whose(name of it starts with "_Logs_" AND name of it ends with ".7z") of folders "C:\Windows\Temp" }
+_END_OF_FILE_
+
+delete __Download\{parameter "ScriptFile"}
+
+copy __createfile __Download\{parameter "ScriptFile"}
+
+// need to switch directories to __Download in some cases
+// CMD /C "cd __Download && delFiles.bat"
+if { parameter "Confirm" starts with "Yes" }
+	wait CMD /C "cd __Download && {parameter "ScriptFile"}"
+	// check for success:
+	continue if { 0 = exit code of active action }
+endif
+
+// Related:
+// - https://stackoverflow.com/questions/3205027/maximum-length-of-command-line-string
+// - https://bigfix.me/relevance/details/2999306
+// - https://bigfix.me/fixlet/details/3657
+// - https://ss64.com/nt/del.html
+]]></ActionScript>
+			<SuccessCriteria Option="CustomRelevance">(parameter "Confirm" starts with "Yes") AND ( exists items 1 of (it, files whose(name of it starts with "_Logs_" AND name of it ends with ".7z")  of folders "C:\Windows\Temp") whose(item 0 of it != creation time of item 1 of it) of maxima of creation times of files whose(name of it starts with "_Logs_" AND name of it ends with ".7z") of folders "C:\Windows\Temp" )</SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
