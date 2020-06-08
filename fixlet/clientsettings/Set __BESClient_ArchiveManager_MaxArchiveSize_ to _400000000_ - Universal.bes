@@ -5,7 +5,7 @@
 		<Description><![CDATA[<P>This task will set a client setting</P>
 <P>This task was automatically generated using the Dashboard: "Custom - Client Settings Manager"</P>
 <P>&nbsp;</P>]]></Description>
-		<Relevance>not exists settings "_BESClient_ArchiveManager_MaxArchiveSize" whose("500000000" = value of it) of client</Relevance>
+		<Relevance>not exists settings "_BESClient_ArchiveManager_MaxArchiveSize" whose("400000000" = value of it) of client</Relevance>
 		<Category>Configuration: Client Settings</Category>
 		<DownloadSize>0</DownloadSize>
 		<Source>Custom Dashboard - Client Settings Manager</Source>
