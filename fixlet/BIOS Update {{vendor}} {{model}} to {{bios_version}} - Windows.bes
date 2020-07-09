@@ -72,7 +72,7 @@ endif
 
 // Update BIOS:
 
-// TODO: {{BIOS_Update_ActionScript}}
+// {{{BIOS_Update_ActionScript}}}
 
 // TODO: If BIOS Password Set / Provided Then Handle passing BIOS Password to update command
 
