@@ -10,6 +10,7 @@
 		<Relevance><![CDATA[/* Check for older BIOS */ exists values "bios_version" whose( it as string as version < "{{bios_version}}" as version ) of structures "bios_information" of smbios]]></Relevance>
 		<Relevance>/* to be removed once BIOS Password handling added: */ not exists boolean values whose(it) of selects "IsSet FROM DCIM_BIOSPassword where ElementName='BiosSetupPassword'" of wmis "ROOT\DCIM\SYSMAN"</Relevance>
 		<Category></Category>
+		<DownloadSize>999</DownloadSize>
 		<Source>Internal</Source>
 		<SourceID></SourceID>
 		<SourceReleaseDate>2020-05-19</SourceReleaseDate>
