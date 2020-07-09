@@ -77,12 +77,6 @@ endif
 
 action requires restart "BIOS_Update"
 
-// Set RunOnce Key to Resume BitLocker for OS that don't support RebootCount (WinVista, Win7, Win2008, Win2008R2)
-if { exists names whose(it starts with "Win7" OR it starts with "WinVista" OR it starts with "Win2008" OR it starts with "Win2008R2") of operating systems }
-// TODO: Handle BitLocker Resume After Reboot (RunOnce key?)
-// TODO: need to check if BitLocker was disabled during this action, only handle this case if so.
-endif
-
 // Optional: force update of analysis properties:
 // notify client ForceRefresh
 ]]></ActionScript>
