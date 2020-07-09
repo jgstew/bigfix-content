@@ -13,7 +13,7 @@
 		<DownloadSize>999</DownloadSize>
 		<Source>Internal</Source>
 		<SourceID></SourceID>
-		<SourceReleaseDate>2020-05-19</SourceReleaseDate>
+		<SourceReleaseDate>{{SourceReleaseDate}}</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
