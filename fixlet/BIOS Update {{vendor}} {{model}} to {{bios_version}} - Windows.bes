@@ -10,16 +10,16 @@
 		<Relevance><![CDATA[/* Check for older BIOS */ exists values "bios_version" whose( it as string as version < "{{bios_version}}" as version ) of structures "bios_information" of smbios]]></Relevance>
 		<Relevance>/* to be removed once BIOS Password handling added: */ not exists boolean values whose(it) of selects "IsSet FROM DCIM_BIOSPassword where ElementName='BiosSetupPassword'" of wmis "ROOT\DCIM\SYSMAN"</Relevance>
 		<Category></Category>
-		<DownloadSize>999</DownloadSize>
-		<Source>Internal</Source>
-		<SourceID></SourceID>
+		<DownloadSize>{{DownloadSize}}</DownloadSize>
+		<Source>https://github.com/jgstew/bigfix-content</Source>
+		<SourceID>JGStew</SourceID>
 		<SourceReleaseDate>{{SourceReleaseDate}}</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Tue, 19 May 2020 17:47:47 +0000</Value>
+			<Value>{{x-fixlet-modification-time}}</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
