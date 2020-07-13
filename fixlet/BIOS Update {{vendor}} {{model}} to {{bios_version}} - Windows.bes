@@ -74,6 +74,23 @@ endif
 
 action requires restart "BIOS_Update"
 
+{{#DellBIOS}}
+// Dell BIOS Exit Codes:
+//		0 = SUCCESSFUL
+//		1 = UNSUCCESSFUL  (FAILURE)
+//		2 = REBOOT_REQUIRED  (SUCCESSFUL)
+//		3 = DEP_SOFT_ERROR
+//		4 = DEP_HARD_ERROR
+//		5 = QUAL_HARD_ERROR
+//		6 = REBOOTING_SYSTEM  (SUCCESSFUL)
+//		7 = ? (wrong password)
+//		8 = ?
+//		9 = RPM_VERIFY_FAILED
+
+// http://en.community.dell.com/techcenter/enterprise-client/w/wiki/3462.dup-bios-updates
+// Report failure if bad return code, continue if good return code
+continue if{ exists (exit codes of action) whose(it = 2 OR it = 0 OR it = 6) }
+{{/DellBIOS}}
 // Optional: force update of analysis properties:
 // notify client ForceRefresh
 ]]></ActionScript>
