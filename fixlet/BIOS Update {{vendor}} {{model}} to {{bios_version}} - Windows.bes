@@ -7,7 +7,10 @@
 		<Relevance><![CDATA[/* Windows XP or Higher */ version of operating system >= "5.1"]]></Relevance>
 		<Relevance>/* Check Vendor */ exists values "vendor" whose(it as string as trimmed string as uppercase contains "{{vendor}}" as trimmed string as uppercase) of structures "bios_information" of smbios</Relevance>
 		<Relevance>/* Check Model */ exists values "product_name" whose(it as string as trimmed string as uppercase contains "{{model}}" as trimmed string as uppercase) of structures "system_information" of smbios</Relevance>
-		<Relevance><![CDATA[/* Check for older BIOS */ exists values "bios_version" whose( it as string as version < "{{bios_version}}" as version ) of structures "bios_information" of smbios]]></Relevance>
+		<Relevance><![CDATA[/* Check BIOS is older */ exists values "bios_version" whose( it as string as version < "{{bios_version}}" as version ) of structures "bios_information" of smbios]]></Relevance>
+		{{#bios_version_minimum}}
+		<Relevance><![CDATA[/* Check for minimum BIOS dependency */ exists values "bios_version" whose( it as string as version >= "{{bios_version_minimum}}" as version ) of structures "bios_information" of smbios ]]></Relevance>
+		{{/bios_version_minimum}}
 		<Relevance>/* to be removed once BIOS Password handling added: */ not exists boolean values whose(it) of selects "IsSet FROM DCIM_BIOSPassword where ElementName='BiosSetupPassword'" of wmis "ROOT\DCIM\SYSMAN"</Relevance>
 		<Category></Category>
 		<DownloadSize>{{DownloadSize}}</DownloadSize>
