@@ -11,7 +11,6 @@
 		{{#bios_version_minimum}}
 		<Relevance><![CDATA[/* Check for minimum BIOS dependency */ exists values "bios_version" whose( it as string as version >= "{{bios_version_minimum}}" as version ) of structures "bios_information" of smbios ]]></Relevance>
 		{{/bios_version_minimum}}
-		<Relevance>/* to be removed once BIOS Password handling added: */ not exists boolean values whose(it) of selects "IsSet FROM DCIM_BIOSPassword where ElementName='BiosSetupPassword'" of wmis "ROOT\DCIM\SYSMAN"</Relevance>
 		<Category></Category>
 		<DownloadSize>{{DownloadSize}}</DownloadSize>
 		<Source>https://github.com/jgstew/bigfix-content</Source>
@@ -32,16 +31,13 @@
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+action parameter query "BIOS_Password" with description "Enter BIOS Password, or leave blank if none. Password WILL NOT be encrypted." and with default value " "
+
 // -- START:DOWNLOADS -------------------------
 
 // {{BIOS_Update_Prefetch}}
 
 // -- END:DOWNLOADS ---------------------------
-
-
-// -- Check if bios_password is required: --
-// TODO: change this check once bios_password is handled by fixlet description input
-continue if{ not exists boolean values whose(it) of selects "IsSet FROM DCIM_BIOSPassword where ElementName='BiosSetupPassword'" of wmis "ROOT\DCIM\SYSMAN" }
 
 action uses wow64 redirection {not x64 of operating system}
 
@@ -74,10 +70,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-
 // {{{BIOS_Update_ActionScript}}}
-
-// TODO: If BIOS Password Set / Provided Then Handle passing BIOS Password to update command
 
 action requires restart "BIOS_Update"
 
