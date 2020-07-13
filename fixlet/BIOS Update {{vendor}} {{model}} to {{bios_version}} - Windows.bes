@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>BIOS Update for {{vendor}} {{model}} to {{bios_version}} - Windows</Title>
-		<Description><![CDATA[<P>This task will suspend BitLocker if applicable, and update the BIOS for {{vendor}} {{model}} to {{bios_version}}<BR><BR>BIOS Passwords are not CURRENTLY handled by this task. Dell Command Monitor or similar vendor software is required to populate `wmis "ROOT\DCIM\SYSMAN"` in order to detect if the BIOS password is set properly, otherwise it is assumed the BIOS Password is NOT set.<BR><BR>NOTE: Windows Vista and 2008 use a different command to manage BitLocker, not currently tested there. This should work on those OSes as long as BitLocker is not enabled.<BR></P>]]></Description>
+		<Description><![CDATA[<P>This task will suspend BitLocker if applicable, and update the BIOS for {{vendor}} {{model}} to {{bios_version}}<BR><BR>BIOS Passwords, if supplied, will NOT be encrypted to the endpoint. This may be added in the future.<BR><BR>NOTE: Windows Vista and 2008 use a different command to manage BitLocker, not currently tested there. This should work on those OSes as long as BitLocker is not enabled.<BR></P>]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance><![CDATA[/* Windows XP or Higher */ version of operating system >= "5.1"]]></Relevance>
 		<Relevance>/* Check Vendor */ exists values "vendor" whose(it as string as trimmed string as uppercase contains "{{vendor}}" as trimmed string as uppercase) of structures "bios_information" of smbios</Relevance>
