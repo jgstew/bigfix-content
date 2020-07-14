@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>BIOS Update for Dell Latitude E6330 to A21 - Windows</Title>
+		<Description><![CDATA[<P>This task will suspend BitLocker if applicable, and update the BIOS for Dell Latitude E6330 to A21<BR><BR>BIOS Passwords, if supplied, will NOT be encrypted to the endpoint. This may be added in the future.<BR><BR>NOTE: Windows Vista and 2008 use a different command to manage BitLocker, not currently tested there. This should work on those OSes as long as BitLocker is not enabled.<BR></P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance><![CDATA[/* Windows XP or Higher */ version of operating system >= "5.1"]]></Relevance>
+		<Relevance>/* Check Vendor */ exists values "vendor" whose(it as string as trimmed string as uppercase contains "Dell" as trimmed string as uppercase) of structures "bios_information" of smbios</Relevance>
+		<Relevance>/* Check Model */ exists values "product_name" whose(it as string as trimmed string as uppercase contains "Latitude E6330" as trimmed string as uppercase) of structures "system_information" of smbios</Relevance>
+		<Relevance><![CDATA[/* Check BIOS is older */ exists values "bios_version" whose( it as string as version < "A21" as version ) of structures "bios_information" of smbios]]></Relevance>
+		<Category></Category>
+		<DownloadSize>8770056</DownloadSize>
+		<Source>https://github.com/jgstew/bigfix-content</Source>
+		<SourceID>JGStew</SourceID>
+		<SourceReleaseDate>2019-11-28</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Mon, 13 Jul 2020 21:48:01 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+action parameter query "BIOS_Password" with description "Enter BIOS Password, or leave blank if none. Password WILL NOT be encrypted." and with default value " "
+
+// -- START:DOWNLOADS -------------------------
+
+// 
+prefetch E6330A21.exe sha1:70f43cbd290c39ed3965748a5704e066b963ae5f size:8770056 http://downloads.dell.com/FOLDER05371271M/1/E6330A21.exe sha256:26cb1aa0858849fe895d43cd0486c189611a3a4470a835a579f5b9b25cc18f54
+
+// -- END:DOWNLOADS ---------------------------
+
+action uses wow64 redirection {not x64 of operating system}
+
+// Suspend BitLocker (if applicable)
+if { exists it whose( exists integer values whose(it = 1) of properties "ProtectionStatus" of it OR ( exists integer values whose(it = 0) of properties "ProtectionStatus" of it AND exists integer values whose(it = 2 OR it = 4) of properties "ConversionStatus" of it ) ) of select objects "ConversionStatus, ProtectionStatus, DriveLetter from Win32_EncryptableVolume" whose(string value of property "DriveLetter" of it starts with (name of drive of system folder)) of wmis "root\CIMv2\Security\MicrosoftVolumeEncryption" }
+
+// Handle BitLocker Resume after reboot for Win7 and Win2008R2
+if {version of operating system < "6.2.0.0"}
+regset64 "[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce]" "ResumeBitLocker"="manage-bde -protectors -enable { /* C: */ name of drive of system folder}"
+endif
+
+if { exists files "manage-bde.exe" of (system folders; system x64 folders) }
+// Suspend BitLocker Using: `manage-bde`
+wait manage-bde -protectors -disable { /* C: */ name of drive of system folder}{ if (version of operating system < "6.2.0.0") then "" else " -RebootCount 1" }
+else
+// Suspend BitLocker Using Powershell: `Suspend-BitLocker`
+wait powershell -ExecutionPolicy Bypass -command "Suspend-BitLocker -mountpoint '{ /* C: */ name of drive of system folder}'{ if (version of operating system < "6.2.0.0") then "" else " -rebootcount 1" }"
+endif
+
+// Check exit code: Should be 0
+continue if {exit code of action = 0}
+
+// verify BitLocker Protection Suspended: (not exactly the task relevance due to possibilty of encryption in progress)
+continue if{ not exists integer values whose(it = 1) of properties "ProtectionStatus" of select objects "ProtectionStatus, DriveLetter from Win32_EncryptableVolume" whose(string value of property "DriveLetter" of it starts with (name of drive of system folder) ) of wmis "root\CIMv2\Security\MicrosoftVolumeEncryption" }
+
+endif
+// -- ENDIF for Suspend BitLocker --
+
+
+// ----------------------------------------------------------------
+
+// Update BIOS:
+// 
+waithidden __Download\E6330A21.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
+
+action requires restart "BIOS_Update"
+
+// Dell BIOS Exit Codes:
+//		0 = SUCCESSFUL
+//		1 = UNSUCCESSFUL  (FAILURE)
+//		2 = REBOOT_REQUIRED  (SUCCESSFUL)
+//		3 = DEP_SOFT_ERROR
+//		4 = DEP_HARD_ERROR
+//		5 = QUAL_HARD_ERROR
+//		6 = REBOOTING_SYSTEM  (SUCCESSFUL)
+//		7 = ? (wrong password)
+//		8 = ?
+//		9 = RPM_VERIFY_FAILED
+
+// http://en.community.dell.com/techcenter/enterprise-client/w/wiki/3462.dup-bios-updates
+// Report failure if bad return code, continue if good return code
+continue if{ exists (exit codes of action) whose(it = 2 OR it = 0 OR it = 6) }
+// Optional: force update of analysis properties:
+// notify client ForceRefresh
+]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
