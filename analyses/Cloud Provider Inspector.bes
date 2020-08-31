@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Cloud Provider Inspector</Title>
+		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Relevance>exists cloud providers</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2020-08-31</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Mon, 31 Aug 2020 16:41:44 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="Name of Cloud Provider" ID="1" EvaluationPeriod="PT1H">unique values of names of cloud providers</Property>
+		<Property Name="unique instance ID" ID="2" EvaluationPeriod="PT1H">unique values of unique ids of cloud providers</Property>
+		<Property Name="region" ID="3" EvaluationPeriod="PT1H">unique values of regions of cloud providers</Property>
+		<Property Name="image version" ID="4" EvaluationPeriod="PT1H">unique values of versions of cloud providers</Property>
+		<Property Name="private ips" ID="5" EvaluationPeriod="PT1H">unique values of private ips of cloud providers</Property>
+	</Analysis>
+</BES>
