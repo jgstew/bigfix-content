@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Public IP - Universal</Title>
+		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Relevance><![CDATA[( exists files whose(name of it as lowercase starts with "public_ip_" AND name of it as lowercase ends with ".log") of folders "Logs" of folders "__Global" of data folders of client ) OR ( exists unique values of ( addresses whose( (it as string does not start with "172." OR it as string as version < "172.16" as version OR it as string as version > "172.31" as version) AND it as string does not start with "10." AND it as string does not start with "192.168." AND it as string does not start with "169.254." AND it as string does not start with "127." AND it as string does not start with "0.") of adapters of network ) )]]></Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2020-09-08</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 08 Sep 2020 17:47:04 +0000</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-relevance-evaluation-period</Name>
+			<Value>01:00:00</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="Public IP::nslookup results" ID="1" EvaluationPeriod="PT6H">unique values whose(it != "") of (tuple string item 1 of it | it) of concatenations ", " of (it as trimmed string) of following texts of firsts "Address:" of lines whose(it starts with "Address:") of files "public_ip_nslookup.log" of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="Public IP::inspect network" ID="2" EvaluationPeriod="PT1H"><![CDATA[unique values of ( addresses whose( (it as string does not start with "172." OR it as string as version < "172.16" as version OR it as string as version > "172.31" as version) AND it as string does not start with "10." AND it as string does not start with "192.168." AND it as string does not start with "169.254." AND it as string does not start with "127." AND it as string does not start with "0.") of adapters of network )]]></Property>
+		<Property Name="Has Apparent Internet Access?" ID="3" EvaluationPeriod="PT6H"><![CDATA[exists (4 = number of substrings separated by "." of unique values whose(it != "") of it) whose(it) of it whose( (it as string does not start with "172." OR it as string as version < "172.16" as version OR it as string as version > "172.31" as version) AND it as string does not start with "10." AND it as string does not start with "192.168." AND it as string does not start with "169.254." AND it as string does not start with "127." AND it as string does not start with "0." ) of unique values of ( ( (it as string) of addresses of any adapters of networks ) ; ( (tuple string item 1 of it | it) of concatenations ", " of (it as trimmed string) of following texts of firsts "Address:" of lines whose(it starts with "Address:") of files "public_ip_nslookup.log" of folders "Logs" of folders "__Global" of data folders of client ) )]]></Property>
+	</Analysis>
+</BES>
