@@ -16,11 +16,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Tue, 08 Sep 2020 17:59:24 +0000</Value>
-		</MIMEField>
-		<MIMEField>
-			<Name>x-relevance-evaluation-period</Name>
-			<Value>06:00:00</Value>
+			<Value>Wed, 09 Sep 2020 02:38:33 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -32,13 +28,17 @@
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
 // Reference: https://docs.aws.amazon.com/directoryservice/latest/admin-guide/join_linux_instance.html
 
-//override wait
-//timeout_seconds=360
-//wait bash -c "yum update -y"
+// TODO: only makecache if not done within past X hours
+
+override wait
+timeout_seconds=360
+wait bash -c "yum makecache -y"
 
 override wait
 timeout_seconds=360
 wait bash -c "yum install -y sssd realmd krb5-workstation samba-common-tools"
+
+// https://www.computertechblog.com/active-directory-permissions-required-to-join-linux-and-windows-computers-to-a-domain/
 </ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
