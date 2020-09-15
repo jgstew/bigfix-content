@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>Add AD Domain to DNS Suffix Search List if missing - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists dns domainnames of local computers of active directories</Relevance>
+		<Relevance>exists (it as trimmed string) whose(it != "") of substrings separated by "," of (it as string as lowercase) of values "SearchList" of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" of registries</Relevance>
+		<Relevance>not exists (it as trimmed string) whose(it contains unique value of dns domainnames of local computers of active directories) of substrings separated by "," of (it as string as lowercase) of values "SearchList" of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" of registries</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2020-09-14</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 15 Sep 2020 14:30:04 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// TODO: Test
+
+regset "[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters]" "SearchList"="{ concatenations "," of (it as trimmed string) of ( (unique values of dns domainnames of local computers of active directories) ; it ) of (it as string as trimmed string) of values "SearchList" of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" of registries }"
+
+
+// concatenations "," of ( (unique values of dns domainnames of local computers of active directories) ; it ) of (it as string as trimmed string) of values "SearchList" of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" of registries
+
+// Reference:
+//  - https://bigfix.me/relevance/details/3022969 
+
+</ActionScript>
+		</DefaultAction>
+	</Fixlet>
+</BES>
