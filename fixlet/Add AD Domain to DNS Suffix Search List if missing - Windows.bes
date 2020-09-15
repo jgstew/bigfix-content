@@ -8,8 +8,8 @@
 		<Relevance>exists (it as trimmed string) whose(it != "") of substrings separated by "," of (it as string as lowercase) of values "SearchList" of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" of registries</Relevance>
 		<Relevance>not exists (it as trimmed string) whose(it contains unique value of dns domainnames of local computers of active directories) of substrings separated by "," of (it as string as lowercase) of values "SearchList" of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" of registries</Relevance>
 		<Category></Category>
-		<Source>Internal</Source>
-		<SourceID></SourceID>
+		<Source>https://github.com/jgstew/bigfix-content/blob/master/fixlet/Add%20AD%20Domain%20to%20DNS%20Suffix%20Search%20List%20if%20missing%20-%20Windows.bes</Source>
+		<SourceID>jgstew</SourceID>
 		<SourceReleaseDate>2020-09-14</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
