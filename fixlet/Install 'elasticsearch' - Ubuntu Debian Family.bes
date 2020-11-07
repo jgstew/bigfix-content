@@ -33,6 +33,8 @@ endif
 wait bash -c "DEBIAN_FRONTEND=noninteractive apt-get install -qq -y elasticsearch"
 
 // NOTE: this may fail with error code 100 if apt-get cache hasn't been updated since repo was added at least once. Might also happen if there is a problem with the elastic repo public key, but not certain.
+//  - https://www.marnel.net/2015/08/apt-get-error-code-100/#:~:text=It%20turns%20out%20this%20means,user%20permissions%2C%20cannot%20solve%20this.
+
 ]]></ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
