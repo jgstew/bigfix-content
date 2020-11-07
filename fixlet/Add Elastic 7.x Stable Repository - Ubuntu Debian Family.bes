@@ -16,7 +16,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Fri, 06 Nov 2020 22:07:34 +0000</Value>
+			<Value>Sat, 07 Nov 2020 21:59:05 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -27,6 +27,9 @@
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 wait bash -c "echo 'deb https://artifacts.elastic.co/packages/7.x/apt stable main' > /etc/apt/sources.list.d/elastic-7.x.list"
+
+// need to refresh cache due to new repo added
+wait bash -c "apt-get update"
 
 // https://www.elastic.co/guide/en/elasticsearch/reference/7.9/deb.html
 ]]></ActionScript>
