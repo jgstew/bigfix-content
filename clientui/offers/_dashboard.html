@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=11">
+		<meta version="1.0.0" product="CustomDashboardClientUI"/>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<title>BigFix Offers</title>
+	</head>	
+	<body>
+<h2>BigFix Offers</h2>
+<p>Click the link to take the offer:</p>
+<?Relevance ps of ( html tag("a", attr list of ("href", ("takeoffer:" & it) of items 0 of it), items 1 of it) ) of ( (it as string) of ids of it, (it as string) of values of headers "Subject" of it) of relevant offer actions of sites ?>
+
+<style>
+h2 {
+    padding: 0px;
+    margin: 0px 0px 1px 0px;
+    border: 0;
+    text-align: center;
+}
+div.dataTables_filter input {
+    width: 150px;
+}
+</style>
+<script language="javascript">
+
+</script>
+	</body>
+</html>
