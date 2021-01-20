@@ -23,7 +23,28 @@ div.dataTables_filter input {
 }
 </style>
 <script language="javascript">
+//Refresh the page
+function reFreshNow()
+{
+	location.href='cid:load?page=_dashboard.html';
+	// keep the refresh button disabled for at least 5 seconds
+	setTimeout(function() {
+		document.getElementById("button_refresh").disabled = false;
+	}, 5000)
+}
 
+function reFresh()
+{
+	// disable the refresh button
+	document.getElementById("button_refresh").disabled = true;
+	// do the refresh after 100ms delay
+	setTimeout( reFreshNow, 100 );
+}
+
+// refresh every x seconds
+window.setInterval(function(){
+    reFresh(); 
+  }, 90 * 1000);
 </script>
 	</body>
 </html>
