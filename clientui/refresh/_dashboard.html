@@ -10,7 +10,7 @@
 
 <?Relevance ps of bs of (it as string) of now ?>
 
-<p>Click icon button to refresh: <button onclick="reFresh();" id="button_refresh" class="btn"><i class="fas fa-redo-alt"></i> Refresh</button></p>
+<p>Click icon button to refresh relevance: <button onclick="reFresh();" id="button_refresh" class="btn"><i class="fas fa-redo-alt"></i> Refresh</button></p>
 
 <style>
 h2 {
@@ -27,7 +27,7 @@ h2 {
 function reFreshNow()
 {
 	location.href='cid:load?page=_dashboard.html';
-	// keep the refresh button disabled for at least 5 seconds
+	// keep the refresh button disabled for at least 5 seconds (assumes only 1 button)
 	setTimeout(function() {
 		document.getElementById("button_refresh").disabled = false;
 	}, 5000)
@@ -41,10 +41,10 @@ function reFresh()
 	setTimeout( reFreshNow, 100 );
 }
 
-// refresh every 30 seconds
+// refresh every 90 seconds
 window.setInterval(function(){
     reFresh(); 
-  }, 30000);
+}, 90000);
 </script>
 	</body>
 </html>
