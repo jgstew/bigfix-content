@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Get MSSQL Max RAM - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>/* MSSQL */ (exists key "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL" of native registry) OR (exists key "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\MSSQLServer\MSSQLServer" of native registry) OR ((exists local mssql databases) AND (exists runnings whose(it = TRUE) of local mssql databases))</Relevance>
+		<Category></Category>
+		<DownloadSize>12557</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2021-01-26</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 26 Jan 2021 21:10:00 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[prefetch SqlMaxMemory.psm1 sha1:244ebd7a2595d3c2f4b7c580c4fc1470664db025 size:12557 https://gallery.technet.microsoft.com/scriptcenter/Get-Set-SQL-Max-Memory-19147057/file/138092/1/SqlMaxMemory.psm1 sha256:2d71452b63cb953ecb3a456ecf2dc9554691d6f72308c95d16bb87862b596d91
+//wait __Download\SqlMaxMemory.psm1
+
+action uses wow64 redirection {not x64 of operating system}
+
+delete C:\Windows\Temp\SqlMaxMemory.psm1
+copy __Download\SqlMaxMemory.psm1 C:\Windows\Temp\SqlMaxMemory.psm1
+
+delete __createfile
+createfile until _END_OF_FILE_
+# https://docs.microsoft.com/en-us/sql/powershell/load-the-smo-assemblies-in-windows-powershell?view=sql-server-ver15
+# Loads the SQL Server Management Objects (SMO)  
+
+$ErrorActionPreference = "Stop"
+  
+$sqlpsreg="HKLM:\SOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.SqlServer.Management.PowerShell.sqlps"  
+  
+if (Get-ChildItem $sqlpsreg -ErrorAction "SilentlyContinue")  
+{{  
+    throw "SQL Server Provider for Windows PowerShell is not installed."  
+}  
+else  
+{{ 
+    $item = Get-ItemProperty $sqlpsreg  
+    $sqlpsPath = [System.IO.Path]::GetDirectoryName($item.Path)  
+}  
+  
+$assemblylist =
+"Microsoft.SqlServer.Management.Common",  
+"Microsoft.SqlServer.Smo",  
+"Microsoft.SqlServer.Dmf ",  
+"Microsoft.SqlServer.Instapi ",  
+"Microsoft.SqlServer.SqlWmiManagement ",  
+"Microsoft.SqlServer.ConnectionInfo ",  
+"Microsoft.SqlServer.SmoExtended ",  
+"Microsoft.SqlServer.SqlTDiagM ",  
+"Microsoft.SqlServer.SString ",  
+"Microsoft.SqlServer.Management.RegisteredServers ",  
+"Microsoft.SqlServer.Management.Sdk.Sfc ",  
+"Microsoft.SqlServer.SqlEnum ",  
+"Microsoft.SqlServer.RegSvrEnum ",  
+"Microsoft.SqlServer.WmiEnum ",  
+"Microsoft.SqlServer.ServiceBrokerEnum ",  
+"Microsoft.SqlServer.ConnectionInfoExtended ",  
+"Microsoft.SqlServer.Management.Collector ",  
+"Microsoft.SqlServer.Management.CollectorEnum",  
+"Microsoft.SqlServer.Management.Dac",  
+"Microsoft.SqlServer.Management.DacEnum",  
+"Microsoft.SqlServer.Management.Utility"  
+  
+foreach ($asm in $assemblylist)  
+{{
+    $asm = [Reflection.Assembly]::LoadWithPartialName($asm)  
+}
+  
+Push-Location  
+cd $sqlpsPath  
+update-FormatData -prependpath SQLProvider.Format.ps1xml
+Pop-Location
+
+
+# https://gallery.technet.microsoft.com/scriptcenter/Get-Set-SQL-Max-Memory-19147057
+# https://gallery.technet.microsoft.com/scriptcenter/Get-Set-SQL-Max-Memory-19147057/file/138092/1/SqlMaxMemory.psm1
+
+Import-Module C:\Windows\Temp\SqlMaxMemory.psm1
+
+Get-SqlMaxMemory localhost | Select-Object -Property SqlMaxMB | Format-List
+
+_END_OF_FILE_
+
+delete C:\Windows\Temp\Get-SQL-Max-RAM.ps1
+
+copy __createfile C:\Windows\Temp\Get-SQL-Max-RAM.ps1
+
+waithidden CMD /C "powershell -ExecutionPolicy Bypass -File C:\Windows\Temp\Get-SQL-Max-RAM.ps1" > C:\Windows\Temp\_BigFix_PowerShell_Get-SQL-Max-RAM.log 2>&1
+
+// Cleanup:
+//delete C:\Windows\Temp\Get-SQL-Max-RAM.ps1
+//delete C:\Windows\Temp\SqlMaxMemory.psm1
+]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
