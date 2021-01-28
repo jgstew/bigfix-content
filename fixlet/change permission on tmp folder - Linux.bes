@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>change permission on tmp folder - Linux</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance><![CDATA[exists (user masks of it; group masks of it; other masks of it) whose(it < 6) of folders "/tmp"]]></Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2021-01-27</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 28 Jan 2021 15:39:53 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+parameter "numMinPermission" = "6"
+
+parameter "maskPermission" = "{ concatenations of (it as string) of ( (it whose(it >= (parameter "numMinPermission" as integer) )) | (parameter "numMinPermission" as integer) ) of (user masks of it; group masks of it; other masks of it) of folders "/tmp" }"
+
+wait bash -c "chmod { parameter "maskPermission" } /tmp"
+
+// https://www.december.com/unix/ref/chmod.html
+]]></ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
