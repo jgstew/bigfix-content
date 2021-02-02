@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Windows Autopilot Manual Registration Data</Title>
+		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists string values of selects "DeviceHardwareData from MDM_DevDetail_Ext01 where InstanceID='Ext' AND ParentID='./DevDetail'" of wmis "root/cimv2/mdm/dmmap"</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2021-01-20</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 02 Feb 2021 13:32:39 +0000</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-relevance-evaluation-period</Name>
+			<Value>12:00:00</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="Autopilot Registration CSV Data" ID="1" EvaluationPeriod="PT12H"><![CDATA[( (first 1024 of it | it) of it ; (first 1024 of it | it) of following texts of firsts 1024 of it ; (first 1024 of it | it) of following texts of firsts 1024 of following texts of firsts 1024 of it ; (first 1024 of it | it) of following texts of firsts 1024 of following texts of firsts 1024 of following texts of firsts 1024 of it ) of (item 0 of it & ",," & item 1 of it) of (concatenations "" of unique values of string values of selects "SerialNumber from Win32_BIOS" of wmis, concatenations "" of unique values of string values of selects "DeviceHardwareData from MDM_DevDetail_Ext01 where InstanceID='Ext' AND ParentID='./DevDetail'" of wmis "root/cimv2/mdm/dmmap")]]></Property>
+		<Property Name="Autopilot Hardware Hash" ID="2" EvaluationPeriod="PT12H">( (first 1024 of it | it) of it ; (first 1024 of it | it) of following texts of firsts 1024 of it ; (first 1024 of it | it) of following texts of firsts 1024 of following texts of firsts 1024 of it ; (first 1024 of it | it) of following texts of firsts 1024 of following texts of firsts 1024 of following texts of firsts 1024 of it ) of concatenations "" of unique values of string values of selects "DeviceHardwareData from MDM_DevDetail_Ext01 where InstanceID='Ext' AND ParentID='./DevDetail'" of wmis "root/cimv2/mdm/dmmap"</Property>
+	</Analysis>
+</BES>
