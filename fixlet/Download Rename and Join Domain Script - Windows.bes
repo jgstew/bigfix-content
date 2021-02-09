@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>download rename and join domain script - windows</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>NOT in proxy agent context</Relevance>
+		<Relevance>not exists distinguished names of local computers of active directories</Relevance>
+		<Relevance>not exists files "Join_Domain_Rename_Computer.ps1" of folders "\Windows\Temp"</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2021-02-08</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 09 Feb 2021 18:38:25 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// this will create a script on the target to help with rename and join domain
+action parameter query "ad-domain"
+
+delete __createfile
+
+createfile until _END_OF_FILE_
+# GOAL: To rename the local computer and join it to a domain in 1 step with only 1 required reboot.
+
+# https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/add-computer?view=powershell-5.1
+# https://stackoverflow.com/questions/6217799/rename-computer-and-join-to-domain-in-one-step-with-powershell
+
+# get the domain credential 
+$cred = get-credential
+#$oldName = hostname
+$newName = Read-Host -Prompt "Enter New Computer Name"
+
+Rename-Computer -Force -PassThru -NewName $newName
+
+Add-Computer -Force -PassThru -DomainName { parameter "ad-domain" } -Credential $cred -ComputerName "localhost" -newname $newName
+
+# Rename-Computer -Force -PassThru -DomainCredential Get-Credential -NewName $newName
+
+
+# Requires Restart:
+# Restart-Computer
+_END_OF_FILE_
+
+delete \Windows\Temp\Join_Domain_Rename_Computer.ps1
+
+copy __createfile \Windows\Temp\Join_Domain_Rename_Computer.ps1
+
+// https://github.com/jgstew/tools/blob/master/powershell/Join_Domain_Rename_Computer.ps1
+// https://bigfix.me/relevance/details/3023193
+
+// todo - get list of domains from existing computers - use secure parameters to pass domain creds
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
