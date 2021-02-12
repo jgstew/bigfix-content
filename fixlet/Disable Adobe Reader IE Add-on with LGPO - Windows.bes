@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Disable Adobe Reader IE Add-on with LGPO - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>not exists values "{CA8A9780-280D-11CF-A24D-444553540000}" whose(it as string as integer = 0) of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Ext\CLSID" of (x64 registries; x32 registries)</Relevance>
+		<Relevance>exists keys whose( exists values "DisplayName" whose(it as string as lowercase contains "Acrobat Reader" as lowercase) of it ) of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of ( x64 registries; x32 registries )</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2021-02-12</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 12 Feb 2021 19:16:45 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+prefetch LGPO.zip sha1:4578a97946102a20505d1e8f09abedd1fd7a8d89 size:531635 https://download.microsoft.com/download/8/5/C/85C25433-A1B0-4FFA-9429-7E023E7DA8D8/LGPO.zip sha256:cb7159d134a0a1e7b1ed2ada9a3ce8ce8f4de391d14403d55438af824247cc55
+
+utility __Download\LGPO.zip
+
+// Disable wow64 redirection on x64 OSes
+action uses wow64 redirection {not x64 of operating system}
+
+delete C:\Windows\Temp\LGPO.zip
+copy __Download\LGPO.zip C:\Windows\Temp\LGPO.zip
+
+delete __createfile
+// https://github.com/jgstew/tools/blob/master/VBS/zipExtractSimple.vbs
+createfile until _END_OF_FILE_
+
+strOutputDir   = "C:\Windows\Temp"
+strZipFilePath = "C:\Windows\Temp\LGPO.zip"
+CreateObject( "Shell.Application" ).NameSpace( CreateObject("Scripting.FileSystemObject").GetAbsolutePathName( strOutputDir ) ).copyHere ( CreateObject( "Shell.Application" ).NameSpace( CreateObject("Scripting.FileSystemObject").GetAbsolutePathName( strZipFilePath ) ).Items() ), 1044
+
+_END_OF_FILE_
+
+delete C:\Windows\Temp\zipExtractSimple.vbs
+
+copy __createfile C:\Windows\Temp\zipExtractSimple.vbs
+
+wait CMD /C cd C:\Windows\Temp && cscript //nologo C:\Windows\Temp\zipExtractSimple.vbs
+
+delete C:\Windows\Temp\LGPO.exe
+copy C:\Windows\Temp\LGPO_30\LGPO.exe C:\Windows\Temp\LGPO.exe
+
+// Clean Up
+delete C:\Windows\Temp\zipExtractSimple.vbs
+delete C:\Windows\Temp\LGPO.zip
+folder delete C:\Windows\Temp\LGPO_30
+
+// verify LGPO.exe exists
+continue if{ exists files "LGPO.exe" whose(481144 = size of it AND "3.0.2004.13001" = version of it AND "13 Apr 2020 16:39:44 -0500" as time = modification time of it AND "0c97f29543418b30340c4ff5d930d31e6196dd59c2cc74b6b890fa7b90c910c7" = sha256 of it) of folders "\Windows\Temp" }
+
+delete __createfile
+createfile until _END_OF_FILE_
+; ----------------------------------------------------------------------
+Computer
+Software\Microsoft\Windows\CurrentVersion\Policies\Ext
+ListBox_Support_CLSID
+DWORD:1
+
+Computer
+Software\Microsoft\Windows\CurrentVersion\Policies\Ext\CLSID
+{{CA8A9780-280D-11CF-A24D-444553540000}
+SZ:0
+; ----------------------------------------------------------------------
+_END_OF_FILE_
+delete __Download\registry.pol.txt
+copy __createfile __Download\registry.pol.txt
+waithidden C:\Windows\Temp\LGPO.exe /t __Download\registry.pol.txt
+continue if {exit code of action = 0}
+
+// References: 
+//  - https://community.adobe.com/t5/acrobat/adobe-acrobat-reader-21-001-20135-preventing-users-to-connect-to-global-protect/td-p/11823885
+//  - https://docs.microsoft.com/en-us/internet-explorer/ie11-deploy-guide/enable-and-disable-add-ons-using-administrative-templates-and-group-policy
+//  - https://community.adobe.com/t5/acrobat-reader/internet-explorer-add-on-is-automatically-disabled-when-acrobat-reader-dc-runs/m-p/9892959
+]]></ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
