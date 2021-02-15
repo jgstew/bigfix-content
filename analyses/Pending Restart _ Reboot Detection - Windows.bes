@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Pending Restart / Reboot Detection - Windows</Title>
+		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2021-02-15</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Mon, 15 Feb 2021 21:50:06 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="pending restart?" ID="1" EvaluationPeriod="PT1H">pending restart</Property>
+		<Property Name="pending restart names" ID="2" EvaluationPeriod="PT1H">pending restart names</Property>
+		<Property Name="names of values of  BESPendingRestart" ID="3" EvaluationPeriod="PT1H">names of values of keys "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\EnterpriseClient\BESPendingRestart" of (x64 registries; x32 registries)</Property>
+		<Property Name="last write times of BESPendingRestart" ID="4" EvaluationPeriod="PT1H">last write times of keys "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\EnterpriseClient\BESPendingRestart" of (x64 registries; x32 registries)</Property>
+		<Property Name="RunServicesOnce BESPendingRestart" ID="5" EvaluationPeriod="PT1H">values "BESPendingRestart" of keys "HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunServicesOnce" of (x64 registries; x32 registries)</Property>
+		<Property Name="Component Based Servicing - RebootPending" ID="6" EvaluationPeriod="PT1H">exists keys "HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending" of (x64 registries; x32 registries)</Property>
+		<Property Name="Flags of UpdateExeVolatile" ID="7" EvaluationPeriod="PT1H">values "Flags" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Updates\UpdateExeVolatile" of (x64 registries; x32 registries)</Property>
+		<Property Name="WindowsUpdate RebootRequired" ID="8" EvaluationPeriod="PT1H">names of values of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired" of (x64 registries; x32 registries)</Property>
+		<Property Name="Pending File Rename Operations" ID="9" EvaluationPeriod="PT1H">substrings separated by "%00" whose (it != "") of (it as string) of values "PendingFileRenameOperations" of keys "HKLM\System\CurrentControlSet\Control\Session Manager" of (x64 registries; x32 registries)</Property>
+	</Analysis>
+</BES>
