@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<ComputerGroup>
+		<Title>MDM Devices</Title>
+		<Domain>BESC</Domain>
+		<JoinByIntersection>true</JoinByIntersection>
+		<SearchComponentRelevance Comparison="IsTrue">
+			<Relevance>(in proxy agent context) AND exists management statuses of devices</Relevance>
+		</SearchComponentRelevance>
+	</ComputerGroup>
+</BES>
