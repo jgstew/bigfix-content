@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<ComputerGroup>
+		<Title>BigFix Clients Installed Within Last Week</Title>
+		<Domain>BESC</Domain>
+		<JoinByIntersection>true</JoinByIntersection>
+		<SearchComponentRelevance Comparison="IsTrue">
+			<Relevance><![CDATA[exists absolute values whose(it < 8 * day) of (now - it) of minima of subscribe times of sites]]></Relevance>
+		</SearchComponentRelevance>
+	</ComputerGroup>
+</BES>
