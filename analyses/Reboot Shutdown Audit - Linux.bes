@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Reboot Shutdown Audit - Linux</Title>
+		<Description>Requires use of probe action to gather the data, then it will show up here.</Description>
+		<Relevance>unix of operating system</Relevance>
+		<Relevance>exists files "/tmp/bigfix_reboot_audits.log"</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2021-03-04</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 04 Mar 2021 15:17:02 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="Lines of bigfix_reboot_audits.log" ID="1" EvaluationPeriod="PT6H">lines of files "/tmp/bigfix_reboot_audits.log"</Property>
+	</Analysis>
+</BES>
