@@ -5,7 +5,7 @@
 		<Domain>BESC</Domain>
 		<JoinByIntersection>true</JoinByIntersection>
 		<SearchComponentRelevance Comparison="IsTrue">
-			<Relevance>exists (it as string) whose(it starts with "Hyper-V") of values "version" of structures "system_information" of smbioses</Relevance>
+			<Relevance><![CDATA[unique values whose(it starts with "Hyper-V") of ( ( if ( exists (it as string) whose(it contains "<dmi>") of properties ) then ( ( (it as string) of versions of system_informations of dmis ) ) else NOTHINGS ) ; ( if ( exists (it as string) whose(it contains "<smbios>") of properties ) then ( (it as string) of values "version" of structures "system_information" of smbioses ) else NOTHINGS ) ; ( if ( exists (it as string) whose(it contains "<bios>") of properties ) then ( (it as string) of version strings of bioses ) else NOTHINGS ) )]]></Relevance>
 		</SearchComponentRelevance>
 	</ComputerGroup>
 </BES>
