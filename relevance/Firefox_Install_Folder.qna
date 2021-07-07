@@ -14,5 +14,6 @@ I: plural string with multiplicity
 Q: unique values of pathnames of (folder it) of expand environment strings of (it as string) of values "InstallLocation" of keys whose(value "DisplayName" of it as string contains "Firefox") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries; x32 registries)
 A: C:\Program Files\Mozilla Firefox
 T: 7.801 ms
-I: plural string with multiplicity</QnAView>
+I: plural string with multiplicity
+	</QnAView>
 </FixletDebuggerFile>
