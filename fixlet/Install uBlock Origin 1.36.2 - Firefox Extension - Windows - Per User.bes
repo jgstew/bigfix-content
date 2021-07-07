@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Install uBlock Origin 1.36.2 - Firefox Extension - Windows - Per User</Title>
+		<Description><![CDATA[<P>&nbsp;</P>
+<P>Known Issue: The user must visit the add-on page and enable the extension manually for it to take effect.</P>]]></Description>
+		<Relevance>exists regapps "firefox.exe"</Relevance>
+		<Relevance>exists folders "extensions" of folders of folders "AppData\Roaming\Mozilla\Firefox\Profiles" of folders of folders "\Users"</Relevance>
+		<Relevance>exists folders "extensions" whose(not exists files "uBlock0@raymondhill.net.xpi" of it) of folders of folders "AppData\Roaming\Mozilla\Firefox\Profiles" of folders of folders "\Users"</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2021-07-07</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 07 Jul 2021 19:00:14 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+// NOTE: the user will have to enable the extension manually using this method:
+prefetch uBlock0.xpi sha1:34f229c1f6e21a8818a1931f9f396b08f5840c36 size:2823571 https://addons.mozilla.org/firefox/downloads/file/3806442/ublock_origin-1.36.2-an+fx.xpi sha256:31f8c2126a3f4e3cfe3ef63550b842a5d4f071ec1c6e5aa377c2f29b11ff1415
+
+delete __appendfile
+
+appendfile { concatenations "%0d%0a" of ("copy __Download\uBlock0.xpi %22" & it & "\uBlock0@raymondhill.net.xpi%22") of pathnames of folders "extensions" whose(not exists files "uBlock0@raymondhill.net.xpi" of it) of folders of folders "AppData\Roaming\Mozilla\Firefox\Profiles" of folders of folders "\Users" }
+
+delete __Download\run.bat
+copy __appendfile __Download\run.bat
+
+dos __Download\run.bat
+
+// GUID? 5cbcc3fa-50db-45de-921e-cd9ce7587460
+// https://askubuntu.com/questions/73474/how-to-install-firefox-addon-from-command-line-in-scripts
+// https://bigfix.me/relevance/details/2997195
+]]></ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
