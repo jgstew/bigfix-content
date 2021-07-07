@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FixletDebuggerFile>
+	<QnAView>
+Q: unique values of pathnames of (folder it) of expand environment string of (it as string) of values "Install Directory" of keys "Main" of keys of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Mozilla\Mozilla Firefox" of (x64 registries; x32 registries)
+A: C:\Program Files\Mozilla Firefox
+T: 8.480 ms
+I: plural string with multiplicity
+
+Q: unique values of pathnames of (folders it) of expand environment strings of names of values of keys "HKLM\SOFTWARE\Mozilla\Firefox\TaskBarIDs" of (x64 registries; x32 registries)
+A: C:\Program Files\Mozilla Firefox
+T: 8.176 ms
+I: plural string with multiplicity
+
+Q: unique values of pathnames of (folder it) of expand environment strings of (it as string) of values "InstallLocation" of keys whose(value "DisplayName" of it as string contains "Firefox") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries; x32 registries)
+A: C:\Program Files\Mozilla Firefox
+T: 7.801 ms
+I: plural string with multiplicity</QnAView>
+</FixletDebuggerFile>
