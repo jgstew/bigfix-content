@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Open Logitech BRIO PDF - Offer - Windows</Title>
+		<Description>This will appear as an Offer in the Client UI and open WMI Explorer when run. </Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>1 = number of unique values of home directories of users of (current users;logged on users)</Relevance>
+		<Relevance>exists unique values whose(it starts with "Logitech BRIO") of friendly names of active devices</Relevance>
+		<Category>Offer</Category>
+		<DownloadSize>249327</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2019-02-19</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 15 Jul 2021 15:32:02 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// https://www.logitech.com/assets/65031/2/brio-4k-ultra-hd-webcam.pdf
+prefetch brio-4k-ultra-hd-webcam.pdf sha1:d05a9bdf0da7cc201115277e2f9f1ba04f238ca0 size:2919984 https://www.logitech.com/assets/65031/2/brio-4k-ultra-hd-webcam.pdf sha256:2d782a33f95b67cb1bad2b753a8c9da81390421cfe3db8fd8f8fded157b53cbf
+
+parameter "File" = "brio-4k-ultra-hd-webcam.pdf"
+
+parameter "CurrentUserTempFolder" = "{ pathnames of folders "AppData\Local\Temp" of (folders it) of unique value of home directories of users of (current users;logged on users) }\BES"
+
+if{ not exists folders (parameter "CurrentUserTempFolder") }
+folder create {parameter "CurrentUserTempFolder"}
+endif
+
+
+delete "{parameter "CurrentUserTempFolder"}\{parameter "File"}"
+copy "__Download\{parameter "File"}" "{parameter "CurrentUserTempFolder"}\{parameter "File"}"
+
+override run
+runas=currentuser
+run explorer.exe "{parameter "CurrentUserTempFolder"}\{parameter "File"}"
+</ActionScript>
+			<Settings>
+				<ActionUITitle>Open Logitech BRIO Webcam PDF Manual</ActionUITitle>
+				<PreActionShowUI>false</PreActionShowUI>
+				<HasRunningMessage>false</HasRunningMessage>
+				<HasTimeRange>false</HasTimeRange>
+				<HasStartTime>false</HasStartTime>
+				<HasEndTime>false</HasEndTime>
+				<HasDayOfWeekConstraint>false</HasDayOfWeekConstraint>
+				<UseUTCTime>false</UseUTCTime>
+				<ActiveUserRequirement>NoRequirement</ActiveUserRequirement>
+				<ActiveUserType>AllUsers</ActiveUserType>
+				<HasWhose>false</HasWhose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>true</Reapply>
+				<HasReapplyLimit>false</HasReapplyLimit>
+				<HasReapplyInterval>true</HasReapplyInterval>
+				<ReapplyInterval>PT15M</ReapplyInterval>
+				<HasRetry>false</HasRetry>
+				<HasTemporalDistribution>false</HasTemporalDistribution>
+				<ContinueOnErrors>true</ContinueOnErrors>
+				<PostActionBehavior Behavior="Nothing"></PostActionBehavior>
+				<IsOffer>true</IsOffer>
+				<AnnounceOffer>false</AnnounceOffer>
+				<OfferCategory></OfferCategory>
+				<OfferDescriptionHTML>Open Logitech BRIO Webcam PDF Manual</OfferDescriptionHTML>
+			</Settings>
+			<SettingsLocks>
+				<ActionUITitle>false</ActionUITitle>
+				<PreActionShowUI>false</PreActionShowUI>
+				<PreAction>
+					<Text>false</Text>
+					<AskToSaveWork>false</AskToSaveWork>
+					<ShowActionButton>false</ShowActionButton>
+					<ShowCancelButton>false</ShowCancelButton>
+					<DeadlineBehavior>false</DeadlineBehavior>
+					<ShowConfirmation>false</ShowConfirmation>
+				</PreAction>
+				<HasRunningMessage>false</HasRunningMessage>
+				<RunningMessage>
+					<Text>false</Text>
+				</RunningMessage>
+				<TimeRange>false</TimeRange>
+				<StartDateTimeOffset>false</StartDateTimeOffset>
+				<EndDateTimeOffset>false</EndDateTimeOffset>
+				<DayOfWeekConstraint>false</DayOfWeekConstraint>
+				<ActiveUserRequirement>false</ActiveUserRequirement>
+				<ActiveUserType>false</ActiveUserType>
+				<Whose>false</Whose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>false</Reapply>
+				<ReapplyLimit>false</ReapplyLimit>
+				<RetryCount>false</RetryCount>
+				<RetryWait>false</RetryWait>
+				<TemporalDistribution>false</TemporalDistribution>
+				<ContinueOnErrors>false</ContinueOnErrors>
+				<PostActionBehavior>
+					<Behavior>false</Behavior>
+					<AllowCancel>false</AllowCancel>
+					<Deadline>false</Deadline>
+					<Title>false</Title>
+					<Text>false</Text>
+				</PostActionBehavior>
+				<IsOffer>false</IsOffer>
+				<AnnounceOffer>false</AnnounceOffer>
+				<OfferCategory>false</OfferCategory>
+				<OfferDescriptionHTML>false</OfferDescriptionHTML>
+			</SettingsLocks>
+		</DefaultAction>
+	</Task>
+</BES>
