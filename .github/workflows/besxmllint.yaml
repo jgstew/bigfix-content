@@ -1,0 +1,26 @@
+---
+name: besxmllint
+
+on:
+  push:
+    paths:
+      - "**.bes"
+      - ".github/workflows/besxmllint.yaml"
+  pull_request:
+    paths:
+      - "**.bes"
+      - ".github/workflows/besxmllint.yaml"
+
+jobs:
+  besxmllint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install validate-bes-xml
+        run: pip install validate-bes-xml
+      - name: Lint BES XML files
+        run: python3 -m validate_bes_xml
