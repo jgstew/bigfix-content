@@ -1,0 +1,31 @@
+---
+name: xmlvalidate
+
+on:
+  push:
+    paths:
+      - "**.xml"
+      - "**.ojo"
+      - "**.qna"
+      - "**.BESDomain"
+      - ".github/workflows/xmlvalidate.yaml"
+  pull_request:
+    paths:
+      - "**.xml"
+      - "**.ojo"
+      - "**.qna"
+      - "**.BESDomain"
+      - ".github/workflows/xmlvalidate.yaml"
+
+jobs:
+  xmlvalidate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Validate XML Syntax
+        uses: anyone-developer/anyone-validate-xml@69dcf09dc84d6797169cbd4f8252e6719576e94a
+        with:
+          file-extension: '.xml,.ojo,.qna,.BESDomain'
+          ignore-files: 'README.md'
+          ignore-directories: '.git'
+          read-path: '.'
