@@ -5,10 +5,12 @@ on:
   push:
     paths:
       - "**.bes"
+      - "**.ojo"
       - ".github/workflows/besxmllint.yaml"
   pull_request:
     paths:
       - "**.bes"
+      - "**.ojo"
       - ".github/workflows/besxmllint.yaml"
 
 jobs:
