@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- vim: set syntax=xml: -->
 <FixletDebuggerFile>
-	<QnAView>
+	<QnAView><![CDATA[
   
 Q: minima of ( (if exists properties whose(it as string contains "creation time of <filesystem object>: time") then ( creation times of it ) else NOTHINGS) ; (if exists properties whose(it as string contains "change time of <filesystem object>: time") then ( creation times of it ) else NOTHINGS) ; (if exists properties whose(it as string contains "modification time of <filesystem object>: time") then ( modification times of it ) else NOTHINGS) ; (if exists properties whose(it as string contains "accessed time of <filesystem object>: time") then ( accessed times of it ) else NOTHINGS) ) of (files it; folders it) of ("/root/install.log"; "/"; "/var/log/installer"; "/root"; "/root/anaconda-ks.cfg"; "/var/log"; "C:\Recovery")
 A: Thu, 04 Aug 2016 15:40:10 -0700
 T: 25.784 ms
 I: plural time
 
-</QnAView>
+]]></QnAView>
 </FixletDebuggerFile>
