@@ -24,7 +24,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 if { not exists absolute values whose(it < 1 * hour) of (now - it) of maxima of modification times of files "/var/lib/apt/periodic/update-success-stamp" }
   wait bash -c "apt-get update"
 endif
@@ -36,7 +36,7 @@ wait bash -c "DEBIAN_FRONTEND=noninteractive apt-get install -qq slapd"
 // https://stackoverflow.com/questions/32325597/script-install-for-slapd
 // https://anonscm.debian.org/cgit/pkg-openldap/openldap.git/tree/debian/slapd.templates?h=jessie
 // http://manpages.ubuntu.com/manpages/xenial/man1/debconf-set-selections.1.html
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>
