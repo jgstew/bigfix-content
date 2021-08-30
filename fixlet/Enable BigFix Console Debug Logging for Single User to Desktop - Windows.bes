@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Enable BigFix Console Debug Logging for Single User to Desktop - Windows</Title>
+		<Description><![CDATA[See this forum post: <A href="https://forum.bigfix.com/t/how-to-enable-bes-console-logging/32032">https://forum.bigfix.com/t/how-to-enable-bes-console-logging/32032</A>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists keys whose(value "DisplayName" of it as string contains "BigFix Console") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries;x32 registries)</Relevance>
+		<Relevance>1 = number of unique values of names of (current users;logged on users)</Relevance>
+		<Relevance>not exists values "DebugOut" of keys "Software\BigFix\Enterprise Console" of keys of keys "HKEY_USERS" of registry</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2021-08-30</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Mon, 30 Aug 2021 16:17:58 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+
+delete __createfile
+
+createfile until _END_OF_FILE_
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\BigFix\Enterprise Console]
+"EnabledLogs"="all"
+"DebugOut"="{unique value of escapes of home directories of users of (current users; logged on users)}\\Desktop\\bigfix-console.log"
+_END_OF_FILE_
+
+delete "{unique value of pathnames of folders "AppData\Local\Temp" of home directory folders of users of (current users; logged on users)}\bigfix-console-log.reg"
+copy __createfile "{unique value of pathnames of folders "AppData\Local\Temp" of home directory folders of users of (current users; logged on users)}\bigfix-console-log.reg"
+
+// import REG
+override run
+Hidden=true
+RunAs=currentuser
+run cmd /c START /MIN "import-bigfix-console-reg" cmd /C "reg import "{unique value of pathnames of folders "AppData\Local\Temp" of home directory folders of users of (current users; logged on users)}\bigfix-console-log.reg""
+
+// Clean Up:
+
+delete "{unique value of pathnames of folders "AppData\Local\Temp" of home directory folders of users of (current users; logged on users)}\bigfix-console-log.reg"
+delete __createfile
+
+// ToDo: Set RunOnce keys for current user to delete these settings on reboot/login automatically
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
