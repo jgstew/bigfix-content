@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Dell Command Update Audit - Windows</Title>
+		<Description><![CDATA[Learn more about this analysis online:  <a href='http://bigfix.me/cdb/analysis/2994743'>http://bigfix.me/cdb/analysis/2994743</a><br /><br /><P>This will show the results of running "Run: Check for updates - Dell Command Update - Windows"</P>
+<P>&nbsp;</P>
+<P><STRONG>Steps to using Dell Command Update:</STRONG></P>
+<OL>
+<LI>Install/Update: Dell Command Update - Windows&nbsp; (Only once for each client) 
+<LI>Run: Check for updates - Dell Command Update - Windows&nbsp;&nbsp;(Once every 60 days) 
+<LI>Check Results in Analysis:&nbsp; Dell Command Update Audit - Windows 
+<LI>Run: Install Updates - Dell Command Update - Windows&nbsp; (Only if updates are needed) 
+<LI>Reboot Computer&nbsp; (Only if reboot is actually required)</LI>
+<OL>
+<LI>Run: Notify User to Reboot System with pending restart due to Dell Updates - Dell Command Update - Windows 
+<LI>Run: Reboot System if no user is logged on with pending restart due to Dell Updates - Dell Command Update - Windows</LI></OL></OL>
+<P>&nbsp;&nbsp;</P>]]></Description>
+		<Relevance>/* Windows Only */ windows of operating system</Relevance>
+		<Relevance><![CDATA[/* Windows Vista or Higher */ version of operating system >= "6.0"]]></Relevance>
+		<Relevance>/* DELL Only */ exists values "vendor" whose(it as string as uppercase contains "DELL") of structures "bios_information" of smbios</Relevance>
+		<Relevance>/* check for supported model: OptiPlex, Latitude, Precision, Venue Tablets, XPS */ exists ((value "product_name" of structures "system_information" of smbios) as string as uppercase) whose(it starts with "OPTIPLEX" OR it starts with "LATITUDE" OR it starts with "PRECISION" OR it starts with "XPS" OR it starts with "VENUE")</Relevance>
+		<Relevance><![CDATA[exists keys whose(value "DisplayName" of it as string as trimmed string starts with "Dell Command | Update" AND value "DisplayVersion" of it as string as version >= "2.0.0") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of registry]]></Relevance>
+		<MIMEField>
+			<Name>bigfixme-added-time</Name>
+			<Value>Wed, 29 Oct 2014 13:08:09 GMT</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>bigfixme-modification-time</Name>
+			<Value>Wed, 29 Oct 2014 13:08:09 GMT</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>bigfixme-keywords</Name>
+			<Value></Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>bigfixme-ID</Name>
+			<Value>2994743</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 23 Dec 2020 13:37:50 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="InstallLocation" ID="1" EvaluationPeriod="PT12H"><![CDATA[unique values of (it as string) of ( ( values "InstallLocation" of keys whose(value "DisplayName" of it as string as trimmed string starts with "Dell Command | Update" AND value "DisplayVersion" of it as string as version >= "2.0.0") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (registry;native registry) ) ; ( values "InstallPath" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Dell\CommandUpdate" of (registry;native registry) ) )]]></Property>
+		<Property Name="Version of DCU-CLI" ID="2" EvaluationPeriod="PT12H"><![CDATA[versions of files "dcu-cli.exe" of folders ( unique values of (it as string) of ( ( values "InstallLocation" of keys whose(value "DisplayName" of it as string as trimmed string starts with "Dell Command | Update" AND value "DisplayVersion" of it as string as version >= "2.0.0") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (registry;native registry) ) ; ( values "InstallPath" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Dell\CommandUpdate" of (registry;native registry) ) ) )]]></Property>
+		<Property Name="ProductVersion" ID="3" EvaluationPeriod="PT12H"><![CDATA[unique values of (it as string) of ( ( values "DisplayVersion" of keys whose(value "DisplayName" of it as string as trimmed string starts with "Dell Command | Update" AND value "DisplayVersion" of it as string as version >= "2.0.0") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (registry;native registry) ) ; ( values "ProductVersion" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Dell\CommandUpdate" of (registry;native registry) ) )]]></Property>
+		<Property Name="automationmode" ID="4" EvaluationPeriod="PT12H">unique values of (it as string) of ( values "automationmode" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Dell\CommandUpdate\Preferences" of (registry;native registry) )</Property>
+		<Property Name="scheduledexecution" ID="5" EvaluationPeriod="PT12H">unique values of (it as string) of ( values "scheduledexecution" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Dell\CommandUpdate\Preferences" of (registry;native registry) )</Property>
+		<Property Name="showsetuppopup" ID="6" EvaluationPeriod="PT12H">unique values of (it as string) of ( values "showsetuppopup" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Dell\CommandUpdate\Preferences" of (registry;native registry) )</Property>
+		<Property Name="path of dcu-cli" ID="7" EvaluationPeriod="PT12H"><![CDATA[pathname of file "dcu-cli.exe" of folder ( unique value of pathnames of folders ( unique values of (it as string) of ( ( values "InstallLocation" of keys whose(value "DisplayName" of it as string as trimmed string starts with "Dell Command | Update" AND value "DisplayVersion" of it as string as version >= "2.0.0") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (registry;native registry) ) ; ( values "InstallPath" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Dell\CommandUpdate" of (registry;native registry) ) ) ) )]]></Property>
+		<Property Name="results" ID="8" EvaluationPeriod="PT12H">(substrings separated by "%0a" of it) whose(it contains "Packages for current system configuration: " AND it contains " (latest only)") of node values of child nodes of child nodes whose(node name of it = "Data") of parent nodes of parent nodes of xpaths "/LogEntries/LogEntry/data/Type/text()" whose(node value of it = "Log") of xml documents of files "ActivityLog.xml" of folders "Logs_DellUpdate" of folders "__BESData\__Global\Logs" of parent folder of client</Property>
+		<Property Name="available updates" ID="9" EvaluationPeriod="PT12H">node values of xpaths "/updates/update/name/text()" of xml documents of files "results_DellUpdate.xml" of folders "__BESData\__Global\Logs" of parent folder of client</Property>
+		<Property Name="time of available update check" ID="10" EvaluationPeriod="PT12H">maxima of modification times of files "results_DellUpdate.xml" of folders "__BESData\__Global\Logs" of parent folder of client</Property>
+		<Property Name="time of results check" ID="11" EvaluationPeriod="PT12H">maxima of modification times of files "ActivityLog.xml" of folders "Logs_DellUpdate" of folders "__BESData\__Global\Logs" of parent folder of client</Property>
+		<Property Name="results (parsed)" ID="12" EvaluationPeriod="PT12H">preceding texts of lasts " (latest only)" of following texts of firsts "Packages for current system configuration: " of (substrings separated by "%0a" of it) whose(it contains "Packages for current system configuration: " AND it contains " (latest only)") of node values of child nodes of child nodes whose(node name of it = "Data") of parent nodes of parent nodes of xpaths "/LogEntries/LogEntry/data/Type/text()" whose(node value of it = "Log") of xml documents of files "ActivityLog.xml" of folders "Logs_DellUpdate" of folders "__BESData\__Global\Logs" of parent folder of client</Property>
+		<Property Name="current BIOS Version" ID="15" EvaluationPeriod="PT15M">(it as string as trimmed string) of value "bios_version" of structures "bios_information" of smbios</Property>
+		<Property Name="# of available updates" ID="16" EvaluationPeriod="PT6H">number of xpaths "/updates/update/name/text()" of xml documents of files "results_DellUpdate.xml" of folders "__BESData\__Global\Logs" of parent folder of client</Property>
+		<Property Name="Dell Update Log Exit Codes" ID="17" EvaluationPeriod="PT1H">lines whose(it as lowercase contains "exit code") of ( (files whose(name of it as lowercase ends with ".log") of folders "C:\Dell\UpdatePackage\log");(files "install_Dell_BIOS_Update.log" of folders "__BESData\__Global\Logs" of parent folder of client) )</Property>
+		<Property Name="BIOS Download" ID="18" EvaluationPeriod="PT12H">node values of child nodes of child nodes whose(node name of it = "file") of parent nodes of parent nodes of xpaths "/updates/update/type/text()" whose(node value of it as trimmed string as uppercase = "BIOS") of xml documents of files "results_DellUpdate.xml" of folders "__BESData\__Global\Logs" of parent folder of client</Property>
+		<Property Name="BIOS Update available version" ID="19" EvaluationPeriod="PT1H">node values of child nodes of child nodes whose(node name of it = "version") of parent nodes of parent nodes of xpaths "/updates/update/type/text()" whose(node value of it as trimmed string as uppercase = "BIOS") of xml documents of files "results_DellUpdate.xml" of folders "__BESData\__Global\Logs" of parent folder of client</Property>
+	</Analysis>
+</BES>
