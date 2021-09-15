@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<ComputerGroup>
+		<Title>Dell Business Devices - Windows</Title>
+		<Domain>BESC</Domain>
+		<JoinByIntersection>true</JoinByIntersection>
+		<SearchComponentRelevance Comparison="IsTrue">
+			<Relevance>(windows of operating system) AND (/* DELL Only */ exists values "vendor" whose(it as string as uppercase contains "DELL") of structures "bios_information" of smbios) AND ( /* check for supported model: OptiPlex, Latitude, Precision, Venue Tablets, XPS */ exists ((value "product_name" of structures "system_information" of smbios) as string as uppercase) whose(it starts with "OPTIPLEX" OR it starts with "LATITUDE" OR it starts with "PRECISION" OR it starts with "XPS" OR it starts with "VENUE") )</Relevance>
+		</SearchComponentRelevance>
+	</ComputerGroup>
+</BES>
