@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>SSH with AD Active Directory Login - Linux RHEL Family</Title>
+		<Description><![CDATA[<P>&nbsp;</P>
+<P>References:</P>
+<P>-&nbsp;<A href="https://docs.aws.amazon.com/directoryservice/latest/admin-guide/join_linux_instance.html">https://docs.aws.amazon.com/directoryservice/latest/admin-guide/join_linux_instance.html</A>&nbsp;</P>
+<P>- <A href="https://www.ssh.com/ssh/sshd_config/">https://www.ssh.com/ssh/sshd_config/</A>&nbsp;</P>
+<P>- <A href="https://www.cyberciti.biz/faq/rhel-8-change-hostname-computer-name-command/">https://www.cyberciti.biz/faq/rhel-8-change-hostname-computer-name-command/</A>&nbsp;</P>]]></Description>
+		<Relevance>unix of operating system</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2020-08-18</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 02 Sep 2020 22:15:39 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="Required Packages" ID="1" EvaluationPeriod="PT30M">packages whose( name of it is contained by set of ("sssd";"realmd";"krb5-workstation";"samba-common-tools") AND (if exists properties whose(it as string contains "currently installed of ") then (currently installed of it) else TRUE)) of (if exists properties whose(it as string contains "debianpackage:") then debianpackages else if exists properties whose(it as string contains "rpm:") then rpms else ERROR "The operators are not defined.")</Property>
+		<Property Name="Password or ChallengeResponse Auth SSH" ID="2" EvaluationPeriod="PT1H">lines containing "yes" whose(it starts with "PasswordAuthentication" OR it starts with "ChallengeResponseAuthentication") of files "/etc/ssh/sshd_config"</Property>
+		<Property Name="AD Sudoers" ID="3" EvaluationPeriod="PT6H">lines containing "ALL=(ALL:ALL)" of ( files "/etc/sudoers" ; files of folders "/etc/sudoers.d" )</Property>
+		<Property Name="sssd.conf" ID="4" EvaluationPeriod="PT6H">lines of files "/etc/sssd/sssd.conf"</Property>
+		<Property Name="sssd.conf::use_fully_qualified_names" ID="5" EvaluationPeriod="PT6H">unique values of (it as trimmed string) of following texts of firsts "].use_fully_qualified_names=" of following texts of firsts "[domain/" of variables of files "/etc/sssd/sssd.conf"</Property>
+		<Property Name="sssd.conf::domain" ID="6" EvaluationPeriod="PT6H">unique values of (it as trimmed string) of following texts of firsts "[sssd].domains=" of variables whose(it starts with "[sssd].domains=") of files "/etc/sssd/sssd.conf" </Property>
+		<Property Name="sssd.conf::fallback_homedir" ID="7" EvaluationPeriod="PT6H">unique values of (it as trimmed string) of following texts of firsts "].fallback_homedir=" of variables whose(it starts with "[domain/" AND it contains "].fallback_homedir=") of files "/etc/sssd/sssd.conf" </Property>
+	</Analysis>
+</BES>
