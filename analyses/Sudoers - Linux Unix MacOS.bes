@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Sudoers - Linux Unix MacOS</Title>
+		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Relevance>exists ( files "/etc/sudoers" ; files of folders "/etc/sudoers.d" )</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2020-01-21</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 07 Oct 2021 14:31:53 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="sudoers" ID="1" EvaluationPeriod="PT30M">unique values of (it as trimmed string) whose(it != "" AND it does not start with "#") of lines of ( files "/etc/sudoers" ; files of folders "/etc/sudoers.d" )</Property>
+	</Analysis>
+</BES>
