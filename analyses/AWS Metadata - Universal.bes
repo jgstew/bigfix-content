@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>AWS Metadata - Universal</Title>
+		<Description>This analysis reads the results of an action that gets aws metadata.</Description>
+		<Relevance>exists files whose(name of it as lowercase starts with "aws_metadata_dynamic-doc.json") of folders "Logs" of folders "__Global" of data folders of client</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2020-08-31</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 07 Oct 2021 14:17:47 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="All AWS Metadata" ID="1" EvaluationPeriod="P2D">lines of files whose(name of it as lowercase starts with "aws_metadata_dynamic-doc.json") of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="instanceType" ID="2" EvaluationPeriod="PT1H">(it as string) of values of keys "instanceType" of jsons of files whose(name of it as lowercase starts with "aws_metadata_dynamic-doc.json") of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="instance data of cloud provider" ID="3" EvaluationPeriod="PT1H">number of instance datas of cloud providers</Property>
+		<Property Name="name of cloud provider" ID="4" EvaluationPeriod="PT1H">names of cloud providers</Property>
+	</Analysis>
+</BES>
