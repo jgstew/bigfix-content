@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>SSH Config - Linux Unix</Title>
+		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Relevance>exists files "/etc/ssh/sshd_config"</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2020-08-04</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 07 Oct 2021 14:25:00 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="sshd_config" ID="1" EvaluationPeriod="PT6H">lines whose(it does not start with "#" AND it as trimmed string != "") of files "/etc/ssh/sshd_config"</Property>
+	</Analysis>
+</BES>
