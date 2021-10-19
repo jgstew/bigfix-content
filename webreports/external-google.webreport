@@ -1,0 +1,12 @@
+<BESWebReport>
+  <Name>Let You Google It For You</Name>
+  <Description>
+    Google
+  </Description>
+  <Type>ExternalReport</Type>
+  <Category>External Report</Category>
+  <Source>JGStew</Source>
+  <Data>
+    https://www.google.com/
+  </Data>
+</BESWebReport>
