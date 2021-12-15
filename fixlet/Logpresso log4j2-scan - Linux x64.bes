@@ -6,8 +6,7 @@
 This task will run log4j2-scan v1.6.2 scanner.
 		]]></Description>
 		<Relevance>unix of operating system</Relevance>
-				<Relevance><![CDATA[x64 of operating system]]></Relevance>
-				<Relevance><![CDATA[not exists modification times whose(now - it < 1*day) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"]]></Relevance>
+		<Relevance><![CDATA[not exists modification times whose(now - it < 1*day) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"]]></Relevance>
 		<Category></Category>
 		<DownloadSize>3018133</DownloadSize>
 		<Source>log4j2-scan</Source>
