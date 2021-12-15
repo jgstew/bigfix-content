@@ -2,12 +2,12 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Run: log4j2-scan v1.6.2 - Windows (x64)</Title>
-		<Description><![CDATA[
+		<Description>
 This task will run log4j2-scan v1.6.2 scanner.
-		]]></Description>
+		</Description>
 		<Relevance>windows of operating system</Relevance>
-				<Relevance><![CDATA[x64 of operating system]]></Relevance>
-				<Relevance><![CDATA[true]]></Relevance>
+		<Relevance>x64 of operating system</Relevance>
+		<Relevance><![CDATA[not exists modification times whose(now - it < 1*day) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"]]></Relevance>
 		<Category></Category>
 		<DownloadSize>3168477</DownloadSize>
 		<Source>log4j2-scan</Source>
@@ -22,7 +22,7 @@ This task will run log4j2-scan v1.6.2 scanner.
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Wed, 15 Dec 2021 18:02:43 +0000</Value>
+			<Value>Wed, 15 Dec 2021 19:28:43 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -63,10 +63,10 @@ delete "{parameter "ListFile"}"
 
 
 // Run:
-//runhidden CMD /C {windows folder}\Temp\log4j2-scan.exe ????? > "{parameter "ListFile"}"
+runhidden CMD /C {windows folder}\Temp\log4j2-scan.exe --drives c > "{parameter "ListFile"}"
 
 // End]]></ActionScript>
-      		<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>
 </BES>
