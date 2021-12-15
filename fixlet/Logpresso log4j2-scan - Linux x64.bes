@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run: log4j2-scan v1.6.2 - Linux (x64)</Title>
+		<Title>Run: log4j2-scan v1.6.2 - Linux (x64) WORK IN PROGRESS</Title>
 		<Description><![CDATA[
 This task will run log4j2-scan v1.6.2 scanner.
 		]]></Description>
