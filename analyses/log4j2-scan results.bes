@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>log4j2-scan results</Title>
+		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Relevance>exists files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2021-12-15</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 15 Dec 2021 22:03:50 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="log4j2-scan results" ID="1" EvaluationPeriod="PT6H">unique values of (it as trimmed string) of preceding texts of firsts "," of following texts of firsts "vulnerability in " of lines whose (it as lowercase does not contain " (mitigated)" as lowercase) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Property>
+	</Analysis>
+</BES>
