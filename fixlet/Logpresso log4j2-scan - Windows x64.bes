@@ -63,7 +63,7 @@ delete "{parameter "ListFile"}"
 
 
 // Run:
-//runhidden {windows folder}\Temp\log4j2-scan.exe ????? > "{parameter "ListFile"}"
+//runhidden CMD /C {windows folder}\Temp\log4j2-scan.exe ????? > "{parameter "ListFile"}"
 
 // End]]></ActionScript>
       		<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
