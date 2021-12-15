@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Run: log4j2-scan v1.6.2 - Linux (x64)</Title>
+		<Description><![CDATA[
+This task will run log4j2-scan v1.6.2 scanner.
+		]]></Description>
+		<Relevance>unix of operating system</Relevance>
+				<Relevance><![CDATA[x64 of operating system]]></Relevance>
+				<Relevance><![CDATA[not exists modification times whose(now - it < 1*day) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"]]></Relevance>
+		<Category></Category>
+		<DownloadSize>3018133</DownloadSize>
+		<Source>log4j2-scan</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2021-12-15</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>action-ui-metadata</Name>
+			<Value>{ "version":"1.6.2","size":3018133 }</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 15 Dec 2021 20:21:41 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy log4j2-scan v1.6.2.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+// Download log4j2-scan:
+prefetch logpresso-log4j2-scan-linux.tar.gz sha1:e8f591e652ac34adf25d77da800fb9499017d47f size:3018133 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v1.6.2/logpresso-log4j2-scan-1.6.2-linux.tar.gz sha256:e6230dcf566c18e21e6099edb26c0ace5108397b05ac5faab8248e1e4c9bc92c
+
+// TODO: is deleting the destination required first? or will the tar command overwrite?
+//       Does this command work on Linux and Unix? Does this binary work on Unix?
+wait tar -zxf __Download/logpresso-log4j2-scan-linux.tar.gz -C /tmp
+
+// BES Client Folder Determination
+if {name of operating system as lowercase starts with "win"}
+    parameter "BPSFolder" = "{pathname of parent folder of client}\BPS-Scans\"
+else 
+    parameter "BPSFolder" = "{(if (version of client >= "9" as version) then (pathname of parent folder of data folder of client) else (pathname of parent folder of parent folder of client folder of site "actionsite"))}/BPS-Scans/"
+endif
+
+if {not exists folder (parameter "BPSFolder")}
+    folder create "{parameter "BPSFolder"}"
+endif
+
+parameter "ListFile"="{parameter "BPSFolder"}results-log4j2-scan.txt"
+
+// Housekeeping, clear any previous scan output
+delete __createfile
+delete "{parameter "ListFile"}"
+
+
+// TODO: is chmod needed?
+// Run:
+// runhidden sh -c /tmp/log4j2-scan ???? > "{parameter "ListFile"}"
+
+// End]]></ActionScript>
+      		<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
