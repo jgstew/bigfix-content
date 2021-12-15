@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Run: log4j2-scan v1.6.2 - Windows (x64)</Title>
+		<Description><![CDATA[
+This task will run log4j2-scan v1.6.2 scanner.
+		]]></Description>
+		<Relevance>windows of operating system</Relevance>
+				<Relevance><![CDATA[x64 of operating system]]></Relevance>
+				<Relevance><![CDATA[true]]></Relevance>
+		<Category></Category>
+		<DownloadSize>3168477</DownloadSize>
+		<Source>log4j2-scan</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2021-12-15</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>action-ui-metadata</Name>
+			<Value>{ "version":"1.6.2","size":3168477 }</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 15 Dec 2021 18:02:43 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy log4j2-scan v1.6.2.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+// Download log4j2-scan:
+prefetch logpresso-log4j2-scan-win64.zip sha1:26a2e9e119a5a41a885fccb98ed2cea7ab982679 size:3168477 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v1.6.2/logpresso-log4j2-scan-1.6.2-win64.zip sha256:9400e2457c6e5bfadfe152b4e65f32aba5533648d358c665db7ca3003978d258
+// Download Unzip:
+prefetch unzip.exe sha1:84debf12767785cd9b43811022407de7413beb6f size:204800 http://software.bigfix.com/download/redist/unzip-6.0.exe sha256:2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
+
+// Add Unzip to Utility Cache:
+utility __Download\unzip.exe
+// delete any existing copy if applicable
+delete {windows folder}\Temp\log4j2-scan.exe
+
+waithidden __Download\unzip.exe -o "{pathname of files "logpresso-log4j2-scan-win64.zip" of folders "__Download" of client folder of current site}" -d {windows folder}\Temp
+
+// BES Client Folder Determination
+if {name of operating system as lowercase starts with "win"}
+    parameter "BPSFolder" = "{pathname of parent folder of client}\BPS-Scans\"
+else 
+    parameter "BPSFolder" = "{(if (version of client >= "9" as version) then (pathname of parent folder of data folder of client) else (pathname of parent folder of parent folder of client folder of site "actionsite"))}/BPS-Scans/"
+endif
+
+if {not exists folder (parameter "BPSFolder")}
+    folder create "{parameter "BPSFolder"}"
+endif
+
+parameter "ListFile"="{parameter "BPSFolder"}results-log4j2-scan.txt"
+
+// Housekeeping, clear any previous scan output
+delete __createfile
+delete "{parameter "ListFile"}"
+
+
+// Run:
+//runhidden {windows folder}\Temp\log4j2-scan.exe ????? > "{parameter "ListFile"}"
+
+// End]]></ActionScript>
+      		<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
