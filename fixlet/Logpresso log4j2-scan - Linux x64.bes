@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run: log4j2-scan v1.6.2 - Linux (x64) WORK IN PROGRESS</Title>
-		<Description><![CDATA[
+		<Title>Run: log4j2-scan v1.6.2 - Linux (x64)</Title>
+		<Description>
 This task will run log4j2-scan v1.6.2 scanner.
-		]]></Description>
+		</Description>
 		<Relevance>unix of operating system</Relevance>
+		<Relevance>"x86_64" = architecture of operating system</Relevance>
 		<Relevance><![CDATA[not exists modification times whose(now - it < 1*day) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"]]></Relevance>
 		<Category></Category>
 		<DownloadSize>3018133</DownloadSize>
@@ -21,7 +22,7 @@ This task will run log4j2-scan v1.6.2 scanner.
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Wed, 15 Dec 2021 20:21:41 +0000</Value>
+			<Value>Wed, 15 Dec 2021 22:11:28 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -41,7 +42,7 @@ wait tar -zxf __Download/logpresso-log4j2-scan-linux.tar.gz -C /tmp
 // BES Client Folder Determination
 if {name of operating system as lowercase starts with "win"}
     parameter "BPSFolder" = "{pathname of parent folder of client}\BPS-Scans\"
-else 
+else
     parameter "BPSFolder" = "{(if (version of client >= "9" as version) then (pathname of parent folder of data folder of client) else (pathname of parent folder of parent folder of client folder of site "actionsite"))}/BPS-Scans/"
 endif
 
@@ -55,13 +56,12 @@ parameter "ListFile"="{parameter "BPSFolder"}results-log4j2-scan.txt"
 delete __createfile
 delete "{parameter "ListFile"}"
 
-
-// TODO: is chmod needed?
 // Run:
-// runhidden sh -c /tmp/log4j2-scan ???? > "{parameter "ListFile"}"
+// WARNING: this may scan network drives unintentionally!!!
+run sh -c 'cd /tmp && ./log4j2-scan --exclude /mnt --exclude /cdrom --exclude /dev / > "{parameter "ListFile"}"'
 
 // End]]></ActionScript>
-      		<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>
 </BES>
