@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run: log4j2-scan v1.6.2 - Linux (x64)</Title>
-		<Description>
-This task will run log4j2-scan v1.6.2 scanner.
-		</Description>
+		<Title>Run: log4j2-scan v1.6.3 - Linux (x64)</Title>
+		<Description><![CDATA[
+This task will run log4j2-scan v1.6.3 scanner.
+		]]></Description>
 		<Relevance>unix of operating system</Relevance>
-		<Relevance>"x86_64" = architecture of operating system</Relevance>
+		<Relevance><![CDATA["x86_64" = architecture of operating system]]></Relevance>
 		<Relevance><![CDATA[not exists modification times whose(now - it < 1*day) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"]]></Relevance>
 		<Category></Category>
-		<DownloadSize>3018133</DownloadSize>
+		<DownloadSize>3017702</DownloadSize>
 		<Source>log4j2-scan</Source>
 		<SourceID></SourceID>
-		<SourceReleaseDate>2021-12-15</SourceReleaseDate>
+		<SourceReleaseDate>2021-12-16</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>action-ui-metadata</Name>
-			<Value>{ "version":"1.6.2","size":3018133 }</Value>
+			<Value>{ "version":"1.6.3","size":3017702 }</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Wed, 15 Dec 2021 22:11:28 +0000</Value>
+			<Value>Thu, 16 Dec 2021 05:14:26 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
 			<Description>
 				<PreLink>Click </PreLink>
 				<Link>here</Link>
-				<PostLink> to deploy log4j2-scan v1.6.2.</PostLink>
+				<PostLink> to deploy log4j2-scan v1.6.3.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // Download log4j2-scan:
-prefetch logpresso-log4j2-scan-linux.tar.gz sha1:e8f591e652ac34adf25d77da800fb9499017d47f size:3018133 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v1.6.2/logpresso-log4j2-scan-1.6.2-linux.tar.gz sha256:e6230dcf566c18e21e6099edb26c0ace5108397b05ac5faab8248e1e4c9bc92c
+prefetch logpresso-log4j2-scan-linux.tar.gz sha1:47ba725bbdb91f8fc6d9d14dba0d3e680699d463 size:3017702 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v1.6.3/logpresso-log4j2-scan-1.6.3-linux.tar.gz sha256:dcda33200f98324818570a053101d9bb7cf39cbbca2cb4f171afe6b4dfdd2858
 
 // TODO: is deleting the destination required first? or will the tar command overwrite?
 //       Does this command work on Linux and Unix? Does this binary work on Unix?
@@ -61,7 +61,7 @@ delete "{parameter "ListFile"}"
 run sh -c 'cd /tmp && ./log4j2-scan {("--exclude " & it) of concatenations " --exclude " of unique values whose(it does not contain " ") of (it;"/mnt";"/dev";"/cdrom") of items 0 of (mount points of it, filesystem types of it, types of it) whose(item 2 of it != "DRIVE_FIXED" OR item 1 of it is contained by set of ("cgroup";"cifs";"nfs";"cgroup2";"sysfs";"proc";"cpuset")) of filesystems} / > "{parameter "ListFile"}"'
 
 // End]]></ActionScript>
-			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+      			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>
 </BES>
