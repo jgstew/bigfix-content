@@ -58,7 +58,7 @@ delete "{parameter "ListFile"}"
 
 // Run:
 // WARNING: this may scan network drives unintentionally!!!
-run sh -c 'cd /tmp && ./log4j2-scan --exclude /mnt --exclude /cdrom --exclude /dev / > "{parameter "ListFile"}"'
+run sh -c 'cd /tmp && ./log4j2-scan {("--exclude " & it) of concatenations " --exclude " of unique values of (it;"/mnt";"/dev";"/cdrom") of items 0 of (mount points of it, filesystem types of it, types of it) whose(item 2 of it != "DRIVE_FIXED" OR item 1 of it is contained by set of ("cgroup";"cifs";"nfs";"cgroup2";"sysfs";"proc";"cpuset")) of filesystems} / > "{parameter "ListFile"}"'
 
 // End]]></ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
