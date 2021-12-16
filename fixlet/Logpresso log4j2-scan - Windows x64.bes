@@ -1,44 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run: log4j2-scan v1.6.2 - Windows (x64)</Title>
-		<Description>
-This task will run log4j2-scan v1.6.2 scanner.
-		</Description>
+		<Title>Run: log4j2-scan v1.6.3 - Windows (x64)</Title>
+		<Description><![CDATA[
+This task will run log4j2-scan v1.6.3 scanner.
+		]]></Description>
 		<Relevance>windows of operating system</Relevance>
-		<Relevance>x64 of operating system</Relevance>
+		<Relevance><![CDATA[x64 of operating system]]></Relevance>
 		<Relevance><![CDATA[not exists modification times whose(now - it < 1*day) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"]]></Relevance>
 		<Category></Category>
-		<DownloadSize>3168477</DownloadSize>
+		<DownloadSize>3168299</DownloadSize>
 		<Source>log4j2-scan</Source>
 		<SourceID></SourceID>
-		<SourceReleaseDate>2021-12-15</SourceReleaseDate>
+		<SourceReleaseDate>2021-12-16</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>action-ui-metadata</Name>
-			<Value>{ "version":"1.6.2","size":3168477 }</Value>
+			<Value>{ "version":"1.6.3","size":3168299 }</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Wed, 15 Dec 2021 19:28:43 +0000</Value>
+			<Value>Thu, 16 Dec 2021 05:17:26 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
 			<Description>
 				<PreLink>Click </PreLink>
 				<Link>here</Link>
-				<PostLink> to deploy log4j2-scan v1.6.2.</PostLink>
+				<PostLink> to deploy log4j2-scan v1.6.3.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // Download log4j2-scan:
-prefetch logpresso-log4j2-scan-win64.zip sha1:26a2e9e119a5a41a885fccb98ed2cea7ab982679 size:3168477 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v1.6.2/logpresso-log4j2-scan-1.6.2-win64.zip sha256:9400e2457c6e5bfadfe152b4e65f32aba5533648d358c665db7ca3003978d258
+prefetch logpresso-log4j2-scan-win64.zip sha1:68cd4275049ed75797776d0a1d413b91f6208045 size:3168299 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v1.6.3/logpresso-log4j2-scan-1.6.3-win64.zip sha256:1f343158adaa5a745e1abf03a65d8281adef24a9e8af2406bbe90d3a56ddf65f
 // Download Unzip:
 prefetch unzip.exe sha1:84debf12767785cd9b43811022407de7413beb6f size:204800 http://software.bigfix.com/download/redist/unzip-6.0.exe sha256:2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
 
 // Add Unzip to Utility Cache:
 utility __Download\unzip.exe
+
 // delete any existing copy if applicable
 delete {windows folder}\Temp\log4j2-scan.exe
 
@@ -47,7 +48,7 @@ waithidden __Download\unzip.exe -o "{pathname of files "logpresso-log4j2-scan-wi
 // BES Client Folder Determination
 if {name of operating system as lowercase starts with "win"}
     parameter "BPSFolder" = "{pathname of parent folder of client}\BPS-Scans\"
-else 
+else
     parameter "BPSFolder" = "{(if (version of client >= "9" as version) then (pathname of parent folder of data folder of client) else (pathname of parent folder of parent folder of client folder of site "actionsite"))}/BPS-Scans/"
 endif
 
@@ -63,10 +64,10 @@ delete "{parameter "ListFile"}"
 
 
 // Run:
-runhidden CMD /C {windows folder}\Temp\log4j2-scan.exe --drives c > "{parameter "ListFile"}"
+runhidden CMD /C {windows folder}\Temp\log4j2-scan.exe --drives {concatenations "," of unique values of (it as lowercase) of preceding texts of firsts ":" of names of drives whose (type of it = "DRIVE_FIXED")} > "{parameter "ListFile"}"
 
 // End]]></ActionScript>
-			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+      		<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>
 </BES>
