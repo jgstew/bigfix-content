@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run: log4j2-scan v1.6.3 - Linux (x64)</Title>
+		<Title>Run: log4j2-scan v1.7.0 - Linux (x64)</Title>
 		<Description><![CDATA[
-This task will run log4j2-scan v1.6.3 scanner.
+This task will run log4j2-scan v1.7.0 scanner.
 		]]></Description>
 		<Relevance>unix of operating system</Relevance>
 		<Relevance><![CDATA["x86_64" = architecture of operating system]]></Relevance>
 		<Relevance><![CDATA[not exists modification times whose(now - it < 1*day) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"]]></Relevance>
 		<Category></Category>
-		<DownloadSize>3017702</DownloadSize>
+		<DownloadSize>3094409</DownloadSize>
 		<Source>log4j2-scan</Source>
 		<SourceID></SourceID>
 		<SourceReleaseDate>2021-12-16</SourceReleaseDate>
@@ -18,22 +18,25 @@ This task will run log4j2-scan v1.6.3 scanner.
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>action-ui-metadata</Name>
-			<Value>{ "version":"1.6.3","size":3017702 }</Value>
+			<Value>{ "version":"1.7.0","size":3094409 }</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 16 Dec 2021 15:27:25 +0000</Value>
+			<Value>Thu, 16 Dec 2021 20:05:03 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
 			<Description>
 				<PreLink>Click </PreLink>
 				<Link>here</Link>
-				<PostLink> to run log4j2-scan v1.6.3.</PostLink>
+				<PostLink> to run log4j2-scan v1.7.0.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // Download log4j2-scan:
-prefetch logpresso-log4j2-scan-linux.tar.gz sha1:47ba725bbdb91f8fc6d9d14dba0d3e680699d463 size:3017702 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v1.6.3/logpresso-log4j2-scan-1.6.3-linux.tar.gz sha256:dcda33200f98324818570a053101d9bb7cf39cbbca2cb4f171afe6b4dfdd2858
+prefetch logpresso-log4j2-scan-linux.tar.gz sha1:356da6176aea08365a2b1c0890cf5b7932901ef1 size:3094409 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v1.7.0/logpresso-log4j2-scan-1.7.0-linux.tar.gz sha256:0b62ed78e028d3d6d2b0969ac464dc468654cbef239abdcb7479b1d2a0538105
+
+// Get shell binary, should return /bin/sh in most cases:
+parameter "shell_bin" = "{ tuple string items 0 of concatenations ", " of ( it ; pathnames of files whose(name of it as lowercase = "sh" OR name of it as lowercase = "sh.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments ) of "/bin/sh" }"
 
 // Delete destination of next command if applicable
 delete /tmp/log4j2-scan
@@ -59,11 +62,12 @@ delete __createfile
 delete "{parameter "ListFile"}"
 
 // set to executable
-run /bin/sh -c "chmod +x /tmp/log4j2-scan"
+run {parameter "shell_bin"} -c "chmod +x /tmp/log4j2-scan"
 
-// Run:
+// Run log4j2-scan:
 // WARNING: this may scan network drives unintentionally!!!
-run /bin/sh -c "cd /tmp && ./log4j2-scan {("--exclude " & it) of concatenations " --exclude " of unique values whose(it does not contain " ") of (it;"/mnt";"/dev";"/cdrom") of items 0 of (mount points of it, filesystem types of it, types of it) whose(item 2 of it != "DRIVE_FIXED" OR item 1 of it is contained by set of ("cgroup";"cifs";"nfs";"cgroup2";"sysfs";"proc";"cpuset")) of filesystems} / > {parameter "ListFile"}"
+//   the following command attempts to exclude network drives, specifically nfs and cifs
+run {parameter "shell_bin"} -c "cd /tmp && ./log4j2-scan {("--exclude " & it) of concatenations " --exclude " of unique values whose(it does not contain " ") of (it;"/mnt";"/dev";"/cdrom") of items 0 of (mount points of it, filesystem types of it, types of it) whose(item 2 of it != "DRIVE_FIXED" OR item 1 of it is contained by set of ("cgroup";"cifs";"nfs";"nfs3";"nfs4";"cgroup2";"sysfs";"proc";"cpuset")) of filesystems} / > '{parameter "ListFile"}'"
 
 // End]]></ActionScript>
       		<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
