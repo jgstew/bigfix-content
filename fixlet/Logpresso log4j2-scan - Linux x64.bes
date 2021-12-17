@@ -52,7 +52,7 @@
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Fri, 17 Dec 2021 14:52:12 +0000</Value>
+			<Value>Fri, 17 Dec 2021 15:37:11 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -104,7 +104,7 @@ run {parameter "shell_bin"} -c "chmod +x /tmp/log4j2-scan"
 
 // Run log4j2-scan:
 // WARNING: this attempts to exclude network shares, but might not be perfect.
-run {parameter "shell_bin"} -c "cd /tmp && ./log4j2-scan --scan-log4j1 --no-symlink --no-empty-report --exclude-config '{parameter "ExclusionFile"}' / > '{parameter "ListFile"}'"
+run {parameter "shell_bin"} -c "cd /tmp && ./log4j2-scan --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660 --exclude-config '{parameter "ExclusionFile"}' / > '{parameter "ListFile"}'"
 
 // End]]></ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
