@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run: log4j2-scan v1.7.0 - Windows (x64)</Title>
+		<Title>Run: log4j2-scan v2.1.3 - Windows (x64)</Title>
 		<Description><![CDATA[
-This task will run log4j2-scan v1.7.0 scanner.
+This task will run log4j2-scan v2.1.3 scanner.
 		]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance><![CDATA[x64 of operating system]]></Relevance>
 		<Relevance><![CDATA[not exists modification times whose(now - it < 1*day) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"]]></Relevance>
 		<Category></Category>
-		<DownloadSize>3217578</DownloadSize>
+		<DownloadSize>3269629</DownloadSize>
 		<Source>log4j2-scan</Source>
 		<SourceID></SourceID>
-		<SourceReleaseDate>2021-12-16</SourceReleaseDate>
+		<SourceReleaseDate>2021-12-17</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>action-ui-metadata</Name>
-			<Value>{ "version":"1.7.0","size":3217578 }</Value>
+			<Value>{ "version":"2.1.3","size":3269629 }</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 16 Dec 2021 20:06:59 +0000</Value>
+			<Value>Fri, 17 Dec 2021 14:51:10 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
 			<Description>
 				<PreLink>Click </PreLink>
 				<Link>here</Link>
-				<PostLink> to run log4j2-scan v1.7.0.</PostLink>
+				<PostLink> to run log4j2-scan v2.1.3.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // Download log4j2-scan:
-prefetch logpresso-log4j2-scan-win64.zip sha1:a1bbc0734634a4ef4bc5d1c7ede1a1425968a98a size:3217578 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v1.7.0/logpresso-log4j2-scan-1.7.0-win64.zip sha256:43df330dbb49e4abbbc667a86bde9b9ed46a918d1897c0424a47c18798da5ef2
+prefetch logpresso-log4j2-scan-win64.zip sha1:5b1fc6fc7cd2a9cde0f82b0531a5b98c460dcde2 size:3269629 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.1.3/logpresso-log4j2-scan-2.1.3-win64.zip sha256:b4c8e905630eaa13bf2c620d0388c16e74e63f804112fa80505ef212861df2dc
 // Download Unzip:
 prefetch unzip.exe sha1:84debf12767785cd9b43811022407de7413beb6f size:204800 http://software.bigfix.com/download/redist/unzip-6.0.exe sha256:2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
 
@@ -64,7 +64,7 @@ delete "{parameter "ListFile"}"
 
 
 // Run:
-runhidden CMD /C {windows folder}\Temp\log4j2-scan.exe --drives {concatenations "," of unique values of (it as lowercase) of preceding texts of firsts ":" of names of drives whose (type of it = "DRIVE_FIXED")} > "{parameter "ListFile"}"
+runhidden CMD /C {windows folder}\Temp\log4j2-scan.exe --scan-log4j1 --no-symlink --no-empty-report --drives {concatenations "," of unique values of (it as lowercase) of preceding texts of firsts ":" of names of drives whose (type of it = "DRIVE_FIXED")} > "{parameter "ListFile"}"
 
 // End]]></ActionScript>
       		<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
