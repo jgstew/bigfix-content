@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Run: log4j2-scan v2.1.4 - Universal JAR - WORK IN PROGESS</Title>
+		<Description><![CDATA[This task will run log4j2-scan v2.1.4 scanner.<br />
+<TABLE>
+  <TBODY>
+    <TR>
+      <TD
+        ><LABEL for="exclusionlist"
+          >List additional directories to be excluded from the scan, one per
+          line:</LABEL
+        >
+      </TD>
+      <TD
+        ><TEXTAREA
+          id="exclusionlist"
+          rows="10"
+          cols="40"
+          name="exclusionlist"
+        ></TEXTAREA></TD
+    ></TR>
+  </TBODY>
+</TABLE>
+<script>
+  document.body.ontakeaction = function () {
+    TakeFixletAction(
+      Relevance("id of current fixlet"),
+      Relevance("id of current bes site"),
+      "Action1",
+      { exclusionlist: document.getElementById("exclusionlist").value },
+      {}
+    );
+    return false;
+  };
+</script>
+]]></Description>
+		<Relevance>TRUE</Relevance>
+		<Relevance><![CDATA[not exists modification times whose(now - it < 1*day) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"]]></Relevance>
+		<Category></Category>
+		<DownloadSize>26747</DownloadSize>
+		<Source>log4j2-scan</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2021-12-17</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>action-ui-metadata</Name>
+			<Value>{ "version":"2.1.4","size":26747 }</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 17 Dec 2021 17:03:44 +0000</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-relevance-evaluation-period</Name>
+			<Value>01:00:00</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to run log4j2-scan v2.1.4.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+//parameter "exclusionlist" is provided in the Description tab
+// Download log4j2-scan:
+prefetch logpresso-log4j2-scan.jar sha1:c880a76bf17608b2610eb9a82bcbb903a2df8358 size:26747 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.1.4/logpresso-log4j2-scan-2.1.4.jar sha256:87471b638fdf18a1b1cbe9b40c99056649ec14db711738d2741de8ed45f00163
+
+// TODO: run using existing JAR or download portable JRE and run with that.
+
+// End]]></ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
