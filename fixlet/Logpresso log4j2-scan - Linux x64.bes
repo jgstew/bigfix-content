@@ -1,39 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run: log4j2-scan v1.7.0 - Linux (x64)</Title>
-		<Description><![CDATA[
-This task will run log4j2-scan v1.7.0 scanner.
-		]]></Description>
+		<Title>Run: log4j2-scan v2.1.2 - Linux (x64)</Title>
+		<Description><![CDATA[This task will run log4j2-scan v2.1.2 scanner.<br />
+<TABLE>
+  <TBODY>
+    <TR>
+      <TD
+        ><LABEL for="exclusionlist"
+          >List additional directories to be excluded from the scan, one per
+          line:</LABEL
+        >
+      </TD>
+      <TD
+        ><TEXTAREA
+          id="exclusionlist"
+          rows="10"
+          cols="40"
+          name="exclusionlist"
+        ></TEXTAREA></TD
+    ></TR>
+  </TBODY>
+</TABLE>
+<script>
+  document.body.ontakeaction = function () {
+    TakeFixletAction(
+      Relevance("id of current fixlet"),
+      Relevance("id of current bes site"),
+      "Action1",
+      { exclusionlist: document.getElementById("exclusionlist").value },
+      {}
+    );
+    return false;
+  };
+</script>
+]]></Description>
 		<Relevance>unix of operating system</Relevance>
 		<Relevance><![CDATA["x86_64" = architecture of operating system]]></Relevance>
 		<Relevance><![CDATA[not exists modification times whose(now - it < 1*day) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"]]></Relevance>
 		<Category></Category>
-		<DownloadSize>3094409</DownloadSize>
+		<DownloadSize>3154079</DownloadSize>
 		<Source>log4j2-scan</Source>
 		<SourceID></SourceID>
-		<SourceReleaseDate>2021-12-16</SourceReleaseDate>
+		<SourceReleaseDate>2021-12-17</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>action-ui-metadata</Name>
-			<Value>{ "version":"1.7.0","size":3094409 }</Value>
+			<Value>{ "version":"2.1.2","size":3154079 }</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 16 Dec 2021 20:05:03 +0000</Value>
+			<Value>Fri, 17 Dec 2021 14:49:16 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
 			<Description>
 				<PreLink>Click </PreLink>
 				<Link>here</Link>
-				<PostLink> to run log4j2-scan v1.7.0.</PostLink>
+				<PostLink> to run log4j2-scan v2.1.2.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+//parameter "exclusionlist" is provided in the Description tab
 // Download log4j2-scan:
-prefetch logpresso-log4j2-scan-linux.tar.gz sha1:356da6176aea08365a2b1c0890cf5b7932901ef1 size:3094409 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v1.7.0/logpresso-log4j2-scan-1.7.0-linux.tar.gz sha256:0b62ed78e028d3d6d2b0969ac464dc468654cbef239abdcb7479b1d2a0538105
+prefetch logpresso-log4j2-scan-linux.tar.gz sha1:99c2156f2d6ca6864783d6335b329e3d487d17a5 size:3154079 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.1.2/logpresso-log4j2-scan-2.1.2-linux.tar.gz sha256:428ed1e12978f2fd7e54d5a0b932a11d730bb73850490f1972bcd16f3eedbde5
 
 // Get shell binary, should return /bin/sh in most cases:
 parameter "shell_bin" = "{ tuple string items 0 of concatenations ", " of ( it ; pathnames of files whose(name of it as lowercase = "sh" OR name of it as lowercase = "sh.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments ) of "/bin/sh" }"
@@ -56,21 +87,27 @@ if {not exists folder (parameter "BPSFolder")}
 endif
 
 parameter "ListFile"="{parameter "BPSFolder"}results-log4j2-scan.txt"
+parameter "ExclusionFile"="{parameter "BPSFolder"}log4j2-path-exclusions.txt"
 
-// Housekeeping, clear any previous scan output
-delete __createfile
+// Delete previous items
 delete "{parameter "ListFile"}"
+delete __appendfile
+delete "{parameter "ExclusionFile"}"
 
-// set to executable
+// Create Exclusions list file:
+appendfile {concatenation (if windows of operating system then "%0d%0a" else "%0a") of unique values whose(it does not contain " ") of (it;"/mnt";"/dev";"/cdrom"; (unique values of (it as trimmed string) whose(it != "") of substrings separated by "%0a" of (parameter "exclusionlist" | "")) ) of items 0 of (mount points of it, filesystem types of it, types of it) whose(item 2 of it != "DRIVE_FIXED" OR item 1 of it is contained by set of ("cgroup";"cifs";"nfs";"nfs3";"nfs4";"cgroup2";"sysfs";"proc";"cpuset")) of filesystems}
+
+copy __appendfile "{parameter "ExclusionFile"}"
+
+// Set to log4j2-scan executable
 run {parameter "shell_bin"} -c "chmod +x /tmp/log4j2-scan"
 
 // Run log4j2-scan:
-// WARNING: this may scan network drives unintentionally!!!
-//   the following command attempts to exclude network drives, specifically nfs and cifs
-run {parameter "shell_bin"} -c "cd /tmp && ./log4j2-scan {("--exclude " & it) of concatenations " --exclude " of unique values whose(it does not contain " ") of (it;"/mnt";"/dev";"/cdrom") of items 0 of (mount points of it, filesystem types of it, types of it) whose(item 2 of it != "DRIVE_FIXED" OR item 1 of it is contained by set of ("cgroup";"cifs";"nfs";"nfs3";"nfs4";"cgroup2";"sysfs";"proc";"cpuset")) of filesystems} / > '{parameter "ListFile"}'"
+// WARNING: this attempts to exclude network shares, but might not be perfect.
+run {parameter "shell_bin"} -c "cd /tmp && ./log4j2-scan --scan-log4j1 --no-symlink --no-empty-report --exclude-config '{parameter "ExclusionFile"}' / > '{parameter "ListFile"}'"
 
 // End]]></ActionScript>
-      		<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>
 </BES>
