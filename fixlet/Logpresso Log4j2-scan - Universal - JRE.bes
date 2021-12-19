@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Run: log4j2-scan v2.3.6 - Universal JAR - Download JRE</Title>
+		<Description><![CDATA[This task will run log4j2-scan v2.3.6 scanner.<br />
+<TABLE>
+  <TBODY>
+    <TR>
+      <TD
+        ><LABEL for="exclusionlist"
+          >List additional directories to be excluded from the scan, one per
+          line:</LABEL
+        >
+      </TD>
+      <TD
+        ><TEXTAREA
+          id="exclusionlist"
+          rows="10"
+          cols="40"
+          name="exclusionlist"
+        ></TEXTAREA></TD
+    ></TR>
+  </TBODY>
+</TABLE>
+<script>
+  document.body.ontakeaction = function () {
+    TakeFixletAction(
+      Relevance("id of current fixlet"),
+      Relevance("id of current bes site"),
+      "Action1",
+      { exclusionlist: document.getElementById("exclusionlist").value },
+      {}
+    );
+    return false;
+  };
+</script>
+
+		<P><H3>NOTE:</H3> This version of the scan fixlet downloads the JAR version of log4j2-scan as well as a temporary Java Runtime from Adoptium/AdoptOpenJDK to execute the scanner.</P>
+		]]>		</Description>
+		<Relevance>if exists property "in proxy agent context" then not in proxy agent context else true</Relevance>
+		<Relevance>windows of operating system or name of operating system as lowercase starts with "linux" or (if exists property "mac" of type "operating system" then mac of operating system else name of operating system as lowercase as lowercase starts with "mac")</Relevance>
+		<Category></Category>
+		<DownloadSize>44346</DownloadSize>
+		<Source>log4j2-scan</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2021-12-19</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>action-ui-metadata</Name>
+			<Value>{ "version":"2.3.6","size":44346 }</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Sun, 19 Dec 2021 23:00:48 +0000</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-relevance-evaluation-period</Name>
+			<Value>01:00:00</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to run log4j2-scan v2.3.6.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+//parameter "exclusionlist" is provided in the Description tab
+begin prefetch block
+	// Download log4j2-scan:
+	add prefetch item name=logpresso-log4j2-scan.jar sha1=150cf46ce2b449e20923baed01d6f90d585c35f4 size=44346 url=https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.3.6/logpresso-log4j2-scan-2.3.6.jar sha256=511e8ce2ba7ae96ae2cf60d867ba449787317d145c640eba2790a0d8488459d7
+	
+	// trap for 'x64 of operating system' property existing only on Windows
+	if {if windows of operating system then x64 of operating system else false}
+ 	  add prefetch item name=jre.zip sha1=359ef250b3e78716cee4669b0182f0c1c28261c3 size=39046089 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_x64_windows_hotspot_8u312b07.zip sha256=a4623365d70e7bc969e84b7f29b6b2eecb6c0686863ed67651506e2b5adf43b0
+ 	  add prefetch item name=unzip.exe sha1=84debf12767785cd9b43811022407de7413beb6f size=204800 url=http://software.bigfix.com/download/redist/unzip-6.0.exe sha256=2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
+	endif
+	if {if windows of operating system then not x64 of operating system else false}
+	  add prefetch item name=jre.zip sha1=bf419f8c9231c34f0ffb9564b5f7f6690f596fd9 size=37494360 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_x86-32_windows_hotspot_8u312b07.zip sha256=789cfa21858156084020ee885ade643556dc57ddec2b44745b5489edb7945b64
+	  add prefetch item name=unzip.exe sha1=84debf12767785cd9b43811022407de7413beb6f size=204800 url=http://software.bigfix.com/download/redist/unzip-6.0.exe sha256=2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
+	endif
+	
+	if {if name of operating system as lowercase starts with "linux" then architecture of operating system = "x86_64" else false}
+        add prefetch item name=jre.tar.gz sha1=8b835bfff7f67d2a097344e95b7221d2d3c048ef size=41286015 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_x64_linux_hotspot_8u312b07.tar.gz sha256=18fd13e77621f712326bfcf79c3e3cc08c880e3e4b8f63a1e5da619f3054b063
+	endif
+
+	if {if exists property "mac" of type "operating system" then mac of operating system else name of operating system as lowercase as lowercase starts with "mac"}
+		add prefetch item name=jre.tar.gz sha1=85bcaf8ab11b50e8ef2adda7d67751d504a46e70 size=45027148 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_x64_mac_hotspot_8u312b07.tar.gz sha256=c8cf94118bd073c3caf0cde2389993ef7f482b46daa7b6f6d680f90d6de1dd3d
+	endif
+
+	// -- TODO: handle JRE downloads for other operating systems here
+		// add prefetch item name=OpenJDK8U-jre_aarch64_linux_hotspot_8u312b07.tar.gz sha1=daedd7d5c60df6a6035d28ec94d2a293d195c516 size=40312760 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_aarch64_linux_hotspot_8u312b07.tar.gz sha256=961df2d520987c2252496fbee024f84c8c8c4d0be80e9fe043d221191666899e
+		// add prefetch item name=OpenJDK8U-jre_arm_linux_hotspot_8u312b07.tar.gz sha1=fb502032c1c6d29da361a6032469a787aae59d58 size=38706993 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_arm_linux_hotspot_8u312b07.tar.gz sha256=5f37cbf311a5c2928aff8e83a82aebcf37b5911b193b5ab8538108381dcd6276
+		// add prefetch item name=OpenJDK8U-jre_ppc64_aix_hotspot_8u312b07.tar.gz sha1=e42ea144018ce547a13e85e4a2692b2fc0f45eeb size=42806130 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_ppc64_aix_hotspot_8u312b07.tar.gz sha256=735c2afd5fc4573a2cd3f1629f1fbc6607849f95230a494560037fa40bdc9e03
+		// add prefetch item name=OpenJDK8U-jre_sparcv9_solaris_hotspot_8u312b07.tar.gz sha1=513d89893df13f14e9b5e76a2f3134dd895fd1ef size=53232710 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_sparcv9_solaris_hotspot_8u312b07.tar.gz sha256=62db15678d4212307c3ccb6743cf44636d81cf08cbf150517a86f65f17f8900d
+		// add prefetch item name=OpenJDK8U-jre_x64_solaris_hotspot_8u312b07.tar.gz sha1=8ab58046126953bb9acf3aa6b4d18d978e13e6d6 size=50196314 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_x64_solaris_hotspot_8u312b07.tar.gz sha256=b4a3b701bfe0f529743d4260f1c776cc2bc95b80456bee539e0bc1931cba6117
+
+
+	collect prefetch items
+end prefetch block
+
+utility __Download/logpresso-log4j2-scan.jar
+if {exists file "__Download\unzip.exe"}
+  utility __Download/unzip.exe
+endif
+if {exists file "__Download\jre.zip"}
+  utility __Download/jre.zip
+endif
+
+folder create "{pathname of parent folder of parent folder of client folder of site "actionsite"}/BPS-Scans"
+folder create "{pathname of parent folder of parent folder of client folder of site "actionsite"}/BPS-Scans/jre"
+
+parameter "BPSFolder"="{pathname of folder "BPS-Scans" of parent folder of parent folder of client folder of site "actionsite"}{if windows of operating system then "\" else "/"}"
+parameter "ListFile"="{parameter "BPSFolder"}results-log4j2-scan.txt"
+parameter "ExclusionFile"="{parameter "BPSFolder"}log4j2-path-exclusions.txt"
+parameter "JREFolder"="{pathname of parent folder of parent folder of client folder of site "actionsite"}/BPS-Scans/jre"
+
+// --- Begin JRE extraction
+if {windows of operating system}
+  waithidden __Download/unzip.exe "__Download/jre.zip" -d "{parameter "JREFolder"}"
+
+// TODO - verify mac works here
+elseif {(name of operating system as lowercase starts with "linux") or (if exists property "mac" of type "operating system" then mac of operating system else name of operating system as lowercase as lowercase starts with "mac")}
+
+  parameter "tar"="{tuple string items 0 of concatenation ", " of pathnames of files "tar" of folders ("/bin";"/sbin";"/usr/sbin"; unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it ) of environments)}"
+
+  //If action stops here, tar may not be available
+  continue if {parameter "tar" as trimmed string != ""}
+
+  // extract temporary JRE
+  wait {parameter "tar"} -xzvf "__Download/jre.tar.gz" -C "{parameter "JREFolder"}"
+  
+else
+  // Operating system was not recognized.
+  continue if {false}
+endif
+
+
+// --- End JRE extraction
+
+//locate Java binary
+parameter "Java_bin"="{tuple string item 0 of (concatenation ", " of pathnames of files ("java";"java.exe") of folders "bin" of folders of folders (parameter "JREFolder"))}"
+
+// If script fails here, the JRE extraction may have failed.
+continue if {exists file (parameter "Java_bin")}
+
+// Setup logpresso-log4j2-scan.jar
+delete "{pathname of file "logpresso-log4j2-scan.jar" of folder (parameter "BPSFolder")}"
+
+// Copy the scanner JAR file to client folder
+copy __Download/logpresso-log4j2-scan.jar "{parameter "BPSFolder"}/logpresso-log4j2-scan.jar"
+
+// Delete previous items
+delete "{parameter "ListFile"}"
+delete __appendfile
+delete "{parameter "ExclusionFile"}"
+
+if {windows of operating system}
+
+  // Create Exclusions list file:
+  appendfile {concatenation "%0d%0a" of unique values of (it as trimmed string) whose(it != "") of substrings separated by "%0a" of (parameter "exclusionlist" | "")}
+  copy __appendfile "{parameter "ExclusionFile"}"
+  
+  // Execute scan
+  runhidden cmd.exe /c "cd "{parameter "BPSFolder"}" & "{parameter "Java_bin"}" -jar .\logpresso-log4j2-scan.jar --all-drives --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660 --exclude-config "{parameter "ExclusionFile"}"> "{parameter "ListFile"}" & rd /s /q "{parameter "JREFolder"}""
+
+elseif {(name of operating system as lowercase starts with "linux") or (if exists property "mac" of type "operating system" then mac of operating system else name of operating system as lowercase as lowercase starts with "mac")}
+
+  // Create Exclusions list file:
+  appendfile {concatenation (if windows of operating system then "%0d%0a" else "%0a") of unique values whose(it does not contain " ") of (it;"/mnt";"/dev";"/cdrom"; (unique values of (it as trimmed string) whose(it != "") of substrings separated by "%0a" of (parameter "exclusionlist" | "")) ) of items 0 of (mount points of it, filesystem types of it, types of it) whose(item 2 of it != "DRIVE_FIXED" OR item 1 of it is contained by set of ("cgroup";"cifs";"nfs";"nfs3";"nfs4";"cgroup2";"sysfs";"proc";"cpuset")) of filesystems}
+  
+  copy __appendfile "{parameter "ExclusionFile"}"
+  
+  // Get shell binary, should return /bin/sh in most cases:
+  parameter "shell_bin" = "{  tuple string items 0 of concatenations ", " of ( pathnames of files "/bin/sh"; pathnames of files whose(name of it as lowercase = "sh" OR name of it as lowercase = "sh.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it ) of environments) }"
+  
+  // Run log4j2-scan:
+  // WARNING: this attempts to exclude network shares, but might not be perfect.
+  run {parameter "shell_bin"} -c "cd '{parameter "BPSFolder"}' ; '{parameter "Java_bin"}' -jar ./logpresso-log4j2-scan.jar --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660 --exclude-config '{parameter "ExclusionFile"}' / > '{parameter "ListFile"}' ; rm -rf '{parameter "JREFolder"}'"
+
+else 
+  // Did not recognize the OS.  Adding more is on the roadmap.
+  continue if {false}
+endif
+
+// Give 30 seconds for startup before checking
+parameter "StartTime"="{now}"
+pause while {not exists file (parameter "ListFile") and now - (parameter "StartTime" as time) < 30 * second }
+// Check that an output log file has been created as an indicator that the scan has launched successfully
+continue if {exists file (parameter "ListFile") whose (modification time of it >= active start time of action)}
+
+// End]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
