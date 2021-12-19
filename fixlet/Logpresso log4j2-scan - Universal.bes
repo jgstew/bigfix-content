@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run: log4j2-scan v2.1.4 - Universal JAR - WORK IN PROGESS</Title>
-		<Description><![CDATA[This task will run log4j2-scan v2.1.4 scanner.<br />
+		<Title>Run: log4j2-scan v2.3.1 - Universal JAR - System JRE</Title>
+		<Description><![CDATA[This task will run log4j2-scan v2.3.1 scanner.<br />
 <TABLE>
   <TBODY>
     <TR>
@@ -34,24 +34,26 @@
     return false;
   };
 </script>
-]]></Description>
-		<Relevance>TRUE</Relevance>
-		<Relevance><![CDATA[not exists modification times whose(now - it < 1*day) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"]]></Relevance>
+
+		<P><H3>NOTE:</H3> This version of the scan fixlet downloads the JAR version of log4j2-scan.  The system-default Java Runtime will be used.&nbsp; This requires the Java command to be present in the default system PATH variable.</P>
+		]]></Description>
+		<Relevance>if exists property "in proxy agent context" then not in proxy agent context else true</Relevance>
+		<Relevance>exists files whose(name of it as lowercase = "java" OR name of it as lowercase = "java.exe") of ( ( (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments ) ; ( (folders "bin" of folders of folders of (folders "\Program Files"; folder "\Program Files (x86)")) ) )</Relevance>
 		<Category></Category>
-		<DownloadSize>26747</DownloadSize>
+		<DownloadSize>41114</DownloadSize>
 		<Source>log4j2-scan</Source>
 		<SourceID></SourceID>
-		<SourceReleaseDate>2021-12-17</SourceReleaseDate>
+		<SourceReleaseDate>2021-12-18</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>action-ui-metadata</Name>
-			<Value>{ "version":"2.1.4","size":26747 }</Value>
+			<Value>{ "version":"2.3.1","size":41114 }</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Fri, 17 Dec 2021 17:03:44 +0000</Value>
+			<Value>Sun, 19 Dec 2021 04:43:21 +0000</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-relevance-evaluation-period</Name>
@@ -62,17 +64,63 @@
 			<Description>
 				<PreLink>Click </PreLink>
 				<Link>here</Link>
-				<PostLink> to run log4j2-scan v2.1.4.</PostLink>
+				<PostLink> to run log4j2-scan v2.3.1.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 //parameter "exclusionlist" is provided in the Description tab
-// Download log4j2-scan:
-prefetch logpresso-log4j2-scan.jar sha1:c880a76bf17608b2610eb9a82bcbb903a2df8358 size:26747 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.1.4/logpresso-log4j2-scan-2.1.4.jar sha256:87471b638fdf18a1b1cbe9b40c99056649ec14db711738d2741de8ed45f00163
+begin prefetch block
+	// Download log4j2-scan:
+	add prefetch item name=logpresso-log4j2-scan.jar sha1=ff965dd30ab4d17a8bd76ef98ca68eb2997d6136 size=41114 url=https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.3.1/logpresso-log4j2-scan-2.3.1.jar sha256=ea375b75cc2e58ddee3e4bef8976cefdb9c3b99ab68f618d5b981fbe18bef7a9
+	collect prefetch items
+end prefetch block
 
-// TODO: run using existing JAR or download portable JRE and run with that.
+utility __Download/logpresso-log4j2-scan.jar
+
+folder create {pathname of parent folder of parent folder of client folder of site "actionsite"}/BPS-Scans
+parameter "BPSFolder"="{pathname of folder "BPS-Scans" of parent folder of parent folder of client folder of site "actionsite"}{if windows of operating system then "\" else "/"}"
+parameter "ListFile"="{parameter "BPSFolder"}results-log4j2-scan.txt"
+parameter "ExclusionFile"="{parameter "BPSFolder"}log4j2-path-exclusions.txt"
+
+delete "{pathname of file "logpresso-log4j2-scan.jar" of folder (parameter "BPSFolder")}"
+
+// Copy the scanner JAR file to client folder
+copy __Download/logpresso-log4j2-scan.jar "{parameter "BPSFolder"}/logpresso-log4j2-scan.jar"
+
+// Delete previous items
+delete "{parameter "ListFile"}"
+delete __appendfile
+delete "{parameter "ExclusionFile"}"
+
+if {windows of operating system}
+
+// Create Exclusions list file:
+appendfile {concatenation "%0d%0a" of unique values of (it as trimmed string) whose(it != "") of substrings separated by "%0a" of (parameter "exclusionlist" | "")}
+copy __appendfile "{parameter "ExclusionFile"}"
+
+runhidden cmd.exe /c "cd "{parameter "BPSFolder"}" & java -jar .\logpresso-log4j2-scan.jar --all-drives --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660 --exclude-config "{parameter "ExclusionFile"}"> "{parameter "ListFile"}""
+
+else // non-Windows operating system:
+
+// Create Exclusions list file:
+appendfile {concatenation (if windows of operating system then "%0d%0a" else "%0a") of unique values whose(it does not contain " ") of (it;"/mnt";"/dev";"/cdrom"; (unique values of (it as trimmed string) whose(it != "") of substrings separated by "%0a" of (parameter "exclusionlist" | "")) ) of items 0 of (mount points of it, filesystem types of it, types of it) whose(item 2 of it != "DRIVE_FIXED" OR item 1 of it is contained by set of ("cgroup";"cifs";"nfs";"nfs3";"nfs4";"cgroup2";"sysfs";"proc";"cpuset")) of filesystems}
+
+copy __appendfile "{parameter "ExclusionFile"}"
+
+// Get shell binary, should return /bin/sh in most cases:
+parameter "shell_bin" = "{  tuple string items 0 of concatenations ", " of ( pathnames of files "/bin/sh"; pathnames of files whose(name of it as lowercase = "sh" OR name of it as lowercase = "sh.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it ) of environments) }"
+
+// Run log4j2-scan:
+// WARNING: this attempts to exclude network shares, but might not be perfect.
+run {parameter "shell_bin"} -c "cd '{parameter "BPSFolder"}' && java -jar ./logpresso-log4j2-scan.jar --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660 --exclude-config '{parameter "ExclusionFile"}' / > '{parameter "ListFile"}'"
+endif
+
+// Give 30 seconds for startup before checking
+parameter "StartTime"="{now}"
+pause while {not exists file (parameter "ListFile") and now - (parameter "StartTime" as time) < 30 * second }
+// Check that an output log file has been created as an indicator that the scan has launched successfully
+continue if {exists file (parameter "ListFile") whose (modification time of it >= active start time of action)}
 
 // End]]></ActionScript>
-			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>
 </BES>
