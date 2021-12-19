@@ -2,15 +2,28 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Analysis>
 		<Title>log4j2-scan results</Title>
-		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Description><![CDATA[<P>This Analysis retrieves results from running a Logpresso / Log4jscan against BigFix endpoints.&nbsp; See the related Task to execute a scan generating these results.</P>
+<P>References:</P>
+<P><A href="https://forum.bigfix.com/t/log4j-cve-2021-44228-cve-2021-45046-summary-page/40222">https://forum.bigfix.com/t/log4j-cve-2021-44228-cve-2021-45046-summary-page/40222</A></P>
+<P><A href="https://github.com/logpresso/CVE-2021-44228-Scanner">https://github.com/logpresso/CVE-2021-44228-Scanner</A></P>
+<P><A href="https://github.com/jgstew/bigfix-content">https://github.com/jgstew/bigfix-content</A></P>
+<P>&nbsp;</P>]]></Description>
 		<Relevance>exists files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Relevance>
 		<Source>Internal</Source>
 		<SourceReleaseDate>2021-12-15</SourceReleaseDate>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Wed, 15 Dec 2021 22:03:50 +0000</Value>
+			<Value>Sat, 18 Dec 2021 23:04:22 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
-		<Property Name="log4j2-scan results" ID="1" EvaluationPeriod="PT6H">unique values of (it as trimmed string) of preceding texts of firsts "," of following texts of firsts "vulnerability in " of lines whose (it as lowercase does not contain " (mitigated)" as lowercase) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Property>
+		<Property Name="log4j Scan - Vulnerable File List" ID="1" EvaluationPeriod="PT6H">unique values of (it as trimmed string) of preceding texts of firsts "," of following texts of firsts "vulnerability in " of (if exists property "locked lines" then locked lines of it else lines of it) whose (it as lowercase does not contain " (mitigated)" as lowercase) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Property>
+		<Property Name="log4j Scan - Scan Technology" ID="2" EvaluationPeriod="PT6H">unique values of (it as trimmed string) of (if exists property "locked lines" then locked lines 1 of it else lines 1 of it)  of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Property>
+		<Property Name="log4j Scan - Last Scan Time" ID="3" EvaluationPeriod="PT6H">modification times of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Property>
+		<Property Name="log4j Scan - Vulnerable File Count" ID="4" EvaluationPeriod="PT6H">unique values of (it as trimmed string as integer) of (preceding text of first " " of following text of first "Found " of it) of (if exists property "locked lines" then locked lines of it else lines of it) whose (it starts with "Found " and it ends with " vulnerable files" and it does not end with "potentially vulnerable files") of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Property>
+		<Property Name="log4j Scan - Potentially Vulnerable File Count" ID="5" EvaluationPeriod="PT6H">unique values of (it as trimmed string as integer) of (preceding text of first " " of following text of first "Found " of it) of (if exists property "locked lines" then locked lines of it else lines of it) whose (it starts with "Found "  and it ends with "potentially vulnerable files") of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Property>
+		<Property Name="log4j Scan - Mitigated File Count" ID="6" EvaluationPeriod="PT6H">unique values of (it as trimmed string as integer) of (preceding text of first " " of following text of first "Found " of it) of (if exists property "locked lines" then locked lines of it else lines of it) whose (it starts with "Found "  and it ends with "mitigated files") of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Property>
+		<Property Name="log4j Scan - File Result Details" ID="8" EvaluationPeriod="PT6H">unique values of (it as trimmed string) of (if exists property "locked lines" then locked lines of it else lines of it) whose (it starts with "[") of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Property>
+		<Property Name="log4j Scan - File Scan Count" ID="9" EvaluationPeriod="PT6H">(it as integer) of following texts of lasts " " of preceding texts of lasts " files" of (if exists property "locked lines" then locked lines of it else lines of it) whose (it starts with "Scanned " and it ends with " files") of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Property>
+		<Property Name="log4j Scan - Scan Duration" ID="10" EvaluationPeriod="PT6H">following texts of firsts "Completed in " of (if exists property "locked lines" then locked lines of it else lines of it) whose (it starts with "Completed in ") of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Property>
 	</Analysis>
 </BES>
