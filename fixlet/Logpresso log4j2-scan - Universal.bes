@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run: log4j2-scan v2.3.1 - Universal JAR - System JRE</Title>
-		<Description><![CDATA[This task will run log4j2-scan v2.3.1 scanner.<br />
+		<Title>Run: log4j2-scan v2.3.3 - Universal JAR - System JRE</Title>
+		<Description><![CDATA[This task will run log4j2-scan v2.3.3 scanner.<br />
 <TABLE>
   <TBODY>
     <TR>
@@ -40,20 +40,20 @@
 		<Relevance>if exists property "in proxy agent context" then not in proxy agent context else true</Relevance>
 		<Relevance>exists files whose(name of it as lowercase = "java" OR name of it as lowercase = "java.exe") of ( ( (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments ) ; ( (folders "bin" of folders of folders of (folders "\Program Files"; folder "\Program Files (x86)")) ) )</Relevance>
 		<Category></Category>
-		<DownloadSize>41114</DownloadSize>
+		<DownloadSize>41718</DownloadSize>
 		<Source>log4j2-scan</Source>
 		<SourceID></SourceID>
-		<SourceReleaseDate>2021-12-18</SourceReleaseDate>
+		<SourceReleaseDate>2021-12-19</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>action-ui-metadata</Name>
-			<Value>{ "version":"2.3.1","size":41114 }</Value>
+			<Value>{ "version":"2.3.3","size":41718 }</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Sun, 19 Dec 2021 04:43:21 +0000</Value>
+			<Value>Sun, 19 Dec 2021 16:00:18 +0000</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-relevance-evaluation-period</Name>
@@ -64,13 +64,13 @@
 			<Description>
 				<PreLink>Click </PreLink>
 				<Link>here</Link>
-				<PostLink> to run log4j2-scan v2.3.1.</PostLink>
+				<PostLink> to run log4j2-scan v2.3.3.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 //parameter "exclusionlist" is provided in the Description tab
 begin prefetch block
 	// Download log4j2-scan:
-	add prefetch item name=logpresso-log4j2-scan.jar sha1=ff965dd30ab4d17a8bd76ef98ca68eb2997d6136 size=41114 url=https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.3.1/logpresso-log4j2-scan-2.3.1.jar sha256=ea375b75cc2e58ddee3e4bef8976cefdb9c3b99ab68f618d5b981fbe18bef7a9
+	add prefetch item name=logpresso-log4j2-scan.jar sha1=b64baec5f8028cdf15769a4007b4bdb69cf8396f size=41718 url=https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.3.3/logpresso-log4j2-scan-2.3.3.jar sha256=36aa00fc7340fac11686de6bd9800356283fb4894835a918196bc0f3df8c3168
 	collect prefetch items
 end prefetch block
 
