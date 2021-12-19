@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run: log4j2-scan v2.1.3 - Linux (x64)</Title>
-		<Description><![CDATA[This task will run log4j2-scan v2.1.3 scanner.<br />
+		<Title>Run: log4j2-scan v2.3.3 - Linux (x64)</Title>
+		<Description><![CDATA[This task will run log4j2-scan v2.3.3 scanner.<br />
 <TABLE>
   <TBODY>
     <TR>
@@ -35,39 +35,39 @@
   };
 </script>
 ]]></Description>
-		<Relevance>unix of operating system</Relevance>
+		<Relevance><![CDATA[unix of operating system]]></Relevance>
 		<Relevance><![CDATA["x86_64" = architecture of operating system]]></Relevance>
 		<Relevance><![CDATA[not exists modification times whose(now - it < 1*day) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"]]></Relevance>
 		<Category></Category>
-		<DownloadSize>3154170</DownloadSize>
+		<DownloadSize>3150435</DownloadSize>
 		<Source>log4j2-scan</Source>
 		<SourceID></SourceID>
-		<SourceReleaseDate>2021-12-17</SourceReleaseDate>
+		<SourceReleaseDate>2021-12-19</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>action-ui-metadata</Name>
-			<Value>{ "version":"2.1.3","size":3154170 }</Value>
+			<Value>{ "version":"2.3.3","size":3150435 }</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Fri, 17 Dec 2021 15:37:11 +0000</Value>
+			<Value>Sun, 19 Dec 2021 15:53:02 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
 			<Description>
 				<PreLink>Click </PreLink>
 				<Link>here</Link>
-				<PostLink> to run log4j2-scan v2.1.3.</PostLink>
+				<PostLink> to run log4j2-scan v2.3.3.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 //parameter "exclusionlist" is provided in the Description tab
 // Download log4j2-scan:
-prefetch logpresso-log4j2-scan-linux.tar.gz sha1:14c1d1db5054d0418df8432569c1be2fe9bfb690 size:3154170 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.1.3/logpresso-log4j2-scan-2.1.3-linux.tar.gz sha256:fdba172e2d2ca0dd6db070bec94e259027450053749682292d81e100b8711c09
+prefetch logpresso-log4j2-scan-linux.tar.gz sha1:70828baf8e5ac5143ef919d09bec3c43aa164326 size:3150435 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.3.3/logpresso-log4j2-scan-2.3.3-linux.tar.gz sha256:e27934dc71613d1f6bf8f6a50f75000d8ffb832d3c502e37b675e8ec014518de
 
 // Get shell binary, should return /bin/sh in most cases:
-parameter "shell_bin" = "{ tuple string items 0 of concatenations ", " of ( it ; pathnames of files whose(name of it as lowercase = "sh" OR name of it as lowercase = "sh.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments ) of "/bin/sh" }"
+parameter "shell_bin" = "{ tuple string items 0 of concatenations ", " of ( pathnames of files whose(name of it as lowercase = "sh" OR name of it as lowercase = "sh.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments ; it) of "/bin/sh" }"
 
 // Delete destination of next command if applicable
 delete /tmp/log4j2-scan
