@@ -7,18 +7,13 @@
   <TBODY>
     <TR>
       <TD
-        ><LABEL for="exclusionlist"
-          >List additional directories to be excluded from the scan, one per
+        ><LABEL for="exclusionlist">List additional directories to be excluded from the scan, one per
           line:</LABEL
         >
       </TD>
       <TD
         ><TEXTAREA
-          id="exclusionlist"
-          rows="10"
-          cols="40"
-          name="exclusionlist"
-        ></TEXTAREA></TD
+          id="exclusionlist" rows="10" cols="40" name="exclusionlist"></TEXTAREA></TD
     ></TR>
   </TBODY>
 </TABLE>
@@ -53,7 +48,7 @@
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Sun, 19 Dec 2021 23:00:48 +0000</Value>
+			<Value>Mon, 20 Dec 2021 03:50:49 +0000</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-relevance-evaluation-period</Name>
@@ -121,7 +116,7 @@ parameter "JREFolder"="{pathname of parent folder of parent folder of client fol
 if {windows of operating system}
   waithidden __Download/unzip.exe "__Download/jre.zip" -d "{parameter "JREFolder"}"
 
-// TODO - verify mac works here
+
 elseif {(name of operating system as lowercase starts with "linux") or (if exists property "mac" of type "operating system" then mac of operating system else name of operating system as lowercase as lowercase starts with "mac")}
 
   parameter "tar"="{tuple string items 0 of concatenation ", " of pathnames of files "tar" of folders ("/bin";"/sbin";"/usr/sbin"; unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it ) of environments)}"
@@ -141,9 +136,8 @@ endif
 // --- End JRE extraction
 
 //locate Java binary
-parameter "Java_bin"="{tuple string item 0 of (concatenation ", " of pathnames of files ("java";"java.exe") of folders "bin" of folders of folders (parameter "JREFolder"))}"
-
 // If script fails here, the JRE extraction may have failed.
+parameter "Java_bin"="{tuple string item 0 of (concatenation ", " of pathnames of files ("java";"java.exe") of folders ("bin";"Contents/Home/bin") of folders of folders (parameter "JREFolder"))}"
 continue if {exists file (parameter "Java_bin")}
 
 // Setup logpresso-log4j2-scan.jar
@@ -157,22 +151,31 @@ delete "{parameter "ListFile"}"
 delete __appendfile
 delete "{parameter "ExclusionFile"}"
 
-if {windows of operating system}
-
-  // Create Exclusions list file:
-  appendfile {concatenation "%0d%0a" of unique values of (it as trimmed string) whose(it != "") of substrings separated by "%0a" of (parameter "exclusionlist" | "")}
-  copy __appendfile "{parameter "ExclusionFile"}"
+//build exclusions list
+appendfile {concatenation (if windows of operating system then "%0d%0a" else "%0a") of (unique values of (it as trimmed string) whose(it != "") of substrings separated by "%0a" of (parameter "exclusionlist" | ""))}
+ 
+appendfile {concatenation (if windows of operating system then "%0d%0a" else "%0a") of ("/mnt";"/dev";"/cdrom")}
   
+if {exists properties "type" of types "filesystem"}
+ appendfile {concatenation (if windows of operating system then "%0d%0a" else "%0a") of mount points of filesystems whose (type of it != "DRIVE_FIXED" ) }
+endif
+ 
+//mac-specific
+if {exists properties "type" of types "volume"}
+ appendfile {concatenation (if windows of operating system then "%0d%0a" else "%0a") of (it as string) of volumes whose (type of it != "DRIVE_FIXED" ) }
+endif
+ 
+if {exists properties "filesystem type" of types "filesystem"}
+ appendfile {concatenation (if windows of operating system then "%0d%0a" else "%0a") of mount points of filesystems whose (filesystem type of it is contained by set of ("cgroup";"cifs";"nfs";"nfs3";"nfs4";"cgroup2";"sysfs";"proc";"cpuset") ) }
+endif
+
+copy __appendfile "{parameter "ExclusionFile"}"
+
+if {windows of operating system}
   // Execute scan
   runhidden cmd.exe /c "cd "{parameter "BPSFolder"}" & "{parameter "Java_bin"}" -jar .\logpresso-log4j2-scan.jar --all-drives --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660 --exclude-config "{parameter "ExclusionFile"}"> "{parameter "ListFile"}" & rd /s /q "{parameter "JREFolder"}""
 
 elseif {(name of operating system as lowercase starts with "linux") or (if exists property "mac" of type "operating system" then mac of operating system else name of operating system as lowercase as lowercase starts with "mac")}
-
-  // Create Exclusions list file:
-  appendfile {concatenation (if windows of operating system then "%0d%0a" else "%0a") of unique values whose(it does not contain " ") of (it;"/mnt";"/dev";"/cdrom"; (unique values of (it as trimmed string) whose(it != "") of substrings separated by "%0a" of (parameter "exclusionlist" | "")) ) of items 0 of (mount points of it, filesystem types of it, types of it) whose(item 2 of it != "DRIVE_FIXED" OR item 1 of it is contained by set of ("cgroup";"cifs";"nfs";"nfs3";"nfs4";"cgroup2";"sysfs";"proc";"cpuset")) of filesystems}
-  
-  copy __appendfile "{parameter "ExclusionFile"}"
-  
   // Get shell binary, should return /bin/sh in most cases:
   parameter "shell_bin" = "{  tuple string items 0 of concatenations ", " of ( pathnames of files "/bin/sh"; pathnames of files whose(name of it as lowercase = "sh" OR name of it as lowercase = "sh.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it ) of environments) }"
   
