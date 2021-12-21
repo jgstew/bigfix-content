@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Run: Log4j2 Remediation - Replace log4j-core-2.x.jar with log4j-core-2.17.0.jar - Universal</Title>
+		<Description><![CDATA[
+		
+<P><H3>This is Community Content.  When you use these solutions, it is incumbent on your organization to test any solutions provided across the broadest available system base including various OS, storage solutions, and application inventory.</H3></P>
+<P>Please see the <A href="https://forum.bigfix.com/t/log4j-vulnerability-identification-and-3rd-party-remediation-solution-testing-statement/40273"> Community Solution Testing Statement</A></P>
+</P>
+<P>This content is part of a series of community-curated Fixlets, Tasks, and Analyses geared toward finding and remediating Log4j vulnerabilities, including the CVEs referenced at the following URLs:</P>
+<P>
+<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45105">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45105</A><BR>
+<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45046">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45046</A><BR>
+<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228</A><BR>
+<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-4104">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-4104</A></P>
+
+<P>This is part of a series of content currently published through a community GitHub site.&nbsp; Links to related content include</P>
+<P>Analysis:</P>
+<P><A href="https://github.com/jgstew/bigfix-content/blob/master/analyses/log4j2-scan%20results.bes">log4j2-scan results</A></P>
+<P>Scanning Tasks:<BR>
+<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20log4j2-scan%20-%20Universal.bes">Logpresso log4j2-scan - Universal.bes</A><BR>
+<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20Log4j2-scan%20-%20Universal%20-%20JRE.bes">Logpresso Log4j2-scan - Universal - JRE.bes</A><BR>
+<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20log4j2-scan%20-%20Windows%20x64.bes">Logpresso log4j2-scan - Windows x64.bes</A><BR>
+<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20log4j2-scan%20-%20Linux%20x64.bes">Logpresso log4j2-scan - Linux x64.bes</A><BR>
+<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20log4j2-scan%20-%20MacOS%20x64.bes">Logpresso log4j2-scan - MacOS x64.bes</A></P>
+<P><BR>&nbsp;(be sure to check for the latest version).</P>
+<P>For the latest details and discussion of this content, please see <A href="https://forum.bigfix.com/t/log4j-cve-2021-44228-cve-2021-45046-summary-page/40222">https://forum.bigfix.com/t/log4j-cve-2021-44228-cve-2021-45046-summary-page/40222</A></P>
+<P>&nbsp;</P>
+<P>This task will replace log4j-core-2.x.jar with log4j-core-2.17.0.jar</P>
+
+<P>Where the Scan Task found log4j-core.2.x.jar, this Task will rename that file to log4j-core-2.x.jar-disabled, and replace the original file with log4j-core-2.17.0.jar.</P>
+<P> Note that only files matching the log4j-core-2.x.jar format are replaced.  This task does not replace files that were renamed or log4j-1.x versions.</p>
+<P> Follow this task by re-executing one of the scans listed above to ensure the issues have been remediated</p>
+<P>The original filename will be retained for better compatibility with existing configuration files.</P>
+<P>The script to replace files, as well as the output of executing the script, are stored beneath the BES Client directory/BPS-Scans folder which may be useful in troubleshooting or rolling back changes.</P>
+<P>This operation does carry risk, as it is difficult to predict how replacing the JAR file might affect the larger application.&nbsp; No warranty expressed, use at your own risk.</P>
+<P>&nbsp;</P>
+		]]>		</Description>
+		<Relevance>if exists property "in proxy agent context" then not in proxy agent context else true</Relevance>
+		<Relevance>exists files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Relevance>
+		<Category></Category>
+		<DownloadSize>15212230</DownloadSize>
+		<Source>log4j2-scan</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2021-12-20</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames>CVE-2021-44228</CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>action-ui-metadata</Name>
+			<Value>{ "version":"2.17.0","size":15212230 }</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 21 Dec 2021 04:14:05 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to replace log4j-core-2.x.jar with log4j-core-2.17.0.jar</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+//log4j-core-2.17.0.jar properties:
+// sha1 2cc97f5b3328f5934224e3090e2b80dcfe3575b4
+// size 1789339
+// sha256 1f7994dcfcc759d39acfeb2ee37e21fda2c6ea6a3de1956e51b901fffd6a3cef
+
+begin prefetch block
+// Download:
+if {exists files (unique values of (it as trimmed string) of preceding texts of firsts "," of following texts of firsts "vulnerability in " of lines whose (it as lowercase does not contain " (mitigated)" as lowercase) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite") whose (name of it starts with "log4j-core-2" and name of it ends with ".jar" and (size of it != 1789339 or sha256 of it != "1f7994dcfcc759d39acfeb2ee37e21fda2c6ea6a3de1956e51b901fffd6a3cef")) }
+  add prefetch item name=apache-log4j-bin.zip sha1=b4ab0cb6bf4468811b07e41a8f199788a2883bab size=15212230 url=https://dlcdn.apache.org/logging/log4j/2.17.0/apache-log4j-2.17.0-bin.zip sha256=a73b5990e829a360a7d5aaa31fb44f5cac84aeb71c8b88cae97b1fd3a6ffaf66
+  if {windows of operating system}
+    // download Unzip
+    add prefetch item name=unzip.exe sha1=84debf12767785cd9b43811022407de7413beb6f size=204800 url=http://software.bigfix.com/download/redist/unzip-6.0.exe sha256=2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
+  endif
+endif
+
+end prefetch block
+// Check that a scan result lists vulnerable files, the files match our pattern, and the file has not already been replaced before executing replacements
+
+if {not exists files (unique values of (it as trimmed string) of preceding texts of firsts "," of following texts of firsts "vulnerability in " of lines whose (it as lowercase does not contain " (mitigated)" as lowercase) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite") whose (name of it starts with "log4j-core-2" and name of it ends with ".jar" and (size of it != 1789339 or sha256 of it != "1f7994dcfcc759d39acfeb2ee37e21fda2c6ea6a3de1956e51b901fffd6a3cef")) }
+parameter "LogMessage"="No vulnerable fixable files found, skipping action"
+else
+  if {windows of operating system}
+    utility __Download\unzip.exe
+    waithidden __Download\unzip.exe __Download\apache-log4j-bin.zip -d __Download
+    delete __appendfile
+    appendfile REM log4j-core-2.x.jar replacement script {now as string}
+	appendfile REM Preserve existing JAR files
+	appendfile REM COPY /N is used on the backup so the original JAR is backed up only once
+    appendfile {concatenation "%0d%0a" of ("COPY /N %22" & it & "%22 %22" & it & "-disabled%22") of pathnames of files (unique values of (it as trimmed string) of preceding texts of firsts "," of following texts of firsts "vulnerability in " of lines whose (it as lowercase does not contain " (mitigated)" as lowercase) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite") whose (name of it starts with "log4j-core-2" and name of it ends with ".jar" and (size of it != 1789339 or sha256 of it != "1f7994dcfcc759d39acfeb2ee37e21fda2c6ea6a3de1956e51b901fffd6a3cef")) }
+    appendfile REM Overwrite with log4j-core-2.17.0.jar
+    appendfile {concatenation "%0d%0a" of ("COPY /Y %22__Download\apache-log4j-2.17.0-bin\log4j-core-2.17.0.jar%22 %22" & it & "%22") of pathnames of files (unique values of (it as trimmed string) of preceding texts of firsts "," of following texts of firsts "vulnerability in " of lines whose (it as lowercase does not contain " (mitigated)" as lowercase) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite") whose (name of it starts with "log4j-core-2" and name of it ends with ".jar" and (size of it != 1789339 or sha256 of it != "1f7994dcfcc759d39acfeb2ee37e21fda2c6ea6a3de1956e51b901fffd6a3cef")) }
+    
+    delete replace_log4j.cmd
+    move __appendfile replace_log4j.cmd
+	copy replace_log4j.cmd "{pathname of folder "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"}/replace_log4j-{id of action as string}.txt"
+    action uses wow64 redirection {not x64 of operating system}
+    waithidden cmd.exe /c "replace_log4j.cmd > "{pathname of folder "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"}\replace_log4j-{id of action as string}_output.txt" 2>&1"
+  else
+    parameter "shell_bin" = "{ tuple string items 0 of concatenations ", " of pathnames of files "sh" of folders ("/bin";"/sbin";"/usr/sbin"; unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it ) of environments)}"
+    parameter "unzip"="{tuple string items 0 of concatenation ", " of pathnames of files "unzip" of folders ("/bin";"/sbin";"/usr/sbin"; unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it ) of environments)}"
+    wait {parameter "unzip"} __Download/apache-log4j-bin.zip -d __Download
+    delete __appendfile
+    appendfile #!/bin/sh
+	appendfile # log4j-core-2.x.jar replacement script {now as string}
+	appendfile # \cp is used to prevent the common 'cp -i' alias from being used
+	appendfile # -n is used to prevent clobbering destination.  We only want to backup the first, original version, of log4j-core
+    appendfile {concatenation "%0a" of ("\cp -n %22" & it & "%22 %22" & it & "-disabled%22") of pathnames of files (unique values of (it as trimmed string) of preceding texts of firsts "," of following texts of firsts "vulnerability in " of lines whose (it as lowercase does not contain " (mitigated)" as lowercase) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite") whose (name of it starts with "log4j-core-2" and name of it ends with ".jar" and (size of it != 1789339 or sha256 of it != "1f7994dcfcc759d39acfeb2ee37e21fda2c6ea6a3de1956e51b901fffd6a3cef")) }
+    appendfile {concatenation "%0a" of ("\cp %22__Download/apache-log4j-2.17.0-bin/log4j-core-2.17.0.jar%22 %22" & it & "%22") of pathnames of files (unique values of (it as trimmed string) of preceding texts of firsts "," of following texts of firsts "vulnerability in " of lines whose (it as lowercase does not contain " (mitigated)" as lowercase) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite") whose (name of it starts with "log4j-core-2" and name of it ends with ".jar" and (size of it != 1789339 or sha256 of it != "1f7994dcfcc759d39acfeb2ee37e21fda2c6ea6a3de1956e51b901fffd6a3cef")) }
+  
+    delete ./replace_log4j.sh
+    move __appendfile ./replace_log4j.sh
+	copy replace_log4j.sh "{pathname of folder "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"}/replace_log4j-{id of action as string}.txt"
+    wait {parameter "shell_bin"} -c "chmod +x ./replace_log4j.sh"
+    wait {parameter "shell_bin"} -c "./replace_log4j.sh > '{pathname of folder "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"}/replace_log4j-{id of action as string}_output.txt' 2>&1"
+  endif
+  
+  // Check success - no un-fixed log4j-core-2.x.jar files remain.  Their sha hashes should be updated to reflect the 2.16.0 version
+  continue if {not exists files (unique values of (it as trimmed string) of preceding texts of firsts "," of following texts of firsts "vulnerability in " of lines whose (it as lowercase does not contain " (mitigated)" as lowercase) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite") whose (name of it starts with "log4j-core-2" and name of it ends with ".jar" and (size of it != 1789339 or sha256 of it != "1f7994dcfcc759d39acfeb2ee37e21fda2c6ea6a3de1956e51b901fffd6a3cef")) }
+  action requires restart "log4j_file_replacement_2.17.0"
+endif
+// End]]></ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
