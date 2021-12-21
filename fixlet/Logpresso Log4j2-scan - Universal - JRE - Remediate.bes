@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run: log4j2-scan v2.5.3 - Universal JAR - Download JRE</Title>
+		<Title>Run: log4j2-scan v2.5.3 - Universal JAR - Download JRE - WITH REMEDIATION</Title>
 		<Description><![CDATA[
 		<P><H3>This is Community Content.  When you use these solutions, it is incumbent on your organization to test any solutions provided across the broadest available system base including various OS, storage solutions, and application inventory.</H3></P>
 		<P>Please see the <A href="https://forum.bigfix.com/t/log4j-vulnerability-identification-and-3rd-party-remediation-solution-testing-statement/40273"> Community Solution Testing Statement</A></P>
@@ -58,7 +58,8 @@
 		  };
 		</script>
 		</P>
-		
+		<P><H3>This Action will attempt to remediate the vulnerability by using Log4j-Scan to modify the affected JAR files and remove the JndiLookup.class entry.</H3></P>
+
 		<P>
 		<H3>NOTE:</H3> This version of the scan fixlet downloads the JAR version of log4j2-scan as well as a temporary Java Runtime from Adoptium/AdoptOpenJDK to execute the scanner.</P>
 		]]>		</Description>
@@ -202,7 +203,7 @@ copy __appendfile "{parameter "ExclusionFile"}"
 
 if {windows of operating system}
   // Execute scan
-  runhidden cmd.exe /c "cd "{parameter "BPSFolder"}" & "{parameter "Java_bin"}" -jar .\logpresso-log4j2-scan.jar --all-drives --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660 --exclude-config "{parameter "ExclusionFile"}"  > "{parameter "ListFile"}" & rd /s /q "{parameter "JREFolder"}""
+  runhidden cmd.exe /c "cd "{parameter "BPSFolder"}" & "{parameter "Java_bin"}" -jar .\logpresso-log4j2-scan.jar --all-drives --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660 --exclude-config "{parameter "ExclusionFile"}" --force-fix > "{parameter "ListFile"}" & rd /s /q "{parameter "JREFolder"}""
 
 elseif {(name of operating system as lowercase starts with "linux") or (if exists property "mac" of type "operating system" then mac of operating system else name of operating system as lowercase as lowercase starts with "mac")}
   // Get shell binary, should return /bin/sh in most cases:
@@ -210,7 +211,7 @@ elseif {(name of operating system as lowercase starts with "linux") or (if exist
 
   // Run log4j2-scan:
   // WARNING: this attempts to exclude network shares, but might not be perfect.
-  run {parameter "shell_bin"} -c "cd '{parameter "BPSFolder"}' ; '{parameter "Java_bin"}' -jar ./logpresso-log4j2-scan.jar --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660 --exclude-config '{parameter "ExclusionFile"}'   /  > '{parameter "ListFile"}' ; rm -rf '{parameter "JREFolder"}'"
+  run {parameter "shell_bin"} -c "cd '{parameter "BPSFolder"}' ; '{parameter "Java_bin"}' -jar ./logpresso-log4j2-scan.jar --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660 --exclude-config '{parameter "ExclusionFile"}'  --force-fix /  > '{parameter "ListFile"}' ; rm -rf '{parameter "JREFolder"}'"
 
 else
   // Did not recognize the OS.  Adding more is on the roadmap.

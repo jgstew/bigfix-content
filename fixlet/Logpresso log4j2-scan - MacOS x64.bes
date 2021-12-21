@@ -1,65 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run: log4j2-scan v2.3.6 - MacOS (x64)</Title>
-		<Description><![CDATA[This task will run log4j2-scan v2.3.6 scanner.<br />
-<TABLE>
-  <TBODY>
-    <TR>
-      <TD
-        ><LABEL for="exclusionlist">List additional directories to be excluded from the scan, one per
-          line:</LABEL
-        >
-      </TD>
-      <TD
-        ><TEXTAREA
-          id="exclusionlist" rows="10" cols="40" name="exclusionlist"></TEXTAREA></TD
-    ></TR>
-  </TBODY>
-</TABLE>
-<script>
-  document.body.ontakeaction = function () {
-    TakeFixletAction(
-      Relevance("id of current fixlet"),
-      Relevance("id of current bes site"),
-      "Action1",
-      { exclusionlist: document.getElementById("exclusionlist").value },
-      {}
-    );
-    return false;
-  };
-</script>
-]]>		</Description>
+		<Title>Run: log4j2-scan v2.5.0 - MacOS (x64)</Title>
+		<Description><![CDATA[
+		<P><H3>This is Community Content.  When you use these solutions, it is incumbent on your organization to test any solutions provided across the broadest available system base including various OS, storage solutions, and application inventory.</H3></P>
+		<P>Please see the <A href="https://forum.bigfix.com/t/log4j-vulnerability-identification-and-3rd-party-remediation-solution-testing-statement/40273"> Community Solution Testing Statement</A></P>
+		</P>
+		<P>This content is part of a series of community-curated Fixlets, Tasks, and Analyses geared toward finding and remediating Log4j vulnerabilities, including the CVEs referenced at the following URLs:</P>
+		<P>
+		<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45105">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45105</A><BR>
+		<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45046">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45046</A><BR>
+		<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228</A><BR>
+		<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-4104">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-4104</A></P>
+		
+		<P>This is part of a series of content currently published through a community GitHub site.&nbsp; Links to related content include</P>
+		<P>Analysis:</P>
+		<P><A href="https://github.com/jgstew/bigfix-content/blob/master/analyses/log4j2-scan%20results.bes">log4j2-scan results</A></P>
+		<P>Scanning Tasks:<BR>
+		<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20log4j2-scan%20-%20Universal.bes">Logpresso log4j2-scan - Universal.bes</A><BR>
+		<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20Log4j2-scan%20-%20Universal%20-%20JRE.bes">Logpresso Log4j2-scan - Universal - JRE.bes</A><BR>
+		<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20log4j2-scan%20-%20Windows%20x64.bes">Logpresso log4j2-scan - Windows x64.bes</A><BR>
+		<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20log4j2-scan%20-%20Linux%20x64.bes">Logpresso log4j2-scan - Linux x64.bes</A><BR>
+		<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20log4j2-scan%20-%20MacOS%20x64.bes">Logpresso log4j2-scan - MacOS x64.bes</A></P>
+		<P><BR>&nbsp;(be sure to check for the latest version).</P>
+		<P>For the latest details and discussion of this content, please see <A href="https://forum.bigfix.com/t/log4j-cve-2021-44228-cve-2021-45046-summary-page/40222">https://forum.bigfix.com/t/log4j-cve-2021-44228-cve-2021-45046-summary-page/40222</A></P>
+		<P>&nbsp;</P>		</P>
+		This task will run log4j2-scan v2.5.0 scanner.<br />
+		<TABLE>
+		  <TBODY>
+		    <TR>
+		      <TD
+		        ><LABEL for="exclusionlist"
+		          >List additional directories to be excluded from the scan, one per
+		          line:</LABEL
+		        >
+		      </TD>
+		      <TD
+		        ><TEXTAREA
+		          id="exclusionlist"
+		          rows="10"
+		          cols="40"
+		          name="exclusionlist"
+		        ></TEXTAREA></TD
+		    ></TR>
+		  </TBODY>
+		</TABLE>
+		<script>
+		  document.body.ontakeaction = function () {
+		    TakeFixletAction(
+		      Relevance("id of current fixlet"),
+		      Relevance("id of current bes site"),
+		      "Action1",
+		      { exclusionlist: document.getElementById("exclusionlist").value },
+		      {}
+		    );
+		    return false;
+		  };
+		</script>
+		</P>
+		
+		]]>		</Description>
 		<Relevance><![CDATA[mac of operating system]]></Relevance>
 		<Relevance><![CDATA["x86_64" = architecture of operating system]]></Relevance>
-		<Relevance><![CDATA[not exists modification times whose(now - it < 1*day) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"]]></Relevance>
 		<Category></Category>
-		<DownloadSize>3639980</DownloadSize>
+		<DownloadSize>3702171</DownloadSize>
 		<Source>log4j2-scan</Source>
 		<SourceID></SourceID>
-		<SourceReleaseDate>2021-12-19</SourceReleaseDate>
+		<SourceReleaseDate>2021-12-21</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>action-ui-metadata</Name>
-			<Value>{ "version":"2.3.6","size":3639980 }</Value>
+			<Value>{ "version":"2.5.0","size":3702171 }</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Mon, 20 Dec 2021 03:50:55 +0000</Value>
+			<Value>Tue, 21 Dec 2021 17:29:20 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
 			<Description>
 				<PreLink>Click </PreLink>
 				<Link>here</Link>
-				<PostLink> to run log4j2-scan v2.3.6.</PostLink>
+				<PostLink> to run log4j2-scan v2.5.0.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 //parameter "exclusionlist" is provided in the Description tab
 // Download log4j2-scan:
-prefetch logpresso-log4j2-scan-darwin.tar.gz sha1:68b21392688d187940c73e516e84e777412d8650 size:3639980 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.3.6/logpresso-log4j2-scan-2.3.6-darwin.tar.gz sha256:43d1a7aa6dee1a88df1d15f37866bad385c12b26f8b8ec6988692781cdd77ae3
+prefetch logpresso-log4j2-scan-darwin.tar.gz sha1:1a088e9ccc59b35e0289f08d508b47bd9bf1079b size:3702171 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.5.0/logpresso-log4j2-scan-2.5.0-darwin.tar.gz sha256:e4909799c60d7ac7337e05a2bc361fd4b790b0dfca63fcd69071561e80558260
 
 // Get shell binary, should return /bin/sh in most cases:
 parameter "shell_bin" = "{ tuple string items 0 of concatenations ", " of ( pathnames of files whose(name of it as lowercase = "sh" OR name of it as lowercase = "sh.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments ; it) of "/bin/sh" }"
@@ -91,18 +120,18 @@ delete "{parameter "ExclusionFile"}"
 
 // Create Exclusions list file per-OS:
 appendfile {concatenation (if windows of operating system then "%0d%0a" else "%0a") of (unique values of (it as trimmed string) whose(it != "") of substrings separated by "%0a" of (parameter "exclusionlist" | ""))}
- 
+
 appendfile {concatenation (if windows of operating system then "%0d%0a" else "%0a") of ("/mnt";"/dev";"/cdrom")}
-  
+
 if {exists properties "type" of types "filesystem"}
  appendfile {concatenation (if windows of operating system then "%0d%0a" else "%0a") of mount points of filesystems whose (type of it != "DRIVE_FIXED" ) }
 endif
- 
+
 //mac-specific
 if {exists properties "type" of types "volume"}
  appendfile {concatenation (if windows of operating system then "%0d%0a" else "%0a") of (it as string) of volumes whose (type of it != "DRIVE_FIXED" ) }
 endif
- 
+
 if {exists properties "filesystem type" of types "filesystem"}
  appendfile {concatenation (if windows of operating system then "%0d%0a" else "%0a") of mount points of filesystems whose (filesystem type of it is contained by set of ("cgroup";"cifs";"nfs";"nfs3";"nfs4";"cgroup2";"sysfs";"proc";"cpuset") ) }
 endif
@@ -114,10 +143,16 @@ run {parameter "shell_bin"} -c "chmod +x /tmp/log4j2-scan"
 
 // Run log4j2-scan:
 // WARNING: this attempts to exclude network shares, but might not be perfect.
-run {parameter "shell_bin"} -c "cd /tmp && ./log4j2-scan --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660 --exclude-config '{parameter "ExclusionFile"}' / > '{parameter "ListFile"}'"
+run {parameter "shell_bin"} -c "cd /tmp && ./log4j2-scan --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660 --exclude-config '{parameter "ExclusionFile"}'   / > '{parameter "ListFile"}'"
+
+// Wait up to 30 seconds for the logfile to be created to check successful starupt
+parameter "StartTime"="{now}"
+pause while {not exists file (parameter "ListFile") and now - (parameter "StartTime" as time) < 30 * second }
+// Check that an output log file has been created as an indicator that the scan has launched successfully
+continue if {exists file (parameter "ListFile") whose (modification time of it >= active start time of action)}
 
 // End]]></ActionScript>
-			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+
 		</DefaultAction>
 	</Task>
 </BES>
