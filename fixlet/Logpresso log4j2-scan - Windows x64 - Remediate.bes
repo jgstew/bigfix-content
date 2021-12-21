@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Run: log4j2-scan v2.5.3 - Windows (x64) - WITH REMEDIATION</Title>
+		<Description><![CDATA[
+<P><H3>This is Community Content.  When you use these solutions, it is incumbent on your organization to test any solutions provided across the broadest available system base including various OS, storage solutions, and application inventory.</H3></P>
+<P>Please see the <A href="https://forum.bigfix.com/t/log4j-vulnerability-identification-and-3rd-party-remediation-solution-testing-statement/40273"> Community Solution Testing Statement</A></P>
+		</P>
+		<P>This content is part of a series of community-curated Fixlets, Tasks, and Analyses geared toward finding and remediating Log4j vulnerabilities, including the CVEs referenced at the following URLs:</P>
+		<P>
+		<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45105">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45105</A><BR>
+		<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45046">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45046</A><BR>
+		<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228</A><BR>
+		<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-4104">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-4104</A></P>
+		
+		<P>This is part of a series of content currently published through a community GitHub site.&nbsp; Links to related content include</P>
+		<P>Analysis:</P>
+		<P><A href="https://github.com/jgstew/bigfix-content/blob/master/analyses/log4j2-scan%20results.bes">log4j2-scan results</A></P>
+		<P>Scanning Tasks:<BR>
+		<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20log4j2-scan%20-%20Universal.bes">Logpresso log4j2-scan - Universal.bes</A><BR>
+		<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20Log4j2-scan%20-%20Universal%20-%20JRE.bes">Logpresso Log4j2-scan - Universal - JRE.bes</A><BR>
+		<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20log4j2-scan%20-%20Windows%20x64.bes">Logpresso log4j2-scan - Windows x64.bes</A><BR>
+		<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20log4j2-scan%20-%20Linux%20x64.bes">Logpresso log4j2-scan - Linux x64.bes</A><BR>
+		<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20log4j2-scan%20-%20MacOS%20x64.bes">Logpresso log4j2-scan - MacOS x64.bes</A></P>
+		<P><BR>&nbsp;(be sure to check for the latest version).</P>
+		<P>For the latest details and discussion of this content, please see <A href="https://forum.bigfix.com/t/log4j-cve-2021-44228-cve-2021-45046-summary-page/40222">https://forum.bigfix.com/t/log4j-cve-2021-44228-cve-2021-45046-summary-page/40222</A></P>
+		<P>&nbsp;</P>		</P>
+		This task will run log4j2-scan v2.5.3 scanner.<br />
+		<TABLE>
+		  <TBODY>
+		    <TR>
+		      <TD
+		        ><LABEL for="exclusionlist"
+		          >List additional directories to be excluded from the scan, one per
+		          line:</LABEL
+		        >
+		      </TD>
+		      <TD
+		        ><TEXTAREA
+		          id="exclusionlist"
+		          rows="10"
+		          cols="40"
+		          name="exclusionlist"
+		        ></TEXTAREA></TD
+		    ></TR>
+		  </TBODY>
+		</TABLE>
+		<script>
+		  document.body.ontakeaction = function () {
+		    TakeFixletAction(
+		      Relevance("id of current fixlet"),
+		      Relevance("id of current bes site"),
+		      "Action1",
+		      { exclusionlist: document.getElementById("exclusionlist").value },
+		      {}
+		    );
+		    return false;
+		  };
+		</script>
+		</P>
+		<P><H3>This Action will attempt to remediate the vulnerability by using Log4j-Scan to modify the affected JAR files and remove the JndiLookup.class entry.</H3></P>
+
+		<P>
+		]]>		</Description>
+		<Relevance>windows of operating system</Relevance>
+				<Relevance><![CDATA[x64 of operating system]]></Relevance>
+				<Category></Category>
+		<DownloadSize>3344261</DownloadSize>
+		<Source>log4j2-scan</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2021-12-21</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>action-ui-metadata</Name>
+			<Value>{ "version":"2.5.3","size":3344261 }</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 21 Dec 2021 17:29:49 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to run log4j2-scan v2.5.3.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+// Download log4j2-scan:
+prefetch logpresso-log4j2-scan-win64.zip sha1:6c1cec7550915e34c5431d4ea41838a8ca013f15 size:3344261 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.5.3/logpresso-log4j2-scan-2.5.3-win64.zip sha256:aba165289f0c8f8ec34d55f6106c989d60202c8946d310da4b86d2601bd43431
+// Download Unzip:
+prefetch unzip.exe sha1:84debf12767785cd9b43811022407de7413beb6f size:204800 http://software.bigfix.com/download/redist/unzip-6.0.exe sha256:2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
+
+// Add Unzip to Utility Cache:
+utility __Download\unzip.exe
+
+// delete any existing copy if applicable
+delete {windows folder}\Temp\log4j2-scan.exe
+
+waithidden __Download\unzip.exe -o "{pathname of files "logpresso-log4j2-scan-win64.zip" of folders "__Download" of client folder of current site}" -d {windows folder}\Temp
+
+// BES Client Folder Determination
+if {name of operating system as lowercase starts with "win"}
+    parameter "BPSFolder" = "{pathname of parent folder of client}\BPS-Scans\"
+else
+    parameter "BPSFolder" = "{(if (version of client >= "9" as version) then (pathname of parent folder of data folder of client) else (pathname of parent folder of parent folder of client folder of site "actionsite"))}/BPS-Scans/"
+endif
+
+if {not exists folder (parameter "BPSFolder")}
+    folder create "{parameter "BPSFolder"}"
+endif
+
+parameter "ListFile"="{parameter "BPSFolder"}results-log4j2-scan.txt"
+
+// Housekeeping, clear any previous scan output
+delete __createfile
+delete "{parameter "ListFile"}"
+
+
+// Run:
+runhidden CMD /C {windows folder}\Temp\log4j2-scan.exe --scan-log4j1 --no-symlink --no-empty-report --drives {concatenations "," of unique values of (it as lowercase) of preceding texts of firsts ":" of names of drives whose (type of it = "DRIVE_FIXED")}   --force-fix > "{parameter "ListFile"}"
+
+// Wait up to 30 seconds for the logfile to be created to check successful starupt
+parameter "StartTime"="{now}"
+pause while {not exists file (parameter "ListFile") and now - (parameter "StartTime" as time) < 30 * second }
+// Check that an output log file has been created as an indicator that the scan has launched successfully
+continue if {exists file (parameter "ListFile") whose (modification time of it >= active start time of action)}
+
+// End]]></ActionScript>
+
+		</DefaultAction>
+	</Task>
+</BES>
