@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Set "_BESClient_Download_UtilitiesCacheLimitMB" to "300" if lower  - Universal</Title>
+		<Description><![CDATA[<P>This task will ensure the BigFix Client Utility Cache is at least 300MB in size. This allows certain BigFix actions that use utilities that are shared among many different actions to help make sure the file is only downloaded a single time even if it is used many times.</P>
+<P>&nbsp;</P>]]></Description>
+		<Relevance><![CDATA[not exists settings "_BESClient_Download_UtilitiesCacheLimitMB" whose(300 <= (it as string as integer) of value of it) of client]]></Relevance>
+		<Category>Configuration: Client Settings</Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Custom Dashboard - Client Settings Manager</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2017-05-31</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 22 Dec 2021 00:29:40 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to set the Client Setting</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+setting "_BESClient_Download_UtilitiesCacheLimitMB"="300" on "{ parameter "action issue date" of action}" for client
+			</ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
