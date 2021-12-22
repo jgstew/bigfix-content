@@ -78,7 +78,7 @@
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Tue, 21 Dec 2021 17:29:49 +0000</Value>
+			<Value>Wed, 22 Dec 2021 00:50:14 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -89,28 +89,28 @@
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // Download log4j2-scan:
-prefetch logpresso-log4j2-scan-win64.zip sha1:6c1cec7550915e34c5431d4ea41838a8ca013f15 size:3344261 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.5.3/logpresso-log4j2-scan-2.5.3-win64.zip sha256:aba165289f0c8f8ec34d55f6106c989d60202c8946d310da4b86d2601bd43431
-// Download Unzip:
-prefetch unzip.exe sha1:84debf12767785cd9b43811022407de7413beb6f size:204800 http://software.bigfix.com/download/redist/unzip-6.0.exe sha256:2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
+begin prefetch block
+add prefetch item name=logpresso-log4j2-scan-win64.zip sha1=6c1cec7550915e34c5431d4ea41838a8ca013f15 size=3344261 url=https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.5.3/logpresso-log4j2-scan-2.5.3-win64.zip sha256=aba165289f0c8f8ec34d55f6106c989d60202c8946d310da4b86d2601bd43431
 
-// Add Unzip to Utility Cache:
-utility __Download\unzip.exe
+// download Unzip
+add prefetch item name=unzip.exe sha1=84debf12767785cd9b43811022407de7413beb6f size=204800 url=http://software.bigfix.com/download/redist/unzip-6.0.exe sha256=2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
+collect prefetch items
+end prefetch block
 
-// delete any existing copy if applicable
-delete {windows folder}\Temp\log4j2-scan.exe
+if {exists file "__Download\unzip.exe"}
+  utility __Download/unzip.exe
+endif
 
-waithidden __Download\unzip.exe -o "{pathname of files "logpresso-log4j2-scan-win64.zip" of folders "__Download" of client folder of current site}" -d {windows folder}\Temp
 
 // BES Client Folder Determination
-if {name of operating system as lowercase starts with "win"}
-    parameter "BPSFolder" = "{pathname of parent folder of client}\BPS-Scans\"
-else
-    parameter "BPSFolder" = "{(if (version of client >= "9" as version) then (pathname of parent folder of data folder of client) else (pathname of parent folder of parent folder of client folder of site "actionsite"))}/BPS-Scans/"
-endif
+folder create "{pathname of parent folder of parent folder of client folder of site "actionsite"}/BPS-Scans"
+parameter "BPSFolder"="{pathname of folder "BPS-Scans" of parent folder of parent folder of client folder of site "actionsite"}{if windows of operating system then "\" else "/"}"
 
-if {not exists folder (parameter "BPSFolder")}
-    folder create "{parameter "BPSFolder"}"
-endif
+// delete any existing copy if applicable
+delete "{parameter "BPSFolder"}log4j2-scan.exe"
+
+//Unzip.exe doesn't deal with the trailing slash on folder name
+waithidden __Download\unzip.exe -o "{pathname of files "logpresso-log4j2-scan-win64.zip" of folders "__Download" of client folder of current site}" -d "{pathname of folder (parameter "BPSFolder")}"
 
 parameter "ListFile"="{parameter "BPSFolder"}results-log4j2-scan.txt"
 
@@ -120,7 +120,7 @@ delete "{parameter "ListFile"}"
 
 
 // Run:
-runhidden CMD /C {windows folder}\Temp\log4j2-scan.exe --scan-log4j1 --no-symlink --no-empty-report --drives {concatenations "," of unique values of (it as lowercase) of preceding texts of firsts ":" of names of drives whose (type of it = "DRIVE_FIXED")}   --force-fix > "{parameter "ListFile"}"
+runhidden CMD /C ""{parameter "BPSFolder"}log4j2-scan.exe" --scan-log4j1 --no-symlink --no-empty-report --drives {concatenations "," of unique values of (it as lowercase) of preceding texts of firsts ":" of names of drives whose (type of it = "DRIVE_FIXED")}   --force-fix > "{parameter "ListFile"}""
 
 // Wait up to 30 seconds for the logfile to be created to check successful starupt
 parameter "StartTime"="{now}"

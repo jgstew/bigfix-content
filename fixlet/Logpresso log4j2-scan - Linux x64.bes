@@ -76,7 +76,7 @@
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Tue, 21 Dec 2021 17:29:03 +0000</Value>
+			<Value>Wed, 22 Dec 2021 00:49:08 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -88,27 +88,13 @@
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 //parameter "exclusionlist" is provided in the Description tab
 // Download log4j2-scan:
-prefetch logpresso-log4j2-scan-linux.tar.gz sha1:df0bff1704e304f77edde3d032aaf0e6e4a37f96 size:3653673 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.5.3/logpresso-log4j2-scan-2.5.3-linux.tar.gz sha256:acec3e35d0b82a96f8b1e5f273a65bf87a60d7803933bbe9d8825eae5e250c73
-
-// Get shell binary, should return /bin/sh in most cases:
-parameter "shell_bin" = "{ tuple string items 0 of concatenations ", " of ( pathnames of files whose(name of it as lowercase = "sh" OR name of it as lowercase = "sh.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments ; it) of "/bin/sh" }"
-
-// Delete destination of next command if applicable
-delete /tmp/log4j2-scan
-
-// TODO: Does this command work on Linux and Unix? Does this binary work on Unix?
-wait tar -zxf __Download/logpresso-log4j2-scan-linux.tar.gz -C /tmp
+begin prefetch block
+add prefetch item name=logpresso-log4j2-scan-linux.tar.gz sha1=df0bff1704e304f77edde3d032aaf0e6e4a37f96 size=3653673 url=https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.5.3/logpresso-log4j2-scan-2.5.3-linux.tar.gz sha256=acec3e35d0b82a96f8b1e5f273a65bf87a60d7803933bbe9d8825eae5e250c73
+end prefetch block
 
 // BES Client Folder Determination
-if {name of operating system as lowercase starts with "win"}
-    parameter "BPSFolder" = "{pathname of parent folder of client}\BPS-Scans\"
-else
-    parameter "BPSFolder" = "{(if (version of client >= "9" as version) then (pathname of parent folder of data folder of client) else (pathname of parent folder of parent folder of client folder of site "actionsite"))}/BPS-Scans/"
-endif
-
-if {not exists folder (parameter "BPSFolder")}
-    folder create "{parameter "BPSFolder"}"
-endif
+folder create "{pathname of parent folder of parent folder of client folder of site "actionsite"}/BPS-Scans"
+parameter "BPSFolder"="{pathname of folder "BPS-Scans" of parent folder of parent folder of client folder of site "actionsite"}{if windows of operating system then "\" else "/"}"
 
 parameter "ListFile"="{parameter "BPSFolder"}results-log4j2-scan.txt"
 parameter "ExclusionFile"="{parameter "BPSFolder"}log4j2-path-exclusions.txt"
@@ -138,12 +124,23 @@ endif
 
 copy __appendfile "{parameter "ExclusionFile"}"
 
+// Get shell binary, should return /bin/sh in most cases:
+parameter "shell_bin" = "{ tuple string items 0 of concatenations ", " of ( pathnames of files whose(name of it as lowercase = "sh" OR name of it as lowercase = "sh.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments ; it) of "/bin/sh" }"
+
+// Delete destination of next command if applicable
+delete "{parameter "BPSFolder"}log4j2-scan"
+
+// TODO: Does this command work on Linux and Unix? Does this binary work on Unix?
+wait tar -zxf __Download/logpresso-log4j2-scan-linux.tar.gz -C "{parameter "BPSFolder"}"
+
+
+
 // Set to log4j2-scan executable
-run {parameter "shell_bin"} -c "chmod +x /tmp/log4j2-scan"
+run {parameter "shell_bin"} -c "chmod +x '{parameter "BPSFolder"}log4j2-scan'"
 
 // Run log4j2-scan:
 // WARNING: this attempts to exclude network shares, but might not be perfect.
-run {parameter "shell_bin"} -c "cd /tmp && ./log4j2-scan --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660 --exclude-config '{parameter "ExclusionFile"}'   / > '{parameter "ListFile"}'"
+run {parameter "shell_bin"} -c "cd '{parameter "BPSFolder"}' && ./log4j2-scan --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660 --exclude-config '{parameter "ExclusionFile"}'   / > '{parameter "ListFile"}'"
 
 // Wait up to 30 seconds for the logfile to be created to check successful starupt
 parameter "StartTime"="{now}"

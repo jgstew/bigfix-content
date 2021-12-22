@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run: log4j2-scan v2.5.0 - MacOS (x64) - WITH REMEDIATION</Title>
+		<Title>Run: log4j2-scan v2.5.3 - MacOS (x64) - WITH REMEDIATION</Title>
 		<Description><![CDATA[
 		<P><H3>This is Community Content.  When you use these solutions, it is incumbent on your organization to test any solutions provided across the broadest available system base including various OS, storage solutions, and application inventory.</H3></P>
 		<P>Please see the <A href="https://forum.bigfix.com/t/log4j-vulnerability-identification-and-3rd-party-remediation-solution-testing-statement/40273"> Community Solution Testing Statement</A></P>
@@ -25,7 +25,7 @@
 		<P><BR>&nbsp;(be sure to check for the latest version).</P>
 		<P>For the latest details and discussion of this content, please see <A href="https://forum.bigfix.com/t/log4j-cve-2021-44228-cve-2021-45046-summary-page/40222">https://forum.bigfix.com/t/log4j-cve-2021-44228-cve-2021-45046-summary-page/40222</A></P>
 		<P>&nbsp;</P>		</P>
-		This task will run log4j2-scan v2.5.0 scanner.<br />
+		This task will run log4j2-scan v2.5.3 scanner.<br />
 		<TABLE>
 		  <TBODY>
 		    <TR>
@@ -64,7 +64,7 @@
 		<Relevance><![CDATA[mac of operating system]]></Relevance>
 		<Relevance><![CDATA["x86_64" = architecture of operating system]]></Relevance>
 		<Category></Category>
-		<DownloadSize>3702171</DownloadSize>
+		<DownloadSize>3808317</DownloadSize>
 		<Source>log4j2-scan</Source>
 		<SourceID></SourceID>
 		<SourceReleaseDate>2021-12-21</SourceReleaseDate>
@@ -73,43 +73,29 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>action-ui-metadata</Name>
-			<Value>{ "version":"2.5.0","size":3702171 }</Value>
+			<Value>{ "version":"2.5.3","size":3808317 }</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Tue, 21 Dec 2021 17:29:20 +0000</Value>
+			<Value>Wed, 22 Dec 2021 00:49:27 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
 			<Description>
 				<PreLink>Click </PreLink>
 				<Link>here</Link>
-				<PostLink> to run log4j2-scan v2.5.0.</PostLink>
+				<PostLink> to run log4j2-scan v2.5.3.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 //parameter "exclusionlist" is provided in the Description tab
 // Download log4j2-scan:
-prefetch logpresso-log4j2-scan-darwin.tar.gz sha1:1a088e9ccc59b35e0289f08d508b47bd9bf1079b size:3702171 https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.5.0/logpresso-log4j2-scan-2.5.0-darwin.tar.gz sha256:e4909799c60d7ac7337e05a2bc361fd4b790b0dfca63fcd69071561e80558260
-
-// Get shell binary, should return /bin/sh in most cases:
-parameter "shell_bin" = "{ tuple string items 0 of concatenations ", " of ( pathnames of files whose(name of it as lowercase = "sh" OR name of it as lowercase = "sh.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments ; it) of "/bin/sh" }"
-
-// Delete destination of next command if applicable
-delete /tmp/log4j2-scan
-
-// TODO: Does this command work on Linux and Unix? Does this binary work on Unix?
-wait tar -zxf __Download/logpresso-log4j2-scan-darwin.tar.gz -C /tmp
+begin prefetch block
+add prefetch item name=logpresso-log4j2-scan-darwin.zip sha1=fe46b764fd3d79fa5e5d9d4b76da9351e15838e9 size=3808317 url=https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.5.3/logpresso-log4j2-scan-2.5.3-darwin.zip sha256=a9c2cb8f50e7e46ecadd5e270c73e489d7919b061a1e8ae7a3df10b92c37f7b7
+end prefetch block
 
 // BES Client Folder Determination
-if {name of operating system as lowercase starts with "win"}
-    parameter "BPSFolder" = "{pathname of parent folder of client}\BPS-Scans\"
-else
-    parameter "BPSFolder" = "{(if (version of client >= "9" as version) then (pathname of parent folder of data folder of client) else (pathname of parent folder of parent folder of client folder of site "actionsite"))}/BPS-Scans/"
-endif
-
-if {not exists folder (parameter "BPSFolder")}
-    folder create "{parameter "BPSFolder"}"
-endif
+folder create "{pathname of parent folder of parent folder of client folder of site "actionsite"}/BPS-Scans"
+parameter "BPSFolder"="{pathname of folder "BPS-Scans" of parent folder of parent folder of client folder of site "actionsite"}{if windows of operating system then "\" else "/"}"
 
 parameter "ListFile"="{parameter "BPSFolder"}results-log4j2-scan.txt"
 parameter "ExclusionFile"="{parameter "BPSFolder"}log4j2-path-exclusions.txt"
@@ -139,12 +125,23 @@ endif
 
 copy __appendfile "{parameter "ExclusionFile"}"
 
+// Get shell binary, should return /bin/sh in most cases:
+parameter "shell_bin" = "{ tuple string items 0 of concatenations ", " of ( pathnames of files whose(name of it as lowercase = "sh" OR name of it as lowercase = "sh.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments ; it) of "/bin/sh" }"
+
+// Delete destination of next command if applicable
+delete "{parameter "BPSFolder"}log4j2-scan"
+
+// TODO: Does this command work on Linux and Unix? Does this binary work on Unix?
+wait tar -zxf __Download/logpresso-log4j2-scan-darwin.zip -C "{parameter "BPSFolder"}"
+
+
+
 // Set to log4j2-scan executable
-run {parameter "shell_bin"} -c "chmod +x /tmp/log4j2-scan"
+run {parameter "shell_bin"} -c "chmod +x '{parameter "BPSFolder"}log4j2-scan'"
 
 // Run log4j2-scan:
 // WARNING: this attempts to exclude network shares, but might not be perfect.
-run {parameter "shell_bin"} -c "cd /tmp && ./log4j2-scan --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660 --exclude-config '{parameter "ExclusionFile"}'  --force-fix / > '{parameter "ListFile"}'"
+run {parameter "shell_bin"} -c "cd '{parameter "BPSFolder"}' && ./log4j2-scan --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660 --exclude-config '{parameter "ExclusionFile"}'  --force-fix / > '{parameter "ListFile"}'"
 
 // Wait up to 30 seconds for the logfile to be created to check successful starupt
 parameter "StartTime"="{now}"
