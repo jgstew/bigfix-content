@@ -78,7 +78,7 @@
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 23 Dec 2021 03:17:31 +0000</Value>
+			<Value>Thu, 23 Dec 2021 03:29:57 +0000</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-relevance-evaluation-period</Name>
@@ -127,7 +127,7 @@ begin prefetch block
 	
 		if {(name of operating system as lowercase contains "linux") AND (architecture of it = "ppc64") of operating system}
 			// Linux PowerPC [RHEL, SuSe]
-			add prefetch item name=ibm-java-jre-8.0-7.0-ppc64-archive.bin sha1=051e7311474ce67a9d4c6d318617c85f878386d2 size=143521020 url=http://public.dhe.ibm.com/ibmdl/export/pub/systems/cloud/runtimes/java/8.0.7.0/linux/ppc64/ibm-java-jre-8.0-7.0-ppc64-archive.bin sha256=79909bb46012b3df5ba5979fb831aa6f57a5d0533cb13531a8003b85866b1420
+			add prefetch item name=jre.tar.gz sha1=051e7311474ce67a9d4c6d318617c85f878386d2 size=143521020 url=http://public.dhe.ibm.com/ibmdl/export/pub/systems/cloud/runtimes/java/8.0.7.0/linux/ppc64/ibm-java-jre-8.0-7.0-ppc64-archive.bin sha256=79909bb46012b3df5ba5979fb831aa6f57a5d0533cb13531a8003b85866b1420
 		endif
 	
 		if {(name of operating system as lowercase contains "linux") AND ((architecture of it = "ppc64le") of operating system)}
