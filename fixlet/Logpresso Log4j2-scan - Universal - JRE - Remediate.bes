@@ -79,7 +79,7 @@
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 23 Dec 2021 15:44:50 +0000</Value>
+			<Value>Thu, 23 Dec 2021 19:17:26 +0000</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-relevance-evaluation-period</Name>
@@ -159,11 +159,14 @@ begin prefetch block
 end prefetch block
 
 utility __Download/logpresso-log4j2-scan.jar
-if {exists file "__Download\unzip.exe"}
+if {exists files "__Download\unzip.exe"}
   utility __Download/unzip.exe
 endif
-if {exists file "__Download\jre.zip"}
+if {exists files "__Download\jre.zip"}
   utility __Download/jre.zip
+endif
+if {exists files "__Download/jre.tar.gz"}
+  utility __Download/jre.tar.gz
 endif
 
 folder create "{pathname of parent folder of parent folder of client folder of site "actionsite"}/BPS-Scans"
@@ -183,38 +186,38 @@ else
   // Some UNIX versions require use of the shell to extract JRE, so shell must be known early
   // Get shell binary, should return /bin/sh in most cases:
   parameter "shell_bin" = "{  tuple string items 0 of concatenations ", " of ( pathnames of files "/bin/sh"; pathnames of files whose(name of it as lowercase = "sh" OR name of it as lowercase = "sh.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it ) of environments) }"
-  
+
   // If script stops here, we did not find a shell
   continue if {parameter "shell_bin" as trimmed string != ""}
-  
+
   parameter "tar"="{tuple string items 0 of concatenation ", " of pathnames of files "tar" of folders ("/bin";"/sbin";"/usr/sbin"; unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it ) of environments)}"
   // If script stops here, we did not find a tar command
   continue if {parameter "tar" as trimmed string != ""}
 
   // Some UNIX flavors cannot decompress directly via tar, and need a gunzip or unzip command
   parameter "unzip"="{tuple string items 0 of concatenations ", " of pathnames of files ("gunzip"; "unzip") of folders ("/bin";"/usr/bin";unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it ) of environments)}"
-   
+
 
   if {exists match (regex "(AIX|AIX VIOS)") of name of operating system and (if exists property "current technology level" then current technology level of operating system >= "7100-04" else false)}
     // AIX extraction
 	// If action stops here we may not have gunzip / unzip available
-	
+
 	continue if {parameter "unzip" as trimmed string != ""}
 
     wait {parameter "unzip"} "__Download/jre.tar.gz"
-	wait {parameter "tar" } -xf "__Download/jre.tar" -C "{parameter "JREFolder"}
+	wait {parameter "tar" } -xf "__Download/jre.tar" -C "{parameter "JREFolder"}"
 
-  elseif {((exists match (regex "SunOS") of it ) of name of operating system) AND (if exists properties whose(it as string contains "type of <processor>") then (type of main processor as string contains "i386") else false)}
-    // SunOS extraction
-	// If action stops here we may not have gunzip / unzip available 
+  elseif {exists match (regex "SunOS") of name of operating system}
+    // SunOS extraction for i386 or Sparc
+	// If action stops here we may not have gunzip / unzip available
 	continue if {parameter "unzip" as trimmed string != ""}
-	
+
 	// SunOS version of tar does not support specifying output folder, so unzip in-place and then use shell redirection to relocate the untar
 	wait {parameter "unzip"} "__Download/jre.tar.gz"
 	wait {parameter "shell_bin"} -c "( cd '{parameter "BPSFolder"}jre' && tar xf - ) < __Download/jre.tar"
 
   else
-    // Unless otherwise specified, our UNIX/Linux variant version of 'tar' should support both decompress and output folder spec    
+    // Unless otherwise specified, our UNIX/Linux variant version of 'tar' should support both decompress and output folder spec
     // extract temporary JRE
     wait {parameter "tar"} -xzvf "__Download/jre.tar.gz" -C "{parameter "JREFolder"}"
   endif
@@ -228,7 +231,9 @@ parameter "Java_bin"="{tuple string item 0 of (concatenation ", " of pathnames o
 continue if {exists file (parameter "Java_bin")}
 
 // Setup logpresso-log4j2-scan.jar
-delete "{pathname of file "logpresso-log4j2-scan.jar" of folder (parameter "BPSFolder")}"
+if { exists files "logpresso-log4j2-scan.jar" of folders (parameter "BPSFolder")}
+  delete "{pathname of file "logpresso-log4j2-scan.jar" of folder (parameter "BPSFolder")}"
+endif
 
 // Copy the scanner JAR file to client folder
 copy __Download/logpresso-log4j2-scan.jar "{parameter "BPSFolder"}/logpresso-log4j2-scan.jar"
