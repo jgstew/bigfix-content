@@ -17,7 +17,7 @@
 			<LI>HP-UX </LI></UL>
 			<P>The scan should not be deployed all at once on all systems due to potential impact to shared network and disk resources. </P>
 			<P>The scanner will try to avoid common network file shares and will not follow symlinks to help prevent common potential problems, but this is not a guarantee that all cases are covered. If you know you need to exclude specific paths, those can be added in the field below. </P>
-			<P>A BigFix task that can also do mitigation of some Log4j vulnerabilities is available through Support or unofficially the BigFix community.</P><br />
+			<P>A BigFix task that can also do mitigation of Log4j vulnerabilities using the same technology is available if you contact us or unofficially through the BigFix community.</P><br />
 		<TABLE>
 		  <TBODY>
 		    <TR>
