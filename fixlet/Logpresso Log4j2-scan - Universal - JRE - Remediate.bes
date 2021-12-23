@@ -79,7 +79,7 @@
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 23 Dec 2021 02:51:02 +0000</Value>
+			<Value>Thu, 23 Dec 2021 03:17:31 +0000</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-relevance-evaluation-period</Name>
@@ -98,15 +98,14 @@ begin prefetch block
 	// Download log4j2-scan:
 	add prefetch item name=logpresso-log4j2-scan.jar sha1=f489bba5a2386e8d9e77a5281bfae892ac40fa49 size=640109 url=https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.6.0/logpresso-log4j2-scan-2.6.0.jar sha256=89ec9ea7f819065a74c6f2482eb6983b20212b67dc1909989e7c4d362e6c825d
 
-	
 		// trap for 'x64 of operating system' property existing only on Windows
 		if {if windows of operating system then x64 of operating system else false}
-	 	  add prefetch item name=jre.zip sha1=359ef250b3e78716cee4669b0182f0c1c28261c3 size=39046089 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_x64_windows_hotspot_8u312b07.zip sha256=a4623365d70e7bc969e84b7f29b6b2eecb6c0686863ed67651506e2b5adf43b0
-	 	  add prefetch item name=unzip.exe sha1=84debf12767785cd9b43811022407de7413beb6f size=204800 url=http://software.bigfix.com/download/redist/unzip-6.0.exe sha256=2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
+			add prefetch item name=jre.zip sha1=359ef250b3e78716cee4669b0182f0c1c28261c3 size=39046089 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_x64_windows_hotspot_8u312b07.zip sha256=a4623365d70e7bc969e84b7f29b6b2eecb6c0686863ed67651506e2b5adf43b0
+			add prefetch item name=unzip.exe sha1=84debf12767785cd9b43811022407de7413beb6f size=204800 url=http://software.bigfix.com/download/redist/unzip-6.0.exe sha256=2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
 		endif
 		if {if windows of operating system then not x64 of operating system else false}
-		  add prefetch item name=jre.zip sha1=bf419f8c9231c34f0ffb9564b5f7f6690f596fd9 size=37494360 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_x86-32_windows_hotspot_8u312b07.zip sha256=789cfa21858156084020ee885ade643556dc57ddec2b44745b5489edb7945b64
-		  add prefetch item name=unzip.exe sha1=84debf12767785cd9b43811022407de7413beb6f size=204800 url=http://software.bigfix.com/download/redist/unzip-6.0.exe sha256=2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
+			add prefetch item name=jre.zip sha1=bf419f8c9231c34f0ffb9564b5f7f6690f596fd9 size=37494360 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_x86-32_windows_hotspot_8u312b07.zip sha256=789cfa21858156084020ee885ade643556dc57ddec2b44745b5489edb7945b64
+			add prefetch item name=unzip.exe sha1=84debf12767785cd9b43811022407de7413beb6f size=204800 url=http://software.bigfix.com/download/redist/unzip-6.0.exe sha256=2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
 		endif
 	
 		if {if exists property "mac" of type "operating system" then mac of operating system else name of operating system as lowercase as lowercase starts with "mac"}
@@ -114,41 +113,47 @@ begin prefetch block
 		endif
 	
 		if {if name of operating system as lowercase starts with "linux" then architecture of operating system = "x86_64" else false}
-	        add prefetch item name=jre.tar.gz sha1=8b835bfff7f67d2a097344e95b7221d2d3c048ef size=41286015 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_x64_linux_hotspot_8u312b07.tar.gz sha256=18fd13e77621f712326bfcf79c3e3cc08c880e3e4b8f63a1e5da619f3054b063
+			add prefetch item name=jre.tar.gz sha1=8b835bfff7f67d2a097344e95b7221d2d3c048ef size=41286015 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_x64_linux_hotspot_8u312b07.tar.gz sha256=18fd13e77621f712326bfcf79c3e3cc08c880e3e4b8f63a1e5da619f3054b063
 		endif
 	
-	    if {(name of operating system as lowercase starts with "linux") AND (exists match (regex "^i[3-9]86$") of architecture of operating system)}
-	        add prefetch item name=jre.tar.gz sha1=ec336b1ae9027966da050c6678123baf6e7bc581 size=45651626 url=https://cdn.azul.com/zulu/bin/zulu8.58.0.13-ca-jre8.0.312-linux_i686.tar.gz sha256=d76850b3a7cfd9930b26879ef89b89dc1f1f2de063504fdbce212c7facca7735
+		if {(name of operating system as lowercase starts with "linux") AND (exists match (regex "^i[3-9]86$") of architecture of operating system)}
+			add prefetch item name=jre.tar.gz sha1=ec336b1ae9027966da050c6678123baf6e7bc581 size=45651626 url=https://cdn.azul.com/zulu/bin/zulu8.58.0.13-ca-jre8.0.312-linux_i686.tar.gz sha256=d76850b3a7cfd9930b26879ef89b89dc1f1f2de063504fdbce212c7facca7735
 		endif
 	
-	    if {(name of operating system as lowercase starts with "linux") AND ((it = "armv7l") of architecture of operating system)}
-	        // Download for Raspberry Pi
-	        add prefetch item name=jre.tar.gz sha1=daedd7d5c60df6a6035d28ec94d2a293d195c516 size=40312760 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_aarch64_linux_hotspot_8u312b07.tar.gz sha256=961df2d520987c2252496fbee024f84c8c8c4d0be80e9fe043d221191666899e
+		if {(name of operating system as lowercase starts with "linux") AND ((it = "armv7l") of architecture of operating system)}
+			// Download for Raspberry Pi
+			add prefetch item name=jre.tar.gz sha1=daedd7d5c60df6a6035d28ec94d2a293d195c516 size=40312760 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_aarch64_linux_hotspot_8u312b07.tar.gz sha256=961df2d520987c2252496fbee024f84c8c8c4d0be80e9fe043d221191666899e
 			// add prefetch item name=jre.tar.gz sha1=fb502032c1c6d29da361a6032469a787aae59d58 size=38706993 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_arm_linux_hotspot_8u312b07.tar.gz sha256=5f37cbf311a5c2928aff8e83a82aebcf37b5911b193b5ab8538108381dcd6276
-	    endif
+		endif
 	
-	    // TODO:
-	    // Linux PowerPC64LittleEndian:
-	    // add prefetch item name=OpenJDK8U-jdk_ppc64le_linux_hotspot_8u312b07.tar.gz sha1=05996686e35c8891955a7ac09414b9097ee80653 size=100571080 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jdk_ppc64le_linux_hotspot_8u312b07.tar.gz sha256=ddce3f067eab6fd98bb2a8ea3d18de6b09ea41d10382c76ad22bd3e7895951cf
+		if {(name of operating system as lowercase contains "linux") AND (architecture of it = "ppc64") of operating system}
+			// Linux PowerPC [RHEL, SuSe]
+			add prefetch item name=ibm-java-jre-8.0-7.0-ppc64-archive.bin sha1=051e7311474ce67a9d4c6d318617c85f878386d2 size=143521020 url=http://public.dhe.ibm.com/ibmdl/export/pub/systems/cloud/runtimes/java/8.0.7.0/linux/ppc64/ibm-java-jre-8.0-7.0-ppc64-archive.bin sha256=79909bb46012b3df5ba5979fb831aa6f57a5d0533cb13531a8003b85866b1420
+		endif
 	
-	    if {exists match (regex "(AIX|AIX VIOS)") of name of operating system and (if exists property "current technology level" then current technology level of operating system >= "7100-04" else false)}
+		if {(name of operating system as lowercase contains "linux") AND ((architecture of it = "ppc64le") of operating system)}
+			// Linux PowerPC [RHEL, Ubuntu, SuSe]
+			add prefetch item name=jre.tar.gz sha1=05996686e35c8891955a7ac09414b9097ee80653 size=100571080 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jdk_ppc64le_linux_hotspot_8u312b07.tar.gz sha256=ddce3f067eab6fd98bb2a8ea3d18de6b09ea41d10382c76ad22bd3e7895951cf
+		endif
+	
+		if {(name of operating system as lowercase contains "linux") AND ((architecture of it = "s390x") of operating system)}
+			// Linux System Z (s390x) [RHEL, SuSe]
+			add prefetch item name=jre.tar.gz sha1=8add84ee86d5addebac5058cdc244756638b14c3 size=130839417 url=http://public.dhe.ibm.com/ibmdl/export/pub/systems/cloud/runtimes/java/8.0.7.0/linux/s390x/ibm-java-jre-8.0-7.0-s390x-archive.bin sha256=73f941590d60287d9d480884698120149bf2f9b8da04d2501b450f320a5be181
+		endif
+	
+		if {exists match (regex "(AIX|AIX VIOS)") of name of operating system and (if exists property "current technology level" then current technology level of operating system >= "7100-04" else false)}
 			add prefetch item name=jre.tar.gz sha1=e42ea144018ce547a13e85e4a2692b2fc0f45eeb size=42806130 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_ppc64_aix_hotspot_8u312b07.tar.gz sha256=735c2afd5fc4573a2cd3f1629f1fbc6607849f95230a494560037fa40bdc9e03
 		endif
-	    if {((exists match (regex "SunOS") of it ) of name of operating system) AND (if exists properties whose(it as string contains "type of <processor>") then (type of main processor as string contains "i386") else false)}
-		    add prefetch item name=jre.tar.gz sha1=8ab58046126953bb9acf3aa6b4d18d978e13e6d6 size=50196314 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_x64_solaris_hotspot_8u312b07.tar.gz sha256=b4a3b701bfe0f529743d4260f1c776cc2bc95b80456bee539e0bc1931cba6117
+		if {((exists match (regex "SunOS") of it ) of name of operating system) AND (if exists properties whose(it as string contains "type of <processor>") then (type of main processor as string contains "i386") else false)}
+			add prefetch item name=jre.tar.gz sha1=8ab58046126953bb9acf3aa6b4d18d978e13e6d6 size=50196314 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_x64_solaris_hotspot_8u312b07.tar.gz sha256=b4a3b701bfe0f529743d4260f1c776cc2bc95b80456bee539e0bc1931cba6117
 		endif
 	
 		if {((exists match (regex "SunOS") of it ) of name of operating system) AND (if exists properties whose(it as string contains "type of <processor>") then (type of main processor as string contains "sparc") else false)}
-		    add prefetch item name=jre.tar.gz sha1=513d89893df13f14e9b5e76a2f3134dd895fd1ef size=53232710 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_sparcv9_solaris_hotspot_8u312b07.tar.gz sha256=62db15678d4212307c3ccb6743cf44636d81cf08cbf150517a86f65f17f8900d
+			add prefetch item name=jre.tar.gz sha1=513d89893df13f14e9b5e76a2f3134dd895fd1ef size=53232710 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_sparcv9_solaris_hotspot_8u312b07.tar.gz sha256=62db15678d4212307c3ccb6743cf44636d81cf08cbf150517a86f65f17f8900d
 		endif
 	
-		// -- TODO: handle JRE downloads for other operating systems here
-	        // System Z or s390x CPU:
-	        // add prefetch item name=ibm-java-jre-8.0-7.0-s390x-archive.bin sha1=8add84ee86d5addebac5058cdc244756638b14c3 size=130839417 url=http://public.dhe.ibm.com/ibmdl/export/pub/systems/cloud/runtimes/java/8.0.7.0/linux/s390x/ibm-java-jre-8.0-7.0-s390x-archive.bin sha256=73f941590d60287d9d480884698120149bf2f9b8da04d2501b450f320a5be181
-	        // PowerPC:
-	        // add prefetch item name=ibm-java-jre-8.0-7.0-ppc64-archive.bin sha1=051e7311474ce67a9d4c6d318617c85f878386d2 size=143521020 url=http://public.dhe.ibm.com/ibmdl/export/pub/systems/cloud/runtimes/java/8.0.7.0/linux/ppc64/ibm-java-jre-8.0-7.0-ppc64-archive.bin sha256=79909bb46012b3df5ba5979fb831aa6f57a5d0533cb13531a8003b85866b1420
-	        // HP-UX: (MANUAL_CACHING_REQUIRED)
-	        // prefetch 2106_Java80_1.8.0.22.00_HP-UX_B.11.31_IA.depot sha1:b87d2dd25794360238a38fda132cb799a65b6d18 size:144097280 http://MANUAL_CACHING_REQUIRED/2106_Java80_1.8.0.22.00_HP-UX_B.11.31_IA.depot sha256:fa48555266f5ca0223f03a86485ae0908177133e1d5bd993632c23678833e9ae
+		// HP-UX: (MANUAL_CACHING_REQUIRED)
+		// prefetch 2106_Java80_1.8.0.22.00_HP-UX_B.11.31_IA.depot sha1:b87d2dd25794360238a38fda132cb799a65b6d18 size:144097280 http://MANUAL_CACHING_REQUIRED/2106_Java80_1.8.0.22.00_HP-UX_B.11.31_IA.depot sha256:fa48555266f5ca0223f03a86485ae0908177133e1d5bd993632c23678833e9ae
 	collect prefetch items
 end prefetch block
 
