@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run: log4j2-scan v2.5.3 - Universal JAR - System JRE</Title>
+		<Title>Run: log4j2-scan v2.6.0 - Universal JAR - System JRE</Title>
 		<Description><![CDATA[
 		<P><H3>This is Community Content.  When you use these solutions, it is incumbent on your organization to test any solutions provided across the broadest available system base including various OS, storage solutions, and application inventory.</H3></P>
 		<P>Please see the <A href="https://forum.bigfix.com/t/log4j-vulnerability-identification-and-3rd-party-remediation-solution-testing-statement/40273"> Community Solution Testing Statement</A></P>
@@ -25,7 +25,7 @@
 		<P><BR>&nbsp;(be sure to check for the latest version).</P>
 		<P>For the latest details and discussion of this content, please see <A href="https://forum.bigfix.com/t/log4j-cve-2021-44228-cve-2021-45046-summary-page/40222">https://forum.bigfix.com/t/log4j-cve-2021-44228-cve-2021-45046-summary-page/40222</A></P>
 		<P>&nbsp;</P>		</P>
-		This task will run log4j2-scan v2.5.3 scanner.<br />
+		This task will run log4j2-scan v2.6.0 scanner.<br />
 		<TABLE>
 		  <TBODY>
 		    <TR>
@@ -65,20 +65,20 @@
 		<Relevance>if exists property "in proxy agent context" then not in proxy agent context else true</Relevance>
 		<Relevance>exists files whose(name of it as lowercase = "java" OR name of it as lowercase = "java.exe") of ( ( (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments ) ; ( (folders "bin" of folders of folders of (folders "\Program Files"; folder "\Program Files (x86)")) ) )</Relevance>
 		<Category></Category>
-		<DownloadSize>59877</DownloadSize>
+		<DownloadSize>640109</DownloadSize>
 		<Source>log4j2-scan</Source>
 		<SourceID></SourceID>
-		<SourceReleaseDate>2021-12-21</SourceReleaseDate>
+		<SourceReleaseDate>2021-12-22</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>action-ui-metadata</Name>
-			<Value>{ "version":"2.5.3","size":59877 }</Value>
+			<Value>{ "version":"2.6.0","size":640109 }</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Wed, 22 Dec 2021 00:49:56 +0000</Value>
+			<Value>Thu, 23 Dec 2021 02:46:02 +0000</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-relevance-evaluation-period</Name>
@@ -89,13 +89,13 @@
 			<Description>
 				<PreLink>Click </PreLink>
 				<Link>here</Link>
-				<PostLink> to run log4j2-scan v2.5.3.</PostLink>
+				<PostLink> to run log4j2-scan v2.6.0.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 //parameter "exclusionlist" is provided in the Description tab
 begin prefetch block
 	// Download log4j2-scan:
-	add prefetch item name=logpresso-log4j2-scan.jar sha1=bcaeb2cc198fd29ea0e5320ba2865e81b9a335bd size=59877 url=https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.5.3/logpresso-log4j2-scan-2.5.3.jar sha256=3cd1fa397d518a0ac39ed333be01b73b1857c92beeafeafdaedf790e41b7c0b0
+	add prefetch item name=logpresso-log4j2-scan.jar sha1=f489bba5a2386e8d9e77a5281bfae892ac40fa49 size=640109 url=https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.6.0/logpresso-log4j2-scan-2.6.0.jar sha256=89ec9ea7f819065a74c6f2482eb6983b20212b67dc1909989e7c4d362e6c825d
 	collect prefetch items
 end prefetch block
 
