@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run: log4j2-scan v2.6.0 - Universal JAR - Download JRE - WITH REMEDIATION</Title>
+		<Title>Run: log4j2-scan v2.6.1 - Universal JAR - Download JRE - WITH REMEDIATION</Title>
 		<Description><![CDATA[
 		<P><H3>This is Community Content.  When you use these solutions, it is incumbent on your organization to test any solutions provided across the broadest available system base including various OS, storage solutions, and application inventory.</H3></P>
 		<P>Please see the <A href="https://forum.bigfix.com/t/log4j-vulnerability-identification-and-3rd-party-remediation-solution-testing-statement/40273"> Community Solution Testing Statement</A></P>
@@ -25,7 +25,7 @@
 		<P><BR>&nbsp;(be sure to check for the latest version).</P>
 		<P>For the latest details and discussion of this content, please see <A href="https://forum.bigfix.com/t/log4j-cve-2021-44228-cve-2021-45046-summary-page/40222">https://forum.bigfix.com/t/log4j-cve-2021-44228-cve-2021-45046-summary-page/40222</A></P>
 		<P>&nbsp;</P>		</P>
-		This task will run log4j2-scan v2.6.0 scanner.<br />
+		This task will run log4j2-scan v2.6.1 scanner.<br />
 		<TABLE>
 		  <TBODY>
 		    <TR>
@@ -62,24 +62,24 @@
 
 		<P>
 		<H3>NOTE:</H3> This version of the scan fixlet downloads the JAR version of log4j2-scan as well as a temporary Java Runtime from Adoptium/AdoptOpenJDK to execute the scanner.</P>
-		]]></Description>
+		]]>		</Description>
 		<Relevance>if exists property "in proxy agent context" then not in proxy agent context else true</Relevance>
-		<Relevance>/* TODO: exclude known unsupported operating systems */ TRUE</Relevance>
+		<Relevance><![CDATA[( if (name of operating system as lowercase contains "win") then (version of operating system >= "6.3") else TRUE ) AND ( if (name of operating system as lowercase contains "linux") AND ((architecture of it = "s390x") of operating system OR (architecture of it = "ppc64") of operating system) then FALSE else TRUE ) AND (name of operating system does not start with "HP-UX")]]></Relevance>
 		<Category></Category>
-		<DownloadSize>640109</DownloadSize>
+		<DownloadSize>639740</DownloadSize>
 		<Source>log4j2-scan</Source>
 		<SourceID></SourceID>
-		<SourceReleaseDate>2021-12-22</SourceReleaseDate>
+		<SourceReleaseDate>2021-12-23</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>action-ui-metadata</Name>
-			<Value>{ "version":"2.6.0","size":640109 }</Value>
+			<Value>{ "version":"2.6.1","size":639740 }</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 23 Dec 2021 03:29:57 +0000</Value>
+			<Value>Thu, 23 Dec 2021 15:44:50 +0000</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-relevance-evaluation-period</Name>
@@ -90,13 +90,13 @@
 			<Description>
 				<PreLink>Click </PreLink>
 				<Link>here</Link>
-				<PostLink> to run log4j2-scan v2.6.0.</PostLink>
+				<PostLink> to run log4j2-scan v2.6.1.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 //parameter "exclusionlist" is provided in the Description tab
 begin prefetch block
 	// Download log4j2-scan:
-	add prefetch item name=logpresso-log4j2-scan.jar sha1=f489bba5a2386e8d9e77a5281bfae892ac40fa49 size=640109 url=https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.6.0/logpresso-log4j2-scan-2.6.0.jar sha256=89ec9ea7f819065a74c6f2482eb6983b20212b67dc1909989e7c4d362e6c825d
+	add prefetch item name=logpresso-log4j2-scan.jar sha1=8cf9647ec5631fd78d6e39e7a30c74335c6aafd4 size=639740 url=https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.6.1/logpresso-log4j2-scan-2.6.1.jar sha256=e073a173c256ba8fb1228725df30e42dbb9a9ec2fccd9dfeff6cf0c34141a51e
 
 		// trap for 'x64 of operating system' property existing only on Windows
 		if {if windows of operating system then x64 of operating system else false}
@@ -122,12 +122,12 @@ begin prefetch block
 	
 		if {(name of operating system as lowercase starts with "linux") AND ((it = "armv7l") of architecture of operating system)}
 			// Download for Raspberry Pi
-			add prefetch item name=jre.tar.gz sha1=daedd7d5c60df6a6035d28ec94d2a293d195c516 size=40312760 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_aarch64_linux_hotspot_8u312b07.tar.gz sha256=961df2d520987c2252496fbee024f84c8c8c4d0be80e9fe043d221191666899e
-			// add prefetch item name=jre.tar.gz sha1=fb502032c1c6d29da361a6032469a787aae59d58 size=38706993 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_arm_linux_hotspot_8u312b07.tar.gz sha256=5f37cbf311a5c2928aff8e83a82aebcf37b5911b193b5ab8538108381dcd6276
+			add prefetch item name=jre.tar.gz sha1=fb502032c1c6d29da361a6032469a787aae59d58 size=38706993 url=https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jre_arm_linux_hotspot_8u312b07.tar.gz sha256=5f37cbf311a5c2928aff8e83a82aebcf37b5911b193b5ab8538108381dcd6276
 		endif
 	
 		if {(name of operating system as lowercase contains "linux") AND (architecture of it = "ppc64") of operating system}
 			// Linux PowerPC [RHEL, SuSe]
+			// this is not actually a tar.gz file, not sure how to expand it
 			add prefetch item name=jre.tar.gz sha1=051e7311474ce67a9d4c6d318617c85f878386d2 size=143521020 url=http://public.dhe.ibm.com/ibmdl/export/pub/systems/cloud/runtimes/java/8.0.7.0/linux/ppc64/ibm-java-jre-8.0-7.0-ppc64-archive.bin sha256=79909bb46012b3df5ba5979fb831aa6f57a5d0533cb13531a8003b85866b1420
 		endif
 	
@@ -138,6 +138,7 @@ begin prefetch block
 	
 		if {(name of operating system as lowercase contains "linux") AND ((architecture of it = "s390x") of operating system)}
 			// Linux System Z (s390x) [RHEL, SuSe]
+			// this is not actually a tar.gz file, not sure how to expand it
 			add prefetch item name=jre.tar.gz sha1=8add84ee86d5addebac5058cdc244756638b14c3 size=130839417 url=http://public.dhe.ibm.com/ibmdl/export/pub/systems/cloud/runtimes/java/8.0.7.0/linux/s390x/ibm-java-jre-8.0-7.0-s390x-archive.bin sha256=73f941590d60287d9d480884698120149bf2f9b8da04d2501b450f320a5be181
 		endif
 	
@@ -179,14 +180,44 @@ if {windows of operating system}
 
 
 else
-
+  // Some UNIX versions require use of the shell to extract JRE, so shell must be known early
+  // Get shell binary, should return /bin/sh in most cases:
+  parameter "shell_bin" = "{  tuple string items 0 of concatenations ", " of ( pathnames of files "/bin/sh"; pathnames of files whose(name of it as lowercase = "sh" OR name of it as lowercase = "sh.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it ) of environments) }"
+  
+  // If script stops here, we did not find a shell
+  continue if {parameter "shell_bin" as trimmed string != ""}
+  
   parameter "tar"="{tuple string items 0 of concatenation ", " of pathnames of files "tar" of folders ("/bin";"/sbin";"/usr/sbin"; unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it ) of environments)}"
-
-  //If action stops here, tar may not be available
+  // If script stops here, we did not find a tar command
   continue if {parameter "tar" as trimmed string != ""}
 
-  // extract temporary JRE
-  wait {parameter "tar"} -xzvf "__Download/jre.tar.gz" -C "{parameter "JREFolder"}"
+  // Some UNIX flavors cannot decompress directly via tar, and need a gunzip or unzip command
+  parameter "unzip"="{tuple string items 0 of concatenations ", " of pathnames of files ("gunzip"; "unzip") of folders ("/bin";"/usr/bin";unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it ) of environments)}"
+   
+
+  if {exists match (regex "(AIX|AIX VIOS)") of name of operating system and (if exists property "current technology level" then current technology level of operating system >= "7100-04" else false)}
+    // AIX extraction
+	// If action stops here we may not have gunzip / unzip available
+	
+	continue if {parameter "unzip" as trimmed string != ""}
+
+    wait {parameter "unzip"} "__Download/jre.tar.gz"
+	wait {parameter "tar" } -xf "__Download/jre.tar" -C "{parameter "JREFolder"}
+
+  elseif {((exists match (regex "SunOS") of it ) of name of operating system) AND (if exists properties whose(it as string contains "type of <processor>") then (type of main processor as string contains "i386") else false)}
+    // SunOS extraction
+	// If action stops here we may not have gunzip / unzip available 
+	continue if {parameter "unzip" as trimmed string != ""}
+	
+	// SunOS version of tar does not support specifying output folder, so unzip in-place and then use shell redirection to relocate the untar
+	wait {parameter "unzip"} "__Download/jre.tar.gz"
+	wait {parameter "shell_bin"} -c "( cd '{parameter "BPSFolder"}jre' && tar xf - ) < __Download/jre.tar"
+
+  else
+    // Unless otherwise specified, our UNIX/Linux variant version of 'tar' should support both decompress and output folder spec    
+    // extract temporary JRE
+    wait {parameter "tar"} -xzvf "__Download/jre.tar.gz" -C "{parameter "JREFolder"}"
+  endif
 endif
 
 
@@ -229,15 +260,13 @@ copy __appendfile "{parameter "ExclusionFile"}"
 
 if {windows of operating system}
   // Execute scan
-  runhidden cmd.exe /c "cd "{parameter "BPSFolder"}" & "{parameter "Java_bin"}" -jar .\logpresso-log4j2-scan.jar --all-drives --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660 --exclude-config "{parameter "ExclusionFile"}" --force-fix > "{parameter "ListFile"}" & rd /s /q "{parameter "JREFolder"}""
+  runhidden cmd.exe /c "cd "{parameter "BPSFolder"}" & "{parameter "Java_bin"}" -jar .\logpresso-log4j2-scan.jar --all-drives --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660,autofs,afs --exclude-config "{parameter "ExclusionFile"}" --force-fix > "{parameter "ListFile"}" & rd /s /q "{parameter "JREFolder"}""
 
 else
-  // Get shell binary, should return /bin/sh in most cases:
-  parameter "shell_bin" = "{  tuple string items 0 of concatenations ", " of ( pathnames of files "/bin/sh"; pathnames of files whose(name of it as lowercase = "sh" OR name of it as lowercase = "sh.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it ) of environments) }"
 
   // Run log4j2-scan:
   // WARNING: this attempts to exclude network shares, but might not be perfect.
-  run {parameter "shell_bin"} -c "cd '{parameter "BPSFolder"}' ; '{parameter "Java_bin"}' -jar ./logpresso-log4j2-scan.jar --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660 --exclude-config '{parameter "ExclusionFile"}'  --force-fix /  > '{parameter "ListFile"}' ; rm -rf '{parameter "JREFolder"}'"
+  run {parameter "shell_bin"} -c "cd '{parameter "BPSFolder"}' ; '{parameter "Java_bin"}' -jar ./logpresso-log4j2-scan.jar --scan-log4j1 --no-symlink --no-empty-report --exclude-fs nfs,nfs3,nfs4,cifs,tmpfs,devtmpfs,iso9660,autofs,afs --exclude-config '{parameter "ExclusionFile"}'  --force-fix /  > '{parameter "ListFile"}' ; rm -rf '{parameter "JREFolder"}'"
 
 endif
 
@@ -246,6 +275,8 @@ parameter "StartTime"="{now}"
 pause while {not exists file (parameter "ListFile") and now - (parameter "StartTime" as time) < 30 * second }
 // Check that an output log file has been created as an indicator that the scan has launched successfully
 continue if {exists file (parameter "ListFile") whose (modification time of it >= active start time of action)}
+
+action requires restart
 
 // End]]></ActionScript>
 		</DefaultAction>
