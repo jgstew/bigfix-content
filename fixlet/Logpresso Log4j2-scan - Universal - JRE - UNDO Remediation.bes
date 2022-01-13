@@ -1,32 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
   <Task>
-    <Title>Run: log4j2-scan v2.7.1 - Universal JAR - Download JRE - UNDO REMEDIATION - Community Version</Title>
+    <Title>Run: log4j2-scan v2.7.1 - Universal JAR - Download JRE - UNDO REMEDIATION</Title>
     <Description><![CDATA[
-		<P><H3>This is Community Content.  When you use these solutions, it is incumbent on your organization to test any solutions provided across the broadest available system base including various OS, storage solutions, and application inventory.</H3></P>
-		<P>Please see the <A href="https://forum.bigfix.com/t/log4j-vulnerability-identification-and-3rd-party-remediation-solution-testing-statement/40273"> Community Solution Testing Statement</A></P>
-		</P>
-		<P>This content is part of a series of community-curated Fixlets, Tasks, and Analyses geared toward finding and remediating Log4j vulnerabilities, including the CVEs referenced at the following URLs:</P>
-		<P>
-		<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45105">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45105</A><BR>
-		<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45046">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45046</A><BR>
-		<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228</A><BR>
-		<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-4104">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-4104</A></P>
-		
-		<P>This is part of a series of content currently published through a community GitHub site.&nbsp; Links to related content include</P>
-		<P>Analysis:</P>
-		<P><A href="https://github.com/jgstew/bigfix-content/blob/master/analyses/log4j2-scan%20results.bes">log4j2-scan results</A></P>
-		<P>Scanning Tasks:<BR>
-		<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20log4j2-scan%20-%20Universal.bes">Logpresso log4j2-scan - Universal.bes</A><BR>
-		<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20Log4j2-scan%20-%20Universal%20-%20JRE.bes">Logpresso Log4j2-scan - Universal - JRE.bes</A><BR>
-		<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20log4j2-scan%20-%20Windows%20x64.bes">Logpresso log4j2-scan - Windows x64.bes</A><BR>
-		<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20log4j2-scan%20-%20Linux%20x64.bes">Logpresso log4j2-scan - Linux x64.bes</A><BR>
-		<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20log4j2-scan%20-%20MacOS%20x64.bes">Logpresso log4j2-scan - MacOS x64.bes</A></P>
-		<P><BR>&nbsp;(be sure to check for the latest version).</P>
-		<P>For the latest details and discussion of this content, please see <A href="https://forum.bigfix.com/t/log4j-cve-2021-44228-cve-2021-45046-summary-page/40222">https://forum.bigfix.com/t/log4j-cve-2021-44228-cve-2021-45046-summary-page/40222</A></P>
-		<P>&nbsp;</P>
-		This task will run log4j2-scan v2.7.1 scanner.<br />		</P>
-				</P>
+    <P>This task will: </P>
+    <UL>
+    	<LI>Download a platform specific JRE or JDK </LI>
+    	<LI>Download a log4j-scan utility JAR file from Logpresso </LI>
+    	<LI>Run the log4j-scan utility JAR with the platform specific JRE or JDK </LI>
+    	<LI>Save results to a file. Results available in an analysis </LI>
+    	<LI>Delete the platform specific JRE or JDK when the scan is completed. </LI>
+    </UL>
+    <P>The following platforms are currently excluded: </P>
+    <UL>
+    	<LI>Windows 2012 or older, Windows 8 or older </LI>
+    	<LI>Linux Z and Linux PowerPC Big Endian </LI>
+    	<LI>HP-UX </LI>
+    </UL>
+    <P>The scan should not be deployed all at once on all systems due to potential impact to shared network and disk resources. </P>
+    <P>The scanner will try to avoid common network file shares and will not follow symlinks to help prevent common potential problems, but this is not a guarantee that all cases are covered. If you know you need to exclude specific paths, those can be added in the field below. </P>
+    <P>A BigFix task that can also do mitigation of Log4j vulnerabilities using the same technology is available if you contact us or unofficially through the BigFix community.</P>
+    <br />				</P>
 		
 		<P><H3>This Action will restore the original versions of JAR files that were previously remediated by a LogPresso scan.</H3></P>
 		After restoring the original JAR file versions, a new Scan should be executed to determine the new vulnerability status.<br>
@@ -43,7 +37,7 @@
     <DownloadSize>646583</DownloadSize>
     <Source>log4j2-scan</Source>
     <SourceID></SourceID>
-    <SourceReleaseDate>2022-01-04</SourceReleaseDate>
+    <SourceReleaseDate>2022-01-13</SourceReleaseDate>
     <SourceSeverity></SourceSeverity>
     <CVENames></CVENames>
     <SANSID></SANSID>
@@ -53,7 +47,7 @@
     </MIMEField>
     <MIMEField>
       <Name>x-fixlet-modification-time</Name>
-      <Value>Tue, 04 Jan 2022 23:52:06 +0000</Value>
+      <Value>Thu, 13 Jan 2022 21:40:13 +0000</Value>
     </MIMEField>
     <MIMEField>
       <Name>x-relevance-evaluation-period</Name>
@@ -219,7 +213,7 @@ continue if {exists file (parameter "Java_bin")}
 // Setup logpresso-log4j2-scan.jar
 if { exists files "logpresso-log4j2-scan.jar" of folders (parameter "BPSFolder")}
   delete "{pathname of file "logpresso-log4j2-scan.jar" of folder (parameter "BPSFolder")}"
-  
+
 endif
 
 // Copy the scanner JAR file to client folder
@@ -234,7 +228,7 @@ if {windows of operating system}
   appendfile del /q "{parameter "RestoreListFile"}"
   appendfile {concatenation "%0d%0a" of ("%22" & parameter "Java_bin" & "%22 -jar %22" & parameter "BPSFolder" & "logpresso-log4j2-scan.jar%22  --restore %22" & it & "%22 >> %22" & parameter "RestoreListFile" & "%22 2>&1"; "echo move /Y %22" & it & "%22 %22" & it & ".restored%22") of pathnames of find files "log4j2_scan_backup_*.zip" of folders (parameter "BPSFolder")}
   appendfile rd /s /q "{parameter "JREFolder"}"
- 
+
   delete log4j-restore.cmd
   move __appendfile log4j-restore.cmd
   waithidden cmd.exe /c log4j-restore.cmd
@@ -242,7 +236,7 @@ if {windows of operating system}
 else
   delete __appendfile
   appendfile #!/bin/sh
-  appendfile cd '{parameter "BPSFolder"}' 
+  appendfile cd '{parameter "BPSFolder"}'
   appendfile rm -f "{parameter "RestoreListFile"}"
   appendfile {concatenation "%0a" of ("%22" & parameter "Java_bin" & "%22 -jar %22" & parameter "BPSFolder" & "logpresso-log4j2-scan.jar%22  --restore %22" & it & "%22 >> %22" & parameter "RestoreListFile" & "%22 2>&1 "; "echo mv -f %22" & it & "%22 %22" & it & ".restored%22") of pathnames of find files "log4j2_scan_backup_*.zip" of folders (parameter "BPSFolder")}
   appendfile rm -rf '{parameter "JREFolder"}'
