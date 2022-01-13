@@ -13,7 +13,7 @@
 		<SourceReleaseDate>2021-12-15</SourceReleaseDate>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Sat, 18 Dec 2021 23:04:22 +0000</Value>
+			<Value>Thu, 13 Jan 2022 20:33:06 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<Property Name="log4j Scan - Vulnerable File List" ID="1" EvaluationPeriod="PT1H">unique values of (it as trimmed string) of preceding texts of firsts "," of following texts of firsts "vulnerability in " of (if exists property "locked lines" then locked lines of it else lines of it) whose (it as lowercase does not contain " (mitigated)" as lowercase) of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Property>
@@ -25,5 +25,8 @@
 		<Property Name="log4j Scan - File Result Details" ID="8" EvaluationPeriod="PT1H">unique values of (it as trimmed string) of (if exists property "locked lines" then locked lines of it else lines of it) whose (it starts with "[") of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Property>
 		<Property Name="log4j Scan - File Scan Count" ID="9" EvaluationPeriod="PT1H">(it as integer) of following texts of lasts " " of preceding texts of lasts " files" of (if exists property "locked lines" then locked lines of it else lines of it) whose (it starts with "Scanned " and it ends with " files") of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Property>
 		<Property Name="log4j Scan - Scan Duration" ID="10" EvaluationPeriod="PT1H">following texts of firsts "Completed in " of (if exists property "locked lines" then locked lines of it else lines of it) whose (it starts with "Completed in ") of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Property>
+		<Property Name="log4j Scan - Log4j versions found" ID="11" EvaluationPeriod="PT1H">(following texts of lasts "," of it as trimmed string) of (if exists property "locked lines" then locked lines of it else lines of it) whose (it starts with "[") of files "results-log4j2-scan.txt" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Property>
+		<Property Name="log4j Scan - Number of Logpresso Mitigation Rollback Files" ID="12" EvaluationPeriod="PT1H">number of find files "log4j2_scan_backup_*.zip" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Property>
+		<Property Name="log4j Scan - Logpresso Mitigation Rollback Files" ID="13" EvaluationPeriod="PT1H">names of find files "log4j2_scan_backup_*.zip" of folders "BPS-Scans" of parent folders of parent folders of client folders of sites "actionsite"</Property>
 	</Analysis>
 </BES>
