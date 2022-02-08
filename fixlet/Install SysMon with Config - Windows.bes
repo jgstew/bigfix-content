@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Install SysMon with Config - Windows</Title>
+		<Description><![CDATA[<P>WARNING: the default configuration of SysMon used in this will be very noisey, particularly with network items and they should likely be disabled for performance reasons on most systems.</P>
+<P>This is experimental and meant as an example. You really should customize the SysMon config to exclude more items than this example does.</P>
+<P>The example configuration this uses would make sense on test systems that you wish to monitor closely and are less worried about exessive monitoring causing issues. It may also make sense as-is for temporary usage during troubleshooting or investigations.</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>not exists display names whose(it as lowercase starts with "sysmon") of services</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2022-02-08</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 08 Feb 2022 16:26:24 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// https://github.com/SwiftOnSecurity/sysmon-config
+prefetch sysmonconfig-export.xml sha1:a61456878a619e0cf6ddf7cdbb7539e34fa04fba size:123257 https://raw.githubusercontent.com/SwiftOnSecurity/sysmon-config/1836897f12fbd6a0a473665ef6abc34a6b497e31/sysmonconfig-export.xml sha256:055febc600e6d7448cdf3812307275912927a62b1f94d0d933b64b294bc87162
+
+// https://docs.microsoft.com/en-us/sysinternals/downloads/sysmon
+prefetch Sysmon.zip sha1:2fe1cecd8fcfe31ddcd8e81cd2a7ce987859db9f size:3259770 https://download.sysinternals.com/files/Sysmon.zip sha256:97cb0ba1e615b98037be8bb32c0c2a53bfa20288f01bd881c8ee8f5d1c090936
+
+prefetch unzip.exe sha1:84debf12767785cd9b43811022407de7413beb6f size:204800 http://software.bigfix.com/download/redist/unzip-6.0.exe sha256:2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
+
+
+action uses wow64 redirection {not x64 of operating system}
+
+waithidden __Download\unzip.exe -o __Download\Sysmon.zip -d __Download
+
+waithidden __Download\Sysmon{if x64 of operating system then "64" else ""}.exe -accepteula -i __Download\sysmonconfig-export.xml
+</ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
