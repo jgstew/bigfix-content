@@ -1,0 +1,33 @@
+---
+name: autopkg
+
+on:
+  push:
+    paths:
+      - "**autopkg.yaml"
+
+jobs:
+  autopkg:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: git clone autopkg
+        run: git clone https://github.com/jgstew/autopkg.git
+      - name: switch autopkg branch
+        run: cd autopkg && git checkout dev
+      - name: install requirements autopkg
+        run: cd autopkg && pip3 install --requirement requirements.txt --quiet
+      - name: create autopkg config dir
+        run: mkdir -p ~/.config/Autopkg
+      - name: create default autopkg config files
+        run: echo {} > ~/.config/Autopkg/config.json
+      - name: add autopkg repos
+        run: for line in $(cat .autopkg_repos.txt); do python3 autopkg/Code/autopkg repo-add $line; done
+      - name: install requirements jgstew recipes
+        run: cd autopkg && pip3 install --requirement /root/Library/AutoPkg/RecipeRepos/com.github.jgstew.jgstew-recipes/requirements.txt --quiet
+      - name: run autopkg recipe
+        run: python3 autopkg/Code/autopkg run -vv com.github.jgstew.bigfix.log4j2-scan-Win64
