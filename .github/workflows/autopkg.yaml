@@ -33,4 +33,4 @@ jobs:
       - name: install requirements jgstew recipes
         run: cd autopkg && pip3 install --requirement /home/runner/Library/AutoPkg/RecipeRepos/com.github.jgstew.jgstew-recipes/requirements.txt --quiet
       - name: run autopkg recipe
-        run: cd /home/runner/Library/AutoPkg/RecipeRepos/com.github.jgstew.jgstew-recipes && python3 /home/runner/work/bigfix-content/bigfix-content/autopkg/Code/autopkg run -v com.github.jgstew.bigfix.log4j2-scan-Win64
+        run: cd /home/runner/Library/AutoPkg/RecipeRepos/com.github.jgstew.jgstew-recipes && python3 /home/runner/work/bigfix-content/bigfix-content/autopkg/Code/autopkg run -vvvvv com.github.jgstew.bigfix.log4j2-scan-Win64
