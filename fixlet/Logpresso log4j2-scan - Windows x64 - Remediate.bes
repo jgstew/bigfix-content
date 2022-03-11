@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run: log4j2-scan v2.5.3 - Windows (x64) - WITH REMEDIATION</Title>
+		<Title>Run: log4j2-scan v3.0.1 - Windows (x64) - WITH REMEDIATION</Title>
 		<Description><![CDATA[
 <P><H3>This is Community Content.  When you use these solutions, it is incumbent on your organization to test any solutions provided across the broadest available system base including various OS, storage solutions, and application inventory.</H3></P>
 <P>Please see the <A href="https://forum.bigfix.com/t/log4j-vulnerability-identification-and-3rd-party-remediation-solution-testing-statement/40273"> Community Solution Testing Statement</A></P>
@@ -24,40 +24,9 @@
 		<A href="https://github.com/jgstew/bigfix-content/blob/master/fixlet/Logpresso%20log4j2-scan%20-%20MacOS%20x64.bes">Logpresso log4j2-scan - MacOS x64.bes</A></P>
 		<P><BR>&nbsp;(be sure to check for the latest version).</P>
 		<P>For the latest details and discussion of this content, please see <A href="https://forum.bigfix.com/t/log4j-cve-2021-44228-cve-2021-45046-summary-page/40222">https://forum.bigfix.com/t/log4j-cve-2021-44228-cve-2021-45046-summary-page/40222</A></P>
-		<P>&nbsp;</P>		</P>
-		This task will run log4j2-scan v2.5.3 scanner.<br />
-		<TABLE>
-		  <TBODY>
-		    <TR>
-		      <TD
-		        ><LABEL for="exclusionlist"
-		          >List additional directories to be excluded from the scan, one per
-		          line:</LABEL
-		        >
-		      </TD>
-		      <TD
-		        ><TEXTAREA
-		          id="exclusionlist"
-		          rows="10"
-		          cols="40"
-		          name="exclusionlist"
-		        ></TEXTAREA></TD
-		    ></TR>
-		  </TBODY>
-		</TABLE>
-		<script>
-		  document.body.ontakeaction = function () {
-		    TakeFixletAction(
-		      Relevance("id of current fixlet"),
-		      Relevance("id of current bes site"),
-		      "Action1",
-		      { exclusionlist: document.getElementById("exclusionlist").value },
-		      {}
-		    );
-		    return false;
-		  };
-		</script>
-		</P>
+		<P>&nbsp;</P>
+		This task will run log4j2-scan v3.0.1 scanner.<br />		</P>
+				</P>
 		<P><H3>This Action will attempt to remediate the vulnerability by using Log4j-Scan to modify the affected JAR files and remove the JndiLookup.class entry.</H3></P>
 
 		<P>
@@ -65,32 +34,32 @@
 		<Relevance>windows of operating system</Relevance>
 				<Relevance><![CDATA[x64 of operating system]]></Relevance>
 				<Category></Category>
-		<DownloadSize>3344261</DownloadSize>
+		<DownloadSize>10778326</DownloadSize>
 		<Source>log4j2-scan</Source>
 		<SourceID></SourceID>
-		<SourceReleaseDate>2021-12-21</SourceReleaseDate>
+		<SourceReleaseDate>2022-03-11</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>action-ui-metadata</Name>
-			<Value>{ "version":"2.5.3","size":3344261 }</Value>
+			<Value>{ "version":"3.0.1","size":10778326 }</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Wed, 22 Dec 2021 00:50:14 +0000</Value>
+			<Value>Fri, 11 Mar 2022 05:28:28 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
 			<Description>
 				<PreLink>Click </PreLink>
 				<Link>here</Link>
-				<PostLink> to run log4j2-scan v2.5.3.</PostLink>
+				<PostLink> to run log4j2-scan v3.0.1.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // Download log4j2-scan:
 begin prefetch block
-add prefetch item name=logpresso-log4j2-scan-win64.zip sha1=6c1cec7550915e34c5431d4ea41838a8ca013f15 size=3344261 url=https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v2.5.3/logpresso-log4j2-scan-2.5.3-win64.zip sha256=aba165289f0c8f8ec34d55f6106c989d60202c8946d310da4b86d2601bd43431
+add prefetch item name=logpresso-log4j2-scan-win64.zip sha1=2426c33216ed97258f08804371953105c2d4582f size=10778326 url=https://github.com/logpresso/CVE-2021-44228-Scanner/releases/download/v3.0.1/logpresso-log4j2-scan-3.0.1-win64.zip sha256=2e4fdf6df91beae1b974d6e4911f6151af990ed8143319488a5159135bffed96
 
 // download Unzip
 add prefetch item name=unzip.exe sha1=84debf12767785cd9b43811022407de7413beb6f size=204800 url=http://software.bigfix.com/download/redist/unzip-6.0.exe sha256=2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
@@ -127,6 +96,8 @@ parameter "StartTime"="{now}"
 pause while {not exists file (parameter "ListFile") and now - (parameter "StartTime" as time) < 30 * second }
 // Check that an output log file has been created as an indicator that the scan has launched successfully
 continue if {exists file (parameter "ListFile") whose (modification time of it >= active start time of action)}
+
+action requires restart
 
 // End]]></ActionScript>
 
