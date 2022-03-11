@@ -34,3 +34,16 @@ jobs:
         run: cd autopkg && pip3 install --requirement /home/runner/Library/AutoPkg/RecipeRepos/com.github.jgstew.jgstew-recipes/requirements.txt --quiet
       - name: run autopkg recipe
         run: cd /home/runner/Library/AutoPkg/RecipeRepos/com.github.jgstew.jgstew-recipes && python3 /home/runner/work/bigfix-content/bigfix-content/autopkg/Code/autopkg run -vvvv com.github.jgstew.bigfix.log4j2-scan-Win64
+      - name: copy generated file
+        run: copy "/home/runner/Library/AutoPkg/Cache/com.github.jgstew.bigfix.log4j2-scan-Win64/Logpresso log4j2-scan - Windows x64 - Remediate.bes" "fixlet/Logpresso log4j2-scan - Windows x64 - Remediate.bes"
+      - name: setup git config
+        run: |
+          # setup the username and email.
+          git config user.name "GitHub Actions Runner"
+          git config user.email "<>"
+      - name: commit
+        run: |
+          # Stage the file, commit and push
+          git add "fixlet/Logpresso log4j2-scan - Windows x64 - Remediate.bes"
+          git commit -m "new logpresso"
+          git push
