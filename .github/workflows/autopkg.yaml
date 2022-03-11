@@ -15,7 +15,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3
+          python-version: 3.9
       - name: git clone autopkg
         run: git clone https://github.com/jgstew/autopkg.git
       - name: switch autopkg branch
