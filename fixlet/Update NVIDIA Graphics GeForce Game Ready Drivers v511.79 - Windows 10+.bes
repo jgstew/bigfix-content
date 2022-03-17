@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>Update NVIDIA Graphics GeForce Game Ready Drivers v511.79 - Windows 10+</Title>
+		<Description><![CDATA[<P>NOTE: This is not tested with all possible NVIDIA graphics cards and will likely NOT work if it is targeting a system with an older GPU than is supported.</P>
+<P>Content Applicability Evaluation Period: Every <?relevance ((if it = "00:00:00" as time interval then "Report" else if it / day > 0 then (it / day * day) as string else if it / hour > 0 then (it / hour) as string & " hours" else (it / minute) as string & " minutes") of it & " (" & it as string & ")") of (mime field "x-relevance-evaluation-period" of current fixlet as time interval | "00:00:00" as time interval)?></P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>x64 of operating system</Relevance>
+		<Relevance><![CDATA[version of operating system >= "10.0"]]></Relevance>
+		<Relevance>exists keys whose(value "DisplayName" of it as string starts with "NVIDIA Graphics Driver") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)</Relevance>
+		<Relevance><![CDATA[not exists (it as string as version) whose(it >= "511.79") of values "DisplayVersion" of keys whose(value "DisplayName" of it as string starts with "NVIDIA Graphics Driver") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)]]></Relevance>
+		<Relevance>/* exists NVIDIA GPU */ exists active devices whose(manufacturer of it as uppercase is "NVIDIA" AND description of it contains "GeForce" AND location information of it contains "PCI")</Relevance>
+		<Category></Category>
+		<Source>jgstew</Source>
+		<SourceID>NVIDIA</SourceID>
+		<SourceReleaseDate>2022-02-14</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-relevance-evaluation-period</Name>
+			<Value>01:00:00</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 17 Mar 2022 16:21:43 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+prefetch nvidia-gpu-win10-win11-64bit-international-dch-whql.exe sha1:aa874ce5f4203bf70f22c4ea35277591b7d5b5a6 size:824931464 https://us.download.nvidia.com/Windows/511.79/511.79-desktop-win10-win11-64bit-international-dch-whql.exe sha256:ad0ec9471eae8ed93691d6796a837cd1676c3a383635339f08cc4f43506ebe79
+
+// GPU Usage must be below 33% otherwise do not upgrade GPU drivers.
+continue if{ not exists sums whose(it >= 33) of integer values of selects "UtilizationPercentage FROM Win32_PerfFormattedData_GPUPerformanceCounters_GPUEngine" of wmis }
+
+// TODO: Test the update installation:
+// wait __Download\nvidia-gpu-win10-win11-64bit-international-dch-whql.exe -s -noreboot
+]]></ActionScript>
+		</DefaultAction>
+	</Fixlet>
+</BES>
