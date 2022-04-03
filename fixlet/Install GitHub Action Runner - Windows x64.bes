@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Install GitHub Action Runner - Windows x64</Title>
+		<Description><![CDATA[<P>WARNING: This will create an admin user on the target system to run the service under. The password is semi random, but can be retrived by an admin user of the system (which is true for any windows service running as a specific user with password)</P>
+<P>WARNING: This does not use a secure parameter for the `github_runner_token`</P>
+<P>WARNING: This will set the PowerShell Execution Policy for the local system context to "RemoteSigned". This is required for the default shell of GitHub Actions on Windows.</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>x64 of operating system</Relevance>
+		<Relevance>not exists services whose(display name of it starts with "GitHub Actions Runner")</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2022-03-31</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Sun, 03 Apr 2022 15:51:13 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+prefetch actions-runner-win-x64.zip sha1:9e712007c837afa0e8089a7a0b71d0ed65b7f65e size:72221988 https://github.com/actions/runner/releases/download/v2.289.2/actions-runner-win-x64-2.289.2.zip sha256:942723f875837fb167d7b3c772ea77163e42da7c0657a763461ecdb5b8987177
+
+action parameter query "github_url" with default "https://github.com/" with description "Enter the URL for a private repo, organization, or enterprise"
+
+// GitHub URL Examples:
+// https://github.com/user/repo
+
+
+action parameter query "github_runner_token" with default "" with description "Enter the runner token found through GitHub when choosing to add a new runner. It should be 29 uppercase alphanumeric characters."
+
+parameter "folder_path" = "\actions-runner"
+
+// if the password is greater then 14 characters long, then you get an interactive prompt warning you.
+parameter "pass" = "{ concatenations of (firsts 6 of it as uppercase; "!!" ; lasts 6 of it) of sha1s of concatenations of ( (it as string) of (id of active action | 0) ; infos of clients ) }"
+
+// Download Unzip:
+prefetch unzip.exe sha1:84debf12767785cd9b43811022407de7413beb6f size:204800 http://software.bigfix.com/download/redist/unzip-6.0.exe sha256:2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
+
+// Add Unzip to Utility Cache:
+utility __Download\unzip.exe
+
+// delete existing folder if it exists:
+folder delete {parameter "folder_path"}
+folder create {parameter "folder_path"}
+
+override wait
+hidden=true
+completion=job
+timeout_seconds=3600
+wait __Download\unzip.exe -o "__Download\actions-runner-win-x64.zip" -d "{parameter "folder_path"}"
+
+// create admin user for runner or change password for existing
+
+// https://operating-systems.wonderhowto.com/how-to/create-admin-user-account-using-cmd-prompt-windows-0125689/
+
+// if user doesn't already exist:
+if {not exists names whose(it = "github-runner") of users}
+override wait
+hidden=true
+completion=job
+timeout_seconds=3600
+wait CMD /C net user /add github-runner {parameter "pass"}
+else
+// if user already exists:
+override wait
+hidden=true
+completion=job
+timeout_seconds=3600
+wait CMD /C net user github-runner {parameter "pass"}
+endif
+// end of create user / change password
+
+// add user to local admin
+override wait
+hidden=true
+completion=job
+timeout_seconds=3600
+wait CMD /C net localgroup administrators github-runner /add
+
+// configure runner:
+override wait
+hidden=true
+completion=job
+timeout_seconds=3600
+wait CMD /C "cd {parameter "folder_path"} && config.cmd --unattended --replace --url {parameter "github_url"} --token {parameter "github_runner_token"} --runasservice --windowslogonaccount github-runner --windowslogonpassword {parameter "pass"}"
+
+// TODO: if possible, setup WSL2 for BASH commands to work
+// powershell -command "Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform"
+// wsl --install -d Ubuntu
+
+continue if{ exists services whose(display name of it starts with "GitHub Actions Runner") }
+continue if{ exists services whose(display name of it starts with "GitHub Actions Runner" AND running of it) }
+
+// set powershell execution policy for github-runner user: (not sure this works)
+// regset64 "[{(it & "\SOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell") of pathnames of keys whose(length of name of it > 8 AND name of it =  unique value of names of keys whose(value "ProfileImagePath" of it as string contains "\github-runner") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList" of native registry ) of keys "HKEY_USERS" of native registries}]" "ExecutionPolicy"="RemoteSigned"
+]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
