@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Find Private Key Files - Universal</Title>
+		<Description>WARNING: This searches the entire drive and is very slow! This will prevent the bigfix agent from running other actions while it is running and it could take multiple hours. This should only be used sparingly and when appropriate. </Description>
+		<Relevance>true</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2022-04-03</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 05 Apr 2022 02:10:22 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+// this will disable pre evaluation of relevance substitution:
+begin prefetch block
+end prefetch block
+
+action parameter query "notice" with description "WARNING: This action could take a very long time and is not a good idea to do more than once in a great while" with default "Okay"
+
+parameter "results_file_path" = "{pathname of folders "Logs" of folders "__Global" of data folders of client}/private_key_files_results.txt"
+
+delete __createfile
+
+createfile until _END_OF_FILE_
+{concatenations "%0d%0a" of pathnames of descendants whose(size of it < 500000 AND not exists following texts whose(it as lowercase is contained by set of ("exe";"zip";"msi";"dll";"chm")) of lasts "." of names of it AND content of it contains "PRIVATE KEY") of folders "/"}
+_END_OF_FILE_
+
+delete "{ parameter "results_file_path" }"
+copy __createfile "{ parameter "results_file_path" }"
+]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
