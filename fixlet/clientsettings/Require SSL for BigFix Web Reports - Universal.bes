@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>Require SSL for BigFix Web Reports - Universal</Title>
+		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Relevance>exists main gather service OR exists service "BESWebReportsServer"</Relevance>
+		<Relevance>not exists values whose(it as integer = 1) of settings "_WebReports_HTTPServer_UseSSLFlag" of clients</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2022-05-11</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 11 May 2022 17:21:43 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+setting "_WebReports_HTTPServer_UseSSLFlag"="1" on "{ parameter "action issue date" of action}" for client
+
+// session relevance to find related fixlets: names of bes fixlets whose(exists scripts whose(it contains "_HTTPServer_RequireTLS12") of actions of it OR exists relevances whose(it contains "_HTTPServer_RequireTLS12") of it)
+</ActionScript>
+		</DefaultAction>
+	</Fixlet>
+</BES>
