@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Run Adobe Remote Update Manager (RUM) - Windows and MacOS - Preview</Title>
+		<Description><![CDATA[<P>This has not been validated. Please let me know if this works. <A href="https://forum.bigfix.com/u/jgstew">https://forum.bigfix.com/u/jgstew</A></P>
+<P>This will run the Adobe Remote Update Manager and update all supported Adobe software.</P>
+<P><STRONG>Related:</STRONG></P>
+<P>- <A href="https://helpx.adobe.com/enterprise/using/using-remote-update-manager.html#env-setup">https://helpx.adobe.com/enterprise/using/using-remote-update-manager.html#env-setup</A>&nbsp;</P>
+<P>- <A href="https://bigfix.me/fixlet/details/3854">https://bigfix.me/fixlet/details/3854</A></P>]]></Description>
+		<Relevance>exists unique values of pathnames of (files "Common Files\Adobe\OOBE_Enterprise\RemoteUpdateManager\RemoteUpdateManager.exe" of (folders "C:\Program Files (x86)"; folders "C:\Program Files") ; files "/usr/local/bin/RemoteUpdateManager")</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2022-08-18</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 19 Aug 2022 01:15:24 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+parameter "RUM_Path" = "{ unique value of pathnames of (files "Common Files\Adobe\OOBE_Enterprise\RemoteUpdateManager\RemoteUpdateManager.exe" of (folders "C:\Program Files (x86)"; folders "C:\Program Files") ; files "/usr/local/bin/RemoteUpdateManager") }"
+
+wait "{ parameter "RUM_Path" }" --action=install
+
+parameter "exit_code" = "{ (exit code of active action | 0) }"
+
+continue if{ exists ( (parameter "exit_code") as integer ) whose(it = 1 OR it = 0) }
+
+// Exit Code 0
+// Updates deployed successfully, or machine is already up to date.
+
+// Exit Code 1
+// Generic error, for example an internal error. For example,  the Adobe Application Manager installation may be corrupted or network is not available. In this case, typically, the process of downloading or installing updates cannot be started at all.
+
+// Exit Code 2
+// One or more updates could not be installed. For example, only two out of three updates might have been installed successfully.
+// Consider a case where updates are to be installed for Photoshop, Illustrator, and Dreamweaver. However, Photoshop is running on the client machine and so the updates were installed only for Illustrator and Dreamweaver. In this scenario, error 2 will be returned.
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
