@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Get QnA Results - Universal - Experimental</Title>
+		<Description>Experimental preview </Description>
+		<Relevance>exists pathnames of files ("qna";"qna.exe") of storage folders of client</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2022-08-19</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 19 Aug 2022 17:34:39 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+parameter "QNA_Path" = "{unique value of pathnames of files ("qna";"qna.exe") of storage folders of client}"
+
+parameter "TMP_Path" = "{ if windows of operating system then "/Windows/Temp" else "/tmp" }"
+
+// "C:\Program Files (x86)\BigFix Enterprise\BES Client\qna.exe" -t -showtypes -o "/Windows/temp/test.qnaoutput.txt" /Windows/Temp/test.qna
+
+// Make sure __createfile doesn't already exist
+delete __createfile
+
+// generate __createfile contents: (must escape {})
+createfile until _END_OF_FILE_
+
+Q: (name of it | "Unknown", version of it | "0.0.0.0" as version, pathname of it | "Unknown") of descendants whose(".exe" = (it as lowercase) of last 4 of name of it) of folders "microsoft" of (program files folders; program files x64 folders)
+
+_END_OF_FILE_
+
+delete "{ parameter "TMP_Path" }/queryinput.qna.txt"
+copy __createfile "{ parameter "TMP_Path" }/queryinput.qna.txt"
+
+delete "{ parameter "TMP_Path" }/queryoutput.qna.txt"
+
+run "{ parameter "QNA_Path" }" -t -showtypes -o "{ parameter "TMP_Path" }/queryoutput.qna.txt" "{ parameter "TMP_Path" }/queryinput.qna.txt"
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
