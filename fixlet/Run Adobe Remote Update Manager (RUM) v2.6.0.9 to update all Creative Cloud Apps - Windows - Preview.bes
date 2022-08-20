@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Run Adobe Remote Update Manager (RUM) v2.6.0.9 to update all Creative Cloud Apps - Windows - Preview</Title>
+		<Description><![CDATA[<BR>WARNING: This is experimental <BR>This will download ALL updates for ALL Adobe Creative Cloud apps directly from Adobe. This will NOT use BigFix Relay caching. This could use a LOT of data! <BR>This will take a long time to complete, but this action will complete immediately while Adobe Remote Update Manager (RUM) runs in the background on the target system. <BR>It is not recommended to target this action on too many computers at once behind the same WAN because this could consume a lot of WAN bandwidth. <BR>Examine the log output found at: C:\Windows\Temp\RemoteUpdateManager.log ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists (folders "Adobe\Adobe Creative Cloud" of it; folders "Common Files\Adobe\OOBE" of it; folder "Common Files\Adobe\Adobe Desktop Common" of it) of (program files folders; program files x64 folders)</Relevance>
+		<Category>Update</Category>
+		<DownloadSize>1557930</DownloadSize>
+		<Source>Adobe</Source>
+		<SourceID>BigFix</SourceID>
+		<SourceReleaseDate>2021-07-28</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>action-ui-metadata</Name>
+			<Value>{ "version":"2.6.0.9","size":1557930 } </Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-cpe23-item-name</Name>
+			<Value>cpe:2.3:a:adobe:adobe_remote_update_manager_(rum):2.6.0.9:*:*:*:*:windows:*:*</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Sat, 20 Aug 2022 02:55:53 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to run Adobe Remote Update Manager (RUM) v2.6.0.9.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// Download:
+prefetch RemoteUpdateManager.zip sha1:a8b5ab914342aaee6b98314f4798ee5effd67c46 size:1557930 https://deploymenttools.acp.adobeoobe.com/RUM/Win/RemoteUpdateManager.zip sha256:0397ab96bb7884c096401058f78c02c04189af62dc2c0ed424666d0b2a89db5c
+
+prefetch unzip.exe sha1:84debf12767785cd9b43811022407de7413beb6f size:204800 http://software.bigfix.com/download/redist/unzip-6.0.exe sha256:2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
+parameter "run_folder" = "{folders "Temp" of windows folders}\bf_run_adobe_rum"
+
+folder delete "{parameter "run_folder"}"
+folder create "{parameter "run_folder"}"
+
+// Extract Adobe RUM:
+wait __Download\unzip.exe -o "{pathname of client folder of current site}\__Download\RemoteUpdateManager.zip" -d "{parameter "run_folder"}"
+
+// Run Adobe RUM:
+run "{parameter "run_folder"}\RemoteUpdateManager.exe" --action=install
+
+// End</ActionScript>
+			<SuccessCriteria Option="RunToCompletion"></SuccessCriteria>
+			<Settings>
+				<PreActionShowUI>false</PreActionShowUI>
+				<HasRunningMessage>false</HasRunningMessage>
+				<HasTimeRange>false</HasTimeRange>
+				<HasStartTime>false</HasStartTime>
+				<HasEndTime>false</HasEndTime>
+				<HasDayOfWeekConstraint>false</HasDayOfWeekConstraint>
+				<UseUTCTime>false</UseUTCTime>
+				<ActiveUserRequirement>NoRequirement</ActiveUserRequirement>
+				<ActiveUserType>AllUsers</ActiveUserType>
+				<HasWhose>false</HasWhose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>true</Reapply>
+				<HasReapplyLimit>false</HasReapplyLimit>
+				<HasReapplyInterval>true</HasReapplyInterval>
+				<ReapplyInterval>P30D</ReapplyInterval>
+				<HasRetry>false</HasRetry>
+				<HasTemporalDistribution>true</HasTemporalDistribution>
+				<TemporalDistribution>PT15H</TemporalDistribution>
+				<ContinueOnErrors>true</ContinueOnErrors>
+				<PostActionBehavior Behavior="Nothing"></PostActionBehavior>
+				<IsOffer>false</IsOffer>
+			</Settings>
+			<SettingsLocks>
+				<ActionUITitle>false</ActionUITitle>
+				<PreActionShowUI>false</PreActionShowUI>
+				<PreAction>
+					<Text>false</Text>
+					<AskToSaveWork>false</AskToSaveWork>
+					<ShowActionButton>false</ShowActionButton>
+					<ShowCancelButton>false</ShowCancelButton>
+					<DeadlineBehavior>false</DeadlineBehavior>
+					<ShowConfirmation>false</ShowConfirmation>
+				</PreAction>
+				<HasRunningMessage>false</HasRunningMessage>
+				<RunningMessage>
+					<Text>false</Text>
+				</RunningMessage>
+				<TimeRange>false</TimeRange>
+				<StartDateTimeOffset>false</StartDateTimeOffset>
+				<EndDateTimeOffset>false</EndDateTimeOffset>
+				<DayOfWeekConstraint>false</DayOfWeekConstraint>
+				<ActiveUserRequirement>false</ActiveUserRequirement>
+				<ActiveUserType>false</ActiveUserType>
+				<Whose>false</Whose>
+				<PreActionCacheDownload>false</PreActionCacheDownload>
+				<Reapply>false</Reapply>
+				<ReapplyLimit>false</ReapplyLimit>
+				<RetryCount>false</RetryCount>
+				<RetryWait>false</RetryWait>
+				<TemporalDistribution>false</TemporalDistribution>
+				<ContinueOnErrors>false</ContinueOnErrors>
+				<PostActionBehavior>
+					<Behavior>false</Behavior>
+					<AllowCancel>false</AllowCancel>
+					<Deadline>false</Deadline>
+					<Title>false</Title>
+					<Text>false</Text>
+				</PostActionBehavior>
+				<IsOffer>false</IsOffer>
+				<AnnounceOffer>false</AnnounceOffer>
+				<OfferCategory>false</OfferCategory>
+				<OfferDescriptionHTML>false</OfferDescriptionHTML>
+			</SettingsLocks>
+		</DefaultAction>
+	</Task>
+</BES>
