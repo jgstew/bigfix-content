@@ -18,10 +18,6 @@
 			<Value>{ "version":"2.6.0.9","size":1557930 } </Value>
 		</MIMEField>
 		<MIMEField>
-			<Name>x-fixlet-cpe23-item-name</Name>
-			<Value>cpe:2.3:a:adobe:adobe_remote_update_manager_(rum):2.6.0.9:*:*:*:*:windows:*:*</Value>
-		</MIMEField>
-		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
 			<Value>Sat, 20 Aug 2022 02:55:53 +0000</Value>
 		</MIMEField>
