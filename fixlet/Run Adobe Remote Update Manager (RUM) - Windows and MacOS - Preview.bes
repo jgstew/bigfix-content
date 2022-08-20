@@ -1,53 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Run Adobe Remote Update Manager (RUM) v2.6.0.9 to update all Creative Cloud Apps - Windows - Preview</Title>
-		<Description><![CDATA[<BR>WARNING: This is experimental <BR>This will download ALL updates for ALL Adobe Creative Cloud apps directly from Adobe. This will NOT use BigFix Relay caching. This could use a LOT of data! <BR>This will take a long time to complete, but this action will complete immediately while Adobe Remote Update Manager (RUM) runs in the background on the target system. <BR>It is not recommended to target this action on too many computers at once behind the same WAN because this could consume a lot of WAN bandwidth. <BR>Examine the log output found at: C:\Windows\Temp\RemoteUpdateManager.log 
-
+		<Title>Run Adobe Remote Update Manager (RUM) - Windows and MacOS - Preview</Title>
+		<Description><![CDATA[<P>This has not been validated. Please let me know if this works. <A href="https://forum.bigfix.com/u/jgstew">https://forum.bigfix.com/u/jgstew</A></P>
+<P>This will run the Adobe Remote Update Manager and update all supported Adobe software.</P>
 <P><STRONG>Related:</STRONG></P>
 <P>- <A href="https://helpx.adobe.com/enterprise/using/using-remote-update-manager.html#env-setup">https://helpx.adobe.com/enterprise/using/using-remote-update-manager.html#env-setup</A>&nbsp;</P>
-<P>- <A href="https://bigfix.me/fixlet/details/3854">https://bigfix.me/fixlet/details/3854</A></P>
-]]></Description>
-		<Relevance>windows of operating system</Relevance>
-		<Relevance>exists (folders "Adobe\Adobe Creative Cloud" of it; folders "Common Files\Adobe\OOBE" of it; folder "Common Files\Adobe\Adobe Desktop Common" of it) of (program files folders; program files x64 folders)</Relevance>
-		<Category>Update</Category>
-		<DownloadSize>1557930</DownloadSize>
-		<Source>Adobe</Source>
-		<SourceID>jgstew</SourceID>
-		<SourceReleaseDate>2021-07-28</SourceReleaseDate>
+<P>- <A href="https://bigfix.me/fixlet/details/3854">https://bigfix.me/fixlet/details/3854</A></P>]]></Description>
+		<Relevance>exists unique values of pathnames of (files "Common Files\Adobe\OOBE_Enterprise\RemoteUpdateManager\RemoteUpdateManager.exe" of (folders "C:\Program Files (x86)"; folders "C:\Program Files") ; files "/usr/local/bin/RemoteUpdateManager")</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2022-08-18</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
-			<Name>action-ui-metadata</Name>
-			<Value>{ "version":"2.6.0.9","size":1557930 } </Value>
-		</MIMEField>
-		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Sat, 20 Aug 2022 02:55:53 +0000</Value>
+			<Value>Fri, 19 Aug 2022 01:15:24 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
 			<Description>
 				<PreLink>Click </PreLink>
 				<Link>here</Link>
-				<PostLink> to run Adobe Remote Update Manager (RUM) v2.6.0.9.</PostLink>
+				<PostLink> to deploy this action.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
-// Download:
-prefetch RemoteUpdateManager.zip sha1:a8b5ab914342aaee6b98314f4798ee5effd67c46 size:1557930 https://deploymenttools.acp.adobeoobe.com/RUM/Win/RemoteUpdateManager.zip sha256:0397ab96bb7884c096401058f78c02c04189af62dc2c0ed424666d0b2a89db5c
+parameter "RUM_Path" = "{ unique value of pathnames of (files "Common Files\Adobe\OOBE_Enterprise\RemoteUpdateManager\RemoteUpdateManager.exe" of (folders "C:\Program Files (x86)"; folders "C:\Program Files") ; files "/usr/local/bin/RemoteUpdateManager") }"
 
-prefetch unzip.exe sha1:84debf12767785cd9b43811022407de7413beb6f size:204800 http://software.bigfix.com/download/redist/unzip-6.0.exe sha256:2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
-parameter "run_folder" = "{folders "Temp" of windows folders}\bf_run_adobe_rum"
+wait "{ parameter "RUM_Path" }" --action=install
 
-folder delete "{parameter "run_folder"}"
-folder create "{parameter "run_folder"}"
+parameter "exit_code" = "{ (exit code of active action | 0) }"
 
-// Extract Adobe RUM:
-wait __Download\unzip.exe -o "{pathname of client folder of current site}\__Download\RemoteUpdateManager.zip" -d "{parameter "run_folder"}"
-
-// Run Adobe RUM:
-run "{parameter "run_folder"}\RemoteUpdateManager.exe" --action=install
+continue if{ exists ( (parameter "exit_code") as integer ) whose(it = 1 OR it = 0) }
 
 // Exit Code 0
 // Updates deployed successfully, or machine is already up to date.
@@ -58,32 +44,7 @@ run "{parameter "run_folder"}\RemoteUpdateManager.exe" --action=install
 // Exit Code 2
 // One or more updates could not be installed. For example, only two out of three updates might have been installed successfully.
 // Consider a case where updates are to be installed for Photoshop, Illustrator, and Dreamweaver. However, Photoshop is running on the client machine and so the updates were installed only for Illustrator and Dreamweaver. In this scenario, error 2 will be returned.
-
-// End</ActionScript>
-			<SuccessCriteria Option="RunToCompletion"></SuccessCriteria>
-			<Settings>
-				<PreActionShowUI>false</PreActionShowUI>
-				<HasRunningMessage>false</HasRunningMessage>
-				<HasTimeRange>false</HasTimeRange>
-				<HasStartTime>false</HasStartTime>
-				<HasEndTime>false</HasEndTime>
-				<HasDayOfWeekConstraint>false</HasDayOfWeekConstraint>
-				<UseUTCTime>false</UseUTCTime>
-				<ActiveUserRequirement>NoRequirement</ActiveUserRequirement>
-				<ActiveUserType>AllUsers</ActiveUserType>
-				<HasWhose>false</HasWhose>
-				<PreActionCacheDownload>false</PreActionCacheDownload>
-				<Reapply>true</Reapply>
-				<HasReapplyLimit>false</HasReapplyLimit>
-				<HasReapplyInterval>true</HasReapplyInterval>
-				<ReapplyInterval>P30D</ReapplyInterval>
-				<HasRetry>false</HasRetry>
-				<HasTemporalDistribution>true</HasTemporalDistribution>
-				<TemporalDistribution>PT15H</TemporalDistribution>
-				<ContinueOnErrors>true</ContinueOnErrors>
-				<PostActionBehavior Behavior="Nothing"></PostActionBehavior>
-				<IsOffer>false</IsOffer>
-			</Settings>
+</ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>
