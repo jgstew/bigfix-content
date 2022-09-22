@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Install/Update: Dell Command Update - 2.3.1 - Windows TODO:testing</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>/* Windows Only */ windows of operating system</Relevance>
+		<Relevance><![CDATA[/* Windows Vista or Higher */ version of operating system >= "6.0"]]></Relevance>
+		<Relevance>/* DELL Only */ exists values "vendor" whose(it as string as uppercase contains "DELL") of structures "bios_information" of smbios</Relevance>
+		<Relevance>/* check for supported model: OptiPlex, Latitude, Precision, Venue Tablets, XPS */ exists ((value "product_name" of structures "system_information" of smbios) as string as uppercase) whose(it starts with "OPTIPLEX" OR it starts with "LATITUDE" OR it starts with "PRECISION" OR it starts with "XPS" OR it starts with "VENUE")</Relevance>
+		<Relevance>/* Requires .NET 4+ */ exists values "Install" whose(1 = it as string as integer) of keys of keys whose(name of it starts with "v4") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\NET Framework Setup\NDP" of (x32 registries;x64 registries)</Relevance>
+		<Relevance><![CDATA[not exists keys whose(value "DisplayName" of it as string as trimmed string starts with "Dell Command | Update" AND value "DisplayVersion" of it as string as version >= "2.3.1") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries; x32 registries)]]></Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2017-12-27</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 28 Dec 2017 02:00:36 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// DOWNLOAD   https://virustotal.com/en/file/f322e74600468fd888183ec520e4e3a031fe8ab2b12a89c18b679dc589512254/analysis/
+prefetch Dell-Command-Update.exe sha1:0f341c5380428e0399dec6098a7e5e03b2701914 size:99786432 https://downloads.dell.com/FOLDER04358530M/1/Dell-Command-Update_X79N4_WIN_2.3.1_A00.EXE sha256:f322e74600468fd888183ec520e4e3a031fe8ab2b12a89c18b679dc589512254
+
+// INSTALL
+waithidden __Download\Dell-Command-Update.exe /s
+
+// DELETE: the Dell Command Update start menu folder
+folder delete "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Dell\Command Update"
+
+// DELETE: the Dell start menu folder if it is empty
+if{ not exists descendants of folders "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Dell" }
+    folder delete "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Dell"
+endif
+
+// if run, check for updates and notify 
+regset "[HKEY_LOCAL_MACHINE\SOFTWARE\Dell\CommandUpdate\Preferences]" "automationmode"="ScanNotify"
+// Only run if manually invoked
+regset "[HKEY_LOCAL_MACHINE\SOFTWARE\Dell\CommandUpdate\Preferences]" "scheduledexecution"="Off"
+// Don't show setup popup on first launch
+regset "[HKEY_LOCAL_MACHINE\SOFTWARE\Dell\CommandUpdate\Preferences]" "showsetuppopup"="False"
+
+
+// https://www.bigfix.me/fixlet/details/11942
+// https://github.com/flcdrg/chocolatey-dellcommandupdate/blob/master/tools/chocolateyinstall.ps1
+// https://github.com/discentem/dellCommandUpdate/blob/master/downloadDellCommandUpdate.ps1
+// https://forum.bigfix.com/t/bios-updates-configuration-using-bigfix/24058
+// http://www.dell.com/support/home/us/en/19/Drivers/DriversDetails?driverId=X79N4
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
