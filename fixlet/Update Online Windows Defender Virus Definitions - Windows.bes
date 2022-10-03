@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Update Online Windows Defender Virus Definitions - Windows</Title>
+		<Description>This shouldn't be required, but this will force Windows Defender to do a check for new AntiVirus Definitions. I'm not certain this works as is currently.</Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>/* Check that Windows Defender is enabled: */ not exists (it as string as integer) whose(it = 1) of values "DisableAntiSpyware" of (keys "Microsoft Antimalware" of it ; keys "Windows Defender" of it) of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft" of native registry</Relevance>
+		<Relevance>exists unique values of pathnames of files "MpCmdRun.exe" of (folders it) of (it as string) of values "InstallLocation" of (keys "Microsoft Antimalware" of it ; keys "Windows Defender" of it) of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft" of native registry</Relevance>
+		<Relevance><![CDATA[/* Check that Windows Defender Updates have not been applied or attempted recently */ exists (now - it) whose(it > 1 * day) of maxima of (it * second + "01 Jan 1601 00:00:00" as universal time) of (it/10000000) of (hexadecimal integer (concatenation of characters ((it; it + 1) of lengths of following texts of positions whose (it mod 2 = 0) of it) of it)) of (it as string) of (values "SignatureUpdateLastAttempted" of it; values "SignaturesLastUpdated" of it; values "AVSignatureApplied" of it) of keys "Signature Updates" of (keys "Microsoft Antimalware" of it ; keys "Windows Defender" of it) of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft" of native registry]]></Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2022-10-01</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Mon, 03 Oct 2022 20:16:37 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+// https://www.microsoft.com/en-us/wdsi/defenderupdates
+wait CMD /C "{ unique value of pathnames of files "MpCmdRun.exe" of (folders it) of (it as string) of values "InstallLocation" of (keys "Microsoft Antimalware" of it ; keys "Windows Defender" of it) of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft" of native registry }" -SignatureUpdate
+
+parameter "start" = "{now}"
+pause while{ now - (it as time) of (parameter "start") < 30 * second }
+]]></ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
