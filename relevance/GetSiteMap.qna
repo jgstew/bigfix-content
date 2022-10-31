@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FixletDebuggerFile>
+	<Actions>download now http://sync.bigfix.com/cgi-bin/bfgather/bessupport
+
+parameter "site_ver"="{parenthesized parts of matches (regex "http://sync.bigfix.com/bfsites/bessupport_([0-9]+)/SiteMap.js") of concatenations of lines containing "/SiteMap.js" of files "bessupport" of folders "__FixletDebugger\__Download" of data folders of client}"
+
+download now http://sync.bigfix.com/bfsites/bessupport_{parameter "site_ver"}/SiteMap.js
+
+parameter "results_sites"="{concatenations ";;" of lines whose(it as lowercase contains "nac" as lowercase) of files "SiteMap.js" of folders "__FixletDebugger\__Download" of data folders of client}"</Actions>
+</FixletDebuggerFile>
