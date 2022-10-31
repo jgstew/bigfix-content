@@ -6,5 +6,11 @@ parameter "site_ver"="{parenthesized parts of matches (regex "http://sync.bigfix
 
 download now http://sync.bigfix.com/bfsites/bessupport_{parameter "site_ver"}/SiteMap.js
 
-parameter "results_sites"="{concatenations ";;" of lines whose(it as lowercase contains "nac" as lowercase) of files "SiteMap.js" of folders "__FixletDebugger\__Download" of data folders of client}"</Actions>
+delete __createfile
+
+createfile until _EOF_
+{concatenations "%0d%0a" of lines whose(it as lowercase contains "patch" as lowercase) of files "SiteMap.js" of folders "__FixletDebugger\__Download" of data folders of client}
+_EOF_
+
+run CMD /C start "" code "{pathname of files "__createfile" of folders "__FixletDebugger" of data folders of client}"</Actions>
 </FixletDebuggerFile>
