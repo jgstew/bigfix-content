@@ -1,4 +1,5 @@
 # https://github.com/github/linguist/blob/master/lib/linguist/languages.yml
+# https://github.com/github/linguist/blob/master/docs/overrides.md
 *.html linguist-language=HTML
 *.xml linguist-language=XML linguist-detectable
 *.bes linguist-language=XML linguist-detectable
