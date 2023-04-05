@@ -1,7 +1,7 @@
 # https://github.com/github/linguist/blob/master/lib/linguist/languages.yml
 *.html linguist-language=HTML
-*.xml linguist-language=XML
-*.bes linguist-language=XML
-*.ojo linguist-language=XML
-*.beswrpt linguist-language=HTML
+*.xml linguist-language=XML linguist-detectable
+*.bes linguist-language=XML linguist-detectable
+*.ojo linguist-language=XML linguist-detectable
+*.beswrpt linguist-language=HTML linguist-detectable
 Tasks_UninstallApplicationsMSI_Windows.bes linguist-vendored
