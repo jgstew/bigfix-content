@@ -1,7 +1,7 @@
 
 *.html linguist-language=HTML
-*.xml linguist-language=XProc
-*.bes linguist-language=XProc
-*.ojo linguist-language=XProc
+*.xml linguist-language=XML
+*.bes linguist-language=XML
+*.ojo linguist-language=XML
 *.beswrpt linguist-language=HTML
 Tasks_UninstallApplicationsMSI_Windows.bes linguist-vendored
