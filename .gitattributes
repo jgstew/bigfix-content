@@ -4,4 +4,4 @@
 *.bes linguist-language=XML linguist-detectable
 *.ojo linguist-language=XML linguist-detectable
 *.beswrpt linguist-language=HTML linguist-detectable
-Tasks_UninstallApplicationsMSI_Windows.bes linguist-vendored
+Tasks_UninstallApplicationsMSI_Windows.bes linguist-generated
