@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Google Chrome - Enable Automatic Component Updates - no longer supported OS</Title>
+		<Description><![CDATA[<TABLE>
+<TBODY>
+<TR>
+<TD>
+<P>Deploy the action below to enable Google Chrome's component updater. This only works on Google Chrome version 54 and above.</P>
+<P>This is only relevant on Win2012R2 or Win8.1 or below.</P></TD></TR></TBODY></TABLE>]]></Description>
+		<Relevance>(if( name of operating system starts with "Win" ) then platform id of operating system != 3 else false) AND (if exists property "in proxy agent context" then ( not in proxy agent context ) else true )</Relevance>
+		<Relevance>name of operating system as lowercase starts with "win"</Relevance>
+		<Relevance><![CDATA[/* Win2012R2 or Win8.1 or lower */ exists version whose(it <= "6.3") of operating system]]></Relevance>
+		<Relevance>not exists values "PROCESSOR_ARCHITECTURE" whose (it as string as lowercase = "ia64") of keys "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment" of registry</Relevance>
+		<Relevance>exists regapp "chrome.exe"</Relevance>
+		<Relevance>(it != "WinNT" AND it != "Win95") of name of operating system</Relevance>
+		<Relevance><![CDATA[exists key whose ((value "name" of it as string = "Google %c5%a9%b7%d2" or value "name" of it as string = "Google Chrome") and value "pv" of it as string as version >= "54.0.0.0") of keys "HKEY_LOCAL_MACHINE\Software\Google\Update\Clients" of registry]]></Relevance>
+		<Relevance>not exists keys "Google\Chrome" whose (exists values "ComponentUpdatesEnabled" whose(1 = it as string as integer) of it) of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Policies" of native registry</Relevance>
+		<Category>Configuration</Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Google</Source>
+		<SourceID>Unspecified</SourceID>
+		<SourceReleaseDate>2017-06-23</SourceReleaseDate>
+		<SourceSeverity>Unspecified</SourceSeverity>
+		<CVENames>Unspecified</CVENames>
+		<SANSID>Unspecified</SANSID>
+		<MIMEField>
+			<Name>x-fixlet-domain_attributes</Name>
+			<Value>PatchManagement 3rdPartyApp Google Chrome</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-first-propagation</Name>
+			<Value>Thu, 06 Feb 2020 20:59:40 +0000</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 25 Apr 2023 15:44:34 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to disable component updater of Google Chrome.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+regset64 "[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome]" "ComponentUpdatesEnabled"="1"
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
