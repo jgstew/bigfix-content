@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Install: GitHub Action Runner v2.304.0 - Linux (x64)</Title>
+		<Description><![CDATA[<DIV>This Task will download and install "GitHub Action Runner v2.304.0" onto selected endpoints. <BR><BR><B>Download Size:</B> 144145165 <BR>This will either suppress the creation of desktop shortcuts or delete them if created by the action. </DIV>]]></Description>
+		<Relevance>unix of operating system</Relevance>
+		<Relevance>exists architectures whose(it = "x86_64") of operating system</Relevance>
+		<Relevance>not exists folders "/actions-runner"</Relevance>
+		<Category>Install</Category>
+		<DownloadSize>144145165</DownloadSize>
+		<Source>GitHub</Source>
+		<SourceID>BigFix</SourceID>
+		<SourceReleaseDate>2023-06-07</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>action-ui-metadata</Name>
+			<Value>{ "version":"2.304.0","size":144145165 } </Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 07 Jun 2023 20:54:14 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy GitHub Action Runner v2.304.0.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+// Download:
+prefetch actions-runner-linux-x64.tar.gz sha1:2c4dc553de2155567a407a5d96e01a3c2fff3aeb size:144145165 https://github.com/actions/runner/releases/download/v2.304.0/actions-runner-linux-x64-2.304.0.tar.gz sha256:292e8770bdeafca135c2c06cd5426f9dda49a775568f45fcc25cc2b576afc12f
+
+action parameter query "url"
+action parameter query "token"
+action parameter query "labels"
+
+parameter "install_folder" = "/actions-runner"
+parameter "install_user" = "github"
+
+folder delete "{parameter "install_folder"}"
+folder create "{parameter "install_folder"}"
+
+// Create "github" user
+wait bash -c "useradd {parameter "install_user"}"
+
+// Install:
+wait bash -c "tar xzf __Download/actions-runner-linux-x64.tar.gz --directory '{parameter "install_folder"}'"
+wait bash -c "chown -R {parameter "install_user"} '{parameter "install_folder"}'"
+wait sudo --user={parameter "install_user"} bash -c "cd {parameter "install_folder"} && bash config.sh --url {parameter "url"} --token {parameter "token"} --labels {parameter "labels"}"
+
+// Run:
+run sudo --user=github bash -c "cd /actions-runner && nohup bash run.sh & disown"
+
+// End]]></ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
