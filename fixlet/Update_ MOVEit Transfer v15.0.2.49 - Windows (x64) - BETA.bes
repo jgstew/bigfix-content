@@ -13,7 +13,7 @@
 		<SourceID>BigFix</SourceID>
 		<SourceReleaseDate>2023-06-08</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
-		<CVENames></CVENames>
+		<CVENames>CVE-2023-35036</CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-domain_attributes</Name>
