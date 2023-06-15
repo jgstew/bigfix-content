@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Update: MOVEit Transfer v15.0.2.49 - Windows (x64) - BETA</Title>
+		<Description><![CDATA[<DIV>This Task will download and update "MOVEit Transfer v15.0.2.49" onto selected endpoints. <BR><BR><B>Download Size:</B> 357127104 <BR>This will either suppress the creation of desktop shortcuts or delete them if created by the action. </DIV>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>x64 of operating system</Relevance>
+		<Relevance>exists keys whose(value "DisplayName" of it as string contains "MOVEit Transfer") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)</Relevance>
+		<Relevance><![CDATA[not exists (it as string as version) whose(it >= "15.0.2.49") of values "DisplayVersion" of keys whose(value "DisplayName" of it as string contains "MOVEit Transfer") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)]]></Relevance>
+		<Category>Update</Category>
+		<DownloadSize>357127104</DownloadSize>
+		<Source>Progress</Source>
+		<SourceID>BigFix</SourceID>
+		<SourceReleaseDate>2023-06-08</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-domain_attributes</Name>
+			<Value>PatchManagement 3rdPartyApp</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>action-ui-metadata</Name>
+			<Value>{ "version":"15.0.2.49","size":357127104 } </Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-cpe23-item-name</Name>
+			<Value>cpe:2.3:a:progress:moveit_transfer:15.0.2.49:*:*:*:*:windows:x64:*</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 15 Jun 2023 23:06:07 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy MOVEit Transfer v15.0.2.49.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// Download:
+prefetch MOVEit-Transfer-FullInstall.exe sha1:c2f1df684f1dd50f16da02725946183270ed5aaa size:357127104 https://cdn.ipswitch.com/ft/MOVEit/Transfer/2023/2023.0.2/MOVEit-Transfer-2023.0.2-FullInstall.exe sha256:ca48b55254f58c98c8b635a7992f9872825a5185d1d248f80b93f13b9848f45d
+
+delete __createfile
+
+// Example create file:
+createfile until _END_OF_FILE_
+CREDENTIALS
+MySQL Administrator Username=root Password=???
+MySQL User Username=moveittransfer Password=???
+SysAdmin Username=sysadmin Password=???
+RootKey Passphrase=???
+Windows Service Username=moveitsvc Password=???
+
+FOLDERS
+Install Directory=C:\Program Files\MOVEit
+Data Directory=C:\MOVEitTransfer
+MySQL Directory=C:\MySQL
+
+TRANSFER SERVER
+Public URL=https://???
+Email Server=???
+Email Server Port=25
+To Email Address=to@???.com
+From Email Address=from@???.com
+Email Account Username= Password=
+Email Use TLS=1
+Email Ignore Certificate Errors=0
+Web Site Name=MOVEitDMZ
+Certificate=temporary 90 day
+_END_OF_FILE_
+
+delete __Download\ResponseFile.txt
+copy __createfile __Download\ResponseFile.txt
+
+// Do Not Continue if ResponseFile not altered:
+continue if { not exists lines containing "???" of files "ResponseFile.txt" of folders "__Download" of client folders of current site}
+
+// Install:
+// https://community.progress.com/s/article/Silent-Install-Guide
+override wait
+hidden=true
+completion=job
+timeout_seconds=3600
+disposition=terminate
+wait __Download\MOVEit-Transfer-FullInstall.exe -L1033 ResponseFile=__Download\ResponseFile.txt
+
+// End</ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
