@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Update: MOVEit Transfer v15.0.2.49 - Windows (x64) - BETA</Title>
+		<Title>Update: MOVEit Transfer v15.0.2.49 - Windows (x64) - NOT RECOMMENDED</Title>
 		<Description><![CDATA[<DIV>This Task will download and update "MOVEit Transfer v15.0.2.49" onto selected endpoints. <BR><BR><B>Download Size:</B> 357127104 <BR>This will either suppress the creation of desktop shortcuts or delete them if created by the action. </DIV>]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>x64 of operating system</Relevance>
