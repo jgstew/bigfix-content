@@ -46,29 +46,220 @@ delete __createfile
 
 // Example create file:
 createfile until _END_OF_FILE_
-CREDENTIALS
-MySQL Administrator Username=root Password=???
-MySQL User Username=moveittransfer Password=???
-SysAdmin Username=sysadmin Password=???
-RootKey Passphrase=???
-Windows Service Username=moveitsvc Password=???
+#service user and passwords
+ServiceUser=moveitsvc
+ServicePassword=<EncrStr>???
+WebServiceUseLocalSystem=
+WebServiceUser=
+WebServicePassword=
 
-FOLDERS
-Install Directory=C:\Program Files\MOVEit
-Data Directory=C:\MOVEitTransfer
-MySQL Directory=C:\MySQL
+#Proxy settings
+# if proxy server used and requires credentials set these values
+ProxyUser=
+ProxyPassword=
 
-TRANSFER SERVER
-Public URL=https://???
-Email Server=???
-Email Server Port=25
-To Email Address=to@???.com
-From Email Address=from@???.com
-Email Account Username= Password=
-Email Use TLS=1
-Email Ignore Certificate Errors=0
-Web Site Name=MOVEitDMZ
-Certificate=temporary 90 day
+#Licensing values
+SerialNumber=???
+RRN=1462
+LicenseFile=
+UseInstalledLicense=No
+CustomerPortalLoginName=
+CustomerPortalLoginPassword=
+
+#Disables all calls requiring Internet access
+# set Offline = to 'Yes' to disable the installer from attempting to make any internet related calls
+Offline=No
+
+#send back installation telemetry
+SendInstallStats=No
+
+# Option to automatically restart computer if required to finish installation.
+# If reboot is not required, this option is ignored.
+# If reboot is required and
+#    'Yes' is selected - computer will be automatically restarted
+#    'No' is selected, reboot dialog will be shown for manual selection to reboot now or later
+AutoReboot=No
+
+# maintenance mode (applies only if setup is in maintenance mode, i.e. ignored if new Platform installation or upgrade)
+# Recognized values:
+# 1 - repair
+# 2 - uninstall
+MaintenanceMode=
+
+
+#New installations only
+#-------------------------------------------------------------------
+
+#installation directory
+ApplicationFolder=C:\Program Files\MOVEit
+
+#Suites
+# only one can be selected
+# set the one you want to install to 1 the rest to 0
+mitransfer.selected=1
+miautomation.selected=0
+
+#Begin Transfer Server
+#-------------------------------------------------------------------
+mitransfer.mitransferserver.selected=1
+
+#Database values
+mitransfer.mitransferserver.DatabaseType=MYSQL
+mitransfer.mitransferserver.DatabaseName=moveittransfer
+mitransfer.mitransferserver.DatabaseUsername=moveittransfer
+mitransfer.mitransferserver.DatabasePassword=<EncrStr>???
+mitransfer.mitransferserver.DatabaseAdminUsername=root
+mitransfer.mitransferserver.DatabaseAdminPassword=<EncrStr>???
+
+# Upgrade Maintenance only
+# 0 is the default it will do the existing logic and remove DB Elements that we don't know about
+# 1 will leave the DB Elements
+mitransfer.mitransferserver.IgnoreNonStandardDBElements=
+
+#SQL Server only values
+mitransfer.mitransferserver.SQLServerName=
+# 0 the install will error out if the DB exists
+# 1 SQL Server - delete and over write the DB
+# 1 SQL Azure - Use the existing DB
+mitransfer.mitransferserver.DatabaseAlreadyExists=0
+
+#MySql Only Database values
+mitransfer.mitransferserver.DatabaseFolder=C:\MySQL
+
+#Certificate
+mitransfer.mitransferserver.CreateCertificate=1
+mitransfer.mitransferserver.CertificateHash=
+
+#Data folder
+mitransfer.mitransferserver.DataFolder=C:\MOVEitTransfer
+
+# Storage Folder Values
+mitransfer.mitransferserver.StorageType=Windows
+mitransfer.mitransferserver.StorageAzureAccount=
+mitransfer.mitransferserver.StorageAzureKey=
+mitransfer.mitransferserver.StorageAzureContainer=
+mitransfer.mitransferserver.StorageAzureMOVEitEncrypt=1
+
+#IIS
+mitransfer.mitransferserver.WebSiteName=MOVEitDMZ
+mitransfer.mitransferserver.VirtualDirectoryName=moveittransfer
+
+#Admin credentials
+mitransfer.mitransferserver.AdminUsername=sysadmin
+mitransfer.mitransferserver.AdminPassword=<EncrStr>???
+
+#Root Key
+mitransfer.mitransferserver.RootKeyPassphrase=<EncrStr>???
+
+#Email settings
+mitransfer.mitransferserver.EmailURL=https://???
+mitransfer.mitransferserver.EmailTo=to@???.com
+mitransfer.mitransferserver.EmailFrom=from@???.com
+mitransfer.mitransferserver.EmailServer=???
+mitransfer.mitransferserver.EmailPort=25
+mitransfer.mitransferserver.EmailUsername=
+mitransfer.mitransferserver.EmailPassword=
+mitransfer.mitransferserver.EmailUseSSL=1
+mitransfer.mitransferserver.EmailIgnoreCertErrors=0
+#-------------------------------------------------------------------
+#End Transfer Server
+
+#Begin Transfer Mobile
+#-------------------------------------------------------------------
+mitransfer.mitransfermobile.selected=
+mitransfer.mitransfermobile.HTTPPort=
+mitransfer.mitransfermobile.HTTPSPort=
+#-------------------------------------------------------------------
+#End Transfer Mobile
+
+#Begin Transfer Extras
+#-------------------------------------------------------------------
+mitransfer.mitransferapi.selected=1
+mitransfer.mitransferclients.selected=1
+mitransfer.mitransferutils.selected=1
+#-------------------------------------------------------------------
+#End Transfer Extras
+
+#Begin Automation Server
+#-------------------------------------------------------------------
+miautomation.miautomationserver.selected=0
+
+#Database values
+miautomation.miautomationserver.DatabaseType=
+miautomation.miautomationserver.DatabaseName=
+miautomation.miautomationserver.DatabaseUserUseWinAuth=
+miautomation.miautomationserver.DatabaseUsername=
+miautomation.miautomationserver.DatabasePassword=
+miautomation.miautomationserver.DatabaseAdminUseWinAuth=
+miautomation.miautomationserver.DatabaseAdminUsername=
+miautomation.miautomationserver.DatabaseAdminPassword=
+
+#SQL Server only values
+miautomation.miautomationserver.SQLServerName=
+# 0 the install will error out if the DB exists
+# 1 SQL Server - delete and over write the DB
+# 1 SQL Azure - Use the existing DB
+miautomation.miautomationserver.DatabaseAlreadyExists=
+
+#MySql Only Database values
+miautomation.miautomationserver.DatabaseFolder=
+
+#Certificate
+miautomation.miautomationserver.CreateCertificate=
+miautomation.miautomationserver.CertificateHash=
+
+#Data folder
+miautomation.miautomationserver.DataFolder=
+
+#Admin credentials
+miautomation.miautomationserver.AdminUsername=
+miautomation.miautomationserver.AdminPassword=
+
+#Tamper Key
+miautomation.miautomationserver.TamperKey=
+
+#Email settings
+miautomation.miautomationserver.EmailServer=
+miautomation.miautomationserver.EmailTo=
+miautomation.miautomationserver.EmailFrom=
+miautomation.miautomationserver.EmailPort=
+miautomation.miautomationserver.EmailUsername=
+miautomation.miautomationserver.EmailPassword=
+miautomation.miautomationserver.EmailUseSSL=
+miautomation.miautomationserver.EmailIgnoreCertErrors=
+#-------------------------------------------------------------------
+#End Automation Server
+
+#Begin Automation VB Admin
+#-------------------------------------------------------------------
+miautomation.miautomationvbadmin.selected=0
+
+#-------------------------------------------------------------------
+#End Automation VB Admin
+
+
+#Begin Automation Web Admin
+#-------------------------------------------------------------------
+miautomation.miautomationwebadmin.selected=0
+miautomation.miautomationwebadmin.Servers=
+miautomation.miautomationwebadmin.HTTPPort=
+miautomation.miautomationwebadmin.HTTPSPort=
+
+#Certificate
+miautomation.miautomationwebadmin.UseCertificateFile=
+miautomation.miautomationwebadmin.CertificateFile=
+miautomation.miautomationwebadmin.CertificatePassword=
+
+#-------------------------------------------------------------------
+#End Automation Web Admin
+
+#Begin Automation Extras
+#-------------------------------------------------------------------
+miautomation.miautomationapi.selected=0
+miautomation.miautomationutils.selected=0
+#-------------------------------------------------------------------
+#End Automation Extras
+
 _END_OF_FILE_
 
 delete __Download\ResponseFile.txt
