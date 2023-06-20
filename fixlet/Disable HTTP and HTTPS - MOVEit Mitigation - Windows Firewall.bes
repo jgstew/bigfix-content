@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Disable HTTP and HTTPS - MOVEit Mitigation - Windows Firewall</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists keys whose(value "DisplayName" of it as string as lowercase contains "MOVEit Transfer" as lowercase) of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries; x32 registries)</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2023-06-20</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 20 Jun 2023 17:46:24 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// Enable Firewall
+waithidden NetSh Advfirewall set allprofiles state on
+
+// block incoming http
+waithidden netsh advfirewall firewall add rule name="Block incoming HTTP" dir=in action=block protocol=tcp localport=80 enable=yes profile=any
+
+// block incoming http
+waithidden netsh advfirewall firewall add rule name="Block incoming HTTPS" dir=in action=block protocol=tcp localport=443 enable=yes profile=any
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
