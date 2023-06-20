@@ -1,19 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Update: MOVEit Transfer v15.0.2.49 - Windows (x64) - NOT RECOMMENDED</Title>
-		<Description><![CDATA[<DIV>This Task will download and update "MOVEit Transfer v15.0.2.49" onto selected endpoints. <BR><BR><B>Download Size:</B> 357127104 <BR>This will either suppress the creation of desktop shortcuts or delete them if created by the action. </DIV>]]></Description>
+		<Title>Update: MOVEit Transfer v15.0.3.51 - Windows (x64) - NOT RECOMMENDED</Title>
+		<Description><![CDATA[<p>Recommend Updating manually instead!</p>
+<div>
+  This Task
+  will download and
+  update
+  
+  "MOVEit Transfer v15.0.3.51" onto selected endpoints.
+  <br /><br /><b>Download Size:</b> 356665216
+  
+  <br />This will either suppress the creation of desktop shortcuts or delete them if created by the action.
+</div>		]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>x64 of operating system</Relevance>
-		<Relevance>exists keys whose(value "DisplayName" of it as string contains "MOVEit Transfer") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)</Relevance>
-		<Relevance><![CDATA[not exists (it as string as version) whose(it >= "15.0.2.49") of values "DisplayVersion" of keys whose(value "DisplayName" of it as string contains "MOVEit Transfer") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)]]></Relevance>
+		<Relevance>exists keys whose(value "DisplayName" of it as string starts with "MOVEit Transfer") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)</Relevance>
+		<Relevance><![CDATA[not exists (it as string as version) whose(it >= "15.0.3.51") of values "DisplayVersion" of keys whose(value "DisplayName" of it as string starts with "MOVEit Transfer") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)]]></Relevance>
 		<Category>Update</Category>
-		<DownloadSize>357127104</DownloadSize>
+		<DownloadSize>356665216</DownloadSize>
 		<Source>Progress</Source>
 		<SourceID>BigFix</SourceID>
-		<SourceReleaseDate>2023-06-08</SourceReleaseDate>
+		<SourceReleaseDate>2023-06-15</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
-		<CVENames>CVE-2023-35036</CVENames>
+		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-domain_attributes</Name>
@@ -21,26 +31,26 @@
 		</MIMEField>
 		<MIMEField>
 			<Name>action-ui-metadata</Name>
-			<Value>{ "version":"15.0.2.49","size":357127104 } </Value>
+			<Value>{ "version":"15.0.3.51","size":356665216 } </Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-cpe23-item-name</Name>
-			<Value>cpe:2.3:a:progress:moveit_transfer:15.0.2.49:*:*:*:*:windows:x64:*</Value>
+			<Value>cpe:2.3:a:progress:moveit_transfer:15.0.3.51:*:*:*:*:windows:x64:*</Value>
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 15 Jun 2023 23:06:07 +0000</Value>
+			<Value>Tue, 20 Jun 2023 17:41:22 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
 			<Description>
 				<PreLink>Click </PreLink>
 				<Link>here</Link>
-				<PostLink> to deploy MOVEit Transfer v15.0.2.49.</PostLink>
+				<PostLink> to deploy MOVEit Transfer v15.0.3.51.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // Download:
-prefetch MOVEit-Transfer-FullInstall.exe sha1:c2f1df684f1dd50f16da02725946183270ed5aaa size:357127104 https://cdn.ipswitch.com/ft/MOVEit/Transfer/2023/2023.0.2/MOVEit-Transfer-2023.0.2-FullInstall.exe sha256:ca48b55254f58c98c8b635a7992f9872825a5185d1d248f80b93f13b9848f45d
+prefetch MOVEit-Transfer-FullInstall.exe sha1:7e6c94cf02ea3cb14a3395f6b9be90b3e0a2c70e size:356665216 https://cdn.ipswitch.com/ft/MOVEit/Transfer/2023/2023.0.3/MOVEit-Transfer-2023.0.3-FullInstall.exe sha256:c99235b1d9e4938b162f2b8216a4f9f763a2eb196fc8578bd02cb206fffd738c
 
 delete __createfile
 
