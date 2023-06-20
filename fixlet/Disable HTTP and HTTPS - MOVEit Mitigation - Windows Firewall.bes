@@ -2,9 +2,10 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Disable HTTP and HTTPS - MOVEit Mitigation - Windows Firewall</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[ This will disable incoming HTTP and HTTPS traffic ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists keys whose(value "DisplayName" of it as string as lowercase contains "MOVEit Transfer" as lowercase) of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries; x32 registries)</Relevance>
+		<Relevance>2 != number of unique values of (it as trimmed string as integer) whose(it = 443 or it = 80) of substrings separated by "," of local ports strings of rules whose(enabled of it AND inbound of it AND protocol of it = tcp AND action of it = block firewall action AND exists (it as trimmed string as integer) whose(it = 443 or it = 80) of substrings separated by "," of local ports strings of it) of firewalls</Relevance>
 		<Category></Category>
 		<Source>Internal</Source>
 		<SourceID></SourceID>
@@ -14,7 +15,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Tue, 20 Jun 2023 17:46:24 +0000</Value>
+			<Value>Tue, 20 Jun 2023 18:21:33 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -24,6 +25,8 @@
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// names of rules whose(enabled of it AND inbound of it AND protocol of it = tcp AND action of it = block firewall action AND exists (it as trimmed string as integer) whose(it = 443 or it = 80) of substrings separated by "," of local ports strings of it) of firewalls
+
 // Enable Firewall
 waithidden NetSh Advfirewall set allprofiles state on
 
