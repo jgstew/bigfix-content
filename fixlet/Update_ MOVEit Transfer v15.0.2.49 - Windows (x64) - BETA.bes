@@ -38,7 +38,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy MOVEit Transfer v15.0.2.49.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // Download:
 prefetch MOVEit-Transfer-FullInstall.exe sha1:c2f1df684f1dd50f16da02725946183270ed5aaa size:357127104 https://cdn.ipswitch.com/ft/MOVEit/Transfer/2023/2023.0.2/MOVEit-Transfer-2023.0.2-FullInstall.exe sha256:ca48b55254f58c98c8b635a7992f9872825a5185d1d248f80b93f13b9848f45d
 
@@ -277,7 +277,7 @@ timeout_seconds=3600
 disposition=terminate
 wait __Download\MOVEit-Transfer-FullInstall.exe -L1033 ResponseFile=__Download\ResponseFile.txt
 
-// End</ActionScript>
+// End]]></ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>
