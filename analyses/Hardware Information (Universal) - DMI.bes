@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Hardware Information (Universal) - DMI</Title>
+		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Relevance>exists dmis</Relevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2019-02-26</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 26 Feb 2019 22:28:49 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="dmi::system_information::manufacturer" ID="1" EvaluationPeriod="PT12H">unique values of (it as string as trimmed string) of manufacturers of system_informations of dmis</Property>
+		<Property Name="dmi::system_information::product_name" ID="2" EvaluationPeriod="PT12H">unique values of (it as string as trimmed string) of product_names of system_informations of dmis</Property>
+	</Analysis>
+</BES>
