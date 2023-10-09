@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Set BigFix Client Setting using Action Parameter Query - Universal</Title>
+		<Description><![CDATA[<P>This task will set a client setting, which can affect the behavior of the BigFix client or other related items managed with BigFix.</P>
+<P>&nbsp;</P>]]></Description>
+		<Relevance>true</Relevance>
+		<Category>Configuration: Client Settings</Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>jgstew</Source>
+		<SourceID>https://forum.bigfix.com/users/jgstew</SourceID>
+		<SourceReleaseDate>2023-10-09</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Mon, 09 Oct 2023 21:48:53 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to set the Client Setting</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+action parameter query "NAME_OF_SETTING"
+
+action parameter query "DESIRED_VALUE"
+
+setting "{parameter "NAME_OF_SETTING" as trimmed string}"="{parameter "DESIRED_VALUE" as trimmed string}" on "{ now }" for client
+
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
