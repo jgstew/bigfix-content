@@ -5,4 +5,6 @@
 *.bes linguist-language=XML linguist-detectable
 *.ojo linguist-language=XML linguist-detectable
 *.beswrpt linguist-language=HTML linguist-detectable
+# https://stackoverflow.com/a/68932262
+*.reg working-tree-encoding=UTF-16LE-BOM eol=CRLF
 Tasks_UninstallApplicationsMSI_Windows.bes linguist-generated
