@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Update: DataDog Agent v7.50.3.0 - Windows (x64)</Title>
+		<Title>Update: Datadog Agent v7.50.3.0 - Windows (x64)</Title>
 		<Description><![CDATA[
-This task will download and install "DataDog Agent v7.50.3.0" package onto selected endpoints <br><br><b>Run Command As:</b> System User<br><br><b>Download Size:</b> 151891968
+This task will download and install "Datadog Agent v7.50.3.0" package onto selected endpoints <br><br><b>Run Command As:</b> System User<br><br><b>Download Size:</b> 151891968
 
 		]]></Description>
 		<Relevance>windows of operating system</Relevance>
-		<Relevance><![CDATA[x64 of operating system]]></Relevance>
-		<Relevance><![CDATA[ not exists login accounts whose(it does not end with "\ddagentuser") of services "datadogagent" ]]></Relevance>
-		<Relevance><![CDATA[ exists keys whose(value "DisplayName" of it as string starts with "DataDog Agent") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries) ]]></Relevance>
+				<Relevance><![CDATA[x64 of operating system]]></Relevance>
+				<Relevance><![CDATA[ not exists login accounts whose(it does not end with "\ddagentuser") of services "datadogagent" ]]></Relevance>
+		
+		<Relevance><![CDATA[ exists keys whose(value "DisplayName" of it as string starts with "Datadog Agent") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries) ]]></Relevance>
+		
 		<Relevance><![CDATA[
-not exists (it as string as version) whose(it >= "7.50.3.0") of values "DisplayVersion" of keys whose(value "DisplayName" of it as string starts with "DataDog Agent") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)
+not exists (it as string as version) whose(it >= "7.50.3.0") of values "DisplayVersion" of keys whose(value "DisplayName" of it as string starts with "Datadog Agent") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)
 		]]></Relevance>
 		<Category></Category>
 		<DownloadSize>151891968</DownloadSize>
-		<Source>DataDog Agent</Source>
+		<Source>Datadog Agent</Source>
 		<SourceID></SourceID>
 		<SourceReleaseDate>2024-01-10</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
@@ -27,14 +29,14 @@ not exists (it as string as version) whose(it >= "7.50.3.0") of values "DisplayV
 		</MIMEField>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Fri, 02 Feb 2024 15:05:08 +0000</Value>
+			<Value>Fri, 02 Feb 2024 16:14:40 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
 			<Description>
 				<PreLink>Click </PreLink>
 				<Link>here</Link>
-				<PostLink> to deploy DataDog Agent v7.50.3.0.</PostLink>
+				<PostLink> to deploy Datadog Agent v7.50.3.0.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // Download:
