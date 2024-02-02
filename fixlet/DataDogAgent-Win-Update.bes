@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Update: DataDog Agent v7.50.3.0 - Windows (x64)</Title>
+		<Description><![CDATA[
+This task will download and install "DataDog Agent v7.50.3.0" package onto selected endpoints <br><br><b>Run Command As:</b> System User<br><br><b>Download Size:</b> 151891968
+
+		]]></Description>
+		<Relevance>windows of operating system</Relevance>
+				<Relevance><![CDATA[x64 of operating system]]></Relevance>
+				<Relevance><![CDATA[ TRUE /* Need to add relevance to detect non default service account */ ]]></Relevance>
+		
+		<Relevance><![CDATA[ exists keys whose(value "DisplayName" of it as string starts with "DataDog Agent") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries) ]]></Relevance>
+		
+		<Relevance><![CDATA[
+not exists (it as string as version) whose(it >= "7.50.3.0") of values "DisplayVersion" of keys whose(value "DisplayName" of it as string starts with "DataDog Agent") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)
+		]]></Relevance>
+		<Category></Category>
+		<DownloadSize>151891968</DownloadSize>
+		<Source>DataDog Agent</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2024-01-10</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>action-ui-metadata</Name>
+			<Value>{ "version":"7.50.3.0","size":151891968 }</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 02 Feb 2024 15:05:08 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy DataDog Agent v7.50.3.0.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+// Download:
+prefetch datadog-agent-x86_64.msi sha1:303fd982d7675693b55a96ca41ab12b1abf533a2 size:151891968 https://s3.amazonaws.com/ddagent-windows-stable/ddagent-cli-7.50.3.msi sha256:afd7927271157930b2f2dcaf80b9fef6b1964f3ef0a353ee5b93d8e28b18b456
+
+// Install:
+override wait
+hidden=true
+completion=job
+wait msiexec.exe /i __Download\datadog-agent-x86_64.msi /qn /norestart
+]]></ActionScript>
+      		<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
