@@ -7,11 +7,9 @@ This task will download and install "DataDog Agent v7.50.3.0" package onto selec
 
 		]]></Description>
 		<Relevance>windows of operating system</Relevance>
-				<Relevance><![CDATA[x64 of operating system]]></Relevance>
-				<Relevance><![CDATA[ TRUE /* Need to add relevance to detect non default service account */ ]]></Relevance>
-		
+		<Relevance><![CDATA[x64 of operating system]]></Relevance>
+		<Relevance><![CDATA[ not exists login accounts whose(it does not end with "\ddagentuser") of services "datadogagent" ]]></Relevance>
 		<Relevance><![CDATA[ exists keys whose(value "DisplayName" of it as string starts with "DataDog Agent") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries) ]]></Relevance>
-		
 		<Relevance><![CDATA[
 not exists (it as string as version) whose(it >= "7.50.3.0") of values "DisplayVersion" of keys whose(value "DisplayName" of it as string starts with "DataDog Agent") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)
 		]]></Relevance>
