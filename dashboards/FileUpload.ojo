@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<BES>
+  <Wizard>
+    <Title>Custom - Upload File</Title>
+    <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+    <DefaultPage>DefaultPage</DefaultPage>
+    <Page Name="DefaultPage" DocType="HTML5" >
+        <Title>Upload File</Title>
+        <Head><![CDATA[
+            <meta http-equiv="X-UA-Compatible" content="IE=11">
+            <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
+        ]]></Head>
+        <HTML><![CDATA[
+<script language="javascript">InsertUtilityDiv();</script>
+
+<script>
+    function apiTestCallback(error, status, body) {
+        if(status == 200){
+          alert(body);
+        }else{
+           alert(error);
+        }
+      }
+
+    function uploadFile() {
+        var fileInput = document.getElementById('fileInput');
+        var fileData = fileInput.files[0];
+        var options = { data: fileData, customHeaders: {'Content-Disposition': 'attachment; filename="test.txt"'} }
+        API.Post('upload', options, apiTestCallback );
+    }
+</script>
+
+<h2>Upload File</h2>
+
+<input type="file" id="fileInput">
+<button id="uploadButton" onclick="uploadFile()" >Upload</button>
+<style>
+div#wr_datapage > br + br {
+    display: none;
+}
+</style>
+        ]]></HTML>
+        </Page>
+    </Wizard>
+</BES>
