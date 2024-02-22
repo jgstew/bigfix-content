@@ -8,12 +8,12 @@
     <Page Name="DefaultPage" DocType="HTML5" >
         <Title>Upload File</Title>
         <Head><![CDATA[
-            <meta http-equiv="X-UA-Compatible" content="IE=11">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
             <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
         ]]></Head>
         <HTML><![CDATA[
 <script language="javascript">InsertUtilityDiv();</script>
-
+<script src="https://cdn.jsdelivr.net/npm/formdata-polyfill@4.0.10/formdata.min.js"></script>
 <style>
   #result {
       white-space: pre-wrap; /* Allow wrapping */
@@ -43,13 +43,15 @@
       document.getElementById('spinner').style.display = 'block';
 
       var fileInput = document.getElementById('fileInput');
+      var file = fileInput.files[0];
       var fileData = new FormData(); // Create FormData object
-      fileData.append('file', fileInput.files[0]); // Append file to FormData object
-      var options = { data: fileData, customHeaders: {'Content-Disposition': 'attachment; filename="test.txt"'} }
+      fileData.append('file', file); // Append file to FormData object
+      // var options = { data: fileData, customHeaders: {'Content-Disposition': 'form-data; name="file"; filename="file.data"', 'Content-Type':'application/octet-stream'} }
+      var options = { data: fileData }
       API.Post('upload', options, apiTestCallback);
   }
 </script>
-
+<h1> WORK IN PROGRESS! This does NOT seem to work correctly! </h1>
 <h2>Upload File</h2>
 
 <input type="file" id="fileInput">
