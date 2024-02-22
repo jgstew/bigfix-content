@@ -3,17 +3,23 @@
 <BES>
   <Wizard>
     <Title>Custom - Upload File</Title>
-    <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+    <UIHooks NavBar="" LaunchType="Document" RequiresAuthoring="true" Menu="Dashboards"></UIHooks>
     <DefaultPage>DefaultPage</DefaultPage>
     <Page Name="DefaultPage" DocType="HTML5" >
         <Title>Upload File</Title>
         <Head><![CDATA[
-            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
             <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
         ]]></Head>
         <HTML><![CDATA[
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  </head>
+  <body>
 <script language="javascript">InsertUtilityDiv();</script>
-<script src="https://cdn.jsdelivr.net/npm/formdata-polyfill@4.0.10/formdata.min.js"></script>
+<script src="https://unpkg.com/formdata-polyfill"></script>
 <style>
   #result {
       white-space: pre-wrap; /* Allow wrapping */
@@ -44,10 +50,13 @@
 
       var fileInput = document.getElementById('fileInput');
       var file = fileInput.files[0];
+
       var fileData = new FormData(); // Create FormData object
-      fileData.append('file', file); // Append file to FormData object
+      fileData.append('file', file, "file.txt"); // Append file to FormData object
       // var options = { data: fileData, customHeaders: {'Content-Disposition': 'form-data; name="file"; filename="file.data"', 'Content-Type':'application/octet-stream'} }
       var options = { data: fileData }
+      // var options = { data: fileData, customHeaders: {'Content-Disposition': 'attachment; filename="file.txt"'} }
+
       API.Post('upload', options, apiTestCallback);
   }
 </script>
@@ -64,6 +73,8 @@
 
 <!-- Result div -->
 <div id="result"></div>
+
+</body></html>
         ]]></HTML>
         </Page>
     </Wizard>
