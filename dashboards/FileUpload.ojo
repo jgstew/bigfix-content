@@ -14,32 +14,54 @@
         <HTML><![CDATA[
 <script language="javascript">InsertUtilityDiv();</script>
 
-<script>
-    function apiTestCallback(error, status, body) {
-        if(status == 200){
-          alert(body);
-        }else{
-           alert(error);
-        }
-      }
+<style>
+  #result {
+      white-space: pre-wrap; /* Allow wrapping */
+      font-family: monospace; /* Use monospace font for code block */
+      border: 1px solid #ccc; /* Add border for clarity */
+      padding: 10px; /* Add padding for spacing */
+      margin-top: 10px; /* Add margin to separate from other elements */
+  }
+</style>
 
-    function uploadFile() {
-        var fileInput = document.getElementById('fileInput');
-        var fileData = fileInput.files[0];
-        var options = { data: fileData, customHeaders: {'Content-Disposition': 'attachment; filename="test.txt"'} }
-        API.Post('upload', options, apiTestCallback );
-    }
+<script>
+  function apiTestCallback(error, status, body) {
+      // Hide spinner after receiving response
+      document.getElementById('spinner').style.display = 'none';
+
+      if(status == 200){
+          // Write body result to div
+          document.getElementById('result').innerText = body;
+      } else {
+          // Write error to div
+          document.getElementById('result').innerText = error;
+      }
+  }
+
+  function uploadFile() {
+      // Show spinner during upload
+      document.getElementById('spinner').style.display = 'block';
+
+      var fileInput = document.getElementById('fileInput');
+      var fileData = new FormData(); // Create FormData object
+      fileData.append('file', fileInput.files[0]); // Append file to FormData object
+      var options = { data: fileData, customHeaders: {'Content-Disposition': 'attachment; filename="test.txt"'} }
+      API.Post('upload', options, apiTestCallback);
+  }
 </script>
 
 <h2>Upload File</h2>
 
 <input type="file" id="fileInput">
-<button id="uploadButton" onclick="uploadFile()" >Upload</button>
-<style>
-div#wr_datapage > br + br {
-    display: none;
-}
-</style>
+<button id="uploadButton" onclick="uploadFile()">Upload</button>
+
+<!-- Spinner element -->
+<div id="spinner" style="display: none;">
+  <img src="https://cdnjs.cloudflare.com/ajax/libs/galleriffic/2.0.1/css/loader.gif" alt="Loading..." width="50" height="50">
+</div>
+
+<!-- Result div -->
+<div id="result"></div>
         ]]></HTML>
         </Page>
     </Wizard>
