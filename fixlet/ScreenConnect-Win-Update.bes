@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Update: ScreenConnect v23.9.10.8817 - Windows</Title>
+		<Description><![CDATA[
+This task will download and install "ScreenConnect v23.9.10.8817" package onto selected endpoints <br><br><b>Run Command As:</b> System User<br><br><b>Download Size:</b> 107065344
+
+		]]></Description>
+		<Relevance>windows of operating system</Relevance>
+				<Relevance><![CDATA[ not exists login accounts whose(it does not end with "\ddagentuser") of services "datadogagent" ]]></Relevance>
+		
+		<Relevance><![CDATA[ exists keys whose(value "DisplayName" of it as string starts with "ScreenConnect") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries) ]]></Relevance>
+		
+		<Relevance><![CDATA[
+not exists (it as string as version) whose(it >= "23.9.10.8817") of values "DisplayVersion" of keys whose(value "DisplayName" of it as string starts with "ScreenConnect") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)
+		]]></Relevance>
+		<Category></Category>
+		<DownloadSize>107065344</DownloadSize>
+		<Source>ScreenConnect</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2024-02-21</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>action-ui-metadata</Name>
+			<Value>{ "version":"23.9.10.8817","size":107065344 }</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 01 Mar 2024 16:27:52 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy ScreenConnect v23.9.10.8817.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+// Download:
+prefetch ScreenConnect_Release.msi sha1:3e3a24d19bf8e787411826d9d4f3b621ea607591 size:107065344 https://d1kuyuqowve5id.cloudfront.net/ScreenConnect_23.9.10.8817_Release.msi sha256:57f5158914858b9584777c81e65aefad3dfd53da780ca4896a10f5dfd42ace21
+
+// Install:
+override wait
+hidden=true
+completion=job
+wait msiexec.exe /i __Download\ScreenConnect_Release.msi /qn /norestart
+]]></ActionScript>
+      		<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
