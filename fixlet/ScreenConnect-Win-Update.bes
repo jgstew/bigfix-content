@@ -7,13 +7,8 @@ This task will download and install "ScreenConnect v23.9.10.8817" package onto s
 
 		]]></Description>
 		<Relevance>windows of operating system</Relevance>
-				<Relevance><![CDATA[ not exists login accounts whose(it does not end with "\ddagentuser") of services "datadogagent" ]]></Relevance>
-		
 		<Relevance><![CDATA[ exists keys whose(value "DisplayName" of it as string starts with "ScreenConnect") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries) ]]></Relevance>
-		
-		<Relevance><![CDATA[
-not exists (it as string as version) whose(it >= "23.9.10.8817") of values "DisplayVersion" of keys whose(value "DisplayName" of it as string starts with "ScreenConnect") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)
-		]]></Relevance>
+		<Relevance><![CDATA[not exists (it as string as version) whose(it >= "23.9.10.8817") of values "DisplayVersion" of keys whose(value "DisplayName" of it as string starts with "ScreenConnect") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)]]></Relevance>
 		<Category></Category>
 		<DownloadSize>107065344</DownloadSize>
 		<Source>ScreenConnect</Source>
