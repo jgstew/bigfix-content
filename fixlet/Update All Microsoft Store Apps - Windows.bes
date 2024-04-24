@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Update All Microsoft Store Apps - Windows</Title>
+		<Description><![CDATA[Trigger Update of&nbsp;All Microsoft Store Apps ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance><![CDATA[/* Windows 8 or Higher */ version of operating system >= "6.2"]]></Relevance>
+		<Relevance>exists wmis "root\cimv2\mdm\dmmap"</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2024-04-24</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 24 Apr 2024 18:06:36 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+// disable syswow redirection on x64 bit windows
+action uses wow64 redirection {not x64 of operating system}
+
+// do update
+wait powershell -c '(Get-WmiObject -Namespace "root\cimv2\mdm\dmmap" -Class "MDM_EnterpriseModernAppManagement_AppManagement01").UpdateScanMethod()'
+
+// NOTE: updates won't actually be finished when this action finishes, but will be in progress
+
+continue if { exists unique value whose(it = 0) of integer values of selects "LastScanError from MDM_EnterpriseModernAppManagement_AppManagement01" of wmis "root\cimv2\mdm\dmmap" }
+
+// End</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
