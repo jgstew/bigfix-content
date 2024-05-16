@@ -2,8 +2,12 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Set "_BESGather_Download_NumVersionsToServe" to "3" - Relays and Root</Title>
-		<Description><![CDATA[<P>This task will set a client setting</P>
+		<Description><![CDATA[<P>This task will set the client setting `_BESGather_Download_NumVersionsToServe`, more info here:</P>
+<UL>
+<LI><A href="https://support.hcltechsw.com/csm?id=kb_article&amp;sysparm_article=KB0080336">https://support.hcltechsw.com/csm?id=kb_article&amp;sysparm_article=KB0080336</A><BR></LI></UL>
 <P>This task was automatically generated using the Dashboard: "Custom - Client Settings Manager"</P>
+<UL>
+<LI><A href="https://github.com/jgstew/bigfix-content/blob/main/dashboards/ClientSettingsManager.ojo">https://github.com/jgstew/bigfix-content/blob/main/dashboards/ClientSettingsManager.ojo</A></LI></UL>
 <P>&nbsp;</P>]]></Description>
 		<Relevance>exists main gather services OR exists relay services</Relevance>
 		<Relevance>not exists settings "_BESGather_Download_NumVersionsToServe" whose("3" = value of it) of client</Relevance>
@@ -17,7 +21,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 16 May 2024 15:12:04 +0000</Value>
+			<Value>Thu, 16 May 2024 15:24:51 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
