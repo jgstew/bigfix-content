@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Uninstall GoToMeeting MSI EXE - Windows</Title>
+		<Description><![CDATA[This will attempt to uninstall both GoToMeeting MSI and EXE installs that are installed per machine for all users. It will uninstall the first of each. It will be considered successful if there are less instances of GoToMeeting afterwards, even if some still remain.<BR><BR>In some cases, even after all real instances of GoToMeeting are uninstalled and non remain, there could be a registry entry that is "stuck" of an old install that makes it seem like GoToMeeting is still present when it is not. Cleanup of such an uninstall item would require a different process. ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists keys whose (value "DisplayName" of it as string contains "GoToMeeting") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of ( x64 registries ; x32 registries )</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2024-05-17</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 17 May 2024 20:13:40 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">parameter "numItems" = "{ number of keys whose (value "DisplayName" of it as string contains "GoToMeeting") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of ( x64 registries ; x32 registries ) }"
+
+// uninstall gotomeeting MSI:
+if { exists tuple string items 0 of concatenations ", " of names whose(it contains "%7B") of keys whose(value "DisplayName" of it as string contains "GoToMeeting" AND value "UninstallString" of it as string as lowercase contains "msiexec") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of ( x64 registries ; x32 registries ) } 
+wait msiexec /X { tuple string items 0 of concatenations ", " of names whose(it contains "%7B") of keys whose(value "DisplayName" of it as string contains "GoToMeeting" AND value "UninstallString" of it as string as lowercase contains "msiexec") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of ( x64 registries ; x32 registries ) } /qn
+endif
+
+// uninstall gotomeeting EXE:
+if { exists exists tuple string items 0 of concatenations ", " of (it as string) whose(it contains "G2MUninstall.exe") of values "UninstallString" of keys whose(value "DisplayName" of it as string contains "GoToMeeting") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of ( x64 registries ; x32 registries ) }
+wait { tuple string items 0 of concatenations ", " of (it as string) whose(it contains "G2MUninstall.exe") of values "UninstallString" of keys whose(value "DisplayName" of it as string contains "GoToMeeting") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of ( x64 registries ; x32 registries ) } /silent
+endif
+
+// set the exit code to the number of gotomeeting items still present:
+exit { number of keys whose (value "DisplayName" of it as string contains "GoToMeeting") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of ( x64 registries ; x32 registries ) }
+</ActionScript>
+			<SuccessCriteria Option="CustomRelevance">( (it as integer) of (parameter "numItems") ) = ( number of keys whose (value "DisplayName" of it as string contains "GoToMeeting") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of ( x64 registries ; x32 registries ) )</SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
