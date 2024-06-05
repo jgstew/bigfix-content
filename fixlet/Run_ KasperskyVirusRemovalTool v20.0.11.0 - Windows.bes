@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Run: KasperskyVirusRemovalTool v20.0.11.0 - Windows</Title>
+		<Description>
+This task will run KasperskyVirusRemovalTool on the system.
+		</Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance><![CDATA[ not exists (now - it) whose(it < 3 * day) of maxima of modification times of files whose(name of it as lowercase contains "report") of folders "Temp\KVRT\Reports" of windows folders ]]></Relevance>
+		<Category></Category>
+		<DownloadSize>112088944</DownloadSize>
+		<Source>KasperskyVirusRemovalTool</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2024-06-05</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>action-ui-metadata</Name>
+			<Value>{ "version":"20.0.11.0","size":112088944 }</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 05 Jun 2024 21:48:27 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy KasperskyVirusRemovalTool v20.0.11.0.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+// Download:
+prefetch KVRT.exe sha1:7a3619ce613ba7c110bad5e735e080d877964787 size:112088944 https://devbuilds.s.kaspersky-labs.com/devbuilds/KVRT/latest/full/KVRT.exe sha256:47080e3b8bfdd96685c9036348cf9719c301648abc03dadcad43ec22ff5d0414
+
+parameter "RunFolder" = "{ (it & "\KVRT") of pathnames of folders "temp" of windows folder }"
+
+folder delete "{ parameter "RunFolder" }"
+folder create "{ parameter "RunFolder" }"
+
+// Copy to RunFolder
+copy __Download\KVRT.exe "{parameter "RunFolder"}\KVRT.exe"
+
+// https://support.kaspersky.com/kvrt2015/howto/8537
+// Run:
+run "{parameter "RunFolder"}\KVRT.exe" -accepteula -d "{parameter "RunFolder"}" -silent -adinsilent -processlevel 1 -dontcryptsupportinfo
+
+// End]]></ActionScript>
+			<SuccessCriteria Option="RunToCompletion"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
