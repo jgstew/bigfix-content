@@ -16,6 +16,10 @@ failed su attempts:
 
 - `locked lines containing ("pam_unix(su-l:auth): authentication failure;";"FAILED su for") of files ("auth.log";"secure") of folders "/var/log"`
 
+dnf:
+
+- `modification times of files ("apt/history.log";"dnf.log") of folders "/var/log"`
+
 ## Related:
 
 - https://github.com/jgstew/bigfix-content/blob/main/analyses/Sudoers%20-%20Linux%20Unix%20MacOS.bes
