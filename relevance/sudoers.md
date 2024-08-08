@@ -15,3 +15,8 @@ failed esecalation attempts:
 failed su attempts:
 
 - `locked lines containing ("pam_unix(su-l:auth): authentication failure;";"FAILED su for") of files ("auth.log";"secure") of folders "/var/log"`
+
+## Related:
+
+- https://github.com/jgstew/bigfix-content/blob/main/analyses/Sudoers%20-%20Linux%20Unix%20MacOS.bes
+- https://github.com/jgstew/bigfix-content/blob/main/analyses/Linux%20package%20info%20-%20RPM%26DEB.bes
