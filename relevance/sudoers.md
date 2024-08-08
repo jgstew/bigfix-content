@@ -25,3 +25,6 @@ dnf:
 - https://github.com/jgstew/bigfix-content/blob/main/analyses/Sudoers%20-%20Linux%20Unix%20MacOS.bes
 - https://github.com/jgstew/bigfix-content/blob/main/analyses/Linux%20package%20info%20-%20RPM%26DEB.bes
   - There are additional properties on BigFix.Me related to updates
+  - https://www.bigfix.me/relevance/details/3022965
+  - https://www.bigfix.me/relevance/details/3022966
+  - https://bigfix.me/relevance/details/3022964
