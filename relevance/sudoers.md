@@ -11,3 +11,7 @@ failed sudo attempts:
 failed esecalation attempts:
 
 - `locked lines containing "user NOT in sudoers" of files ("auth.log";"secure") of folders "/var/log"`
+
+failed su attempts:
+
+- `locked lines containing ("pam_unix(su-l:auth): authentication failure;";"FAILED su for") of files ("auth.log";"secure") of folders "/var/log"`
