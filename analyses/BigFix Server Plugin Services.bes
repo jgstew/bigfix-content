@@ -2,18 +2,18 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Analysis>
 		<Title>BigFix Server Plugin Services</Title>
-		<Description><![CDATA[ BigFix Server Plugin Services Info ]]></Description>
+		<Description>BigFix Server Plugin Services Info </Description>
 		<Relevance>exists relay service OR exists main gather service</Relevance>
 		<Relevance>exists folders "Applications" of parent folders of (folders it) of values of settings "_BESRelay_HTTPServer_ServerRootPath" of client</Relevance>
 		<Source>Internal</Source>
 		<SourceReleaseDate>2024-10-17</SourceReleaseDate>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Tue, 22 Oct 2024 19:06:21 +0000</Value>
+			<Value>Tue, 22 Oct 2024 20:03:18 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<Property Name="Plugin Folder" ID="1" EvaluationPeriod="PT1H">pathnames of folders "Applications" of parent folders of (folders it) of values of settings "_BESRelay_HTTPServer_ServerRootPath" of client</Property>
-		<Property Name="Mod Time of Plugin Service Log" ID="2" EvaluationPeriod="PT30M">modification times of files whose(name of it starts with "MFS" AND name of it as lowercase ends with ".log") of folders "Logs" of folders "Applications" of parent folders of (folders it) of values of settings "_BESRelay_HTTPServer_ServerRootPath" of client</Property>
+		<Property Name="Mod Time of Plugin Service Log" ID="2" EvaluationPeriod="PT30M">maxima of modification times of files whose(name of it starts with "MFS" AND name of it as lowercase ends with ".log") of folders "Logs" of folders "Applications" of parent folders of (folders it) of values of settings "_BESRelay_HTTPServer_ServerRootPath" of client</Property>
 		<Property Name="Names of defined plugins" ID="4" EvaluationPeriod="PT30M"><![CDATA[unique values of preceding texts of firsts "</Name>" of following texts of firsts "<Name>" of lines containing "</Name>" of files whose(name of it as lowercase ends with ".xml") of folders "Config" of folders "Applications" of parent folders of (folders it) of values of settings "_BESRelay_HTTPServer_ServerRootPath" of client]]></Property>
 		<Property Name="Mod Time of Plugin Logs" ID="5" EvaluationPeriod="PT1H">(names of it, modification times of files whose(name of it as lowercase ends with ".log") of it) of folders whose(name of it != "Logs") of folders "Applications" of parent folders of (folders it) of values of settings "_BESRelay_HTTPServer_ServerRootPath" of client</Property>
 		<Property Name="Find Plugin Binary" ID="6" EvaluationPeriod="PT6H"><![CDATA[pathnames of files ( (it; it & ".exe") of unique values of (names of folders whose(name of it != "Logs") of it ; preceding texts of firsts "</Name>" of following texts of firsts "<Name>" of lines containing "</Name>" of files whose(name of it as lowercase ends with ".xml") of folders "Config" of it) of folders "Applications" of parent folders of (folders it) of values of settings "_BESRelay_HTTPServer_ServerRootPath" of client ) of folders of folders "Applications" of parent folders of (folders it) of values of settings "_BESRelay_HTTPServer_ServerRootPath" of client]]></Property>
@@ -21,5 +21,6 @@
 		<Property Name="Plugin Service Status" ID="8" EvaluationPeriod="PT1H">if windows of operating system then states of services "BESPluginService" else ("Running" whose(exists processes whose (name of it = "MFS-Linux")) | "Installed-NOT-Running" whose(exists packages "MFS-Linux" of rpms) | "Unknown")</Property>
 		<Property Name="Plugin Service Files" ID="9" EvaluationPeriod="PT1H">files of folders "Applications" of parent folders of (folders it) of values of settings "_BESRelay_HTTPServer_ServerRootPath" of client</Property>
 		<Property Name="length of string of REST creds" ID="10" EvaluationPeriod="PT1H">if windows of operating system then (lengths of concatenations of (it as string as trimmed string) of values ("RESTUsername";"RESTPassword") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server\MFSConfig" of (x64 registries; x32 registries)) else (lengths of concatenations of (it as trimmed string) of lines of files "/var/opt/BESServer/Applications/MasterOperatorCredentials")</Property>
+		<Property Name="last 10 lines of plugin service log" ID="11" EvaluationPeriod="PT6H"><![CDATA[(item 1 of /* -> This "it" refers to the last 100 lines of the file -> */ it) whose( /* -> remove empty lines, which is why this relevance can return less than 100 lines per file -> */ it as trimmed string != "") of ( /* -> this is the number of lines of the file from the previous statement -> */ item 1 of it, (rawlines of /* -> the file object -> */ item 0 of it) ) /* -> This whose statement is responsible for filtering for only the last 100 lines of the file -> */ whose ( (line number of /* -> lines of the file -> */ item 1 of it) > ( /* -> number of lines of the file -> */ item 0 of it - 10 /* <- This is the number of lines to return, which is subtracted from the total # of lines <- */ ) ) of ( /* -> the parent file object itself -> */ it, number of rawlines of it) of files whose(name of it starts with "MFS" AND name of it as lowercase ends with ".log" AND modification time of it = maximum of modification times of files whose(name of it starts with "MFS" AND name of it as lowercase ends with ".log") of folders "Logs" of folders "Applications" of parent folders of (folders it) of values of settings "_BESRelay_HTTPServer_ServerRootPath" of client) of folders "Logs" of folders "Applications" of parent folders of (folders it) of values of settings "_BESRelay_HTTPServer_ServerRootPath" of client]]></Property>
 	</Analysis>
 </BES>
