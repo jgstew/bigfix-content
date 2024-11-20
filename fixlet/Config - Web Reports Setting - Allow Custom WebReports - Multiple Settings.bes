@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Config - Web Reports Setting - Allow Custom WebReports - Multiple Settings</Title>
+		<Description>Task to enable custom web reports creation on a windows web reports server. </Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists service "BESWebReportsServer"</Relevance>
+		<Relevance>3 != number of (it as integer) whose(it = 1) of values ("AllowCustomReportCreation";"AllowUserViewCustom";"AllowCustomReportExecution") of keys "HKLM\Software\BigFix\Enterprise Server\BESReports" of x32 registries</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2024-11-19</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 20 Nov 2024 03:24:41 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">// https://help.hcl-software.com/bigfix/11.0/platform/Platform/Web_Reports/c_creating_a_custom_report.html
+regset "[HKEY_LOCAL_MACHINE\Software\BigFix\Enterprise Server\BESReports]" "AllowCustomReportCreation"="1"
+regset "[HKEY_LOCAL_MACHINE\Software\BigFix\Enterprise Server\BESReports]" "AllowUserViewCustom"="1"
+regset "[HKEY_LOCAL_MACHINE\Software\BigFix\Enterprise Server\BESReports]" "AllowCustomReportExecution"="1"
+
+wait net stop BESWebReportsServer
+wait net start BESWebReportsServer</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
