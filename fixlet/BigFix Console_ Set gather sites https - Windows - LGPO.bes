@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>BigFix Console: Set gather sites https - Windows - LGPO</Title>
+		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists keys "Software\BigFix\Enterprise Console" of keys of keys "HKEY_USERS" of registries</Relevance>
+		<Relevance>not exists (it as string as integer) whose(it = 1) of values "GatherSitesUsingHttps" of keys "Software\BigFix\Enterprise Console\Preferences" of keys of keys "HKEY_USERS" of registries</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2025-01-07</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 07 Jan 2025 19:19:28 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[// Download LGPO Utilities
+// https://www.microsoft.com/en-us/download/details.aspx?id=55319
+prefetch LGPO.zip sha1:4578a97946102a20505d1e8f09abedd1fd7a8d89 size:531635 https://download.microsoft.com/download/8/5/C/85C25433-A1B0-4FFA-9429-7E023E7DA8D8/LGPO.zip sha256:cb7159d134a0a1e7b1ed2ada9a3ce8ce8f4de391d14403d55438af824247cc55
+
+// should check the file exists first if switching to prefetch block with optional download.
+utility __Download\LGPO.zip
+
+// Disable wow64 redirection on x64 OSes
+action uses wow64 redirection {not x64 of operating system}
+
+if{ not exists files "LGPO.exe" whose(481144 = size of it AND "0c97f29543418b30340c4ff5d930d31e6196dd59c2cc74b6b890fa7b90c910c7" = sha256 of it) of folders "\Windows\Temp" }
+
+delete C:\Windows\Temp\LGPO.zip
+copy __Download\LGPO.zip C:\Windows\Temp\LGPO.zip
+
+delete __createfile
+// https://github.com/jgstew/tools/blob/master/VBS/zipExtractSimple.vbs
+createfile until _END_OF_FILE_
+
+strOutputDir   = "C:\Windows\Temp"
+strZipFilePath = "C:\Windows\Temp\LGPO.zip"
+CreateObject( "Shell.Application" ).NameSpace( CreateObject("Scripting.FileSystemObject").GetAbsolutePathName( strOutputDir ) ).copyHere ( CreateObject( "Shell.Application" ).NameSpace( CreateObject("Scripting.FileSystemObject").GetAbsolutePathName( strZipFilePath ) ).Items() ), 1044
+
+_END_OF_FILE_
+
+delete C:\Windows\Temp\zipExtractSimple.vbs
+
+copy __createfile C:\Windows\Temp\zipExtractSimple.vbs
+
+wait CMD /C cd C:\Windows\Temp && cscript //nologo C:\Windows\Temp\zipExtractSimple.vbs
+
+delete C:\Windows\Temp\LGPO.exe
+copy C:\Windows\Temp\LGPO_30\LGPO.exe C:\Windows\Temp\LGPO.exe
+
+// Clean Up
+delete C:\Windows\Temp\zipExtractSimple.vbs
+delete C:\Windows\Temp\LGPO.zip
+folder delete C:\Windows\Temp\LGPO_30
+
+endif
+
+// verify LGPO.exe exists
+continue if{ exists files "LGPO.exe" whose(481144 = size of it AND "0c97f29543418b30340c4ff5d930d31e6196dd59c2cc74b6b890fa7b90c910c7" = sha256 of it) of folders "\Windows\Temp" }
+
+delete __createfile
+createfile until _END_OF_FILE_
+; ----------------------------------------------------------------------
+User
+SOFTWARE\BigFix\Enterprise Console\Preferences
+GatherSitesUsingHttps
+DWORD:1
+
+; ----------------------------------------------------------------------
+_END_OF_FILE_
+delete __Download\registry.pol.txt
+copy __createfile __Download\registry.pol.txt
+waithidden C:\Windows\Temp\LGPO.exe /t __Download\registry.pol.txt
+continue if {exit code of action = 0}
+
+// update user group policy
+if { exists (current users ; logged on users) }
+
+override wait
+hidden=true
+runas=currentuser
+wait CMD /C echo n | gpupdate /target:user /wait:60
+
+endif
+]]></ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
