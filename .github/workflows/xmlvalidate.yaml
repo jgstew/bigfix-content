@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Validate XML Syntax
-        uses: anyone-developer/anyone-validate-xml@69dcf09dc84d6797169cbd4f8252e6719576e94a
+        uses: anyone-developer/anyone-validate-xml@0.9.2
         with:
           file-extension: '.xml,.ojo,.qna,.BESDomain'
           ignore-files: 'README.md'
