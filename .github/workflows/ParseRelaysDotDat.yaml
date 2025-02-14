@@ -24,4 +24,4 @@ jobs:
             ls
 
       - name: Run ParseRelaysDotDat
-        run: ./ParseRelaysDotDat.exe --help
+        run: ./ParseRelaysDotDat.exe Relays.dat
