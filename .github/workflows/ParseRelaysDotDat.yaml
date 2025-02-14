@@ -1,24 +1,27 @@
 ---
-    name: ParseRelaysDotDat
+name: ParseRelaysDotDat
 
-    on:
-      push:
-        paths:
-          - "**Relays.dat"
-          - ".github/workflows/ParseRelaysDotDat.yaml"
-      pull_request:
-        paths:
-          - "**Relays.dat"
-          - ".github/workflows/ParseRelaysDotDat.yaml"
+on:
+  push:
+    paths:
+      - "**Relays.dat"
+      - ".github/workflows/ParseRelaysDotDat.yaml"
+  pull_request:
+    paths:
+      - "**Relays.dat"
+      - ".github/workflows/ParseRelaysDotDat.yaml"
 
-    jobs:
-      ParseRelaysDotDat:
-        runs-on: windows-latest
-        steps:
-          - uses: actions/checkout@v4
+jobs:
+  ParseRelaysDotDat:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
 
-          - name: Download ParseRelaysDotDat.exe
-            run: curl -O https://bigfix-wiki.hcltechsw.com/wikis/form/anonymous/api/wiki/9800bed4-8101-452b-930b-807aed3eb996/page/e2ee048f-bc56-4798-ba0b-e57c08a23160/attachment/71245215-dbd5-4f4a-b926-14afdd9d8f3c/media/ParseRelaysDotDat.exe
+      - name: Download ParseRelaysDotDat.exe
+        shell: bash
+        run: |
+            curl -O https://bigfix-wiki.hcltechsw.com/wikis/form/anonymous/api/wiki/9800bed4-8101-452b-930b-807aed3eb996/page/e2ee048f-bc56-4798-ba0b-e57c08a23160/attachment/71245215-dbd5-4f4a-b926-14afdd9d8f3c/media/ParseRelaysDotDat.exe
+            ls
 
-          - name: Run
-            run: ParseRelaysDotDat.exe --help
+      - name: Run ParseRelaysDotDat
+        run: ./ParseRelaysDotDat.exe --help
