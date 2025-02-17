@@ -2,6 +2,9 @@
 name: ParseRelaysDotDat
 
 on:
+  push:
+    paths:
+      - ".github/workflows/ParseRelaysDotDat.yaml"
   pull_request:
     paths:
       - "**Relays.dat"
@@ -11,15 +14,32 @@ jobs:
   ParseRelaysDotDat:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 0 }}
 
-      - name: Download ParseRelaysDotDat.exe
+      - name: Get changed files
+        id: changed-files
         shell: bash
         run: |
-            curl -O https://bigfix-wiki.hcltechsw.com/wikis/form/anonymous/api/wiki/9800bed4-8101-452b-930b-807aed3eb996/page/e2ee048f-bc56-4798-ba0b-e57c08a23160/attachment/71245215-dbd5-4f4a-b926-14afdd9d8f3c/media/ParseRelaysDotDat.exe
-            ls
+          if ${{ github.event_name == 'pull_request' }}; then
+            echo "changed_files=$(git diff --name-only -r HEAD^1 HEAD | xargs)" >> $GITHUB_OUTPUT
+          else
+            echo "changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | xargs)" >> $GITHUB_OUTPUT
+          fi
 
-      # TODO: find Relays.dat file in diff
+      - name: List changed files
+        shell: bash
+        run: |
+          for file in ${{ steps.changed-files.outputs.changed_files }}; do
+            echo "$file was changed"
+          done
 
-      - name: Run ParseRelaysDotDat
-        run: ./ParseRelaysDotDat.exe Relays.dat
+      # - name: Download ParseRelaysDotDat.exe
+      #   shell: bash
+      #   run: |
+      #       curl -O https://bigfix-wiki.hcltechsw.com/wikis/form/anonymous/api/wiki/9800bed4-8101-452b-930b-807aed3eb996/page/e2ee048f-bc56-4798-ba0b-e57c08a23160/attachment/71245215-dbd5-4f4a-b926-14afdd9d8f3c/media/ParseRelaysDotDat.exe
+      #       ls
+
+      # - name: Run ParseRelaysDotDat
+      #   run: ./ParseRelaysDotDat.exe Relays.dat
