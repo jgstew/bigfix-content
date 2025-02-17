@@ -4,6 +4,7 @@ name: ParseRelaysDotDat
 on:
   push:
     paths:
+      - "**Relays.dat"
       - ".github/workflows/ParseRelaysDotDat.yaml"
   pull_request:
     paths:
