@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Universal Windows Installer Template Example - Untested work in progress!</Title>
+		<Description>This example will install 7zip, but the purpose is to be an example template that could handle most windows installs with minimal input. </Description>
+		<Relevance>windows of operating system</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2025-03-18</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 19 Mar 2025 04:05:52 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">// The goal of this is to be used as a template with minimal input
+// ideally only the URL would need to be provided or URL and cmd_args
+// the filename would by default be derrived from the URL
+// the prefetch would be generated from the URL
+
+// Download using prefetch block
+begin prefetch block
+	parameter "filename"="7z2409-x64.exe"
+	parameter "cmd_args"="/S"
+	add prefetch item name=7z2409-x64.exe sha1=28b53835fe92c3fa6e0c422fc3b17c6bc1cb27e0 size=1637343 url=https://www.7-zip.org/a/7z2409-x64.exe sha256=bdd1a33de78618d16ee4ce148b849932c05d0015491c34887846d431d29f308e
+	// if windows and if filename ends with .zip, download unzip.exe
+	if {(parameter "filename") as lowercase ends with ".zip"}
+	add prefetch item name=unzip.exe sha1=84debf12767785cd9b43811022407de7413beb6f size=204800 url=http://software.bigfix.com/download/redist/unzip-6.0.exe sha256=2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
+	endif
+	if {(parameter "filename") as lowercase ends with ".7z"}
+	add prefetch item name=7zr.exe sha1=ec3b89ef381fd44deaf386b49223857a47b66bd8 size=593408 url=https://www.7-zip.org/a/7zr.exe sha256=d2c0045523cf053a6b43f9315e9672fc2535f06aeadd4ffa53c729cd8b2b6dfe
+	endif
+end prefetch block
+
+// Disable wow64 redirection on x64 OSes
+action uses wow64 redirection {not x64 of operating system}
+
+// TODO: handle .7z case
+
+// if windows and if filename ends with .zip, extract with unzip.exe to __Download folder
+if {(parameter "filename") as lowercase ends with ".zip"}
+wait __Download\unzip.exe -o "__Download\{parameter "filename"}" -d __Download
+// add unzip to utility cache
+utility __Download\unzip.exe
+endif
+
+// use relevance to find exe or msi in __Download folder (in case it came from archive)
+parameter "installer" = "{ if (parameter "filename") as lowercase does not end with ".zip" then (parameter "filename") else ( tuple string items 0 of concatenations ", " of names of files whose(following text of last "." of name of it is contained by set of ("exe";"msi";"msix";"msixbundle")) of folder "__Download" of client folder of current site ) }"
+
+if {(parameter "installer") as lowercase ends with ".exe"}
+override wait
+timeout_seconds=3600
+hidden=true
+wait "__Download\{parameter "installer"}" {parameter "cmd_args"}
+endif
+
+if {(parameter "installer") as lowercase ends with ".msi"}
+override wait
+timeout_seconds=3600
+hidden=true
+wait msiexec.exe /i "__Download\{parameter "installer"}" {if (parameter "cmd_args") as lowercase does not contain "/qn" then "/qn " else ""}{parameter "cmd_args"}
+endif
+
+if {(parameter "installer") as lowercase ends with ".ps1"}
+override wait
+timeout_seconds=3600
+hidden=true
+wait powershell -ExecutionPolicy Bypass -File "__Download\{parameter "installer"}" {parameter "cmd_args"}
+endif
+
+if {(parameter "installer") as lowercase ends with ".msix" OR (parameter "installer") as lowercase ends with ".msixbundle"}
+override wait
+timeout_seconds=3600
+hidden=true
+wait powershell -ExecutionPolicy Bypass -Command 'Add-AppxProvisionedPackage -Online -SkipLicense -PackagePath "__Download\{parameter "installer"}" {parameter "cmd_args"}'
+endif
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
