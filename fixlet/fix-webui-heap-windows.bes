@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Fix WebUI heap problem - Windows WARNING:Untested</Title>
+		<Description><![CDATA[ this will fix a heap problem with bigfix webui on windows ]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists services "BESWebUI"</Relevance>
+		<Relevance><![CDATA[exists versions whose(it > "18") of files "node.exe" of folders "WebUI" of (folders it) of values of settings "_WebUIAppEnv_WebUI_DIR" of client]]></Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2025-04-01</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 01 Apr 2025 23:29:11 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[// https://support.hcl-software.com/csm?id=kb_article&sysparm_article=KB0120340
+
+// Download node:
+prefetch node-v18.20.8-win-x64.zip sha1:7a0299aae57cb48d93bd29f3d432d3f4fad23b7f size:28782590 https://nodejs.org/dist/v18.20.8/node-v18.20.8-win-x64.zip sha256:1a1e40260a6facba83636e4cd0ba01eb5bd1386896824b36645afba44857384a
+// Download Unzip:
+prefetch unzip.exe sha1:84debf12767785cd9b43811022407de7413beb6f size:204800 http://software.bigfix.com/download/redist/unzip-6.0.exe sha256:2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
+
+// Add Unzip to Utility Cache:
+utility __Download\unzip.exe
+
+parameter "node_path" = "{unique value of pathnames of files "node.exe" of folders "WebUI" of (folders it) of values of settings "_WebUIAppEnv_WebUI_DIR" of client}"
+
+// extract node
+wait __Download\unzip.exe -o "{pathname of files "node-v18.20.8-win-x64.zip" of folders "__Download" of client folders of current site}" -d "{pathname of folders "__Download" of client folders of current site}"
+
+// stop webui service
+wait cmd.exe /C net stop "BESWebUI"
+
+// backup node.exe
+delete "{parameter "node_path"}.backup"
+copy "{parameter "node_path"}" "{parameter "node_path"}.backup"
+delete "{parameter "node_path"}"
+
+// replace node.exe in webui folder
+copy "{unique value of pathnames of files "node.exe" of folders whose(name of it starts with "node") of folders "__Download" of client folders of current site}" "{parameter "node_path"}"
+
+// start webui service
+wait cmd.exe /C net start "BESWebUI"
+]]></ActionScript>
+			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
