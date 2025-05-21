@@ -3,7 +3,7 @@
 	<Analysis>
 		<Title>BES Client Info - Universal</Title>
 		<Description><![CDATA[<P>This analysis will collect some data about the BES Client settings &amp; performance.</P>
-<P>Find the latest version of this analysis here: &nbsp;<A href="http://bigfix.me/analysis/details/2994646">http://bigfix.me/analysis/details/2994646</A></P>
+<P>Find the latest version of this analysis here: &nbsp;<A href="https://github.com/jgstew/bigfix-content/blob/main/analyses/BES%20Client%20Info%20-%20Universal.bes">https://github.com/jgstew/bigfix-content/blob/main/analyses/BES%20Client%20Info%20-%20Universal.bes</A></P>
 <P>&nbsp;</P>
 <P><STRONG>References:</STRONG></P>
 <P><A href="https://help.hcl-software.com/bigfix/11.0/platform/Platform/Config/r_client_set.html">https://help.hcl-software.com/bigfix/11.0/platform/Platform/Config/r_client_set.html</A></P>
