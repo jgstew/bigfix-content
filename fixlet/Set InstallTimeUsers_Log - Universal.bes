@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Fixlet>
+		<Title>Set InstallTimeUsers_Log - Universal</Title>
+		<Description><![CDATA[This sets&nbsp;user sessions found in the bigfix log from the log on the day bigfix was installed. ]]></Description>
+		<Relevance><![CDATA[exists absolute values whose(it < 15 * day) of (now - it) of minima of subscribe times of sites]]></Relevance>
+		<Relevance>not exists values whose(it as trimmed string != "") of settings "InstallTimeUsers_Log" of clients</Relevance>
+		<Relevance><![CDATA[exists unique values of (preceding text of first "'" of it | it) of following texts of firsts "User interface process started for user '" of locked lines containing "User interface process started for user '" of files whose(name of it starts with ( (year of it as string & month of it as two digits & day_of_month of it as two digits) of date (local time zone) of minima of subscribe times of sites ) AND name of it as lowercase ends with ".log") of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2025-05-21</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Wed, 21 May 2025 21:19:31 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+parameter "UserNames"="{ concatenations ";" of unique values of (preceding text of first "'" of it | it) of following texts of firsts "User interface process started for user '" of locked lines containing "User interface process started for user '" of files whose(name of it starts with ( (year of it as string & month of it as two digits & day_of_month of it as two digits) of date (local time zone) of minima of subscribe times of sites ) AND name of it as lowercase ends with ".log") of folders "Logs" of folders "__Global" of data folders of client }"
+
+// set setting with usernames of logged on users
+setting "InstallTimeUsers_Log"="{ parameter "UserNames" }" on "{ now }" for client
+]]></ActionScript>
+		</DefaultAction>
+	</Fixlet>
+</BES>
