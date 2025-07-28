@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Dynamic Install NotepadPlusPlus - Windows</Title>
+		<Description>Install NotepadPlusPlus based upon the latest prefetch info for the same found in existing patch content.</Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>not exists keys whose(value "DisplayName" of it as string starts with "Notepad++") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)</Relevance>
+		<Relevance>exists files "Updates.fxf" of folders "Updates for Windows Applications" of data folders of client</Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2025-07-28</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Mon, 28 Jul 2025 15:41:39 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[// Download:
+// must use prefetch block. parses prefetch block info from regular prefetch statement.
+// this could be made better by parsing the prefetch info using regex instead of preceding/following.
+begin prefetch block
+add prefetch item name=npp.Installer.exe { ( (("sha1=" & it) of unique value of preceding texts of firsts " " of following texts of firsts "sha1:" of it) & ((" size=" & it) of unique value of preceding texts of firsts " " of following texts of firsts "size:" of it) & ( (" url=" & it) of unique value of ("http" & it) of preceding texts of firsts " " of following texts of firsts " http" of it) & ((" sha256=" & it) of unique value of following texts of firsts "sha256:" of it) ) of tuple string items 0 of concatenations ", " of unique values whose(it contains "x64.exe") of following texts of firsts ".exe " of following texts of firsts "prefetch npp." of lines containing "://download.notepad-plus-plus.org/" of files "Updates.fxf" of folders "Updates for Windows Applications" of data folders of client }
+end prefetch block
+// Install:
+wait __Download\npp.Installer.exe /S
+
+// End]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
