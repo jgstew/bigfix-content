@@ -6,7 +6,7 @@ on:
 
 jobs:
   ParseRelaysDotDatInteractive:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Example Interactive Inputs Step
         id: interactive-inputs
@@ -37,5 +37,17 @@ jobs:
           ls -la ${{ steps.interactive-inputs.outputs.uploaded_file }} # Use the label of the multifile/file field as the key to get the uploaded file directory
           echo -e "\n==============================\n"
 
+      - name: Install Wine
+        run: |
+          sudo dpkg --add-architecture i386
+          wget -qO - https://dl.winehq.org/wine-builds/winehq.key | sudo apt-key add -
+          # The following lines set up the repository for the Ubuntu version
+          # Ensure you use the correct release name (e.g., jammy for Ubuntu 22.04)
+          . /etc/os-release
+          sudo add-apt-repository "deb https://dl.winehq.org/wine-builds/ubuntu $UBUNTU_CODENAME main"
+          sudo apt update
+          sudo apt install --install-recommends winehq-stable
+
+      # will need to upload artifact and run in a different job or use Wine.
       - name: Run ParseRelaysDotDat
-        run: ./ParseRelaysDotDat.exe ${{ steps.interactive-inputs.outputs.uploaded_file }}
+        run: wine ./ParseRelaysDotDat.exe ${{ steps.interactive-inputs.outputs.uploaded_file }}
