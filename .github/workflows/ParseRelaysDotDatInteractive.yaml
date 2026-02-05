@@ -14,13 +14,14 @@ jobs:
         with:
           ngrok-authtoken: ${{ secrets.NGROK_AUTHTOKEN }}
           interactive: |
-            - type: file
-              id: uploaded_file
-              name: Upload Relays.dat file
-              description: 'Upload desired Relays.dat file for processing'
-              required: true
-              acceptedFileTypes:
-                - application/octet-stream
+            fields:
+              - label: uploaded_file
+                properties:
+                  display: Upload Relays.dat file to parse # Optional: if not specified, the title for the field will not be displayed on the portal
+                  type: file
+                  required: true
+                  description: Select a Relays.dat file to be uploaded to the runner for processing
+                  acceptedFileTypes: [.dat]
 
       # http://software.bigfix.com/download/bes/util/ParseRelaysDotDat.exe
       - name: Download ParseRelaysDotDat.exe
