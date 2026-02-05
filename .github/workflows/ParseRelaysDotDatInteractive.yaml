@@ -51,4 +51,4 @@ jobs:
 
       # will need to upload artifact and run in a different job or use Wine.
       - name: Run ParseRelaysDotDat
-        run: wine ./ParseRelaysDotDat.exe ${{ steps.interactive-inputs.outputs.uploaded-file }}
+        run: wine ./ParseRelaysDotDat.exe ${{ steps.interactive-inputs.outputs.uploaded-file }}/Relays.dat
