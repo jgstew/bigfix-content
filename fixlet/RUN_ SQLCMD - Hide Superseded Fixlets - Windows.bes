@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>RUN: SQLCMD - Hide Superseded Fixlets - Windows</Title>
+		<Description>
+            This will run SQLCMD on a root server or the MSSQL server where the root server db is hosted. The SYSTEM account must have access to MSSQL. SQLCMD binary must be available and on PATH.
+        </Description>
+		<Relevance>/* Windows Only */ windows of operating system</Relevance>
+		<Relevance><![CDATA[/* Windows XP or Higher */ version of operating system >= "5.1"]]></Relevance>
+		<Relevance>/* Exists MSSQL Server */ exists services "MSSQLSERVER"</Relevance>
+		<Relevance>/* Exists sqlcmd */ exists tuple string items 0 of concatenations ", " of pathnames of files whose(name of it as lowercase contains "sqlcmd") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2026-02-12</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-relevance-evaluation-period</Name>
+			<Value>06:00:00</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 12 Feb 2026 16:49:32 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+parameter "sqlcmd_path" = "{ tuple string items 0 of concatenations ", " of pathnames of files whose(name of it as lowercase contains "sqlcmd") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments }"
+
+parameter "folder_path" = "{ (it & "\__Download") of pathname of client folder of current site | "C:\Windows\Temp"}"
+
+delete __createfile
+delete "{parameter "folder_path"}\HideSuperseded.sql"
+
+// FROM: https://github.com/jgstew/tools/blob/master/SQL/BigFix_FixletsExternal_Superseded_StoredProcedureHide.sql
+createfile until END_OF_FILE
+/****** Call Stored Procedure to hide all Superseded Content with no open actions or relevant devices ******/
+SET NOCOUNT ON; -- Stops the "1 row affected" spam for every single update
+
+DECLARE @CurrentSiteID INT;
+DECLARE @CurrentFixletID INT;
+DECLARE @ProcessedCount INT = 0;
+
+PRINT 'Starting analysis of Superseded Fixlets...';
+
+-- 1. Declare the cursor
+DECLARE FixletCursor CURSOR FOR
+    WITH CombinedFixletsExclude AS (
+        -- Exclude if relevant on at least 1 computer
+        SELECT DISTINCT [SiteID], [ID] As FixletID
+        FROM [BFEnterprise].[dbo].[FIXLETRESULTS]
+        WHERE [IsRelevant] = 1
+
+        UNION
+
+        -- Exclude if part of an open action
+        SELECT [SourceSiteID], [SourceContentID]
+        FROM [BFEnterprise].[dbo].[ACTIONS]
+        WHERE [SourceSiteID] IS NOT NULL
+          AND [IsStopped] = 0
+          AND [IsDeleted] = 0
+
+        UNION
+
+        -- Exclude if already hidden (already in visibility table)
+        SELECT [SiteID], [FixletID]
+        FROM [BFEnterprise].[dbo].[FIXLET_VISIBILITY]
+    )
+    SELECT
+          SiteNameMapTable.[SiteID]
+        , ExternalFixletsTable.[ID]
+    FROM [BFEnterprise].[dbo].[EXTERNAL_OBJECT_DEFS] AS ExternalFixletsTable
+    INNER JOIN [BFEnterprise].[dbo].[SITENAMEMAP] AS SiteNameMapTable
+        ON ExternalFixletsTable.[Sitename] = SiteNameMapTable.[Sitename]
+    WHERE ExternalFixletsTable.[IsFixlet] = 1
+      AND ExternalFixletsTable.[Name] LIKE '% (Superseded)%'
+      AND NOT EXISTS (
+          SELECT 1
+          FROM CombinedFixletsExclude AS ExcludeList
+          WHERE ExcludeList.[SiteID] = SiteNameMapTable.[SiteID]
+            AND ExcludeList.[FixletID] = ExternalFixletsTable.[ID]
+      );
+
+-- 2. Open the cursor
+OPEN FixletCursor;
+
+FETCH NEXT FROM FixletCursor INTO @CurrentSiteID, @CurrentFixletID;
+
+-- 3. Loop through results
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    -- Run the update
+    EXEC dbo.update_fixlet_visibility
+        @siteID = @CurrentSiteID,
+        @fixletID = @CurrentFixletID,
+        @isVisible = 0;
+
+    -- Increment counter
+    SET @ProcessedCount = @ProcessedCount + 1;
+
+    FETCH NEXT FROM FixletCursor INTO @CurrentSiteID, @CurrentFixletID;
+END
+
+-- 4. Cleanup and Final Output
+CLOSE FixletCursor;
+DEALLOCATE FixletCursor;
+
+PRINT '---------------------------------------------------';
+IF @ProcessedCount = 0
+    PRINT 'Result: No superseded items required hiding at this time.';
+ELSE
+    PRINT 'Result: Successfully hid ' + CAST(@ProcessedCount AS VARCHAR(10)) + ' superseded fixlets.';
+PRINT '---------------------------------------------------';
+END_OF_FILE
+
+move __createfile "{parameter "folder_path"}\HideSuperseded.sql"
+
+delete __createfile
+delete "{parameter "folder_path"}\run_sqlcmd.bat"
+
+createfile until END_OF_FILE
+"{parameter "sqlcmd_path"}" -S (local) -d BFEnterprise -E -i "{parameter "folder_path"}\HideSuperseded.sql" > "{parameter "folder_path"}\sqlcmd_out.txt"
+END_OF_FILE
+
+move __createfile "{parameter "folder_path"}\run_sqlcmd.bat"
+
+wait cmd /C "{parameter "folder_path"}\run_sqlcmd.bat"
+
+continue if{ exists locked lines containing "Result: " of files "sqlcmd_out.txt" of folders (parameter "folder_path")}
+
+exit { sums of (it as integer) of preceding texts of lasts " superseded fixlets." of following texts of firsts "Result: Successfully hid " of locked lines containing " superseded fixlets." of files "sqlcmd_out.txt" of folders (parameter "folder_path") }
+// end]]></ActionScript>
+			<SuccessCriteria Option="RunToCompletion"></SuccessCriteria>
+		</DefaultAction>
+	</Task>
+</BES>
