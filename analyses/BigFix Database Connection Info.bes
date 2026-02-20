@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Analysis>
-		<Title>BigFix Database Connection Info - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
-		<Relevance>windows of operating system</Relevance>
-		<Relevance>exists values "server" of keys whose(name of it as lowercase contains "bfenterprise") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\ODBC\ODBC.INI" of (registry; native registry)</Relevance>
+		<Title>BigFix Database Connection Info</Title>
+		<Description><![CDATA[Run this task to get TCPing average:<BR><BR>- <A href="https://github.com/jgstew/bigfix-content/blob/main/fixlet/Measure%20bfenterprise%20database%20ping%20-%20Windows.bes">https://github.com/jgstew/bigfix-content/blob/main/fixlet/Measure%20bfenterprise%20database%20ping%20-%20Windows.bes</A><BR>]]></Description>
+		<Relevance><![CDATA[( exists lengths whose(it > 1) of (it as trimmed string) of values of settings "_BESServer_Database_Server" of client ) OR ( windows of operating system AND ( exists values "server" of keys whose(name of it as lowercase contains "bfenterprise") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\ODBC\ODBC.INI" of (registry; native registry) ) )]]></Relevance>
 		<Source>Internal</Source>
 		<SourceReleaseDate>2026-02-20</SourceReleaseDate>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Fri, 20 Feb 2026 15:43:21 +0000</Value>
+			<Value>Fri, 20 Feb 2026 22:11:27 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
-		<Property Name="Root Database ODBC" ID="1" EvaluationPeriod="P1D">(tuple string item 0 of it, tuple string item 1 of it | "1433") of concatenations ", " of (it as trimmed string) of substrings separated by "," of ( unique value whose(it != "(local)") of (it as string) of values "server" of keys whose(name of it as lowercase contains "bfenterprise") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\ODBC\ODBC.INI" of (registry; native registry) | "localhost,1433")</Property>
+		<Property Name="Root Database ODBC" ID="1" EvaluationPeriod="P1D"><![CDATA[( unique value of (item 0 of it & ", " & item 1 of it) of ( (it as trimmed string) of values of settings "_BESServer_Database_Server" of client, (it as trimmed string) of values of settings "_BESServer_Database_Port" of client ) ) | unique value of (tuple string item 0 of it & ", " & (tuple string item 1 of it | "1433")) of concatenations ", " of (it as trimmed string) of substrings separated by "," of ( unique value whose(it != "(local)") of (it as string) of values "server" of keys whose(name of it as lowercase contains "bfenterprise") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\ODBC\ODBC.INI" of (registry; native registry) | "localhost,1433")]]></Property>
 		<Property Name="BFEnt TCPing Average" ID="2" EvaluationPeriod="P1D">(it as trimmed string) of following texts of lasts "verage=" of line containing "verage=" of files "tcping_bfenterprise_output.txt" of folders "Logs" of folders "__Global" of data folders of client</Property>
 	</Analysis>
 </BES>
