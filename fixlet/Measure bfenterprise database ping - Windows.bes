@@ -39,7 +39,7 @@ delete __createfile
 delete "{parameter "folder_path"}\run_cmd.bat"
 
 createfile until END_OF_FILE
-__Download\win-x64-tcping.exe -i 2 -r 10 -t 90 {parameter "db_server"} {parameter "db_port"} > "{parameter "client_log_folder"}tcping_bfenterprise_output.txt"
+__Download\win-x64-tcping.exe -i 2 -r 10 -t 90 {parameter "db_server"} {parameter "db_port"} > {parameter "client_log_folder"}tcping_bfenterprise_output.txt
 END_OF_FILE
 
 move __createfile "{parameter "folder_path"}\run_cmd.bat"
