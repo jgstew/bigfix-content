@@ -14,7 +14,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Fri, 20 Feb 2026 15:47:47 +0000</Value>
+			<Value>Fri, 20 Feb 2026 17:50:58 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -33,13 +33,13 @@ parameter "db_port" = "{ (tuple string item 1 of it | "1433") of concatenations 
 // win-x64-tcping.exe -i 2 -r 10 -t 90 localhost 1433
 
 parameter "folder_path" = "{ (it & "\__Download") of pathname of client folder of current site | "C:\Windows\Temp"}"
-parameter "client_log_folder" = "{(concatenations (if windows of operating system then "^ " else "\ ") of substrings separated by " " of it) of pathname of folders "Logs" of folders "__Global" of data folders of client}{if windows of operating system then "\" else "/"}"
+parameter "client_log_folder" = "{pathname of folders "Logs" of folders "__Global" of data folders of client}"
 
 delete __createfile
 delete "{parameter "folder_path"}\run_cmd.bat"
 
 createfile until END_OF_FILE
-__Download\win-x64-tcping.exe -i 2 -r 10 -t 90 {parameter "db_server"} {parameter "db_port"} > "{parameter "client_log_folder"}tcping_bfenterprise_output.txt"
+__Download\win-x64-tcping.exe -i 2 -r 10 -t 90 "{parameter "db_server"}" "{parameter "db_port"}" > "{parameter "client_log_folder"}\tcping_bfenterprise_output.txt"
 END_OF_FILE
 
 move __createfile "{parameter "folder_path"}\run_cmd.bat"
@@ -56,7 +56,6 @@ setting "_BESClient_Resource_StartupNormalSpeed"="1" on "{parameter "action issu
 
 // set exit code to failure %
 exit {unique value of (it as integer) of following texts of lasts "(" of preceding texts of lasts "%25 Fail)" of lines containing "%25 Fail)" of files "tcping_bfenterprise_output.txt" of folders "Logs" of folders "__Global" of data folders of client | 999}
-
 // End]]></ActionScript>
 		</DefaultAction>
 	</Task>
