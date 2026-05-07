@@ -1,0 +1,195 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<BES>
+  <Wizard>
+    <Title>BigFix License Info Export</Title>
+    <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+    <DefaultPage>DefaultPage</DefaultPage>
+    <Page Name="DefaultPage" DocType="HTML5" >
+        <Title>BigFix License Info Export</Title>
+        <Head><![CDATA[
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
+
+<style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            max-width: 600px;
+            background-color: #f9f9f9;
+        }
+        .toolbar {
+            padding: 10px;
+            background-color: #eee;
+            border-bottom: 1px solid #ccc;
+            text-align: right;
+        }
+        .toolbar button {
+            padding: 5px 10px;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+        pre {
+            padding: 15px;
+            margin: 0;
+            white-space: pre-wrap; /* Allows text to wrap if it gets too long */
+            word-wrap: break-word;
+            font-family: Consolas, monospace;
+        }
+    </style>
+        ]]></Head>
+        <HTML><![CDATA[
+<script language="javascript">InsertUtilityDiv();</script>
+
+<body>
+<h2>BigFix License Info Export</h2>
+    <div class="container">
+        <div class="toolbar">
+            <button id="copyBtn">Copy</button>
+            <button id="downloadBtn">Download .json</button>
+        </div>
+        <pre id="textBox">
+            <?Relevance
+"[" & concatenation "," of (
+  "{" &
+  "%22allow_unmentioned_site%22:" & (if (exists allow unmentioned site of it) then (allow unmentioned site of it as string as lowercase) else "null") & "," &
+  "%22common_name%22:%22" & (common name of it | "") & "%22," &
+  "%22download_hash_algorithm%22:%22" & (concatenation "," of download hash algorithms of it | "") & "%22," &
+  "%22effective_download_hash_algorithm%22:%22" & (effective download hash algorithm of it | "") & "%22," &
+  "%22effective_signature_hash_algorithm%22:%22" & (effective signature hash algorithm of it | "") & "%22," &
+  "%22email_address%22:%22" & (email address of it | "") & "%22," &
+  "%22encryption_certificate_present%22:" & (if (exists encryption certificate of it) then "true" else "false") & "," &
+  "%22enhanced_security%22:" & (if (exists enhanced security of it) then (enhanced security of it as string as lowercase) else "null") & "," &
+  "%22evaluation%22:" & (if (exists evaluation of it) then (evaluation of it as string as lowercase) else "null") & "," &
+  "%22expiration_date%22:%22" & (expiration date of it as string | "") & "%22," &
+  "%22expiration_state%22:%22" & (expiration state of it | "") & "%22," &
+  "%22fips_mode%22:" & (if (exists fips mode of it) then (fips mode of it as string as lowercase) else "null") & "," &
+  "%22gather_url%22:%22" & (gather url of it | "") & "%22," &
+  "%22maximum_seat_count%22:" & (maximum seat count of it as string | "null") & "," &
+  "%22organization%22:%22" & (organization of it | "") & "%22," &
+  "%22products%22:[" & (if (exists products of it) then ("%22" & concatenation "%22,%22" of (name of it) of products of it & "%22") else "") & "]," &
+  "%22registrar_number%22:" & (registrar number of it as string | "null") & "," &
+  "%22seat_count_state%22:%22" & (seat count state of it | "") & "%22," &
+  "%22sha256_download%22:" & (if (exists sha256 download of it) then (sha256 download of it as string as lowercase) else "null") & "," &
+  "%22signature_hash_algorithm%22:%22" & (signature hash algorithm of it | "") & "%22," &
+  "%22site_number%22:" & (site number of it as string | "null") & "," &
+  "%22start_date%22:%22" & (start date of it as string | "") & "%22," &
+  "%22type%22:%22" & (type of it | "") & "%22" &
+  "}"
+) of bes licenses & "]"
+ ?>
+        </pre>
+    </div>
+
+    <script>
+        // Use 'var' instead of 'const' or 'let' for strict IE11 compatibility
+        var copyBtn = document.getElementById('copyBtn');
+        var downloadBtn = document.getElementById('downloadBtn');
+        var textBox = document.getElementById('textBox');
+
+        // Initialize: Trim, Parse, and Pretty-Print
+        function initFormatter() {
+            var rawText = textBox.innerText || textBox.textContent;
+
+            // 1. Trim whitespace
+            rawText = rawText.trim();
+
+            try {
+                // 2. Parse as JSON
+                var parsedJson = JSON.parse(rawText);
+
+                // 3. Pretty print with 4 spaces
+                var prettyJson = JSON.stringify(parsedJson, null, 4);
+
+                // 4. Output the formatted text safely
+                if (typeof textBox.innerText !== "undefined") {
+                    textBox.innerText = prettyJson;
+                } else {
+                    textBox.textContent = prettyJson;
+                }
+            } catch (e) {
+                // Fallback if the text isn't valid JSON
+                var errorMsg = "Error: Invalid JSON provided.\n\n" + e.message;
+                if (typeof textBox.innerText !== "undefined") {
+                    textBox.innerText = errorMsg;
+                } else {
+                    textBox.textContent = errorMsg;
+                }
+            }
+        }
+
+        // Run formatting on load
+        initFormatter();
+
+        // Copy functionality
+        copyBtn.addEventListener('click', function() {
+            var textToCopy = textBox.innerText || textBox.textContent;
+
+            // Create a temporary textarea to hold the text
+            var textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+
+            // Move it off-screen to avoid jarring layout shifts
+            textArea.style.position = "fixed";
+            textArea.style.top = "-9999px";
+            textArea.style.left = "-9999px";
+
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                // execCommand is deprecated in modern browsers but required for IE11
+                var successful = document.execCommand('copy');
+                if (successful) {
+                    alert('JSON copied to clipboard!');
+                } else {
+                    alert('Copying failed.');
+                }
+            } catch (err) {
+                alert('Your browser does not support automatic copying.');
+            }
+
+            // Cleanup
+            document.body.removeChild(textArea);
+        });
+
+        // Download functionality
+        downloadBtn.addEventListener('click', function() {
+            var textToDownload = textBox.innerText || textBox.textContent;
+            var fileName = "BigFix_License_Info.json";
+
+            // IE10 / IE11 specific API for saving files
+            if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                var blob = new Blob([textToDownload], { type: "application/json;charset=utf-8" });
+                window.navigator.msSaveOrOpenBlob(blob, fileName);
+            } else {
+                // Fallback for modern browsers (Chrome, Firefox, Edge, Safari)
+                var blob = new Blob([textToDownload], { type: "application/json;charset=utf-8" });
+                var url = window.URL.createObjectURL(blob);
+                var a = document.createElement("a");
+
+                a.style.display = "none";
+                a.href = url;
+                a.download = fileName;
+
+                document.body.appendChild(a);
+                a.click();
+
+                // Cleanup
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            }
+        });
+    </script>
+
+</body>
+
+        ]]></HTML>
+        </Page>
+    </Wizard>
+</BES>
