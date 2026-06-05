@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Allow Direct Downloads of Linux Packages - Linux</Title>
+		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Relevance>exists names whose(it starts with "Linux") of operating system</Relevance>
+		<Relevance>not exists settings whose(name of it starts with "_BESClient_" AND name of it contains "_Allow" AND name of it contains "Downloads") of client</Relevance>
+		<Relevance>exists names whose(it starts with "Linux CentOS" OR it starts with "Linux Red Hat" OR it starts with "Linux Rocky" OR it starts with "Linux Oracle" OR it starts with "Linux Amazon" OR it starts with "Linux Ubuntu" OR it starts with "Linux Debian" OR it starts with "Linux Raspbian") of operating system </Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2026-06-05</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 05 Jun 2026 15:44:38 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">// Set the different settings to allow direct downloads for each OS type
+
+parameter "SettingTime" = "{ "01 Jan 2000 11:11:11" as universal time }"
+
+// CentOS
+if { exists names whose(it starts with "Linux CentOS") of operating system }
+
+setting "_BESClient_CentOS_AllowYumDownloads"="1" on "{ parameter "SettingTime" }" for client
+
+endif
+
+// Red Hat
+if { exists names whose(it starts with "Linux Red Hat") of operating system }
+
+setting "_BESClient_RHEL_AllowYumDownloads"="1" on "{ parameter "SettingTime" }" for client
+
+endif
+
+// Rocky
+if { exists names whose(it starts with "Linux Rocky") of operating system }
+
+setting "_BESClient_RockyLinux_AllowYumDownloads"="1" on "{ parameter "SettingTime" }" for client
+
+endif
+
+// Oracle Linux
+if { exists names whose(it starts with "Linux Oracle") of operating system }
+
+setting "_BESClient_OEL_AllowYumDownloads"="1" on "{ parameter "SettingTime" }" for client
+
+endif
+
+// Amazon Linux
+if { exists names whose(it starts with "Linux Amazon") of operating system }
+
+setting "_BESClient_AmazonLinux_AllowYumDownloads"="1" on "{ parameter "SettingTime" }" for client
+
+endif
+
+// Ubuntu
+if { exists names whose(it starts with "Linux Ubuntu") of operating system }
+
+setting "_BESClient_Ubuntu_AllowAPTDownloads"="1" on "{ parameter "SettingTime" }" for client
+
+endif
+
+// Debian
+if { exists names whose(it starts with "Linux Debian") of operating system }
+
+setting "_BESClient_Debian_AllowAPTDownloads"="1" on "{ parameter "SettingTime" }" for client
+
+endif
+
+// Raspbian
+if { exists names whose(it starts with "Linux Raspbian") of operating system }
+
+setting "_BESClient_Raspbian_AllowAPTDownloads"="1" on "{ parameter "SettingTime" }" for client
+
+endif
+
+// End</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
