@@ -60,7 +60,7 @@ endif
 // Check exit code: Should be 0
 continue if {exit code of action = 0}
 
-// verify BitLocker Protection Suspended: (not exactly the task relevance due to possibilty of encryption in progress)
+// verify BitLocker Protection Suspended: (not exactly the task relevance due to possibility of encryption in progress)
 continue if{ not exists integer values whose(it = 1) of properties "ProtectionStatus" of select objects "ProtectionStatus, DriveLetter from Win32_EncryptableVolume" whose(string value of property "DriveLetter" of it starts with (name of drive of system folder) ) of wmis "root\CIMv2\Security\MicrosoftVolumeEncryption" }
 
 endif

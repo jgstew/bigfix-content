@@ -1,0 +1,70 @@
+---
+# run on only items staged in git:  pre-commit
+# automatically run on commit:      pre-commit install
+# check all files in repo:          pre-commit run --all-files
+# check all files manual stage:     pre-commit run --all-files --hook-stage manual
+# update all checks to latest:      pre-commit autoupdate
+# https://github.com/pre-commit/pre-commit-hooks
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-xml
+      - id: end-of-file-fixer
+      # https://www.aleksandrhovhannisyan.com/blog/crlf-vs-lf-normalizing-line-endings-in-git/
+      # - id: mixed-line-ending
+      #   args: ['--fix=no']
+      - id: trailing-whitespace
+      - id: detect-private-key
+
+  - repo: https://github.com/jgstew/pre-commit-jgstew
+    rev: v1.6.2
+    hooks:
+      # local pre-commit equivalent of the besxmllint github workflow:
+      - id: validate-bes
+      - id: check-bes-conventions
+      - id: verify-files-are-ascii
+        # manual: non-ASCII is legitimate in much of this content
+        # (JS payloads, smart quotes in console exports)
+        stages: [manual]
+        # .reg exports and some .sql files are UTF-16 (crash the hook):
+        exclude: |
+          (?x)^(
+              .*\.reg|
+              .*\.sql|
+              fixlet/javascript/.*
+          )$
+
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.38.0
+    hooks:
+      - id: yamllint
+        args: [-c=.yamllint.yaml]
+
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.37.4
+    hooks:
+      - id: check-github-workflows
+        args: ["--verbose"]
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.2
+    hooks:
+      - id: codespell
+        # `ths` is the session relevance inspector for html <th> elements:
+        args: ["-L", "ths"]
+        # exported BES content is full of product names and relevance
+        # keywords; WordGame.besrpt embeds an entire word list:
+        exclude: \.(bes|ojo)$|^webreports/WordGame\.besrpt$
+
+  - repo: meta
+    hooks:
+      - id: check-useless-excludes
+        stages: [manual]
+      - id: check-hooks-apply
+        stages: [manual]

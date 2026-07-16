@@ -8,18 +8,18 @@
 <DIV id = paramFixletDescription>
     <P>
     This is sample Fixlet which will NOT encrypt passwords, use a fake password! <BR/>
-    Enter the required information below and click on take action. 
+    Enter the required information below and click on take action.
     </P>
 </DIV>
 <DIV class=FixletProperty></DIV></DIV>
 <script>
 loaded = false;
-var CODE_SITE_NAME = 'BES Support' ; 
+var CODE_SITE_NAME = 'BES Support' ;
 function loadScript (siteName, callback) {
 loaded = false;
 var relevanceQuery ='unique value of values of mime fields whose (name of it = "vrt_utils.js") of fixlets whose ( task flag of it AND "Parameterized Fixlet Library" = name of it ) of bes sites whose( \"' + siteName + '\" = name of it )'
 var code = EvaluateRelevance(relevanceQuery);
-var head = document.getElementsByTagName("head")[0]; 
+var head = document.getElementsByTagName("head")[0];
 var script   = document.createElement("script");
 script.type  = "text/javascript";
 script.text = code;
@@ -31,7 +31,7 @@ if (!loaded){
 if ( typeof FixletUtils !== 'undefined') {
 loaded = true;
 /*
-* Pleas Note: The following code will be moved to library with next publish of lib and user will have to only call method     
+* Please Note: The following code will be moved to library with next publish of lib and user will have to only call method
 */
 var relQuery = '(messages of it) of fixlets whose ( task flag of it AND "Parameterized Fixlet Library" = name of it ) of bes sites whose( \"' + CODE_SITE_NAME + '\" = name of it )';
 var messages = EvaluateRelevance(relQuery);
@@ -215,7 +215,7 @@ loadScript(CODE_SITE_NAME, scriptLoaded);
     parameter "SessionRelevanceiTunes" = "( if ( exists it whose(item 0 of it = item 1 of it) of ( it, (sets of (ids of source fixlets of components of component groups of it)) of bes baselines whose(name of it as lowercase contains %22itunes%22 AND name of it as lowercase contains %22windows%22) ) of ( sets of ids of fixlets whose(name of it contains %22iTunes%22 AND name of it does not contain %22 (Superseded)%22 AND name of it contains %22Win%22 AND visible flag of it) of bes sites whose(%22Updates for Windows Applications%22 = name of it) ) ) then ERROR %22DuplicateExists%22 else ( fixlets whose(name of it contains %22iTunes%22 AND name of it does not contain %22 (Superseded)%22 AND name of it contains %22Win%22 AND visible flag of it) of bes sites whose(%22Updates for Windows Applications%22 = name of it) ) )"
     parameter "SessionRelevanceTestStatic" = "{ parameter ("SessionRelevance" & "iTunes") }"
     parameter "SessionRelevanceTestParameterized" = "{ parameter "SessionRelevance" }"
-    
+
     // parameters to help with cross platform use:
     parameter "PathSeparator" = "{ if (windows of operating system) then "\" else "/" }"
     parameter "OSshell" = "{ if (windows of operating system) then "cmd /C " else "bash -c " }"

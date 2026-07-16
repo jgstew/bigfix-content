@@ -39,7 +39,7 @@ This is probably the quickest way to get started with Dashboards and learn about
 
 - Put the dashboard files in a folder, then load dynamically using the Console's `Load Wizard` option in the Debug Menu.
   - Placing the files in a folder before loading with the console is important, because the console will copy the entire contents of the folder.
-- Add the dashboard files to a custom site. 
+- Add the dashboard files to a custom site.
 
 ### Get fully rendered HTML for debugging:
 
@@ -55,9 +55,9 @@ This is probably the quickest way to get started with Dashboards and learn about
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="js/libs/jquery-1.5.1.min.js">\x3C/script>')</script>
-    
+
 - https://forum.bigfix.com/t/example-custom-web-report-with-pie-chart/16017/15
- - Load javascript embedded withing a BigFix Task with fallback to CDN
+ - Load javascript embedded within a BigFix Task with fallback to CDN
 
 An even better option: https://github.com/jgstew/bigfix-content/tree/master/fixlet/javascript
 

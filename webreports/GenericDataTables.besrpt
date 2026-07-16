@@ -37,11 +37,11 @@ $(document).ready(function(){
 function fnUpdateTable(){
     // check that datatable library present
     if (jQuery().dataTable) {
-        // incase there is an existing datatable, destroy it:
+        // in case there is an existing datatable, destroy it:
         $("#resultsTable").dataTable().fnDestroy();
     }
     // load in results html: (this should probably be done async using a callback instead)
-    $('#TableDiv').html( EvaluateRelevance( 'tables "id=\'resultsTable\' class=\'compact display\' width=\'100%25\'" of html concatenations of ( theads of trs of html concatenations of tds of ("Data") of substrings "</td>" of preceding texts of firsts "</tr>" of (it as string) ; tbodys of it ) of html concatenations of trs of ' + SessionRelevanceQuery ) );        
+    $('#TableDiv').html( EvaluateRelevance( 'tables "id=\'resultsTable\' class=\'compact display\' width=\'100%25\'" of html concatenations of ( theads of trs of html concatenations of tds of ("Data") of substrings "</td>" of preceding texts of firsts "</tr>" of (it as string) ; tbodys of it ) of html concatenations of trs of ' + SessionRelevanceQuery ) );
     // create datatable from new results:
     if (jQuery().dataTable) {
         $('#resultsTable').dataTable( {
