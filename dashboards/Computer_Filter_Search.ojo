@@ -16,7 +16,7 @@
             <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/js/jquery.dataTables.min.js" integrity="sha256-yWA356lDhruy1J8jGncaMWKAPYDbK47OKb0uT/aELLc=" crossorigin="anonymous"></script>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/css/jquery.dataTables.min.css" integrity="sha256-+Z1rYa3ys5OdZNUck5G7lBvb8A13OrYwvf+d8PfEaHQ=" crossorigin="anonymous" />
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
-            
+
             <script src="https://use.fontawesome.com/releases/v5.3.1/js/all.js" data-auto-replace-svg="nest"></script>
 
             <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
@@ -66,7 +66,7 @@ div#wr_datapage > br + br {
 var oDataTable;
 
 $(document).ready(function(){
-    
+
 	// https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
     // https://datatables.net/plug-ins/api/fnSortNeutral
     // https://cdn.datatables.net/plug-ins/1.10.13/api/fnSortNeutral.js
@@ -85,7 +85,7 @@ $(document).ready(function(){
         /* Redraw */
         oSettings.oApi._fnReDraw( oSettings );
     };
-	
+
     // load initial datatable with settings
     // https://legacy.datatables.net/ref#bDestroy
     // https://stackoverflow.com/questions/25207147/datatable-vs-datatable-why-is-there-a-difference-and-how-do-i-make-them-w
@@ -104,14 +104,14 @@ $(document).ready(function(){
             }
         ]
     });
-	
+
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
     //  - Author: https://datatables.net/forums/profile/6627/manifestinteractive
     $('.sorting, .sorting_asc, .sorting_desc').dblclick(function(){
         oDataTable.fnSortNeutral();
         return false;
     });
-    
+
     // https://stackoverflow.com/questions/185423/how-can-i-open-a-link-in-the-default-web-browser-from-an-hta
     // Open link in default browser:
     //var shell = new ActiveXObject("WScript.Shell");

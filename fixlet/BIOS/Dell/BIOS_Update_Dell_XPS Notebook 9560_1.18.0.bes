@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch XPS_15_9560_1.18.0.exe sha1:e8c2c4ac614ee3e4fd1b9a75fa606e372987a55e size:10238128 http://downloads.dell.com/FOLDER05941156M/1/XPS_15_9560_1.18.0.exe sha256:b99302eda519ea9f67dcd5f7bb44a0ab12b1c79541523d7d3e4abc4333a3104b
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\XPS_15_9560_1.18.0.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

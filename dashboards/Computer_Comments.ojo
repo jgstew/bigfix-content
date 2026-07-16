@@ -50,7 +50,7 @@ div.dataTables_filter input {
 <script language="javascript">
 
 $(document).ready(function(){
-    
+
 	// https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
     // https://datatables.net/plug-ins/api/fnSortNeutral
     // https://cdn.datatables.net/plug-ins/1.10.13/api/fnSortNeutral.js
@@ -69,7 +69,7 @@ $(document).ready(function(){
         /* Redraw */
         oSettings.oApi._fnReDraw( oSettings );
     };
-	
+
     // load initial datatable with settings
     // https://legacy.datatables.net/ref#bDestroy
     oDataTable = $('#resultsTable').dataTable( {
@@ -79,7 +79,7 @@ $(document).ready(function(){
         "bDestroy": true,
         "order": [[ 1, 'desc' ]]
     });
-	
+
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
     //  - Author: https://datatables.net/forums/profile/6627/manifestinteractive
     $('.sorting, .sorting_asc, .sorting_desc').dblclick(function(){

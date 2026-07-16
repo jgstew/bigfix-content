@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch M6400A12.exe sha1:4c9a116db3ef9f976dfb4ee9f5bd59bf8ccc80e4 size:1270328 http://downloads.dell.com/FOLDER00490741M/1/M6400A12.exe sha256:a00fd72c478f7ee031961afb7cffc40982466acdfdec3763e64c059493a652b7
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\M6400A12.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

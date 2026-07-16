@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch XPS_17_9710_Precision_5760_1.33.0.exe sha1:738700636ace106818dfe1a40239c9b421577bbe size:22177656 https://downloads.dell.com/FOLDER12726610M/1/XPS_17_9710_Precision_5760_1.33.0.exe sha256:01daaa8ec90187fa88f4b6f45d1f1b2d3272d4249cb5810b57e38a8be1bf9ae7
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\XPS_17_9710_Precision_5760_1.33.0.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

@@ -41,7 +41,7 @@ continue if {exit code of action = 0}
 wait bash -c "echo {parameter "newComputerName"} > /etc/hostname"
 
 // sudo bash -c "echo `hostname` > /etc/hostname"
-// https://unix.stackexchange.com/questions/459610/whats-the-point-of-the-hostnamectl-command 
+// https://unix.stackexchange.com/questions/459610/whats-the-point-of-the-hostnamectl-command
 ]]></ActionScript>
 			<SuccessCriteria Option="CustomRelevance">computer name = parameter "oldComputerName"</SuccessCriteria>
 		</DefaultAction>

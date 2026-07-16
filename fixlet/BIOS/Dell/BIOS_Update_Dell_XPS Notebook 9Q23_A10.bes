@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch MUR_A10W.exe sha1:c0998197fac36754f00566d6ba3a614f13b5c925 size:4662416 http://downloads.dell.com/FOLDER04994633M/1/MUR_A10W.exe sha256:d406c3477d46c82e5f976efe999ce593ad9a13cabb43e61fac6357bfdf59d26a
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\MUR_A10W.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

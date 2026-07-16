@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch Dell_Pro_Max_FCM2250_FCS1250_FCT2250_1.4.1.exe sha1:75c10f5e0c50f4172f1ccec1af1a993b1761528e size:78802440 https://downloads.dell.com/FOLDER13068749M/1/Dell_Pro_Max_FCM2250_FCS1250_FCT2250_1.4.1.exe sha256:f5782eca2bfbb6cca28d7a6da1cfcda773fb800a9b5c33959608bc7fbeb35271
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\Dell_Pro_Max_FCM2250_FCS1250_FCT2250_1.4.1.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

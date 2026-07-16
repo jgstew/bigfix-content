@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch OptiPlex_7420_1.15.0.exe sha1:cc3ab6668f4eb66618da19e7735a669e9b6b0ba6 size:56307608 https://downloads.dell.com/FOLDER12901410M/1/OptiPlex_7420_1.15.0.exe sha256:53a294569dd1d29b4286bbfa1f346183e954dfde4d413a548460217717eab3c8
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\OptiPlex_7420_1.15.0.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

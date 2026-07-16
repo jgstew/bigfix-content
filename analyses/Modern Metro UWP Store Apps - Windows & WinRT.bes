@@ -4,10 +4,10 @@
 		<Title><![CDATA[Modern Metro UWP Store Apps - Windows & WinRT]]></Title>
 		<Description><![CDATA[<P>&nbsp;</P>
 <UL>
-<LI><A href="https://www.reddit.com/r/Windows10/comments/404kxx/where_are_windows_store_apps_executable_files/">https://www.reddit.com/r/Windows10/comments/404kxx/where_are_windows_store_apps_executable_files/</A> 
-<LI><A href="https://technet.microsoft.com/en-us/library/hh824882.aspx">https://technet.microsoft.com/en-us/library/hh824882.aspx</A> 
-<LI>`C:\Windows\SystemApps` 
-<LI><A href="https://forum.bigfix.com/t/universal-windows-platform-uwp-apps-inspector/20571/9">https://forum.bigfix.com/t/universal-windows-platform-uwp-apps-inspector/20571/9</A> 
+<LI><A href="https://www.reddit.com/r/Windows10/comments/404kxx/where_are_windows_store_apps_executable_files/">https://www.reddit.com/r/Windows10/comments/404kxx/where_are_windows_store_apps_executable_files/</A>
+<LI><A href="https://technet.microsoft.com/en-us/library/hh824882.aspx">https://technet.microsoft.com/en-us/library/hh824882.aspx</A>
+<LI>`C:\Windows\SystemApps`
+<LI><A href="https://forum.bigfix.com/t/universal-windows-platform-uwp-apps-inspector/20571/9">https://forum.bigfix.com/t/universal-windows-platform-uwp-apps-inspector/20571/9</A>
 <LI></LI></UL>]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance><![CDATA[version of operating system >= "6.2"]]></Relevance>

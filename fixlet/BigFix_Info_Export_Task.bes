@@ -30,7 +30,7 @@
         pre {
             padding: 15px;
             margin: 0;
-            white-space: pre-wrap; 
+            white-space: pre-wrap;
             word-wrap: break-word;
             font-family: Consolas, monospace;
         }

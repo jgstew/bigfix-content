@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch 3150A10.exe sha1:b3433522dae66ccf745ac4bcfe8d408e2c4bb86b size:4056880 http://downloads.dell.com/FOLDER05471475M/1/3150A10.exe sha256:0cc8cd19101242e67a793aca26e4067a4f8c3163bf0e532d9cf51db5cde0b124
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\3150A10.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

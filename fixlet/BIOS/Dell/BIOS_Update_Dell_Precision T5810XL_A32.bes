@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch T5810A32.exe sha1:4ec4488641985c61565d5befcce0f29be7017ea0 size:9922840 http://downloads.dell.com/FOLDER05850198M/1/T5810A32.exe sha256:fc9586cdbc17deb99a22c818bf7081c2fd8874c5a9f634ec70b90b7c3ddb7741
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\T5810A32.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

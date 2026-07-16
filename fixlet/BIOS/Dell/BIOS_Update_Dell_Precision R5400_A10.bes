@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch R5400A10.exe sha1:6d3460cdf8d2b8087728418acd5a8651c7fbd33f size:876656 http://downloads.dell.com/FOLDER00493934M/1/R5400A10.exe sha256:6ff80dc8dd8f1542f816ff9c3c9395011b0541c8f714f1f88e928c3503bbce92
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\R5400A10.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

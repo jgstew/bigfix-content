@@ -9,9 +9,9 @@ This task will download and install "Datadog Agent v7.50.3.0" package onto selec
 		<Relevance>windows of operating system</Relevance>
 				<Relevance><![CDATA[x64 of operating system]]></Relevance>
 				<Relevance><![CDATA[ not exists login accounts whose(it does not end with "\ddagentuser") of services "datadogagent" ]]></Relevance>
-		
+
 		<Relevance><![CDATA[ exists keys whose(value "DisplayName" of it as string starts with "Datadog Agent") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries) ]]></Relevance>
-		
+
 		<Relevance><![CDATA[
 not exists (it as string as version) whose(it >= "7.50.3.0") of values "DisplayVersion" of keys whose(value "DisplayName" of it as string starts with "Datadog Agent") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)
 		]]></Relevance>

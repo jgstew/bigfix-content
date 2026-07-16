@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch T1700A28.exe sha1:496cb6eda218519124d8ab30dfe1d73e0a40b99c size:9884400 http://downloads.dell.com/FOLDER05650668M/1/T1700A28.exe sha256:9dbf0655a72fbe1cd4a8a3d7d00ef6e839d25cebf7af286e7016f87cf3a575f7
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\T1700A28.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

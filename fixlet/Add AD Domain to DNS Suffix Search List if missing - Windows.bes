@@ -34,7 +34,7 @@ regset "[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters]"
 // concatenations "," of ( (unique values of dns domainnames of local computers of active directories) ; it ) of (it as string as trimmed string) of values "SearchList" of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" of registries
 
 // Reference:
-//  - https://bigfix.me/relevance/details/3022969 
+//  - https://bigfix.me/relevance/details/3022969
 
 </ActionScript>
 		</DefaultAction>

@@ -5,7 +5,7 @@
     <Title>Custom - Screenshots</Title>
     <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
     <DefaultPage>Screenshots</DefaultPage>
-    <Page Name="Screenshots" DocType="HTML5" > 
+    <Page Name="Screenshots" DocType="HTML5" >
         <Title>Screenshots</Title>
         <Head><![CDATA[
             <meta http-equiv="X-UA-Compatible" content="IE=9">
@@ -48,9 +48,9 @@ $(document).ready(function(){
                      $('#Fullscreen').fadeIn();
                  });
                  $('#Fullscreen').click(function(){
-                     $(this).fadeOut(); //this will hide the fullscreen div if you click away from the image. 
+                     $(this).fadeOut(); //this will hide the fullscreen div if you click away from the image.
                  });
-                 
+
                  $('#Screenshots > table > tbody > tr > td:nth-child(2)').each( function() {
                     strCell = $( this ).text();
                     // momentCell = moment(strCell, "DD MMM YYYY HH:mm:ss");

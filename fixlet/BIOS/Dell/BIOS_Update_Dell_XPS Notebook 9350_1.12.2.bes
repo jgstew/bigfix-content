@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch XPS_9350_1.12.2.exe sha1:412baff99cd0943bc9e22a6c8e037a075c0920f2 size:11453256 http://downloads.dell.com/FOLDER06000219M/1/XPS_9350_1.12.2.exe sha256:9556fadae9bfc9e94fd0853956601ab9c5d3fa097942966a346351e69d6d3301
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\XPS_9350_1.12.2.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

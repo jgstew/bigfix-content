@@ -98,7 +98,7 @@ waithidden "{ (pathname of file "Curl.EXE" of folder "__Download" of client fold
 delete __createfile
 delete UninstallMSI_Tasks.bes
 
-//    CREATEFILE 
+//    CREATEFILE
 createfile until END_OF_FILE
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">

@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch Wyse_7040_1.6.0.exe sha1:f0b9e4d3ea9c47ba66515275a5420d4ead20a20e size:8954592 http://downloads.dell.com/FOLDER05641936M/1/Wyse_7040_1.6.0.exe sha256:a0a10d3cd5945d3f6f2130a280ee48387db017820f49acc0d43826379f0f9092
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\Wyse_7040_1.6.0.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

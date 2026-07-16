@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch OXE-A05.EXE sha1:ad9a99be19a8ae487ab1aa5950c62cfe9cc6e402 size:1185144 http://downloads.dell.com/FOLDER01180418M/1/OXE-A05.EXE sha256:11b82943160e8b4483799b0eaf38e7e4f0d1d5a7b29264a27264117ffeeff6d3
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\OXE-A05.EXE /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

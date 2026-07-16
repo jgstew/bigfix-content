@@ -69,7 +69,7 @@ IDs of Actions:
 Action Headers:
 { concatenation "%0d%0a" of (name of it & " = " & value of it) of headers of action | "ERROR" }
 
-Fixlet Headers: 
+Fixlet Headers:
 { concatenation "%0d%0a" of (name of it & " = " & value of it) of headers of fixlets whose(id of it = origin fixlet id of active action) of current sites | "ERROR" }
 
 

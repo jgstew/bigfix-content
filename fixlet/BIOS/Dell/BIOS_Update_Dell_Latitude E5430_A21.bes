@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch 5430A21.exe sha1:be6ae641d3e57944ca4b7c6feae96b428eab4515 size:8873568 https://downloads.dell.com/FOLDER05350570M/1/5430A21.exe sha256:be0dc32f132a7e577f6f06ad21dea9e3c2d6b95c314e65caaee65a42bf3a8c49
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\5430A21.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

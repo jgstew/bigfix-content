@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch Latitude_9510_1_1_2.exe sha1:74627a27803a54f987a633f1005cce1eb7dff3fd size:23694776 http://downloads.dell.com/FOLDER06244914M/1/Latitude_9510_1_1_2.exe sha256:04d116ac5b2d7688cde2b74b666db3db0901c41da08700cc8f22c4397a0bbdcf
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\Latitude_9510_1_1_2.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

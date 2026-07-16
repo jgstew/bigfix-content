@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch O780-A15.exe sha1:7d78b7495266fd8a9f7a1f58beaea23177147fff size:2628400 http://downloads.dell.com/FOLDER01655390M/1/O780-A15.exe sha256:0bc409834351d6c98bcb70b1c25aea5438f8ff3a436da2b482f877e4f3ed5437
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\O780-A15.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

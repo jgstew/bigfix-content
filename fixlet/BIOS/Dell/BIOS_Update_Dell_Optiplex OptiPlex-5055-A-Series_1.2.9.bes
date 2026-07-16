@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch OptiPlex_5055_A-Series_1.2.9.exe sha1:9d322ff5d9aa7c4fdc805c6af92757cdcc9416f0 size:6736560 http://downloads.dell.com/FOLDER05403663M/1/OptiPlex_5055_A-Series_1.2.9.exe sha256:5b62eb8b5544c03b9b67100b3ba51cb1b58299991bea2e73aacf7dc571578230
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\OptiPlex_5055_A-Series_1.2.9.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

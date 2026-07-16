@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch T3610A19.exe sha1:f697d5c4a4146a19ee3fe95f224fc3725911178c size:9007024 http://downloads.dell.com/FOLDER05830280M/1/T3610A19.exe sha256:2e38f286940f17010d89144c9c32f0e7227e1269518d0e84d6fb8dfbbdb7f7b3
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\T3610A19.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

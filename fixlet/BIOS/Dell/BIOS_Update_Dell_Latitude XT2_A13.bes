@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch XT2_A13.exe sha1:c5fcffc1a370a770ec777d322847b7d13de804e0 size:2930856 http://downloads.dell.com/FOLDER00456025M/1/XT2_A13.exe sha256:31eadda773c66f4ce74e07e4a5af13cea07c4511a0398fa1852f06a39a1cdda3
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\XT2_A13.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

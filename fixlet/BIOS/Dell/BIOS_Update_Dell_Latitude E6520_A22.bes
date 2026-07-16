@@ -33,7 +33,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch Latitude_E6520_A22.exe sha1:ad501808e8bb4b3f2297e50c70146c9da25c9497 size:6087648 http://downloads.dell.com/FOLDER05212868M/1/Latitude_E6520_A22.exe sha256:c73f056e1c63f1b457e94825dce9d3f30907d54e82ff7fa4de971ed46c64646c
 
 // -- END:DOWNLOADS ---------------------------
@@ -69,7 +69,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\Latitude_E6520_A22.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

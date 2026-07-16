@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch FX160A13.exe sha1:00956ab93ab46cd5bec8aa63403fc7718090ba05 size:1349968 https://downloads.dell.com/FOLDER00619888M/1/FX160A13.exe sha256:066dcb93875fb39a0670993d8229e30569ffd93b0b3eacdfd9c09334b054dc09
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\FX160A13.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

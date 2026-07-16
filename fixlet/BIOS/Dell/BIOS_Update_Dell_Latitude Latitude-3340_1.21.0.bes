@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch Latitude_3340_1.21.0.exe sha1:5fcb9c263b3c3697dc1674274bf70f6e0499dfd4 size:21936552 https://downloads.dell.com/FOLDER12816542M/1/Latitude_3340_1.21.0.exe sha256:1029b74de0330658a78d8acb5223b44ac664fe0c96ef69a2c6b54dda59dedd6d
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\Latitude_3340_1.21.0.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

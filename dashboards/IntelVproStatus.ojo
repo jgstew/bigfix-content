@@ -5,7 +5,7 @@
     <Title>Custom - Reporting - Intel vPro Status</Title>
     <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
     <DefaultPage>IntelVproStatus</DefaultPage>
-    <Page Name="IntelVproStatus" DocType="HTML5" > 
+    <Page Name="IntelVproStatus" DocType="HTML5" >
         <Title>Relay Cache Sizing</Title>
         <Head><![CDATA[
             <meta http-equiv="X-UA-Compatible" content="IE=9">
@@ -30,7 +30,7 @@
 
 <script>
 $(document).ready( function () {
-    
+
     $(function () {
         $('#container').highcharts({
         data: {
@@ -50,7 +50,7 @@ $(document).ready( function () {
         }
         });
     });
-    
+
     $('#table').dataTable( {
         "order": [ 1, 'desc' ],
         "pageLength": 10

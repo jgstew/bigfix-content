@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch XPS_9570_1.16.2.exe sha1:149193f9cecd487f5d1b54a6da8ce3ef545dadb7 size:18358320 http://downloads.dell.com/FOLDER06224897M/1/XPS_9570_1.16.2.exe sha256:c34c1b880046088a0dc982ad62d342bf224ac514bbddd7f19297f09a6cfdf8c1
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\XPS_9570_1.16.2.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

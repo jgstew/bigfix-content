@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch O960-A18.exe sha1:9f0301acd8c6be3f58a6f2bb885ab46aa9898e41 size:2603128 http://downloads.dell.com/FOLDER01655045M/1/O960-A18.exe sha256:6c3e6c8478e13247ead2ff381e79617c313b3f6f0ef9edcf0eed51fef33d96e1
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\O960-A18.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

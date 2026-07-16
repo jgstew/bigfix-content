@@ -4,7 +4,7 @@
 		<Title>Docker Container Info - Linux</Title>
 		<Description><![CDATA[<P>&nbsp;This analysis is to inspect info about docker containers that have a bigfix client installed.</P>
 <UL>
-<LI><A href="https://stackoverflow.com/questions/20010199/determining-if-a-process-runs-inside-lxc-docker">https://stackoverflow.com/questions/20010199/determining-if-a-process-runs-inside-lxc-docker</A> 
+<LI><A href="https://stackoverflow.com/questions/20010199/determining-if-a-process-runs-inside-lxc-docker">https://stackoverflow.com/questions/20010199/determining-if-a-process-runs-inside-lxc-docker</A>
 <LI><A href="https://www.npmjs.com/package/containerized">https://www.npmjs.com/package/containerized</A></LI></UL>
 <P>&nbsp;</P>]]></Description>
 		<Relevance>unix of operating system</Relevance>

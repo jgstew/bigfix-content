@@ -19,4 +19,3 @@ copy __createfile C:\Windows\Temp\_BigFix_Command.bat
 override wait
 timeout_seconds=180
 wait CMD /C C:\Windows\Temp\_BigFix_Command.bat > C:\Windows\Temp\_BigFix_Command_01.log
-

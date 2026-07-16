@@ -5,7 +5,7 @@
     <Title>Custom - Reporting - Pie Charts</Title>
     <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
     <DefaultPage>ReportingPieCharts</DefaultPage>
-    <Page Name="ReportingPieCharts" DocType="HTML5" > 
+    <Page Name="ReportingPieCharts" DocType="HTML5" >
         <Title>Relay Cache Sizing</Title>
         <Head><![CDATA[
           <meta http-equiv="X-UA-Compatible" content="IE=9">

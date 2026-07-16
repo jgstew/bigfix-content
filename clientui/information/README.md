@@ -1,6 +1,6 @@
 ## Work in progress
 
-TODO: 
+TODO:
 - Use FallBack.JS - https://github.com/dolox/fallback/issues/77#issuecomment-273781551
 - Windows Reliability Score
   - https://github.com/strawgate/C3-Inventory/issues/34

@@ -12,7 +12,7 @@
 		<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45046">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45046</A><BR>
 		<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228</A><BR>
 		<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-4104">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-4104</A></P>
-		
+
 		<P>This is part of a series of content currently published through a community GitHub site.&nbsp; Links to related content include</P>
 		<P>Analysis:</P>
 		<P><A href="https://github.com/jgstew/bigfix-content/blob/master/analyses/log4j2-scan%20results.bes">log4j2-scan results</A></P>
@@ -27,7 +27,7 @@
 		<P>&nbsp;</P>
 		This task will run log4j2-scan v2.7.1 scanner.<br />		</P>
 							</P>
-		
+
         <P><H3>This Action will restore the original versions of JAR files that were previously remediated by a LogPresso scan.</H3></P>
         After restoring the original JAR file versions, a new Scan should be executed to determine the new vulnerability status.<br>
         A new Remediation may then be executed, potentially excluding the paths of whatever application fails to function after remediation.<br>
@@ -37,7 +37,7 @@
 		]]>		</Description>
 		<Relevance>if exists property "in proxy agent context" then not in proxy agent context else true</Relevance>
 		<Relevance>exists files whose(name of it as lowercase = "java" OR name of it as lowercase = "java.exe") of ( ( (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments ) ; ( (folders "bin" of folders of folders of (folders "\Program Files"; folder "\Program Files (x86)")) ) )</Relevance>
-		<Relevance><![CDATA[exists find files "log4j2_scan_backup_*.zip" of folders "BPS-Scans" of parent folder of parent folder of client folder of site "actionsite"]]></Relevance> 
+		<Relevance><![CDATA[exists find files "log4j2_scan_backup_*.zip" of folders "BPS-Scans" of parent folder of parent folder of client folder of site "actionsite"]]></Relevance>
 		<Category></Category>
 		<DownloadSize>646583</DownloadSize>
 		<Source>log4j2-scan</Source>
@@ -96,7 +96,7 @@ if {windows of operating system}
   appendfile cd "{parameter "BPSFolder"}"
   appendfile del /q "{parameter "RestoreListFile"}"
   appendfile {concatenation "%0d%0a" of ("java -jar %22" & parameter "BPSFolder" & "logpresso-log4j2-scan.jar%22  --restore %22" & it & "%22 >> %22" & parameter "RestoreListFile" & "%22 2>&1"; "echo move /Y %22" & it & "%22 %22" & it & ".restored%22") of pathnames of find files "log4j2_scan_backup_*.zip" of folders (parameter "BPSFolder")}
-   
+
   delete log4j-restore.cmd
   move __appendfile log4j-restore.cmd
   waithidden cmd.exe /c log4j-restore.cmd
@@ -107,7 +107,7 @@ else // non-Windows operating system:
 
   delete __appendfile
   appendfile #!/bin/sh
-  appendfile cd '{parameter "BPSFolder"}' 
+  appendfile cd '{parameter "BPSFolder"}'
   appendfile rm -f "{parameter "RestoreListFile"}"
   appendfile {concatenation "%0a" of ("%22" & parameter "Java_bin" & "%22 -jar %22" & parameter "BPSFolder" & "logpresso-log4j2-scan.jar%22  --restore %22" & it & "%22 >> %22" & parameter "RestoreListFile" & "%22 2>&1 "; "echo mv -f %22" & it & "%22 %22" & it & ".restored%22") of pathnames of find files "log4j2_scan_backup_*.zip" of folders (parameter "BPSFolder")}
   appendfile rm -rf '{parameter "JREFolder"}'

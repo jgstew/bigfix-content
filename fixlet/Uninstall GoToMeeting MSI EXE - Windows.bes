@@ -26,7 +26,7 @@
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">parameter "numItems" = "{ number of keys whose (value "DisplayName" of it as string contains "GoToMeeting") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of ( x64 registries ; x32 registries ) }"
 
 // uninstall gotomeeting MSI:
-if { exists tuple string items 0 of concatenations ", " of names whose(it contains "%7B") of keys whose(value "DisplayName" of it as string contains "GoToMeeting" AND value "UninstallString" of it as string as lowercase contains "msiexec") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of ( x64 registries ; x32 registries ) } 
+if { exists tuple string items 0 of concatenations ", " of names whose(it contains "%7B") of keys whose(value "DisplayName" of it as string contains "GoToMeeting" AND value "UninstallString" of it as string as lowercase contains "msiexec") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of ( x64 registries ; x32 registries ) }
 wait msiexec /X { tuple string items 0 of concatenations ", " of names whose(it contains "%7B") of keys whose(value "DisplayName" of it as string contains "GoToMeeting" AND value "UninstallString" of it as string as lowercase contains "msiexec") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of ( x64 registries ; x32 registries ) } /qn
 endif
 

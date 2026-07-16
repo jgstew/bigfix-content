@@ -5,7 +5,7 @@
     <Title>Custom - Property Evaluation Audit</Title>
     <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
     <DefaultPage>BaselineStatusResults</DefaultPage>
-    <Page Name="BaselineStatusResults" DocType="HTML5" > 
+    <Page Name="BaselineStatusResults" DocType="HTML5" >
         <Title>Baseline Status Results</Title>
         <Head><![CDATA[
             <meta http-equiv="X-UA-Compatible" content="IE=11">
@@ -18,7 +18,7 @@
             <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css" />
             <script src="https://cdn.datatables.net/buttons/1.2.4/js/dataTables.buttons.min.js"></script>
             <script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.html5.min.js"></script>
-            
+
             <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
         ]]></Head>
         <HTML><![CDATA[
@@ -41,7 +41,7 @@ table {
 </style>
 <script>
 $(document).ready(function(){
-    
+
 	// https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
     // https://datatables.net/plug-ins/api/fnSortNeutral
     // https://cdn.datatables.net/plug-ins/1.10.13/api/fnSortNeutral.js
@@ -60,7 +60,7 @@ $(document).ready(function(){
         /* Redraw */
         oSettings.oApi._fnReDraw( oSettings );
     };
-	
+
     // load initial datatable with settings
     // https://legacy.datatables.net/ref#bDestroy
     oDataTable = $('#resultsTable').dataTable( {
@@ -70,7 +70,7 @@ $(document).ready(function(){
         "bDestroy": true,
         "order": [[ 1, 'desc' ]]
     });
-	
+
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
     //  - Author: https://datatables.net/forums/profile/6627/manifestinteractive
     $('.sorting, .sorting_asc, .sorting_desc').dblclick(function(){

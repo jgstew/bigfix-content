@@ -33,7 +33,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch Latitude_XT3_A14.exe sha1:d943a43c8d44b1dd6357901510bbdd7f484c5fbe size:5970688 http://downloads.dell.com/FOLDER04331248M/1/Latitude_XT3_A14.exe sha256:0f8c70e1051d34d5af1cf27d7d6676f9592ed08d4cea7f9c0b4fbccccd5bc664
 
 // -- END:DOWNLOADS ---------------------------
@@ -69,7 +69,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\Latitude_XT3_A14.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

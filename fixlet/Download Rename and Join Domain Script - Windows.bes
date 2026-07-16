@@ -38,7 +38,7 @@ createfile until _END_OF_FILE_
 # https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/add-computer?view=powershell-5.1
 # https://stackoverflow.com/questions/6217799/rename-computer-and-join-to-domain-in-one-step-with-powershell
 
-# get the domain credential 
+# get the domain credential
 $cred = get-credential
 #$oldName = hostname
 $newName = Read-Host -Prompt "Enter New Computer Name"

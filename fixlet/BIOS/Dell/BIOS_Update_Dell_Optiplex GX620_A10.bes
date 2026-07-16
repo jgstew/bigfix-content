@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch GX620A10.EXE sha1:3f366c8c49b11b87522ded089a867331cd92ff86 size:543792 http://downloads.dell.com/FOLDER06282946M/1/GX620A10.EXE sha256:907efdbe27299fc30ca8cd57a7f1f7143d9df2b7c46e8a030bb2d0fc335f4a94
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\GX620A10.EXE /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

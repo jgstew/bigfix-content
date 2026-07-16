@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch Latitude_7030_1.16.2.exe sha1:6bace91e6b7e98280357a3cb6f812b2b6fa0f7dc size:26020816 https://downloads.dell.com/FOLDER13170410M/1/Latitude_7030_1.16.2.exe sha256:bceab3c18b5b719c0eda6e7a3ce5dd97f2d67785ebb000dabda72e7010c0c1f9
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\Latitude_7030_1.16.2.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

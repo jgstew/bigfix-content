@@ -37,7 +37,7 @@ waithidden __Download\ADE_Installer.exe /S
 //    - https://www.virustotal.com/en/file/e795308a6156dbf08e610526d7f49eac367599f426e947b6e814769b184e04fb/analysis/1479759821/
 //    - https://bigfix.me/fixlet/details/3934
 //    - https://bigfix.me/fixlet/details/6085
-//    - 
+//    -
 </ActionScript>
 		</DefaultAction>
 	</Task>

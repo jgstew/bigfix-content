@@ -6,13 +6,13 @@
 <P>&nbsp;</P>
 <P><STRONG>Steps to using Dell Command Update:</STRONG></P>
 <OL>
-<LI>Install/Update: Dell Command Update - Windows&nbsp; (Only once for each client) 
-<LI>Run: Check for updates - Dell Command Update - Windows&nbsp;&nbsp;(Once every 60 days) 
-<LI>Check Results in Analysis:&nbsp; Dell Command Update Audit - Windows 
-<LI>Run: Install Updates - Dell Command Update - Windows&nbsp; (Only if updates are needed) 
+<LI>Install/Update: Dell Command Update - Windows&nbsp; (Only once for each client)
+<LI>Run: Check for updates - Dell Command Update - Windows&nbsp;&nbsp;(Once every 60 days)
+<LI>Check Results in Analysis:&nbsp; Dell Command Update Audit - Windows
+<LI>Run: Install Updates - Dell Command Update - Windows&nbsp; (Only if updates are needed)
 <LI>Reboot Computer&nbsp; (Only if reboot is actually required)</LI>
 <OL>
-<LI>Run: Notify User to Reboot System with pending restart due to Dell Updates - Dell Command Update - Windows 
+<LI>Run: Notify User to Reboot System with pending restart due to Dell Updates - Dell Command Update - Windows
 <LI>Run: Reboot System if no user is logged on with pending restart due to Dell Updates - Dell Command Update - Windows</LI></OL></OL>
 <P>&nbsp;&nbsp;</P>]]></Description>
 		<Relevance>/* Windows Only */ windows of operating system</Relevance>

@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch M6800A26.exe sha1:89f67b6cd9c938ad75b5484e7d0515561294d44a size:10163952 http://downloads.dell.com/FOLDER05674357M/1/M6800A26.exe sha256:3ccd0270b7d1c6e73c1b7fe8bc11798a22b8a6ded2a93500f74ac2b20fb5155b
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\M6800A26.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

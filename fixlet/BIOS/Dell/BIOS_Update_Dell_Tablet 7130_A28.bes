@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch 7130vPro_A28.exe sha1:820179622be12e1cd502e790c0ca618893d61b78 size:8860328 http://downloads.dell.com/FOLDER05706586M/1/7130vPro_A28.exe sha256:d3c4cf09ed39456dc53401bae583df2a34b0aec8ed132149617074c698f5fbd1
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\7130vPro_A28.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

@@ -5,7 +5,7 @@
     <Title>Custom - Actions - Stop Open Completed Actions</Title>
     <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
     <DefaultPage>StopOpenCompletedActions</DefaultPage>
-    <Page Name="StopOpenCompletedActions" DocType="HTML5" > 
+    <Page Name="StopOpenCompletedActions" DocType="HTML5" >
         <Title>Actions - Stop Open Completed Actions</Title>
         <Head><![CDATA[<meta http-equiv="X-UA-Compatible" content="IE=9">]]></Head>
         <HTML><![CDATA[
@@ -21,14 +21,14 @@
             }
         });
     }
-    
+
     function thisDashboardActionStop(actionid) {
         StopAction(actionid);
         // apiBigfixActionStopRest(actionid);
         // this is a heavy handed option: TODO-ajaxify  http://www.w3schools.com/jsref/met_loc_reload.asp
         location.reload(true);
     }
-    
+
     function thisDashboardActionStopMany(actionids) {
         StopActions(actionids);
         // apiBigfixActionStopManyWizard(actionids);
@@ -36,13 +36,13 @@
         // this is a heavy handed option: TODO-ajaxify  http://www.w3schools.com/jsref/met_loc_reload.asp
         location.reload(true);
     }
-    
+
     function apiBigfixActionStopManyRest(actionids) {
         for (i=0; i<actionids.length; i++) {
             apiBigfixActionStopRest( actionids[i] );
         }
     }
-    
+
     function apiBigfixActionStopManyWizard(actionids) {
         StopActions(actionids);
     }

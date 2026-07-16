@@ -26,7 +26,7 @@
     <thead><tr><th>Shortcuts</th></tr></thead>
     <tbody id="results">
         <tr><td/></tr>
-		
+
     </tbody>
 </table>
 
@@ -76,14 +76,14 @@ $(document).ready(function(){
         /* Redraw */
         oSettings.oApi._fnReDraw( oSettings );
     };
-	
+
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
     //  - Author: https://datatables.net/forums/profile/6627/manifestinteractive
     $('.sorting, .sorting_asc, .sorting_desc').dblclick(function(){
         oDataTable.fnSortNeutral();
         return false;
     });
-    
+
     // initial table:
     fnUpdateTable();
 });

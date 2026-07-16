@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch Latitude_5290_2In1_1.39.0.exe sha1:b20de9495ec589685490b61b979d82013c802a34 size:17234272 https://downloads.dell.com/FOLDER12821634M/1/Latitude_5290_2In1_1.39.0.exe sha256:d2a6bd5e306b4cabc1a4eaeeff2073cdb5ae0b1bdcc8d584aeaebf93222edba9
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\Latitude_5290_2In1_1.39.0.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

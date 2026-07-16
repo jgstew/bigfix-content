@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch Latitude_7350_1.13.0.exe sha1:c1da2552e14917b27340ed1c4ba3c90fd2577dc1 size:53146592 https://downloads.dell.com/FOLDER12808917M/1/Latitude_7350_1.13.0.exe sha256:4786aa6719f9eae85f237ab7947e2149254f8fbb1b8c00c030f95f2409216ae3
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\Latitude_7350_1.13.0.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

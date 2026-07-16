@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch ST2A09.EXE sha1:790b46553f72962cd637dcb4210d057b319552c0 size:5235712 http://downloads.dell.com/FOLDER02126177M/1/ST2A09.EXE sha256:41207a1b7729edc05c13527b0d7f3a17a46931f26ceaaaffdf13af0f5b45d33c
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\ST2A09.EXE /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

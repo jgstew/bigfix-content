@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch Dell_Pro_PC14250_PC16250_1.3.0.exe sha1:e9c31107cb21e59e2dbcaf59950d5250b681b54b size:58395296 https://downloads.dell.com/FOLDER13045203M/1/Dell_Pro_PC14250_PC16250_1.3.0.exe sha256:69b033006ea011325cd53f62317706661e71e86ff9e743914f883fbc629cdcba
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\Dell_Pro_PC14250_PC16250_1.3.0.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

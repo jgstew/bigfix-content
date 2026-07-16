@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch 7204A16.exe sha1:93ccf77fc33e7acba56dbc7073ef7b342b0b9f8f size:8850176 http://downloads.dell.com/FOLDER05650911M/1/7204A16.exe sha256:d63831641e957220b90c0b0183a9f7ae0bdf8e901edc4c44c96e7c98d83a538e
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\7204A16.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

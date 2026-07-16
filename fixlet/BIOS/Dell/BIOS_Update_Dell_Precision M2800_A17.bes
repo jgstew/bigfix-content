@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch M2800A17.exe sha1:11ad0b86a12f862d87b6e2abce56b368f2ed65e6 size:10275376 http://downloads.dell.com/FOLDER05674304M/1/M2800A17.exe sha256:3aa73c4b19bb6e69ae52e6126dcfc49decf22b03c5239e7e7cc08126653f4085
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\M2800A17.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

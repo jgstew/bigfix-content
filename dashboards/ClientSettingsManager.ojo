@@ -5,17 +5,17 @@
     <Title>Custom - Client Settings Manager</Title>
     <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
     <DefaultPage>ClientSettingsManager</DefaultPage>
-    <Page Name="ClientSettingsManager" DocType="HTML5" > 
+    <Page Name="ClientSettingsManager" DocType="HTML5" >
         <Title>Client Settings Manager</Title>
         <Head><![CDATA[
             <meta http-equiv="X-UA-Compatible" content="IE=11">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" integrity="sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik=" crossorigin="anonymous" />
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/css/jquery.dataTables.min.css" integrity="sha256-+Z1rYa3ys5OdZNUck5G7lBvb8A13OrYwvf+d8PfEaHQ=" crossorigin="anonymous" />
-            
+
             <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=" crossorigin="anonymous"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/js/jquery.dataTables.min.js" integrity="sha256-yWA356lDhruy1J8jGncaMWKAPYDbK47OKb0uT/aELLc=" crossorigin="anonymous"></script>
-            
+
             <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
         ]]></Head>
         <HTML><![CDATA[
@@ -105,32 +105,32 @@ var bigfix = bigfix?bigfix:{};
 bigfix.relevance = {};
 
 	bigfix.relevance.evaluate = function(relevance, callbackObj) {
-	
+
 		if(callbackObj !== undefined && callbackObj !== null) {
 			var results;
-			
+
 			if(callbackObj.failure !== undefined && callbackObj.failure !== null) {
 				callbackObj.failure = bigfix.relevance.errorWrapper(relevance, callbackObj.failure);
 			} else {
 				callbackObj.failure = bigfix.relevance.errorWrapper(relevance, bigfix.relevance.defaultErrorHandler);
 			}
-			
+
 			try {
 				results = Relevance(relevance, callbackObj);
 			} catch (e2) {
 				return undefined;
-			}	
-			
+			}
+
 			return results;
 		} else {
 			var results;
-					
+
 			try {
 				results = EvaluateRelevance(relevance);
 			} catch (e2) {
 				return undefined;
-			}	
-			
+			}
+
 			return results;
 		}
 	};
@@ -141,7 +141,7 @@ bigfix.relevance = {};
 				customErrorHandler(relevance, new Error(errorMessage));
 			};
 		}
-		
+
 		return function(errorMessage){
 			bigfix.relevance.defaultErrorHandler(relevance, new Error(errorMessage));
 		};
@@ -336,7 +336,7 @@ var sUserActionSite = "";
 $(document).ready(function(){
     // set up the combobox UI elements
     $("#firstchoice").combobox();
-    
+
     // set the global variable to the current selection.
     sSelection = $(".custom-combobox-input")[0].value;
 
@@ -360,7 +360,7 @@ $(document).ready(function(){
         /* Redraw */
         oSettings.oApi._fnReDraw(oSettings);
     };
-    
+
     // load initial datatable with settings
     // https://legacy.datatables.net/ref#bDestroy
     oDataTable = $("#resultsTable").dataTable( {
@@ -387,30 +387,30 @@ $(document).ready(function(){
         ],
         "dom": '<"toolbar">frtip'
     });
-    
+
     // https://api.jqueryui.com/autocomplete/
     $(".custom-combobox-input").on("autocompleteselect", function( event, ui ) {
-        
+
         // set `sSelection` to the value that has been selected in combobox
         sSelection = ui.item.value;
-        
+
         // update table & chart based upon new combobox selection
         // https://datatables.net/reference/api/ajax.reload()
         $(".dataTable").DataTable().ajax.reload();
     });
-    
+
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
     //  - Author: https://datatables.net/forums/profile/6627/manifestinteractive
     $(".sorting, .sorting_asc, .sorting_desc").dblclick(function(){
         oDataTable.fnSortNeutral();
         return false;
     });
-    
+
     // http://api.jquery.com/on/
     // https://datatables.net/examples/ajax/null_data_source.html
     $("#resultsTable tbody").on( "click", "button", function() {
         var dataRow = $(".dataTable").DataTable().row( $(this).parents("tr") ).data();
-        
+
         // TODO: create task if button contains "Create", Take action if button contains "Take"
         //alert( $(this).html() ); // get name of button
 

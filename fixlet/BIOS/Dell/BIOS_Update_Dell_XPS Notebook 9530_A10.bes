@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch 9530-A10.EXE sha1:c25011e2ad77f206fbbb1a73ff1a244f72ea2478 size:7187176 http://downloads.dell.com/FOLDER04799091M/1/9530-A10.EXE sha256:5a4ec8a1696bc005819bc6ae89983f1283baab9e917bf16a4962c6fb7e14b65c
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\9530-A10.EXE /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

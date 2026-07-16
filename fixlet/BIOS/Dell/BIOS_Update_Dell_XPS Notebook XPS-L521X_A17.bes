@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch L521X_A17W.exe sha1:0a14246f416ea21be72bb1c696140654d1b73d05 size:11323656 http://downloads.dell.com/FOLDER04825572M/1/L521X_A17W.exe sha256:61084edb37e012b7c92ff9db949ae56357dc44202e57a450c1fe59d62707e7a8
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\L521X_A17W.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

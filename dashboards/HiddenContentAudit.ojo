@@ -5,7 +5,7 @@
     <Title>Custom - Hidden Content Audit</Title>
     <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
     <DefaultPage>HiddenContentAudit</DefaultPage>
-    <Page Name="HiddenContentAudit" DocType="HTML5" > 
+    <Page Name="HiddenContentAudit" DocType="HTML5" >
         <Title>Hidden Content Audit</Title>
         <Head><![CDATA[
             <meta http-equiv="X-UA-Compatible" content="IE=11">
@@ -23,7 +23,7 @@
             <script language="javascript">InsertUtilityDiv();</script>
 
 <button id="filter" style="float: right">Show only applicable</button>
-<h2>Hidden Content Audit:</h2> 
+<h2>Hidden Content Audit:</h2>
 
 <table id="resultsTable" class="compact display">
     <thead><tr><th>#Applicable</th><th>Type</th><th>Hidden Content Name</th><th>ID</th></tr></thead>
@@ -49,10 +49,10 @@ h2 {
 <script>
 
 $(document).ready(function(){
-    
+
     // set initial results
     // $("#results").html( bigfix.relevance.evaluate(' trs of ( html concatenations of tds of (applicable computer count of it as string; type of it; name of it; id of it as string) ) of bes fixlets whose(not visible flag of it) ') );
-    
+
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
     // https://datatables.net/plug-ins/api/fnSortNeutral
     // https://cdn.datatables.net/plug-ins/1.10.13/api/fnSortNeutral.js
@@ -84,14 +84,14 @@ $(document).ready(function(){
             "zeroRecords": "No hidden content. Nothing to see here."
         }
     });
-    
+
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
     //  - Author: https://datatables.net/forums/profile/6627/manifestinteractive
     $('.sorting, .sorting_asc, .sorting_desc').dblclick(function(){
         oDataTable.fnSortNeutral();
         return false;
     });
-    
+
     // Only trigger event when window stops resizing
     // http://stackoverflow.com/questions/2854407/javascript-jquery-window-resize-how-to-fire-after-the-resize-is-completed
     $(window).resize(function() {
@@ -100,12 +100,12 @@ $(document).ready(function(){
             $(this).trigger('resizeEnd');
         }, 5);
     });
-    
+
     $(window).bind('resizeEnd', function() {
         //do something, window hasn't changed size in 5ms
         oDataTable.fnDraw();
     });
-    
+
     // This will remove entries with no applicable computers or add them back.
     // https://datatables.net/examples/plug-ins/range_filtering.html
     $("#filter").click(function() {
@@ -118,11 +118,11 @@ $(document).ready(function(){
                     return parseInt(data[0])>0
                         ? true
                         : false
-                }     
+                }
             );
             $(this).html('Show All');
         }
-        
+
         oDataTable.fnDraw();
     });
 });

@@ -12,7 +12,7 @@
 		<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45046">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-45046</A><BR>
 		<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228</A><BR>
 		<A href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-4104">https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-4104</A></P>
-		
+
 		<P>This is part of a series of content currently published through a community GitHub site.&nbsp; Links to related content include</P>
 		<P>Analysis:</P>
 		<P><A href="https://github.com/jgstew/bigfix-content/blob/master/analyses/log4j2-scan%20results.bes">log4j2-scan results</A></P>
@@ -60,12 +60,12 @@
 				</P>
 		<P><H3>This Action will attempt to remediate the vulnerability by using Log4j-Scan to modify the affected JAR files and remove the JndiLookup.class entry.</H3></P>
 
-        
+
 		<P><H3>NOTE:</H3> This version of the scan fixlet downloads the JAR version of log4j2-scan.  The system-default Java Runtime will be used.&nbsp; This requires the Java command to be present in the default system PATH variable.</P>
 		]]>		</Description>
 		<Relevance>if exists property "in proxy agent context" then not in proxy agent context else true</Relevance>
 		<Relevance>exists files whose(name of it as lowercase = "java" OR name of it as lowercase = "java.exe") of ( ( (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments ) ; ( (folders "bin" of folders of folders of (folders "\Program Files"; folder "\Program Files (x86)")) ) )</Relevance>
-		
+
 		<Category></Category>
 		<DownloadSize>646583</DownloadSize>
 		<Source>log4j2-scan</Source>

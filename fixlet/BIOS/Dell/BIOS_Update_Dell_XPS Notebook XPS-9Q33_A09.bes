@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch 9Q33_A09.exe sha1:7d3d89b6322d093e96ad34da162401f05d2271c1 size:12808168 http://downloads.dell.com/FOLDER04798225M/1/9Q33_A09.exe sha256:0ec0b4e1a1a78fdf657aaf58f151a62c31322b56dfc630a8eee6719b45fe3d0f
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\9Q33_A09.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

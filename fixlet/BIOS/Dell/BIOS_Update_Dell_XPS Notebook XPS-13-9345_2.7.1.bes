@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch XPS_9345_2.7.1.exe sha1:b393415645cddbcc8cf8492531b84b18c6f83b1e size:16310840 https://downloads.dell.com/FOLDER13007886M/1/XPS_9345_2.7.1.exe sha256:6c86f5f15f897ee66cf80e18e4202ceaf90ecc3649f471bef91b705d81ab377d
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\XPS_9345_2.7.1.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

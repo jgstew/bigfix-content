@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch Dell_Pro_QBT1250_QBS1250_QBM1250_QCT1250_QCS1250_QCM1250_SEMB_1.5.2.exe sha1:bdc2641b3aa5ce748fc9ca57dc19f2f248a24072 size:91947920 https://downloads.dell.com/FOLDER13154311M/1/Dell_Pro_QBT1250_QBS1250_QBM1250_QCT1250_QCS1250_QCM1250_SEMB_1.5.2.exe sha256:f4eed6af24a035d4e20767455f74b0f3ce2f4400a15b23cf8ddbffd52bcfbd2d
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\Dell_Pro_QBT1250_QBS1250_QBM1250_QCT1250_QCS1250_QCM1250_SEMB_1.5.2.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

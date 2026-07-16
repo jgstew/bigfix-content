@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch O990-A10.exe sha1:1b07a6e17be9e1a19b4b0fa400b5fc38135ba7be size:5726960 http://downloads.dell.com/FOLDER00174088M/1/O990-A10.exe sha256:ac5c6a80adcc8f9e9af8c09eb6db44e992be62c006fadfb33cd5996555bce9a1
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\O990-A10.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

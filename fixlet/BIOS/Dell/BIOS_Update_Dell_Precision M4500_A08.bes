@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch M4500A08.EXE sha1:686c5dece0fa10d9e8525e16d3b4e90d70ce23c0 size:5483200 http://downloads.dell.com/FOLDER00453383M/1/M4500A08.EXE sha256:7a0dab2430df564b1830d23f6f4b205fc7cecba9026b95ae750e051e6338cbf6
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\M4500A08.EXE /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

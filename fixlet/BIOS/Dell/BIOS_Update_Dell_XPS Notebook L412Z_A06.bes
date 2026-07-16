@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch L412Z_A06.exe sha1:c52c63fac5202de4a9ad933185cbbc8e66901d33 size:3482232 http://downloads.dell.com/FOLDER06292136M/1/L412Z_A06.exe sha256:cc71dbbbe058b150d4d45b34aee8ec676295d0c633400a3c1bd319596c9c84b1
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\L412Z_A06.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

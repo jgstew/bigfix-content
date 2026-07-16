@@ -38,7 +38,7 @@ wait CMD /C time 17:00:00.99
 
 endif
 
-// Related: 
+// Related:
 //      - https://bigfix.me/fixlet/details/2587
 //      - https://bigfix.me/fixlet/details/2613
 </ActionScript>

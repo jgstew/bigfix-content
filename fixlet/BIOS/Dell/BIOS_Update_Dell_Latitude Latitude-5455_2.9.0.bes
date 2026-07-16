@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch Inspiron_5441_7441_Latitude_5455_7455_2.9.0.exe sha1:5876d14bcbf3a7a7357494afdf39ab73818d9c0b size:55329296 https://downloads.dell.com/FOLDER13011267M/1/Inspiron_5441_7441_Latitude_5455_7455_2.9.0.exe sha256:afb4efd065a4a5407ab2ac3caf7e7e5483e1afef11b3215194ac36ca43e4ea4f
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\Inspiron_5441_7441_Latitude_5455_7455_2.9.0.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

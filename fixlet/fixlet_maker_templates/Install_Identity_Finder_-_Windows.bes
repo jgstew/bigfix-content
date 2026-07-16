@@ -5,20 +5,20 @@
         <Description><![CDATA[<P>This is a template. This is not meant to be used directly. Please use this through the Fixlet Maker Dashboard.</P>
 <P>Read more here:&nbsp; <A href="https://help.hcltechsw.com/bigfix/9.5/patch/Patch/Patch_Windows/c_fixlet_maker_dashboard_overview.html">https://help.hcltechsw.com/bigfix/9.5/patch/Patch/Patch_Windows/c_fixlet_maker_dashboard_overview.html</A></P>
 <P>If importing into the console, it must be imported into a site called "Fixlet Templates" in order to show up and work in the Fixlet Maker Dashboard.</P>
-<P>&nbsp;</P>]]></Description>        
+<P>&nbsp;</P>]]></Description>
         <Relevance>/* Windows Only */ windows of operating system</Relevance>
         <Relevance><![CDATA[/* Windows XP or Higher */ version of operating system >= "5.1"]]></Relevance>
         <Relevance>not exists key whose (value "DisplayName" of it as string contains "Identity Finder") of key "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)</Relevance>
-        <Category>Generated from Template</Category> 
-        <DownloadSize>123456789</DownloadSize> 
-        <Source>Internal</Source> 
+        <Category>Generated from Template</Category>
+        <DownloadSize>123456789</DownloadSize>
+        <Source>Internal</Source>
         <SourceReleaseDate>1900-01-01</SourceReleaseDate>
         <MIMEField>
             <Name>x-fixlet-template_properties</Name>
-            <Value>[ 
-            {&quot;name&quot;: &quot;TEMPLATE_FILE&quot;, &quot;type&quot;: &quot;file&quot;, &quot;fileName&quot;: &quot;TEMPLATE_FILE_NAME&quot;, 
+            <Value>[
+            {&quot;name&quot;: &quot;TEMPLATE_FILE&quot;, &quot;type&quot;: &quot;file&quot;, &quot;fileName&quot;: &quot;TEMPLATE_FILE_NAME&quot;,
                 &quot;fileLink&quot;: &quot;TEMPLATE_FILE_LINK&quot;, &quot;sha1&quot;: &quot;TEMPLATE_FILE_SHA1&quot;, &quot;size&quot;: &quot;123456789&quot;}
-            ] 
+            ]
             </Value>
         </MIMEField>
         <MIMEField>
@@ -46,7 +46,7 @@
             <Value>Fri, 18 Jul 2014 18:22:44 +0000</Value>
         </MIMEField>
 
-        <Domain>BESC</Domain> 
+        <Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
             <Description>
                 <PreLink>Click </PreLink>

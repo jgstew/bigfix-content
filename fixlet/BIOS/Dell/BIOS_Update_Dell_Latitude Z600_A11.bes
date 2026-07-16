@@ -33,7 +33,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch Z600_A11.exe sha1:87c4c99813076d5d68f3c980757afefb42ff2aef size:2817824 http://downloads.dell.com/FOLDER01545857M/1/Z600_A11.exe sha256:76e6bb8b9eb815c0e680d4fe3c13d405387f8d025504aa6ada45e64876bf7546
 
 // -- END:DOWNLOADS ---------------------------
@@ -69,7 +69,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\Z600_A11.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

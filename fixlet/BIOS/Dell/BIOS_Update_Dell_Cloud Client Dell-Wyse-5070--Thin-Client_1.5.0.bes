@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch Wyse_5070_1.5.0.exe sha1:699ec70056a3158837345d94f5ecea46bc3a84df size:8937664 http://downloads.dell.com/FOLDER06037440M/1/Wyse_5070_1.5.0.exe sha256:cf9a9c1266d38bdfca92cfcbabeefdcaf2ffa096a60663489d761562c64c089d
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\Wyse_5070_1.5.0.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

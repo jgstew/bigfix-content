@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch BIOS_004Y7_WN64_2.5.4.EXE sha1:7b9b9aa08657470145e2ee7367e7e93eb6802b4b size:28787480 http://downloads.dell.com/FOLDER06046495M/1/BIOS_004Y7_WN64_2.5.4.EXE sha256:dc176d12b2c080c078a2c0b15ff52b0ecea3f7862ee6bc88220ad81e7700655b
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\BIOS_004Y7_WN64_2.5.4.EXE /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

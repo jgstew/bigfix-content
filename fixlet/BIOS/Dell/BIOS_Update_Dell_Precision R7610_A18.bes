@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch R7610A18.exe sha1:d5f2d2e3f142bfc0390d90d9a2544dd3a06871c3 size:8948824 http://downloads.dell.com/FOLDER05710777M/1/R7610A18.exe sha256:b5e2cbdfc454994047f96924381901f56fdae877dce3d5c83d3874fdb80c3e8d
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\R7610A18.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

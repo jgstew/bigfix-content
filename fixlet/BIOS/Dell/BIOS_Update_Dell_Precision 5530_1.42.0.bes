@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch Precision_5530_1.42.0.exe sha1:a82218938783ff288fabf82f1e990ef2f1afb94b size:22587216 https://downloads.dell.com/FOLDER12474400M/1/Precision_5530_1.42.0.exe sha256:f62208dc4c3b162f0dc9caef8d43ae7f5d5f5fa6cae6e514b3161c78b0c6025f
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\Precision_5530_1.42.0.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

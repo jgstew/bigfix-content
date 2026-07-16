@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch L702X_A11.exe sha1:980ec3b76ead76a3d38089999726a26fe24fd608 size:9772024 http://downloads.dell.com/FOLDER06297748M/1/L702X_A11.exe sha256:1a0c3c40bb6825ecc319510a9ec4e9121ee475b7b1a92db10c82c72681f7e71e
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\L702X_A11.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

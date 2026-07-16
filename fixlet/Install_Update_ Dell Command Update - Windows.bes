@@ -45,7 +45,7 @@ if{ not exists descendants of folders "C:\ProgramData\Microsoft\Windows\Start Me
     folder delete "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Dell"
 endif
 
-// if run, check for updates and notify 
+// if run, check for updates and notify
 regset "[HKEY_LOCAL_MACHINE\SOFTWARE\Dell\CommandUpdate\Preferences]" "automationmode"="ScanNotify"
 // Only run if manually invoked
 regset "[HKEY_LOCAL_MACHINE\SOFTWARE\Dell\CommandUpdate\Preferences]" "scheduledexecution"="Off"

@@ -35,7 +35,7 @@ delete __createfile
 createfile until _END_OF_FILE_
 # Create and export a self-signed certificate
 # Script by Tim Buntrock  https://4sysops.com/archives/create-a-self-signed-certificate-with-powershell/
- 
+
 # Define certificate name
 $Certname = "{ parameter "CertFQDN" }"
 # Define expiration

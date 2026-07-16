@@ -15,7 +15,7 @@
        <FilterRelevance>
          set of bes wizards whose(exists sites whose(custom site flag of it) of it)
        </FilterRelevance>
-      </List> 
+      </List>
 	</Tree>
    </DomainBar>
   </Console>

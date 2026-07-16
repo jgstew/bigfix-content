@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch XPS_9250_Latitude_7275_1.9.1.exe sha1:7bd08c1848f59932a0b9436cf27299118b90591f size:13974920 https://downloads.dell.com/FOLDER07082211M/1/XPS_9250_Latitude_7275_1.9.1.exe sha256:214c0283ecd9410af3a6e403f527c89c9a63038c077a9693b5a6822c3917658d
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\XPS_9250_Latitude_7275_1.9.1.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

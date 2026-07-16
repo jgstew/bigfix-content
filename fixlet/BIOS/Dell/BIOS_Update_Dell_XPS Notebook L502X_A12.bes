@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch L502XA12.exe sha1:cd6c90745794f7b8b6cca81322dbcdf1d5d6f9c0 size:10111992 http://downloads.dell.com/FOLDER06282944M/1/L502XA12.exe sha256:020e5147057d9b366952a3aca518ea2d3a9d08fb69cd057e9bfe68427260a98c
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\L502XA12.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

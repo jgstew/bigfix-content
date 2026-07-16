@@ -5,7 +5,7 @@
     <Title>Custom - BaselineStatusResults</Title>
     <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
     <DefaultPage>BaselineStatusResults</DefaultPage>
-    <Page Name="BaselineStatusResults" DocType="HTML5" > 
+    <Page Name="BaselineStatusResults" DocType="HTML5" >
         <Title>Baseline Status Results</Title>
         <Head><![CDATA[
             <meta http-equiv="X-UA-Compatible" content="IE=11">
@@ -17,11 +17,11 @@
             <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" integrity="sha256-gfQwA6PlkZsLqWu4bU4hXPrbTqzixm0B5MdvBLI+Oas=" crossorigin="anonymous"></script>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.css" integrity="sha256-R2jMs9TISUBFqVTr3Tfh2ChO3bK75hs0FBwshlxrUUw=" crossorigin="anonymous" />
             <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.js" integrity="sha256-lYa1oow3mJv8AcE44iQ5PoqmTOwP1mUzcuom5btzetg=" crossorigin="anonymous"></script>
-            
+
             <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css" />
             <script src="https://cdn.datatables.net/buttons/1.2.4/js/dataTables.buttons.min.js"></script>
             <script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.html5.min.js"></script>
-            
+
             <script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
         ]]></Head>
         <HTML><![CDATA[
@@ -89,32 +89,32 @@ var bigfix = bigfix?bigfix:{};
 bigfix.relevance = {};
 
 	bigfix.relevance.evaluate = function(relevance, callbackObj) {
-	
+
 		if(callbackObj !== undefined && callbackObj !== null) {
 			var results;
-			
+
 			if(callbackObj.failure !== undefined && callbackObj.failure !== null) {
 				callbackObj.failure = bigfix.relevance.errorWrapper(relevance, callbackObj.failure);
 			} else {
 				callbackObj.failure = bigfix.relevance.errorWrapper(relevance, bigfix.relevance.defaultErrorHandler);
 			}
-			
+
 			try {
 				results = Relevance(relevance, callbackObj);
 			} catch (e2) {
 				return undefined;
-			}	
-			
+			}
+
 			return results;
 		} else {
 			var results;
-					
+
 			try {
 				results = EvaluateRelevance(relevance);
 			} catch (e2) {
 				return undefined;
-			}	
-			
+			}
+
 			return results;
 		}
 	};
@@ -125,7 +125,7 @@ bigfix.relevance = {};
 				customErrorHandler(relevance, new Error(errorMessage));
 			};
 		}
-		
+
 		return function(errorMessage){
 			bigfix.relevance.defaultErrorHandler(relevance, new Error(errorMessage));
 		};
@@ -150,7 +150,7 @@ function fnGetDataTablesDataAjax(data, callback, settings){
 //  - usage: getChartData( $("#results > tr > td:nth-child(2)") , $("#results > tr > td:nth-child(4)") );
 function getChartData(values, labels) {
     var arrKeyValuePairs = [];
-    for (i = 0; i < values.length; i++) { 
+    for (i = 0; i < values.length; i++) {
         arrKeyValuePairs[i] = {
             "label": labels[i].innerText,
             "value": Number( values[i].innerText )
@@ -186,16 +186,16 @@ function drawPieChart() {
         this.wrapper = $( "<span>" )
           .addClass( "custom-combobox" )
           .insertAfter( this.element );
- 
+
         this.element.hide();
         this._createAutocomplete();
         this._createShowAllButton();
       },
- 
+
       _createAutocomplete: function() {
         var selected = this.element.children( ":selected" ),
           value = selected.val() ? selected.text() : "";
- 
+
         this.input = $( "<input>" )
           .appendTo( this.wrapper )
           .val( value )
@@ -211,7 +211,7 @@ function drawPieChart() {
               "ui-tooltip": "ui-state-highlight"
             }
           });
- 
+
         this._on( this.input, {
           autocompleteselect: function( event, ui ) {
             ui.item.option.selected = true;
@@ -219,15 +219,15 @@ function drawPieChart() {
               item: ui.item.option
             });
           },
- 
+
           autocompletechange: "_removeIfInvalid"
         });
       },
- 
+
       _createShowAllButton: function() {
         var input = this.input,
           wasOpen = false;
- 
+
         $( "<a>" )
           .attr( "tabIndex", -1 )
           .attr( "title", "Show All Items" )
@@ -246,17 +246,17 @@ function drawPieChart() {
           })
           .on( "click", function() {
             input.trigger( "focus" );
- 
+
             // Close if already visible
             if ( wasOpen ) {
               return;
             }
- 
+
             // Pass empty string as value to search for, displaying all results
             input.autocomplete( "search", "" );
           });
       },
- 
+
       _source: function( request, response ) {
         var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
         response( this.element.children( "option" ).map(function() {
@@ -269,14 +269,14 @@ function drawPieChart() {
             };
         }) );
       },
- 
+
       _removeIfInvalid: function( event, ui ) {
- 
+
         // Selected an item, nothing to do
         if ( ui.item ) {
           return;
         }
- 
+
         // Search for a match (case-insensitive)
         var value = this.input.val(),
           valueLowerCase = value.toLowerCase(),
@@ -287,12 +287,12 @@ function drawPieChart() {
             return false;
           }
         });
- 
+
         // Found a match, nothing to do
         if ( valid ) {
           return;
         }
- 
+
         // Remove invalid value
         this.input
           .val( "" )
@@ -304,13 +304,13 @@ function drawPieChart() {
         }, 2500 );
         this.input.autocomplete( "instance" ).term = "";
       },
- 
+
       _destroy: function() {
         this.wrapper.remove();
         this.element.show();
       }
     });
- 
+
     $( "#combobox" ).combobox();
     $( "#toggle" ).on( "click", function() {
       $( "#combobox" ).toggle();
@@ -323,7 +323,7 @@ var sSelection = "";
 $(document).ready(function(){
     // set up the combobox UI elements
     $("#baselinechoice").combobox();
-    
+
     // set the global variable to the current selection.
     sSelection = $( ".custom-combobox-input" )[0].value;
 
@@ -347,7 +347,7 @@ $(document).ready(function(){
         /* Redraw */
         oSettings.oApi._fnReDraw( oSettings );
     };
-    
+
     // load initial datatable with settings
     // https://legacy.datatables.net/ref#bDestroy
     oDataTable = $('#resultsTable').dataTable( {
@@ -367,21 +367,21 @@ $(document).ready(function(){
         ],
         "dom":  'lrtiBf'
     });
-    
+
     // draw initial pie chart
     drawPieChart();
-    
+
     // https://api.jqueryui.com/autocomplete/
     $( ".custom-combobox-input" ).on( "autocompleteselect", function( event, ui ) {
-        
+
         // set `sSelection` to the value that has been selected in combobox
         sSelection = ui.item.value;
-        
+
         // update table & chart based upon new combobox selection
         // https://datatables.net/reference/api/ajax.reload()
         $('.dataTable').DataTable().ajax.reload( function(){
             drawPieChart();
-            
+
             // if table is empty, hide unnecessary UI elements
             // http://stackoverflow.com/a/19297003/861745
             if ($(".dataTables_empty").length) {
@@ -393,7 +393,7 @@ $(document).ready(function(){
             }
         });
     });
-    
+
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
     //  - Author: https://datatables.net/forums/profile/6627/manifestinteractive
     $('.sorting, .sorting_asc, .sorting_desc').dblclick(function(){

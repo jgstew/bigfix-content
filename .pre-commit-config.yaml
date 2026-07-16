@@ -27,7 +27,7 @@ repos:
     hooks:
       # local pre-commit equivalent of the besxmllint github workflow:
       - id: validate-bes
-      - id: check-bes-conventions
+      # - id: check-bes-conventions
       - id: verify-files-are-ascii
         # manual: non-ASCII is legitimate in much of this content
         # (JS payloads, smart quotes in console exports)

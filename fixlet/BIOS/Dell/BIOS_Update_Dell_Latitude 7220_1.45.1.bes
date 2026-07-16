@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch Latitude_7220_Rugged_Extreme_Tablet_1.45.1.exe sha1:901a4f67c85e4dc5c995bfecaf0345a619d06208 size:25825944 https://downloads.dell.com/FOLDER13023215M/1/Latitude_7220_Rugged_Extreme_Tablet_1.45.1.exe sha256:116a937525bdc9b279b87d438ee4c997a7b959285bdeb26128c26cb1a885cb57
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\Latitude_7220_Rugged_Extreme_Tablet_1.45.1.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

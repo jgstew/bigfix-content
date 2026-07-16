@@ -32,7 +32,7 @@ action parameter query "BIOS_Password" with description "Enter BIOS Password, or
 
 // -- START:DOWNLOADS -------------------------
 
-// 
+//
 prefetch O7020A18.exe sha1:66dc75ced8d88c3945e35a0a301f2edb7ebb1abb size:9790344 http://downloads.dell.com/FOLDER05650653M/1/O7020A18.exe sha256:27aa0f8ded2bb4c189178a3504d2b3375e5b509d3c65f1efd8a1e66413cd2b4e
 
 // -- END:DOWNLOADS ---------------------------
@@ -68,7 +68,7 @@ endif
 // ----------------------------------------------------------------
 
 // Update BIOS:
-// 
+//
 waithidden __Download\O7020A18.exe /s{( (" /p=" & it) whose(length of it > 7) of (it as trimmed string) of (parameter "BIOS_Password" | "") | "" )} /l="{ pathname of folder "__BESData\__Global\Logs" of parent folder of client }\install_BIOS_Update.log"
 
 action requires restart "BIOS_Update"

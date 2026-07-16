@@ -27,7 +27,7 @@
 <table id="resultsTable" class="compact display" width="100%">
     <thead><tr><th>Dashboard</th><th>Variable</th><th>Value</th><th>Shared?</th></tr></thead>
     <tbody id="results">
-		<?Relevance html concatenations of ( trs of html concatenations of tds of ( (it as html) of name of wizard of it; (it as html) of name of it; (it as html) of (value of it | "Unknown"); ( (html tag ("a", attr lists of (("onclick", it);("href", "javascript:window.location.reload()")), (if it contains ", true)" then "P" else "S") of it )) of ("DeleteVariable('" & (dashboard id of it | (name of it & ".ojo") ) of wizard of it & "', '" & name of it & "', " & (if private flag of it then "true" else "false") of it & ")" ) ) of it)) of (variables of it) of bes wizards ?>		
+		<?Relevance html concatenations of ( trs of html concatenations of tds of ( (it as html) of name of wizard of it; (it as html) of name of it; (it as html) of (value of it | "Unknown"); ( (html tag ("a", attr lists of (("onclick", it);("href", "javascript:window.location.reload()")), (if it contains ", true)" then "P" else "S") of it )) of ("DeleteVariable('" & (dashboard id of it | (name of it & ".ojo") ) of wizard of it & "', '" & name of it & "', " & (if private flag of it then "true" else "false") of it & ")" ) ) of it)) of (variables of it) of bes wizards ?>
     </tbody>
 </table>
 
@@ -55,7 +55,7 @@ div#wr_datapage > br + br {
 var oDataTable;
 
 $(document).ready(function(){
-    
+
 	// https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
     // https://datatables.net/plug-ins/api/fnSortNeutral
     // https://cdn.datatables.net/plug-ins/1.10.13/api/fnSortNeutral.js
@@ -74,7 +74,7 @@ $(document).ready(function(){
         /* Redraw */
         oSettings.oApi._fnReDraw( oSettings );
     };
-	
+
     // load initial datatable with settings
     // https://legacy.datatables.net/ref#bDestroy
     // https://stackoverflow.com/questions/25207147/datatable-vs-datatable-why-is-there-a-difference-and-how-do-i-make-them-w
@@ -93,14 +93,14 @@ $(document).ready(function(){
             }
         ]
     });
-	
+
     // https://datatables.net/forums/discussion/1440/how-to-reset-clear-sorting
     //  - Author: https://datatables.net/forums/profile/6627/manifestinteractive
     $('.sorting, .sorting_asc, .sorting_desc').dblclick(function(){
         oDataTable.fnSortNeutral();
         return false;
     });
-    
+
 });
 
 
@@ -118,15 +118,15 @@ $(document).ready(function(){
  * @author      Alexey Shildyakov (ashl1future@gmail.com)
  * @contact     ashl1future@gmail.com
  * @copyright   Alexey Shildyakov
- * 
+ *
  * License      MIT - http://datatables.net/license/mit
  *
  * This feature plug-in for DataTables automatically merges columns cells
  * based on it's values equality. It supports multi-column row grouping
- * in according to the requested order with dependency from each previous 
- * requested columns. Now it supports ordering and searching. 
+ * in according to the requested order with dependency from each previous
+ * requested columns. Now it supports ordering and searching.
  * Please see the example.html for details.
- * 
+ *
  * Rows grouping in DataTables can be enabled by using any one of the following
  * options:
  *
@@ -142,7 +142,7 @@ $(document).ready(function(){
  *   described above.
  *
  * For more detailed information please see:
- *     
+ *
  */
 
 (function($){
@@ -167,7 +167,7 @@ var RowsGroup = function ( dt, columnsForGrouping )
 	this.orderOverrideNow = false;
 	this.mergeCellsNeeded = false; // merge after init
 	this.order = []
-	
+
 	var self = this;
 	dt.on('order.dt', function ( e, settings) {
 		if (!self.orderOverrideNow) {
@@ -177,14 +177,14 @@ var RowsGroup = function ( dt, columnsForGrouping )
 			self.orderOverrideNow = false;
 		}
 	})
-	
+
 	dt.on('preDraw.dt', function ( e, settings) {
 		if (self.mergeCellsNeeded) {
 			self.mergeCellsNeeded = false;
 			self._mergeCells()
 		}
 	})
-	
+
 	dt.on('column-visibility.dt', function ( e, settings) {
 		self.mergeCellsNeeded = true;
 	})
@@ -208,7 +208,7 @@ var RowsGroup = function ( dt, columnsForGrouping )
 	})
 
 	this._updateOrderAndDraw();
-	
+
 /* Events sequence while Add row (also through Editor)
  * addRow() function
  *   draw() function
@@ -240,7 +240,7 @@ RowsGroup.prototype = {
 	{
 		if (groupedColumnsOrderDir === undefined)
 			groupedColumnsOrderDir = GroupedColumnsOrderDir
-			
+
 		var self = this;
 		var groupedColumnsIndexes = this.columnsForGrouping.map(function(columnSelector){
 			return self.table.column(columnSelector).index()
@@ -261,11 +261,11 @@ RowsGroup.prototype = {
 			else
 				return [iColumn, groupedColumnsOrderDir]
 		})
-		
+
 		groupedColumnsOrder.push.apply(groupedColumnsOrder, nongroupedColumnsOrder)
 		return groupedColumnsOrder;
 	},
- 
+
 	// Workaround: the DT reset ordering to 'asc' from multi-ordering if user order on one column (without shift)
 	//   but because we always has multi-ordering due to grouped rows this happens every time
 	_getInjectedMonoSelectWorkaround: function(order)
@@ -284,14 +284,14 @@ RowsGroup.prototype = {
 		} // else got milti order - work normal
 		return order;
 	},
-	
+
 	_mergeCells: function()
 	{
 		var columnsIndexes = this.table.columns(this.columnsForGrouping, ShowedDataSelectorModifier).indexes().toArray()
-		var showedRowsCount = this.table.rows(ShowedDataSelectorModifier)[0].length 
+		var showedRowsCount = this.table.rows(ShowedDataSelectorModifier)[0].length
 		this._mergeColumn(0, showedRowsCount - 1, columnsIndexes)
 	},
-	
+
 	// the index is relative to the showed data
 	//    (selector-modifier = {order: 'current', page: 'current', search: 'applied'}) index
 	_mergeColumn: function(iStartRow, iFinishRow, columnsIndexes)
@@ -299,42 +299,42 @@ RowsGroup.prototype = {
 		var columnsIndexesCopy = columnsIndexes.slice()
 		currentColumn = columnsIndexesCopy.shift()
 		currentColumn = this.table.column(currentColumn, ShowedDataSelectorModifier)
-		
+
 		var columnNodes = currentColumn.nodes()
 		var columnValues = currentColumn.data()
-		
+
 		var newSequenceRow = iStartRow,
 			iRow;
 		for (iRow = iStartRow + 1; iRow <= iFinishRow; ++iRow) {
-			
+
 			if (columnValues[iRow] === columnValues[newSequenceRow]) {
 				$(columnNodes[iRow]).hide()
 			} else {
 				$(columnNodes[newSequenceRow]).show()
 				$(columnNodes[newSequenceRow]).attr('rowspan', (iRow-1) - newSequenceRow + 1)
-				
+
 				if (columnsIndexesCopy.length > 0)
 					this._mergeColumn(newSequenceRow, (iRow-1), columnsIndexesCopy)
-				
+
 				newSequenceRow = iRow;
 			}
-			
+
 		}
 		$(columnNodes[newSequenceRow]).show()
 		$(columnNodes[newSequenceRow]).attr('rowspan', (iRow-1)- newSequenceRow + 1)
 		if (columnsIndexesCopy.length > 0)
 			this._mergeColumn(newSequenceRow, (iRow-1), columnsIndexesCopy)
 	},
-	
+
 	_toogleDirection: function(dir)
 	{
 		return dir == 'asc'? 'desc': 'asc';
 	},
- 
+
 	_updateOrderAndDraw: function()
 	{
 		this.mergeCellsNeeded = true;
-		
+
 		var currentOrder = this.table.order();
 		currentOrder = this._getInjectedMonoSelectWorkaround(currentOrder);
 		this.order = this._getOrderWithGroupColumns(currentOrder)
@@ -354,7 +354,7 @@ $(document).on( 'init.dt', function ( e, settings ) {
 	}
 
 	var api = new $.fn.dataTable.Api( settings );
-	
+
 	if ( settings.oInit.rowsGroup ||
 		 $.fn.dataTable.defaults.rowsGroup )
 	{
@@ -382,11 +382,11 @@ TODO: Provide function which determines the all <tr>s and <td>s with "rowspan" h
 TODO: Feature
 Use saved order direction for grouped columns
 	Split the columns into grouped and ungrouped.
-	
+
 	user = grouped+ungrouped
 	grouped = grouped
 	saved = grouped+ungrouped
-	
+
 	For grouped uses following order: user -> saved (because 'saved' include 'grouped' after first initialisation). This should be done with saving order like for 'groupedColumns'
 	For ungrouped: uses only 'user' input ordering
 */

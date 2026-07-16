@@ -81,7 +81,7 @@ copy __createfile __Download\registry.pol.txt
 waithidden C:\Windows\Temp\LGPO.exe /t __Download\registry.pol.txt
 continue if {exit code of action = 0}
 
-// References: 
+// References:
 //  - https://community.adobe.com/t5/acrobat/adobe-acrobat-reader-21-001-20135-preventing-users-to-connect-to-global-protect/td-p/11823885
 //  - https://docs.microsoft.com/en-us/internet-explorer/ie11-deploy-guide/enable-and-disable-add-ons-using-administrative-templates-and-group-policy
 //  - https://community.adobe.com/t5/acrobat-reader/internet-explorer-add-on-is-automatically-disabled-when-acrobat-reader-dc-runs/m-p/9892959
