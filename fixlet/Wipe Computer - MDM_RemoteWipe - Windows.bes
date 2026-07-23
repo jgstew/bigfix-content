@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Wipe Computer - MDM_RemoteWipe - Windows</Title>
-		<Description>WARNING! This will wipe a system! </Description>
+		<Description><![CDATA[WARNING! This will wipe a system!<BR><BR>This should work with Windows 10, version 1511 (OS Build 10.0.10586) from November 2015 or later.]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
 		<Relevance><![CDATA[computer name = "WIN-ComputerNameToWipe" /* <-- Computer you want to wipe */]]></Relevance>
