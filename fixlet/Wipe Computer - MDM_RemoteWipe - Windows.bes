@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Wipe Computer - MDM_RemoteWipe - Windows</Title>
+		<Description>WARNING! This will wipe a system! </Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
+		<Relevance><![CDATA[computer name = "WIN-ComputerNameToWipe" /* <-- Computer you want to wipe */]]></Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2026-07-22</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 23 Jul 2026 00:00:54 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-PowerShell">$session = New-CimSession
+$params = New-Object Microsoft.Management.Infrastructure.CimMethodParametersCollection
+$param = [Microsoft.Management.Infrastructure.CimMethodParameter]::Create("param", "", "String", "In")
+$params.Add($param)
+$CimSplat = @{
+    Namespace = "root\cimv2\mdm\dmmap"
+    ClassName = "MDM_RemoteWipe"
+    Filter    = "ParentID='./Vendor/MSFT' and InstanceID='RemoteWipe'"
+}
+
+# doWipeProtectedMethod
+# doWipeMethod
+# doWipePersistProvisionedDataMethod
+
+try {
+    $instance = Get-CimInstance @CimSplat
+    $session.InvokeMethod($CimSplat["Namespace"], $instance, "doWipeProtectedMethod", $params)
+}
+catch {
+	try {
+	    $instance = Get-CimInstance @CimSplat
+		$session.InvokeMethod($CimSplat["Namespace"], $instance, "doWipeMethod", $params)
+	}
+	catch {
+	    Write-Error $_
+	    exit 1
+	}
+}
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
