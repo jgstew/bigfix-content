@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>MDM: Put User Friendly Short Title Here - Windows</Title>
+		<Description><![CDATA[<P>Enter Helpful Detailed Description here in simple HTML.</P>
+<P>Also include a little detail about the MDM command.</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2026-07-22</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 23 Jul 2026 02:31:51 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-PowerShell"><![CDATA[<#
+.SYNOPSIS
+    Synopsis of the script.
+
+.DESCRIPTION
+    Longer description of the script.
+
+    Requirements:
+      - Windows 10/11+
+      - Run from SYSTEM
+#>
+
+[CmdletBinding()]
+param(
+    [string]$OutFile = "${env:ProgramFiles(x86)}\BigFix Enterprise\BES Client\__BESData\__Global\Logs\MDM_COMMANDHERE_Result.json"
+)
+
+# Do stuff:
+
+# End of script]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
