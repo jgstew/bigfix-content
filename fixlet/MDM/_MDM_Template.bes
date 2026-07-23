@@ -3,7 +3,9 @@
 	<Task>
 		<Title>MDM: Put User Friendly Short Title Here - Windows</Title>
 		<Description><![CDATA[<P>Enter Helpful Detailed Description here in simple HTML.</P>
-<P>Also include a little detail about the MDM command.</P>]]></Description>
+<P>Also include a little detail about the MDM command.</P>
+<P>WARNING! Add a warning line here if this command is destructive or disruptive. Remove this line otherwise.</P>
+<P>This should work with Windows XX, version XXXX (OS Build XX.X.XXXXX) or later. State the minimum build the CSP/method requires.</P>]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
 		<Category></Category>
@@ -16,7 +18,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 23 Jul 2026 02:31:51 +0000</Value>
+			<Value>Thu, 23 Jul 2026 02:55:32 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -39,10 +41,47 @@
 
 [CmdletBinding()]
 param(
-    [string]$OutFile = "${env:ProgramFiles(x86)}\BigFix Enterprise\BES Client\__BESData\__Global\Logs\MDM_COMMANDHERE_Result.json"
+    # Result output goes to the BES Client global logs folder.
+    # Resolve the client folder from the registry, with a default install path as fallback.
+    [string]$OutFile
 )
 
-# Do stuff:
+if (-not $OutFile) {
+    $clientFolder = $null
+    try {
+        $clientFolder = (Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\BigFix\EnterpriseClient\GlobalOptions" -Name "EnterpriseClientFolder" -ErrorAction Stop).EnterpriseClientFolder
+    }
+    catch {
+        $clientFolder = "${env:ProgramFiles(x86)}\BigFix Enterprise\BES Client"
+    }
+    $OutFile = Join-Path $clientFolder "__BESData\__Global\Logs\MDM_COMMANDHERE_Result.json"
+}
+
+# MDM Bridge: invoke a method on an MDM CSP class via the WMI-to-CSP bridge.
+# Available methods on this class:
+#   METHODNAME
+#   (list alternates here, e.g. doWipeProtectedMethod / doWipeMethod)
+$CimSplat = @{
+    Namespace = "root\cimv2\mdm\dmmap"
+    ClassName = "MDM_CLASSNAME"
+    Filter    = "ParentID='./Vendor/MSFT' and InstanceID='INSTANCEID'"
+}
+
+try {
+    $session  = New-CimSession
+    $params   = New-Object Microsoft.Management.Infrastructure.CimMethodParametersCollection
+    # Add method parameters here if the method requires them, e.g.:
+    # $params.Add([Microsoft.Management.Infrastructure.CimMethodParameter]::Create("param", "", "String", "In"))
+    $instance = Get-CimInstance @CimSplat
+    $result   = $session.InvokeMethod($CimSplat.Namespace, $instance, "METHODNAME", $params)
+
+    $result | ConvertTo-Json -Depth 10 | Out-File -FilePath $OutFile -Encoding UTF8
+    exit 0
+}
+catch {
+    Write-Error $_
+    exit 1
+}
 
 # End of script]]></ActionScript>
 		</DefaultAction>
