@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>MDM: Install PFX Client Certificate - Windows</Title>
+		<Description><![CDATA[<P>Installs a client certificate from a PFX blob via the ClientCertificateInstall CSP through the MDM Bridge WMI provider (root/cimv2/mdm/dmmap).</P>
+<P>This creates an <B>MDM_ClientCertificateInstall_PFXCertInstall01_01</B> instance (ParentID ./Vendor/MSFT/ClientCertificateInstall/PFXCertInstall) with a caller-chosen unique InstanceID. The PFX is supplied as a base64 blob in <B>PFXCertBlob</B>; installing/removing the instance installs/removes the cert and keys.</P>
+<P>SECURITY: Do NOT hardcode the PFX password in shared content. Supply it at deploy time as an action parameter and rotate it if exposed. Consider using PFXCertPasswordEncryptionType so the password is not stored in clear text. Edit the placeholders in the action script before use.</P>
+<P>This should work with Windows 10 or later. Run from SYSTEM.</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2026-07-23</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 23 Jul 2026 03:30:00 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-PowerShell"><![CDATA[<#
+.SYNOPSIS
+    Installs a client certificate from a PFX blob via the ClientCertificateInstall CSP.
+
+.DESCRIPTION
+    Creates an MDM_ClientCertificateInstall_PFXCertInstall01_01 instance. Supply the PFX as a
+    base64 blob and provide the password securely at deploy time (do not hardcode secrets).
+
+    Requirements:
+      - Windows 10 or later (ClientCertificateInstall CSP)
+      - Run from SYSTEM
+#>
+
+[CmdletBinding()]
+param(
+    [string]$InstanceId  = "BigFix-PFX-1",
+    # Base64-encoded PFX blob. Supply at deploy time; do not commit a real cert to source control.
+    [string]$PFXCertBlob = "<BASE64_PFX_BLOB>",
+    # Provide securely at deploy time; rotate if exposed.
+    [string]$PFXCertPassword = "<PFX_PASSWORD>",
+    # KeyLocation: see ClientCertificateInstall CSP (e.g. 1 = software KSP, 2 = TPM, 3 = TPM if present else software).
+    [int]$KeyLocation = 1,
+    [string]$OutFile
+)
+
+if (-not $OutFile) {
+    try {
+        $clientFolder = (Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\BigFix\EnterpriseClient\GlobalOptions" -Name "EnterpriseClientFolder" -ErrorAction Stop).EnterpriseClientFolder
+    }
+    catch {
+        $clientFolder = "${env:ProgramFiles(x86)}\BigFix Enterprise\BES Client"
+    }
+    $OutFile = Join-Path $clientFolder "__BESData\__Global\Logs\MDM_InstallPFX_Result.json"
+}
+
+try {
+    $result = New-CimInstance -Namespace "root\cimv2\mdm\dmmap" -ClassName "MDM_ClientCertificateInstall_PFXCertInstall01_01" -Property @{
+        ParentID        = "./Vendor/MSFT/ClientCertificateInstall/PFXCertInstall"
+        InstanceID      = $InstanceId
+        KeyLocation     = $KeyLocation
+        PFXCertBlob     = $PFXCertBlob
+        PFXCertPassword = $PFXCertPassword
+    } -ErrorAction Stop
+
+    # Do not write the blob or password back to the log; report status/thumbprint only.
+    $result | Select-Object InstanceID, Thumbprint, Status | ConvertTo-Json -Depth 10 | Out-File -FilePath $OutFile -Encoding UTF8
+    exit 0
+}
+catch {
+    Write-Error $_
+    exit 1
+}
+
+# End of script]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>

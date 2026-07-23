@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>MDM: Export Installed App Inventory - Windows</Title>
+		<Description><![CDATA[<P>Exports the modern (AppX/MSIX) app inventory using the EnterpriseModernAppManagement CSP through the MDM Bridge WMI provider (root/cimv2/mdm/dmmap), writing the result to a JSON file in the BES Client logs folder.</P>
+<P>This reads the <B>AppInventoryResults</B> property of the <B>MDM_EnterpriseModernAppManagement_AppManagement01</B> class. You must first set <B>AppInventoryQuery</B> to describe which apps to inventory; an example query is included (and commented) in the action script. See the EnterpriseModernAppManagement CSP documentation for the AppInventoryQuery format.</P>
+<P>This is a read task (query shape) with no callable method. This should work with Windows 10, version 1511 or later.</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2026-07-23</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 23 Jul 2026 03:15:00 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-PowerShell"><![CDATA[<#
+.SYNOPSIS
+    Exports the modern app inventory via the EnterpriseModernAppManagement CSP (WMI-to-CSP bridge).
+
+.DESCRIPTION
+    Sets AppInventoryQuery, then reads AppInventoryResults (and LastScanError) from the
+    MDM_EnterpriseModernAppManagement_AppManagement01 class in root\cimv2\mdm\dmmap and
+    writes them to a JSON file. Read-only with respect to installed apps.
+
+    The AppInventoryQuery string format is defined by the EnterpriseModernAppManagement CSP.
+    Edit $AppInventoryQuery below to scope the inventory (Output/Filter/PackageTypeFilter).
+
+    Requirements:
+      - Windows 10, version 1511 or later (EnterpriseModernAppManagement CSP)
+      - Run from SYSTEM
+#>
+
+[CmdletBinding()]
+param(
+    # Example query: all non-framework packages installed for all users, returning name + version.
+    # Adjust to match the AppInventoryQuery format documented for the CSP.
+    [string]$AppInventoryQuery = './User/NonRemovable/InstallLocation/Name/Version',
+    [string]$OutFile
+)
+
+if (-not $OutFile) {
+    try {
+        $clientFolder = (Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\BigFix\EnterpriseClient\GlobalOptions" -Name "EnterpriseClientFolder" -ErrorAction Stop).EnterpriseClientFolder
+    }
+    catch {
+        $clientFolder = "${env:ProgramFiles(x86)}\BigFix Enterprise\BES Client"
+    }
+    $OutFile = Join-Path $clientFolder "__BESData\__Global\Logs\MDM_AppInventory_Result.json"
+}
+
+try {
+    $CimSplat = @{
+        Namespace = "root\cimv2\mdm\dmmap"
+        ClassName = "MDM_EnterpriseModernAppManagement_AppManagement01"
+    }
+
+    # Set the query, then re-read the instance so AppInventoryResults is populated.
+    Get-CimInstance @CimSplat -ErrorAction Stop | Set-CimInstance -Property @{ AppInventoryQuery = $AppInventoryQuery }
+    $app = Get-CimInstance @CimSplat -ErrorAction Stop
+
+    [pscustomobject]@{
+        AppInventoryQuery   = $app.AppInventoryQuery
+        AppInventoryResults = $app.AppInventoryResults
+        LastScanError       = $app.LastScanError
+    } | ConvertTo-Json -Depth 10 | Out-File -FilePath $OutFile -Encoding UTF8
+    exit 0
+}
+catch {
+    Write-Error $_
+    exit 1
+}
+
+# End of script]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>

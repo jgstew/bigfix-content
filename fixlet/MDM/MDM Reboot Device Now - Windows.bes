@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>MDM: Reboot Device Now - Windows</Title>
+		<Description><![CDATA[<P>Immediately reboots the device using the Reboot CSP through the MDM Bridge WMI provider (root/cimv2/mdm/dmmap).</P>
+<P>This calls the <B>RebootNowMethod</B> on the <B>MDM_Reboot</B> class.</P>
+<P>WARNING! This reboots the machine immediately. The logged-on user will lose unsaved work. Target carefully.</P>
+<P>This should work with Windows 10, version 1703 or later (the version the Reboot CSP was introduced).</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
+		<Relevance><![CDATA[computer name = "WIN-ComputerNameHere" /* <-- Edit or remove: guard so this only targets the intended computer */]]></Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2026-07-23</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 23 Jul 2026 03:15:00 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-PowerShell"><![CDATA[<#
+.SYNOPSIS
+    Immediately reboots the device via the MDM Reboot CSP (WMI-to-CSP bridge).
+
+.DESCRIPTION
+    Calls RebootNowMethod on the MDM_Reboot class in root\cimv2\mdm\dmmap.
+    The reboot is immediate, so this action terminates the session when it runs.
+
+    Requirements:
+      - Windows 10, version 1703 or later (Reboot CSP)
+      - Run from SYSTEM
+#>
+
+[CmdletBinding()]
+param(
+    [string]$OutFile
+)
+
+if (-not $OutFile) {
+    try {
+        $clientFolder = (Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\BigFix\EnterpriseClient\GlobalOptions" -Name "EnterpriseClientFolder" -ErrorAction Stop).EnterpriseClientFolder
+    }
+    catch {
+        $clientFolder = "${env:ProgramFiles(x86)}\BigFix Enterprise\BES Client"
+    }
+    $OutFile = Join-Path $clientFolder "__BESData\__Global\Logs\MDM_Reboot_Result.json"
+}
+
+# MDM_Reboot is a singleton CSP node; select by ClassName (no ParentID/InstanceID filter needed).
+$CimSplat = @{
+    Namespace = "root\cimv2\mdm\dmmap"
+    ClassName = "MDM_Reboot"
+}
+
+try {
+    $session  = New-CimSession
+    $params   = New-Object Microsoft.Management.Infrastructure.CimMethodParametersCollection
+    $instance = Get-CimInstance @CimSplat
+    # RebootNowMethod triggers an immediate reboot of the device.
+    $result   = $session.InvokeMethod($CimSplat.Namespace, $instance, "RebootNowMethod", $params)
+
+    $result | ConvertTo-Json -Depth 10 | Out-File -FilePath $OutFile -Encoding UTF8
+    exit 0
+}
+catch {
+    Write-Error $_
+    exit 1
+}
+
+# End of script]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>

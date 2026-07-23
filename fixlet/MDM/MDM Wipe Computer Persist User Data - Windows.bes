@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>MDM: Wipe Computer (Persist User Data) - Windows</Title>
+		<Description><![CDATA[<P>Wipes the device while persisting user accounts and data, using the RemoteWipe CSP through the MDM Bridge WMI provider (root/cimv2/mdm/dmmap).</P>
+<P>This calls the <B>doWipePersistUserDataMethod</B> on the <B>MDM_RemoteWipe</B> class. It resets Windows but keeps user accounts and data (similar to "Keep my files").</P>
+<P>WARNING! This will reset the system! Installed applications and settings are removed. Target carefully.</P>
+<P>This should work with Windows 10, version 1709 or later (doWipePersistUserDataMethod).</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
+		<Relevance><![CDATA[computer name = "WIN-ComputerNameToWipe" /* <-- Computer you want to wipe */]]></Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2026-07-23</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 23 Jul 2026 03:15:00 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-PowerShell"><![CDATA[<#
+.SYNOPSIS
+    Wipes the device but persists user data, via the RemoteWipe CSP (WMI-to-CSP bridge).
+
+.DESCRIPTION
+    Calls doWipePersistUserDataMethod on the MDM_RemoteWipe class in root\cimv2\mdm\dmmap.
+    Windows is reset while keeping user accounts and data.
+
+    Requirements:
+      - Windows 10, version 1709 or later (doWipePersistUserDataMethod)
+      - Run from SYSTEM
+#>
+
+[CmdletBinding()]
+param(
+    [string]$OutFile
+)
+
+if (-not $OutFile) {
+    try {
+        $clientFolder = (Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\BigFix\EnterpriseClient\GlobalOptions" -Name "EnterpriseClientFolder" -ErrorAction Stop).EnterpriseClientFolder
+    }
+    catch {
+        $clientFolder = "${env:ProgramFiles(x86)}\BigFix Enterprise\BES Client"
+    }
+    $OutFile = Join-Path $clientFolder "__BESData\__Global\Logs\MDM_RemoteWipe_PersistUserData_Result.json"
+}
+
+# MDM_RemoteWipe is a singleton CSP node; select by ClassName.
+$CimSplat = @{
+    Namespace = "root\cimv2\mdm\dmmap"
+    ClassName = "MDM_RemoteWipe"
+}
+
+try {
+    $session  = New-CimSession
+    $params   = New-Object Microsoft.Management.Infrastructure.CimMethodParametersCollection
+    # RemoteWipe methods take an (empty) "param" input.
+    $params.Add([Microsoft.Management.Infrastructure.CimMethodParameter]::Create("param", "", "String", "In"))
+    $instance = Get-CimInstance @CimSplat
+    $result   = $session.InvokeMethod($CimSplat.Namespace, $instance, "doWipePersistUserDataMethod", $params)
+
+    $result | ConvertTo-Json -Depth 10 | Out-File -FilePath $OutFile -Encoding UTF8
+    exit 0
+}
+catch {
+    Write-Error $_
+    exit 1
+}
+
+# End of script]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>

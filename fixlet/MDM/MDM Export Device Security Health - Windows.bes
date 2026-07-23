@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>MDM: Export Device Security Health - Windows</Title>
+		<Description><![CDATA[<P>Exports device security/health posture via the DeviceStatus CSP through the MDM Bridge WMI provider (root/cimv2/mdm/dmmap), writing the result to a JSON file in the BES Client logs folder.</P>
+<P>Collects: Secure Boot state and domain (MDM_DeviceStatus), antivirus and antispyware status (MDM_DeviceStatus_Antivirus01 / _Antispyware01), firewall status (_Firewall01), UAC status (_UAC01), TPM specification version (_TPM01), encryption compliance (_Compliance01), Device Guard / VBS / Credential Guard (_DeviceGuard01), and OS edition (_OS01).</P>
+<P>Read-only. NOTE: the numeric status/state fields are CSP enum codes; consult the DeviceStatus CSP docs for the code-to-meaning mapping. Some classes return nothing where the feature/hardware is absent (e.g. no TPM). This should work with Windows 10 or later. Run from SYSTEM.</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2026-07-23</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 23 Jul 2026 03:30:00 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-PowerShell"><![CDATA[<#
+.SYNOPSIS
+    Exports device security/health posture via the DeviceStatus CSP (WMI-to-CSP bridge).
+
+.DESCRIPTION
+    Reads the MDM_DeviceStatus* classes in root\cimv2\mdm\dmmap and writes their properties
+    to JSON. Each class is queried independently so a missing feature does not fail the export.
+
+    Requirements:
+      - Windows 10 or later (DeviceStatus CSP)
+      - Run from SYSTEM
+#>
+
+[CmdletBinding()]
+param(
+    [string]$OutFile
+)
+
+if (-not $OutFile) {
+    try {
+        $clientFolder = (Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\BigFix\EnterpriseClient\GlobalOptions" -Name "EnterpriseClientFolder" -ErrorAction Stop).EnterpriseClientFolder
+    }
+    catch {
+        $clientFolder = "${env:ProgramFiles(x86)}\BigFix Enterprise\BES Client"
+    }
+    $OutFile = Join-Path $clientFolder "__BESData\__Global\Logs\MDM_DeviceSecurityHealth_Result.json"
+}
+
+$ns = "root\cimv2\mdm\dmmap"
+
+function Get-MdmClass {
+    param([string]$ClassName)
+    try {
+        return Get-CimInstance -Namespace $ns -ClassName $ClassName -ErrorAction Stop |
+            Select-Object -Property * -ExcludeProperty Cim*
+    }
+    catch {
+        return $null
+    }
+}
+
+try {
+    $report = [ordered]@{
+        DeviceStatus = Get-MdmClass "MDM_DeviceStatus"                 # SecureBootState, DomainName
+        Antivirus    = Get-MdmClass "MDM_DeviceStatus_Antivirus01"      # SignatureStatus, Status
+        Antispyware  = Get-MdmClass "MDM_DeviceStatus_Antispyware01"    # SignatureStatus, Status
+        Firewall     = Get-MdmClass "MDM_DeviceStatus_Firewall01"       # Status
+        UAC          = Get-MdmClass "MDM_DeviceStatus_UAC01"            # Status
+        TPM          = Get-MdmClass "MDM_DeviceStatus_TPM01"            # SpecificationVersion
+        Compliance   = Get-MdmClass "MDM_DeviceStatus_Compliance01"     # EncryptionCompliance
+        DeviceGuard  = Get-MdmClass "MDM_DeviceStatus_DeviceGuard01"    # VBS / Credential Guard
+        OS           = Get-MdmClass "MDM_DeviceStatus_OS01"             # Edition
+    }
+
+    [pscustomobject]$report | ConvertTo-Json -Depth 10 | Out-File -FilePath $OutFile -Encoding UTF8
+    exit 0
+}
+catch {
+    Write-Error $_
+    exit 1
+}
+
+# End of script]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
