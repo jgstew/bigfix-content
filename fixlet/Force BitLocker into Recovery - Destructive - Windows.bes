@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>Force BitLocker into Recovery - Destructive - Windows</Title>
+		<Description>Remove BitLocker unlocks, Force BitLocker into Recovery </Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>TRUE OR exists integer values whose(it = 1) of selects ("ProtectionStatus from win32_EncryptableVolume") of WMIs "root\CIMv2\Security\MicrosoftVolumeEncryption"</Relevance>
+		<Relevance><![CDATA[computer name = "DOCKERW-CD2GTBK" /* <-- Computer you want to put into recovery */]]></Relevance>
+		<Category></Category>
+		<Source>Internal</Source>
+		<SourceID></SourceID>
+		<SourceReleaseDate>2026-07-23</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Fri, 24 Jul 2026 14:11:35 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-PowerShell">$bekPath = "C:\Windows\Temp\wipe.bek"
+$log = "C:\Windows\Temp\wipe_blr.log"
+$log_commands = "C:\Windows\Temp\wipe_blr_commands.log"
+Start-Transcript -Path $log -Append
+Add-BitLockerKeyProtector -MountPoint "C:" -RecoveryKeyProtector -RecoveryKeyPath (Split-Path $bekPath)
+
+# Get the new ExternalKey id and remove everything else
+$vol = Get-BitLockerVolume -MountPoint "C:"
+$keep = ($vol.KeyProtector | Where-Object { $_.KeyProtectorType -eq 'ExternalKey' } | Select-Object -Last 1).KeyProtectorId
+$vol.KeyProtector | Where-Object { $_.KeyProtectorId -ne $keep } |
+    ForEach-Object { Remove-BitLockerKeyProtector -MountPoint "C:" -KeyProtectorId $_.KeyProtectorId }
+
+# Force recovery on next boot, then annihilate the .bek
+manage-bde -forcerecovery C: | Tee-Object -FilePath $log_commands -Append
+
+Remove-Item "$(Split-Path $bekPath)\*.bek" -Force
+
+# overwrite free space where the .bek lived (optional and slow, probably not needed)
+# cipher /w:C:\Windows\Temp | Tee-Object -FilePath $log_commands -Append
+
+Initialize-Tpm -AllowClear -AllowPhysicalPresence
+
+shutdown /r /t 0
+</ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>
