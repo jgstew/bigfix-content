@@ -4,7 +4,7 @@
 		<Title>Force BitLocker into Recovery - Destructive - Windows</Title>
 		<Description>Remove BitLocker unlocks, Force BitLocker into Recovery </Description>
 		<Relevance>windows of operating system</Relevance>
-		<Relevance>TRUE OR exists integer values whose(it = 1) of selects ("ProtectionStatus from win32_EncryptableVolume") of WMIs "root\CIMv2\Security\MicrosoftVolumeEncryption"</Relevance>
+		<Relevance>exists integer values whose(it = 1) of selects ("ProtectionStatus from win32_EncryptableVolume") of WMIs "root\CIMv2\Security\MicrosoftVolumeEncryption"</Relevance>
 		<Relevance><![CDATA[computer name = "DOCKERW-CD2GTBK" /* <-- Computer you want to put into recovery */]]></Relevance>
 		<Category></Category>
 		<Source>Internal</Source>
