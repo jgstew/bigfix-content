@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>MDM: Set Windows Update for Business Policy - Windows</Title>
+		<Description><![CDATA[<P>Configures Windows Update for Business (WUfB) settings via the Policy CSP through the MDM Bridge WMI provider (root/cimv2/mdm/dmmap), without touching the registry directly.</P>
+<P>This edits the <B>MDM_Policy_Config01_Update02</B> instance (ParentID ./Vendor/MSFT/Policy/Config, InstanceID Update). Only the parameters you set (values other than -1 / non-empty) are applied. Use the "Export MDM Policy Area" task to audit the effective values afterward.</P>
+<P>Adjustable here: defer quality/feature updates, pause quality/feature updates, active hours, auto-update behavior, and excluding drivers from quality updates.</P>
+<P>NOTE: TargetReleaseVersion / ProductVersion (pin to a feature update version) are NOT exposed by this WMI class and are intentionally not set here. Set those via OMA-URI or the corresponding registry policy instead.</P>
+<P>This should work with Windows 10 or later. Run from SYSTEM.</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2026-07-23</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 23 Jul 2026 03:30:00 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-PowerShell"><![CDATA[<#
+.SYNOPSIS
+    Configures Windows Update for Business policy via the Policy CSP (WMI-to-CSP bridge).
+
+.DESCRIPTION
+    Reads the MDM_Policy_Config01_Update02 instance and applies the supplied settings.
+    Policy classes are keyed by ParentID + InstanceID (not singletons), so a -Filter is used.
+    A value of -1 (int) or empty string means "leave unchanged".
+
+    Requirements:
+      - Windows 10 or later (Policy/Update CSP)
+      - Run from SYSTEM
+#>
+
+[CmdletBinding()]
+param(
+    [int]$DeferQualityUpdatesPeriodInDays  = -1,   # 0-30
+    [int]$DeferFeatureUpdatesPeriodInDays  = -1,   # 0-365
+    [int]$PauseQualityUpdates              = -1,   # 0 or 1
+    [int]$PauseFeatureUpdates              = -1,   # 0 or 1
+    [int]$ActiveHoursStart                 = -1,   # 0-23
+    [int]$ActiveHoursEnd                   = -1,   # 0-23
+    [int]$AllowAutoUpdate                  = -1,   # 0-5
+    [int]$ExcludeWUDriversInQualityUpdate  = -1,   # 0 or 1
+    [string]$OutFile
+)
+
+if (-not $OutFile) {
+    try {
+        $clientFolder = (Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\BigFix\EnterpriseClient\GlobalOptions" -Name "EnterpriseClientFolder" -ErrorAction Stop).EnterpriseClientFolder
+    }
+    catch {
+        $clientFolder = "${env:ProgramFiles(x86)}\BigFix Enterprise\BES Client"
+    }
+    $OutFile = Join-Path $clientFolder "__BESData\__Global\Logs\MDM_SetUpdatePolicy_Result.json"
+}
+
+try {
+    $o = Get-CimInstance -Namespace "root\cimv2\mdm\dmmap" -ClassName "MDM_Policy_Config01_Update02" `
+        -Filter "ParentID='./Vendor/MSFT/Policy/Config' and InstanceID='Update'" -ErrorAction Stop
+
+    # Apply only the settings the operator provided.
+    $intMap = @{
+        DeferQualityUpdatesPeriodInDays = $DeferQualityUpdatesPeriodInDays
+        DeferFeatureUpdatesPeriodInDays = $DeferFeatureUpdatesPeriodInDays
+        PauseQualityUpdates             = $PauseQualityUpdates
+        PauseFeatureUpdates             = $PauseFeatureUpdates
+        ActiveHoursStart                = $ActiveHoursStart
+        ActiveHoursEnd                  = $ActiveHoursEnd
+        AllowAutoUpdate                 = $AllowAutoUpdate
+        ExcludeWUDriversInQualityUpdate = $ExcludeWUDriversInQualityUpdate
+    }
+    foreach ($name in $intMap.Keys) {
+        if ($intMap[$name] -ge 0) { $o.$name = $intMap[$name] }
+    }
+
+    Set-CimInstance -CimInstance $o -ErrorAction Stop
+    $o | Select-Object -Property * -ExcludeProperty Cim* | ConvertTo-Json -Depth 10 | Out-File -FilePath $OutFile -Encoding UTF8
+    exit 0
+}
+catch {
+    Write-Error $_
+    exit 1
+}
+
+# End of script]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>

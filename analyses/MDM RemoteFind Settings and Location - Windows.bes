@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>MDM RemoteFind Settings and Location - Windows</Title>
+		<Description><![CDATA[<P>Reports the RemoteFind CSP data exposed by the MDM Bridge WMI provider (namespace root/cimv2/mdm/dmmap), if available.</P>
+<P>Two classes are read:</P>
+<UL>
+<LI><B>MDM_RemoteFind</B> - the remote-find request parameters: DesiredAccuracy, MaximumAge, Timeout (plus the CSP node keys).</LI>
+<LI><B>MDM_RemoteFind_Location01</B> - the location RESULT: Latitude, Longitude, Altitude, Accuracy, AltitudeAccuracy, Age.</LI>
+</UL>
+<P>IMPORTANT: The coordinate values are the result of the <B>last successful remote find</B>. Per Microsoft, they are populated only after an MDM/OMA-DM server initiates a RemoteFind operation over the management channel - there is <B>no local trigger</B>. A BigFix action cannot start a find, so on devices where no server-initiated find has occurred these values are typically empty / defaults (Latitude/Longitude Null, Accuracy/Age 0). This analysis surfaces whatever the device has cached; it does not obtain a live fix.</P>
+<P>Requires an MDM-enrolled, non-Home Windows 10/11 edition for the RemoteFind CSP to be present. The analysis activates only where the class can be queried, so it is safe to deploy broadly.</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
+		<Relevance>exists selects "InstanceID from MDM_RemoteFind" of wmis "root/cimv2/mdm/dmmap"</Relevance>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2026-07-23</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 23 Jul 2026 03:30:00 +0000</Value>
+		</MIMEField>
+		<MIMEField>
+			<Name>x-relevance-evaluation-period</Name>
+			<Value>12:00:00</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="RemoteFind Available" ID="1" EvaluationPeriod="PT12H"><![CDATA[(exists selects "InstanceID from MDM_RemoteFind" of wmis "root/cimv2/mdm/dmmap") as string]]></Property>
+		<Property Name="RemoteFind DesiredAccuracy" ID="2" EvaluationPeriod="PT12H"><![CDATA[(concatenation ", " of (it as string) of integer values of selects "DesiredAccuracy from MDM_RemoteFind" of wmis "root/cimv2/mdm/dmmap") | "N/A"]]></Property>
+		<Property Name="RemoteFind MaximumAge" ID="3" EvaluationPeriod="PT12H"><![CDATA[(concatenation ", " of (it as string) of integer values of selects "MaximumAge from MDM_RemoteFind" of wmis "root/cimv2/mdm/dmmap") | "N/A"]]></Property>
+		<Property Name="RemoteFind Timeout" ID="4" EvaluationPeriod="PT12H"><![CDATA[(concatenation ", " of (it as string) of integer values of selects "Timeout from MDM_RemoteFind" of wmis "root/cimv2/mdm/dmmap") | "N/A"]]></Property>
+		<Property Name="RemoteFind Location Available" ID="5" EvaluationPeriod="PT12H"><![CDATA[(exists selects "InstanceID from MDM_RemoteFind_Location01" of wmis "root/cimv2/mdm/dmmap") as string | "N/A"]]></Property>
+		<Property Name="RemoteFind Latitude" ID="6" EvaluationPeriod="PT12H"><![CDATA[(concatenation ", " of (it as string) of string values of selects "Latitude from MDM_RemoteFind_Location01" of wmis "root/cimv2/mdm/dmmap") | "N/A"]]></Property>
+		<Property Name="RemoteFind Longitude" ID="7" EvaluationPeriod="PT12H"><![CDATA[(concatenation ", " of (it as string) of string values of selects "Longitude from MDM_RemoteFind_Location01" of wmis "root/cimv2/mdm/dmmap") | "N/A"]]></Property>
+		<Property Name="RemoteFind Altitude" ID="8" EvaluationPeriod="PT12H"><![CDATA[(concatenation ", " of (it as string) of string values of selects "Altitude from MDM_RemoteFind_Location01" of wmis "root/cimv2/mdm/dmmap") | "N/A"]]></Property>
+		<Property Name="RemoteFind Accuracy" ID="9" EvaluationPeriod="PT12H"><![CDATA[(concatenation ", " of (it as string) of string values of selects "Accuracy from MDM_RemoteFind_Location01" of wmis "root/cimv2/mdm/dmmap") | "N/A"]]></Property>
+		<Property Name="RemoteFind AltitudeAccuracy" ID="10" EvaluationPeriod="PT12H"><![CDATA[(concatenation ", " of (it as string) of string values of selects "AltitudeAccuracy from MDM_RemoteFind_Location01" of wmis "root/cimv2/mdm/dmmap") | "N/A"]]></Property>
+		<Property Name="RemoteFind Location Age" ID="11" EvaluationPeriod="PT12H"><![CDATA[(concatenation ", " of (it as string) of string values of selects "Age from MDM_RemoteFind_Location01" of wmis "root/cimv2/mdm/dmmap") | "N/A"]]></Property>
+	</Analysis>
+</BES>

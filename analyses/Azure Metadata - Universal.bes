@@ -8,9 +8,10 @@
 		<SourceReleaseDate>2019-02-26</SourceReleaseDate>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Wed, 27 Feb 2019 01:34:03 +0000</Value>
+			<Value>Tue, 28 Jul 2026 16:13:20 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<Property Name="azure_metadata" ID="1" EvaluationPeriod="PT12H">lines of files whose(name of it as lowercase starts with "azure_metadata.json") of folders "Logs" of folders "__Global" of data folders of client</Property>
+		<Property Name="tags" ID="2" EvaluationPeriod="PT12H">unique values of (it as trimmed string) of substrings separated by ";" of (it as string) of paths "$.compute.tags" of jsons of files whose(name of it as lowercase starts with "azure_metadata.json") of folders "Logs" of folders "__Global" of data folders of client</Property>
 	</Analysis>
 </BES>

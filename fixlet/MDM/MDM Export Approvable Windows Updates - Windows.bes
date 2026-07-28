@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>MDM: Export Approvable Windows Updates - Windows</Title>
+		<Description><![CDATA[<P>Exports the lists of installable (approvable), failed, and pending-reboot Windows updates using the Update CSP through the MDM Bridge WMI provider (root/cimv2/mdm/dmmap), writing them to a JSON file in the BES Client logs folder.</P>
+<P>Each update is identified by a GUID (the InstanceID of the child classes MDM_Update_InstallableUpdates01_01, MDM_Update_FailedUpdates01_01, and MDM_Update_PendingRebootUpdates01_01). Use the GUIDs from this export with the "Approve Windows Update by GUID" task.</P>
+<P>Read-only; makes no changes. This should work with Windows 10 or later (Update CSP).</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2026-07-23</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 23 Jul 2026 03:30:00 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-PowerShell"><![CDATA[<#
+.SYNOPSIS
+    Exports installable/failed/pending Windows updates via the Update CSP (WMI-to-CSP bridge).
+
+.DESCRIPTION
+    Reads the MDM_Update_InstallableUpdates01_01, MDM_Update_FailedUpdates01_01, and
+    MDM_Update_PendingRebootUpdates01_01 classes in root\cimv2\mdm\dmmap. Each instance's
+    InstanceID is the update GUID. Read-only.
+
+    Requirements:
+      - Windows 10 or later (Update CSP)
+      - Run from SYSTEM
+#>
+
+[CmdletBinding()]
+param(
+    [string]$OutFile
+)
+
+if (-not $OutFile) {
+    try {
+        $clientFolder = (Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\BigFix\EnterpriseClient\GlobalOptions" -Name "EnterpriseClientFolder" -ErrorAction Stop).EnterpriseClientFolder
+    }
+    catch {
+        $clientFolder = "${env:ProgramFiles(x86)}\BigFix Enterprise\BES Client"
+    }
+    $OutFile = Join-Path $clientFolder "__BESData\__Global\Logs\MDM_ApprovableUpdates_Result.json"
+}
+
+$ns = "root\cimv2\mdm\dmmap"
+
+try {
+    $installable = @(Get-CimInstance -Namespace $ns -ClassName "MDM_Update_InstallableUpdates01_01" -ErrorAction SilentlyContinue |
+        Select-Object -ExpandProperty InstanceID)
+    $failed = @(Get-CimInstance -Namespace $ns -ClassName "MDM_Update_FailedUpdates01_01" -ErrorAction SilentlyContinue |
+        Select-Object InstanceID, HResult, State)
+    $pending = @(Get-CimInstance -Namespace $ns -ClassName "MDM_Update_PendingRebootUpdates01_01" -ErrorAction SilentlyContinue |
+        Select-Object InstanceID, InstalledTime)
+
+    [pscustomobject]@{
+        InstallableUpdateGUIDs = $installable
+        FailedUpdates          = $failed
+        PendingRebootUpdates   = $pending
+    } | ConvertTo-Json -Depth 10 | Out-File -FilePath $OutFile -Encoding UTF8
+    exit 0
+}
+catch {
+    Write-Error $_
+    exit 1
+}
+
+# End of script]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>MDM: Export Device Detail - Windows</Title>
+		<Description><![CDATA[<P>Exports extended device detail (OS, firmware/BIOS, hardware, and MDM identifiers) using the DevDetail CSP through the MDM Bridge WMI provider (root/cimv2/mdm/dmmap), writing the result to a JSON file in the BES Client logs folder.</P>
+<P>This reads the <B>MDM_DevDetail_Ext01</B> class. It is a read-only inventory task (query shape) with no callable method and no changes to the device.</P>
+<P>This should work with Windows 10, version 1511 or later (DevDetail CSP).</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2026-07-23</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 23 Jul 2026 03:15:00 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-PowerShell"><![CDATA[<#
+.SYNOPSIS
+    Exports extended device detail via the DevDetail CSP (WMI-to-CSP bridge).
+
+.DESCRIPTION
+    Reads the MDM_DevDetail_Ext01 class in root\cimv2\mdm\dmmap and writes all of its
+    properties to a JSON file. Read-only; makes no changes to the device.
+
+    Requirements:
+      - Windows 10, version 1511 or later (DevDetail CSP)
+      - Run from SYSTEM
+#>
+
+[CmdletBinding()]
+param(
+    [string]$OutFile
+)
+
+if (-not $OutFile) {
+    try {
+        $clientFolder = (Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\BigFix\EnterpriseClient\GlobalOptions" -Name "EnterpriseClientFolder" -ErrorAction Stop).EnterpriseClientFolder
+    }
+    catch {
+        $clientFolder = "${env:ProgramFiles(x86)}\BigFix Enterprise\BES Client"
+    }
+    $OutFile = Join-Path $clientFolder "__BESData\__Global\Logs\MDM_DevDetail_Result.json"
+}
+
+try {
+    # MDM_DevDetail_Ext01 is a singleton; select by ClassName. Export all CSP properties.
+    $detail = Get-CimInstance -Namespace "root\cimv2\mdm\dmmap" -ClassName "MDM_DevDetail_Ext01" -ErrorAction Stop
+    $detail | Select-Object -Property * -ExcludeProperty Cim* | ConvertTo-Json -Depth 10 | Out-File -FilePath $OutFile -Encoding UTF8
+    exit 0
+}
+catch {
+    Write-Error $_
+    exit 1
+}
+
+# End of script]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>

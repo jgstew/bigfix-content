@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>MDM: Export Installed AppX MSIX Inventory - Windows</Title>
+		<Description><![CDATA[<P>Exports the installed modern app (AppX/MSIX) inventory via the EnterpriseModernAppManagement CSP through the MDM Bridge WMI provider (root/cimv2/mdm/dmmap), writing the result to a JSON file in the BES Client logs folder.</P>
+<P>This enumerates the <B>MDM_EnterpriseModernAppManagement_AppManagement01_03</B> class (one instance per installed package) and captures name, version, publisher, architecture, install location, and framework/bundle/provisioned flags.</P>
+<P>Read-only. NOTE: classic MSI (Win32) apps are NOT covered here - the EnterpriseDesktopAppManagement CSP that manages MSI is an OMA-DM (SyncML) surface and is not exposed through this WMI provider. This should work with Windows 10 or later. Run from SYSTEM.</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2026-07-23</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 23 Jul 2026 03:30:00 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-PowerShell"><![CDATA[<#
+.SYNOPSIS
+    Exports the installed AppX/MSIX inventory via the EnterpriseModernAppManagement CSP.
+
+.DESCRIPTION
+    Enumerates MDM_EnterpriseModernAppManagement_AppManagement01_03 in root\cimv2\mdm\dmmap
+    and writes selected package properties to JSON. Read-only.
+
+    Requirements:
+      - Windows 10 or later (EnterpriseModernAppManagement CSP)
+      - Run from SYSTEM
+#>
+
+[CmdletBinding()]
+param(
+    [string]$OutFile
+)
+
+if (-not $OutFile) {
+    try {
+        $clientFolder = (Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\BigFix\EnterpriseClient\GlobalOptions" -Name "EnterpriseClientFolder" -ErrorAction Stop).EnterpriseClientFolder
+    }
+    catch {
+        $clientFolder = "${env:ProgramFiles(x86)}\BigFix Enterprise\BES Client"
+    }
+    $OutFile = Join-Path $clientFolder "__BESData\__Global\Logs\MDM_AppXInventory_Result.json"
+}
+
+try {
+    $apps = @(Get-CimInstance -Namespace "root\cimv2\mdm\dmmap" -ClassName "MDM_EnterpriseModernAppManagement_AppManagement01_03" -ErrorAction Stop |
+        Select-Object InstanceID, Name, Version, Publisher, Architecture, InstallLocation, InstallDate, IsFramework, IsBundle, IsProvisioned, PackageStatus)
+
+    [pscustomobject]@{
+        PackageCount = $apps.Count
+        Packages     = $apps
+    } | ConvertTo-Json -Depth 10 | Out-File -FilePath $OutFile -Encoding UTF8
+    exit 0
+}
+catch {
+    Write-Error $_
+    exit 1
+}
+
+# End of script]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>

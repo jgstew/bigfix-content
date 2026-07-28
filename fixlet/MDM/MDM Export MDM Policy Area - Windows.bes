@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>MDM: Export MDM Policy Area (Effective Values) - Windows</Title>
+		<Description><![CDATA[<P>Exports the effective (applied) values for a Policy CSP area via the MDM Bridge WMI provider (root/cimv2/mdm/dmmap), writing them to a JSON file in the BES Client logs folder. Use this to audit what a Policy area actually resolved to on the device.</P>
+<P>By default it reads <B>MDM_Policy_Result01_Update02</B> (InstanceID Update). To audit a different area, change the parameters in the action script - e.g. ClassName MDM_Policy_Result01_DeviceLock02 / InstanceID DeviceLock, or MDM_Policy_Result01_Defender02 / InstanceID Defender.</P>
+<P>Read-only. This should work with Windows 10 or later. Run from SYSTEM.</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2026-07-23</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 23 Jul 2026 03:30:00 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-PowerShell"><![CDATA[<#
+.SYNOPSIS
+    Exports the effective values of a Policy CSP area via the WMI-to-CSP bridge.
+
+.DESCRIPTION
+    Reads a MDM_Policy_Result01_* class instance (keyed by ParentID + InstanceID) and writes
+    all of its properties to JSON. Change the parameters to audit a different Policy area.
+
+    Requirements:
+      - Windows 10 or later (Policy CSP)
+      - Run from SYSTEM
+#>
+
+[CmdletBinding()]
+param(
+    [string]$ClassName  = "MDM_Policy_Result01_Update02",
+    [string]$ParentID   = "./Vendor/MSFT/Policy/Result",
+    [string]$InstanceID = "Update",
+    [string]$OutFile
+)
+
+if (-not $OutFile) {
+    try {
+        $clientFolder = (Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\BigFix\EnterpriseClient\GlobalOptions" -Name "EnterpriseClientFolder" -ErrorAction Stop).EnterpriseClientFolder
+    }
+    catch {
+        $clientFolder = "${env:ProgramFiles(x86)}\BigFix Enterprise\BES Client"
+    }
+    $OutFile = Join-Path $clientFolder "__BESData\__Global\Logs\MDM_PolicyArea_${InstanceID}_Result.json"
+}
+
+try {
+    $o = Get-CimInstance -Namespace "root\cimv2\mdm\dmmap" -ClassName $ClassName `
+        -Filter "ParentID='$ParentID' and InstanceID='$InstanceID'" -ErrorAction Stop
+
+    $o | Select-Object -Property * -ExcludeProperty Cim* | ConvertTo-Json -Depth 10 | Out-File -FilePath $OutFile -Encoding UTF8
+    exit 0
+}
+catch {
+    Write-Error $_
+    exit 1
+}
+
+# End of script]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>

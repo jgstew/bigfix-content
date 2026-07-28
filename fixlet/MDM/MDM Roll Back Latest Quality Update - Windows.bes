@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>MDM: Roll Back Latest Quality Update - Windows</Title>
+		<Description><![CDATA[<P>Rolls back the most recent Windows quality update using the Update CSP through the MDM Bridge WMI provider (root/cimv2/mdm/dmmap).</P>
+<P>This invokes <B>QualityUpdateMethod</B> on the <B>MDM_Update_Rollback01</B> class.</P>
+<P>WARNING! This uninstalls the latest quality update. It cannot target a specific KB - only the most recent quality update is removed. Per Microsoft, this works only on Semi-Annual Channel (Targeted) devices.</P>
+<P>CAUTION: Microsoft's documentation for MDM_Update_Rollback01 has the descriptions of QualityUpdateMethod and FeatureUpdateMethod swapped. This task uses the method NAME (QualityUpdateMethod) as the source of truth for rolling back a quality update. Verify the behavior on a test device before broad use.</P>
+<P>This should work with Windows 10 or later (Update CSP Rollback).</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
+		<Relevance><![CDATA[computer name = "WIN-ComputerNameHere" /* <-- Edit or remove: guard so this only targets the intended computer */]]></Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2026-07-23</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 23 Jul 2026 03:30:00 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-PowerShell"><![CDATA[<#
+.SYNOPSIS
+    Rolls back the latest quality update via the Update CSP (WMI-to-CSP bridge).
+
+.DESCRIPTION
+    Invokes QualityUpdateMethod on the MDM_Update_Rollback01 class in root\cimv2\mdm\dmmap.
+    Removes only the most recent quality update (not a specific KB). Semi-Annual Channel
+    (Targeted) devices only, per Microsoft docs.
+
+    NOTE: Microsoft's docs swap the QualityUpdateMethod / FeatureUpdateMethod descriptions;
+    this script trusts the method name. Verify on a test device.
+
+    Requirements:
+      - Windows 10 or later (Update CSP Rollback)
+      - Run from SYSTEM
+#>
+
+[CmdletBinding()]
+param(
+    [string]$OutFile
+)
+
+if (-not $OutFile) {
+    try {
+        $clientFolder = (Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\BigFix\EnterpriseClient\GlobalOptions" -Name "EnterpriseClientFolder" -ErrorAction Stop).EnterpriseClientFolder
+    }
+    catch {
+        $clientFolder = "${env:ProgramFiles(x86)}\BigFix Enterprise\BES Client"
+    }
+    $OutFile = Join-Path $clientFolder "__BESData\__Global\Logs\MDM_RollbackQualityUpdate_Result.json"
+}
+
+# MDM_Update_Rollback01 is a singleton CSP node; select by ClassName.
+$CimSplat = @{
+    Namespace = "root\cimv2\mdm\dmmap"
+    ClassName = "MDM_Update_Rollback01"
+}
+
+try {
+    $session  = New-CimSession
+    $params   = New-Object Microsoft.Management.Infrastructure.CimMethodParametersCollection
+    $instance = Get-CimInstance @CimSplat
+    $result   = $session.InvokeMethod($CimSplat.Namespace, $instance, "QualityUpdateMethod", $params)
+
+    $result | ConvertTo-Json -Depth 10 | Out-File -FilePath $OutFile -Encoding UTF8
+    exit 0
+}
+catch {
+    Write-Error $_
+    exit 1
+}
+
+# End of script]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>

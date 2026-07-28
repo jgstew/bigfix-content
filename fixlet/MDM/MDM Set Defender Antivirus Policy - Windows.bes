@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>MDM: Set Defender Antivirus Policy - Windows</Title>
+		<Description><![CDATA[<P>Configures Microsoft Defender Antivirus settings via the Policy CSP through the MDM Bridge WMI provider (root/cimv2/mdm/dmmap), without touching the registry directly.</P>
+<P>This edits the <B>MDM_Policy_Config01_Defender02</B> instance (ParentID ./Vendor/MSFT/Policy/Config, InstanceID Defender). Only parameters you set (value other than -1 / non-empty) are applied.</P>
+<P>Adjustable here: real-time monitoring, cloud protection, and Attack Surface Reduction (ASR) rules. The ASR value is the CSP's pipe-delimited "&lt;RuleGUID&gt;=&lt;state&gt;" string - see the Defender Policy CSP docs for the exact format and rule GUIDs.</P>
+<P>NOTE: Tamper Protection is NOT exposed by this WMI class and cannot be set here; manage it via Defender/Intune. This should work with Windows 10 or later. Run from SYSTEM.</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2026-07-23</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 23 Jul 2026 03:30:00 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-PowerShell"><![CDATA[<#
+.SYNOPSIS
+    Configures Microsoft Defender Antivirus policy via the Policy CSP (WMI-to-CSP bridge).
+
+.DESCRIPTION
+    Reads the MDM_Policy_Config01_Defender02 instance and applies the supplied settings.
+    Integer value -1 means "leave unchanged"; empty ASR string means "leave unchanged".
+
+    Requirements:
+      - Windows 10 or later (Policy/Defender CSP)
+      - Run from SYSTEM
+#>
+
+[CmdletBinding()]
+param(
+    [int]$AllowRealtimeMonitoring        = -1,   # 0 or 1
+    [int]$AllowCloudProtection           = -1,   # 0 or 1
+    [string]$AttackSurfaceReductionRules = "",   # "GUID=state|GUID=state" per Defender Policy CSP
+    [string]$OutFile
+)
+
+if (-not $OutFile) {
+    try {
+        $clientFolder = (Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\BigFix\EnterpriseClient\GlobalOptions" -Name "EnterpriseClientFolder" -ErrorAction Stop).EnterpriseClientFolder
+    }
+    catch {
+        $clientFolder = "${env:ProgramFiles(x86)}\BigFix Enterprise\BES Client"
+    }
+    $OutFile = Join-Path $clientFolder "__BESData\__Global\Logs\MDM_SetDefenderPolicy_Result.json"
+}
+
+try {
+    $o = Get-CimInstance -Namespace "root\cimv2\mdm\dmmap" -ClassName "MDM_Policy_Config01_Defender02" `
+        -Filter "ParentID='./Vendor/MSFT/Policy/Config' and InstanceID='Defender'" -ErrorAction Stop
+
+    if ($AllowRealtimeMonitoring -ge 0) { $o.AllowRealtimeMonitoring = $AllowRealtimeMonitoring }
+    if ($AllowCloudProtection    -ge 0) { $o.AllowCloudProtection    = $AllowCloudProtection }
+    if (-not [string]::IsNullOrEmpty($AttackSurfaceReductionRules)) { $o.AttackSurfaceReductionRules = $AttackSurfaceReductionRules }
+
+    Set-CimInstance -CimInstance $o -ErrorAction Stop
+    $o | Select-Object -Property * -ExcludeProperty Cim* | ConvertTo-Json -Depth 10 | Out-File -FilePath $OutFile -Encoding UTF8
+    exit 0
+}
+catch {
+    Write-Error $_
+    exit 1
+}
+
+# End of script]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>

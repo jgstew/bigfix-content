@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Task>
+		<Title>MDM: Deploy VPN Profile - Windows</Title>
+		<Description><![CDATA[<P>Deploys a native Windows VPN profile via the VPNv2 CSP through the MDM Bridge WMI provider (root/cimv2/mdm/dmmap).</P>
+<P>This creates an <B>MDM_VPNv2_01</B> instance keyed by the profile name (InstanceID), with the profile defined by the <B>ProfileXML</B> property (ParentID ./Vendor/MSFT/VPNv2).</P>
+<P>You must supply a valid VPNv2 ProfileXML document - edit <B>$ProfileName</B> and <B>$ProfileXML</B> in the action script. See the VPNv2 CSP / ProfileXML documentation for the schema. To remove a profile, delete the corresponding instance.</P>
+<P>This should work with Windows 10 or later. Run from SYSTEM.</P>]]></Description>
+		<Relevance>windows of operating system</Relevance>
+		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
+		<Category></Category>
+		<DownloadSize>0</DownloadSize>
+		<Source>Internal</Source>
+		<SourceID>jgstew</SourceID>
+		<SourceReleaseDate>2026-07-23</SourceReleaseDate>
+		<SourceSeverity></SourceSeverity>
+		<CVENames></CVENames>
+		<SANSID></SANSID>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Thu, 23 Jul 2026 03:30:00 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<DefaultAction ID="Action1">
+			<Description>
+				<PreLink>Click </PreLink>
+				<Link>here</Link>
+				<PostLink> to deploy this action.</PostLink>
+			</Description>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-PowerShell"><![CDATA[<#
+.SYNOPSIS
+    Deploys a VPN profile via the VPNv2 CSP (WMI-to-CSP bridge).
+
+.DESCRIPTION
+    Creates an MDM_VPNv2_01 instance keyed by the profile name, with the profile defined by
+    the ProfileXML property. Supply a valid VPNv2 ProfileXML document.
+
+    Requirements:
+      - Windows 10 or later (VPNv2 CSP)
+      - Run from SYSTEM
+      - A valid VPNv2 ProfileXML
+#>
+
+[CmdletBinding()]
+param(
+    [string]$ProfileName = "Contoso-VPN",
+    # Replace with a valid VPNv2 ProfileXML document (see the VPNv2 ProfileXML CSP docs).
+    [string]$ProfileXML = "<VPNProfile><!-- PUT VALID VPNv2 ProfileXML HERE --></VPNProfile>",
+    [string]$OutFile
+)
+
+if (-not $OutFile) {
+    try {
+        $clientFolder = (Get-ItemProperty -Path "HKLM:\SOFTWARE\WOW6432Node\BigFix\EnterpriseClient\GlobalOptions" -Name "EnterpriseClientFolder" -ErrorAction Stop).EnterpriseClientFolder
+    }
+    catch {
+        $clientFolder = "${env:ProgramFiles(x86)}\BigFix Enterprise\BES Client"
+    }
+    $OutFile = Join-Path $clientFolder "__BESData\__Global\Logs\MDM_DeployVPN_Result.json"
+}
+
+try {
+    $result = New-CimInstance -Namespace "root\cimv2\mdm\dmmap" -ClassName "MDM_VPNv2_01" -Property @{
+        ParentID   = "./Vendor/MSFT/VPNv2"
+        InstanceID = $ProfileName
+        ProfileXML = $ProfileXML
+    } -ErrorAction Stop
+
+    $result | Select-Object -Property * -ExcludeProperty Cim*, ProfileXML | ConvertTo-Json -Depth 10 | Out-File -FilePath $OutFile -Encoding UTF8
+    exit 0
+}
+catch {
+    Write-Error $_
+    exit 1
+}
+
+# End of script]]></ActionScript>
+		</DefaultAction>
+	</Task>
+</BES>

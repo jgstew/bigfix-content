@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Get Azure Metadata - Universal</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
-		<Relevance> /* isAzure? */ exists ( (it as string) of values "manufacturer" of it, (it as string) of values "product_name" of it, (it as string) of values "version" of it ) whose(item 0 of it starts with "Microsoft" AND item 1 of it starts with "Virtual" AND item 2 of it does not start with "Hyper-V") of structures "system_information" of smbioses</Relevance>
+		<Title>Get Azure Metadata - api2025-04-07 - Universal</Title>
+		<Description><![CDATA[ get azure metadata ]]></Description>
+		<Relevance> /* isMicrosoftVM? */ exists ( (it as string) of values "manufacturer" of it, (it as string) of values "product_name" of it, (it as string) of values "version" of it ) whose(item 0 of it starts with "Microsoft" AND item 1 of it starts with "Virtual") of structures "system_information" of smbioses</Relevance>
+		<Relevance>/* isAzure? */ exists (it as string as trimmed string) whose(it = "7783-7084-3265-9085-8269-3286-77") of values "asset_tag_number" of structures "system_enclosure_or_chassis" of smbioses</Relevance>
 		<Relevance><![CDATA[not exists files whose(name of it as lowercase starts with "azure_metadata.json" AND (now - modification time of it) < 1*day ) of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
-		<Relevance>exists files whose(name of it as lowercase = "curl" OR name of it as lowercase = "curl.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments</Relevance>
+		<Relevance>( windows of operating system ) OR exists files whose(name of it as lowercase = "curl" OR name of it as lowercase = "curl.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments</Relevance>
 		<Category></Category>
 		<DownloadSize>0</DownloadSize>
 		<Source>Internal</Source>
@@ -15,8 +16,12 @@
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
+			<Name>x-relevance-evaluation-period</Name>
+			<Value>06:00:00</Value>
+		</MIMEField>
+		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Wed, 27 Feb 2019 01:58:47 +0000</Value>
+			<Value>Tue, 28 Jul 2026 16:03:03 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -26,17 +31,45 @@
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
-
 // https://azure.microsoft.com/en-us/blog/announcing-general-availability-of-azure-instance-metadata-service/
 
-parameter "MetadataURL" = "http://169.254.169.254/metadata/instance?api-version=2017-04-02"
+parameter "MetadataURL" = "http://169.254.169.254/metadata/instance?api-version=2025-04-07"
 parameter "ArgHeader" = "{ if (windows of operating system) then "@{‘Metadata’=’true’}}" else "Metadata:true" }"
+parameter "OutputPath" = "{ pathname of folders "Logs" of folders "__Global" of data folders of client}{if windows of operating system then "\" else "/" }azure_metadata.json"
 
-wait curl -H {parameter "ArgHeader"} {parameter "MetadataURL"} -o "{pathname of folders "Logs" of folders "__Global" of data folders of client}{if windows of operating system then "\" else "/"}azure_metadata.json"
+if { not windows of operating system }
+wait curl -H {parameter "ArgHeader"} {parameter "MetadataURL"} -o "{parameter "OutputPath"}"
 
 // https://curl.haxx.se/libcurl/c/libcurl-errors.html
 
+else
+
+// use powershell:
+delete __createfile
+createfile until END_OF_FILE
+$ProgressPreference = 'SilentlyContinue'
+try {
+$r = Invoke-RestMethod -Headers @{{Metadata="true"} -Uri "{parameter "MetadataURL"}" -Method GET -TimeoutSec 30
+$r | ConvertTo-Json -Depth 20 | Out-File -Encoding utf8 "{parameter "OutputPath"}"
+} catch {
+    exit 1
+}
+END_OF_FILE
+
+delete __Download\azure_meta.ps1
+move __createfile __Download\azure_meta.ps1
+
+action uses wow64 redirection {not x64 of operating system}
+// --- run it ---
+wait "{pathname of system folder}\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File "__Download\azure_meta.ps1"
+
+endif
+
 continue if{ exists exit codes whose(0=it) of active actions }
+
+notify client ForceRefresh
+
+setting "_BESClient_Resource_StartupNormalSpeed"="1" on "{ now }" for client
 </ActionScript>
 		</DefaultAction>
 	</Task>
