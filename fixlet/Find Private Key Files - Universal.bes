@@ -3,7 +3,7 @@
 	<Task>
 		<Title>Find Private Key Files - Universal</Title>
 		<Description>WARNING: This searches the entire drive and is very slow! This will prevent the bigfix agent from running other actions while it is running and it could take multiple hours. This should only be used sparingly and when appropriate. </Description>
-		<Relevance>true</Relevance>
+		<Relevance>NOT in proxy agent context</Relevance>
 		<Category></Category>
 		<Source>Internal</Source>
 		<SourceID></SourceID>

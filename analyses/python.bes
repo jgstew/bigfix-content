@@ -3,7 +3,7 @@
 	<Analysis>
 		<Title>python</Title>
 		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
-		<Relevance>true</Relevance>
+		<Relevance>NOT in proxy agent context</Relevance>
 		<Source>Internal</Source>
 		<SourceReleaseDate>2018-03-26</SourceReleaseDate>
 		<MIMEField>

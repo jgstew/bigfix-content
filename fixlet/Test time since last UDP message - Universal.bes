@@ -6,7 +6,7 @@
 <P>The exit code should give the time in minutes&nbsp;since last UDP notification or -999 if no last UDP time. </P>
 <P>If a system is running this action very soon after recieving the UDP, then the result should be 0 +/- a little bit, which should be the case for most systems that do get UDP.</P>
 <P>&nbsp;</P>]]></Description>
-		<Relevance>true</Relevance>
+		<Relevance>NOT in proxy agent context</Relevance>
 		<Category></Category>
 		<DownloadSize>0</DownloadSize>
 		<Source>Internal</Source>

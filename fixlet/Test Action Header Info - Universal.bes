@@ -5,7 +5,7 @@
 		<Description><![CDATA[<P>WARNING: This should only be run for on a system for testing what data is available. This should not be deployed to user systems. This could be useful as an offer only available to Admins for debugging.</P>
 <P>This will dump a bunch of data to a file. This is useful for seeing what data is available internally for introspection and use. On Windows, this action&nbsp;can open the resulting file in Notepad by specifying a logged on current user. (currently hard coded to "jgstew")</P>
 <P>&nbsp;</P>]]></Description>
-		<Relevance>true</Relevance>
+		<Relevance>NOT in proxy agent context</Relevance>
 		<Category></Category>
 		<Source>Internal</Source>
 		<SourceID>jgstew</SourceID>

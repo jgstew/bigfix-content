@@ -4,7 +4,7 @@
 	<Task>
 		<Title>Trigger Gathering - BES Client</Title>
 		<Description>This will help new things happen quicker in BigFix, but it shouldn't be done too often. This is especially useful for clients that are mobile and not on a primary network.</Description>
-		<Relevance>true</Relevance>
+		<Relevance>NOT in proxy agent context</Relevance>
 		<Category></Category>
 		<DownloadSize>0</DownloadSize>
 		<Source>Internal</Source>

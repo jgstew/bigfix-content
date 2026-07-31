@@ -28,7 +28,7 @@ repos:
       - id: bes-schema-validate
       - id: bes-actionscript-lint-schclass
       - id: bes-conventions-check
-        args: [--disable, "E212,W207,W206"]
+        args: [--errors-only, --disable, "W207,W206"]
         exclude: |
           (?x)^(
             fixlet/RESTAPI_\ Generate\ uninstall\ tasks\ for\ all\ MSI\ applications\ on\ target\ computer\ -\ Windows\.bes

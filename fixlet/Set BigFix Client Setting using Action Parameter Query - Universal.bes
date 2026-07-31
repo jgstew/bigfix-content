@@ -4,7 +4,7 @@
 		<Title>Set BigFix Client Setting using Action Parameter Query - Universal</Title>
 		<Description><![CDATA[<P>This task will set a client setting, which can affect the behavior of the BigFix client or other related items managed with BigFix.</P>
 <P>&nbsp;</P>]]></Description>
-		<Relevance>true</Relevance>
+		<Relevance>NOT in proxy agent context</Relevance>
 		<Category>Configuration: Client Settings</Category>
 		<DownloadSize>0</DownloadSize>
 		<Source>jgstew</Source>

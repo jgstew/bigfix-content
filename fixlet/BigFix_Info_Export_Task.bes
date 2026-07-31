@@ -371,7 +371,7 @@ var saveTextAs = saveTextAs
     </div>
 </body>
 		 ]]></Description>
-		<Relevance>TRUE</Relevance>
+		<Relevance>NOT in proxy agent context</Relevance>
 		<Category></Category>
 		<DownloadSize>0</DownloadSize>
 		<Source>Internal</Source>

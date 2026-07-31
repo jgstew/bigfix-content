@@ -3,7 +3,7 @@
 	<Task>
 		<Title>Force NTP Time Sync - Universal</Title>
 		<Description><![CDATA[<P>Forces an immediate time synchronization against the configured time server using the native tool for each platform: w32tm /resync on Windows, sntp on macOS, and ntpd -gq on Linux/Unix.</P> ]]></Description>
-		<Relevance>true</Relevance>
+		<Relevance>NOT in proxy agent context</Relevance>
 		<Category></Category>
 		<Source>Internal</Source>
 		<SourceID></SourceID>

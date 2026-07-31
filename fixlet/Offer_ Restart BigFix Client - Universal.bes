@@ -3,7 +3,7 @@
 	<Task>
 		<Title>Offer: Restart BigFix Client - Universal</Title>
 		<Description><![CDATA[<P>Offer that restarts the BigFix client service using the "client restart" action command. Works only on client version 9.0 and later, and should only be run when advised by IT Support.</P> ]]></Description>
-		<Relevance>true</Relevance>
+		<Relevance>NOT in proxy agent context</Relevance>
 		<Category>TROUBLESHOOTING</Category>
 		<DownloadSize>0</DownloadSize>
 		<Source>Internal</Source>
