@@ -25,6 +25,7 @@
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 action parameter query "Download_URL" with description "Enter the download URL of the file:" and with default value "http://"
 
+// download-ok: URL is entered at deploy time, so a static prefetch isn't possible (generating a prefetch is the purpose of this fixlet)
 download now {parameter "Download_URL"}
 
 delete __createfile

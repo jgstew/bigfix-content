@@ -37,6 +37,7 @@ parameter "DownloadURL" = "http://localhost:9200/"
 
 delete __Download/9200
 
+// download-ok: URL is a runtime parameter (a local status endpoint), so a static prefetch isn't possible
 download now {parameter "DownloadURL"}
 
 copy __Download/9200 "{pathname of folders "Logs" of folders "__Global" of data folders of client}{if windows of operating system then "\" else "/"}results_elastic_status.json"
