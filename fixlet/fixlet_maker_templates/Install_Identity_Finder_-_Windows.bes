@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:noNamespaceSchemaLocation='BES.xsd'>
 	<Fixlet>
         <Title>Install: Identity Finder - Windows   File:TEMPLATE_FILE_NAME</Title>

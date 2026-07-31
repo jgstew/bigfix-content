@@ -22,7 +22,7 @@
 		<SourceID>Unspecified</SourceID>
 		<SourceReleaseDate>2017-06-23</SourceReleaseDate>
 		<SourceSeverity>Unspecified</SourceSeverity>
-		<CVENames>Unspecified</CVENames>
+		<CVENames></CVENames>
 		<SANSID>Unspecified</SANSID>
 		<MIMEField>
 			<Name>x-fixlet-domain_attributes</Name>

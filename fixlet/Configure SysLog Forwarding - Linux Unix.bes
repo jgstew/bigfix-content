@@ -43,7 +43,6 @@ wait bash -c "echo '*.* @{parameter "syslog_server"} 514' >> '/etc/syslog.conf'"
 // restart service
 run bash -c "service syslog restart"
 
-
 ]]></ActionScript>
 		</DefaultAction>
 	</Task>
