@@ -49,7 +49,6 @@ wait bash -c "echo '*.notice	@{parameter "syslog_server"}' >> '/etc/syslog.conf'
 // restart service
 run bash -c "svcadm enable svc:/system/system-log:default"
 
-
 ]]></ActionScript>
 		</DefaultAction>
 	</Task>

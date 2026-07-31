@@ -23,12 +23,16 @@ repos:
       - id: detect-private-key
 
   - repo: https://github.com/jgstew/pre-commit-bigfix
-    rev: v0.3.3
+    rev: v0.4.1
     hooks:
       - id: bes-schema-validate
       - id: bes-actionscript-lint-schclass
-      #  - id: bes-conventions-check
-
+      - id: bes-conventions-check
+        args: [--errors-only, --disable, "E204,E212"]
+        exclude: |
+          (?x)^(
+            fixlet/RESTAPI_\ Generate\ uninstall\ tasks\ for\ all\ MSI\ applications\ on\ target\ computer\ -\ Windows\.bes
+          )$
 
   - repo: https://github.com/jgstew/pre-commit-jgstew
     rev: v2.3.0

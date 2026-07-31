@@ -33,7 +33,6 @@ waithidden printui.exe /dl /n "Microsoft XPS Document Writer"
 // https://www.msftnext.com/remove-xps-writer-windows-10/
 // https://bigfix.slack.com/archives/C03U4LJHU/p1535484777000100
 
-
 </ActionScript>
 		</DefaultAction>
 	</Fixlet>
