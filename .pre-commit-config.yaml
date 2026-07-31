@@ -22,12 +22,13 @@ repos:
       - id: trailing-whitespace
       - id: detect-private-key
 
-  # - repo: https://github.com/jgstew/pre-commit-bigfix
-  #   rev: v0.3.1
-  #   hooks:
-  #     - id: bes-schema-validate
-  #     - id: bes-conventions-check
-  #     - id: bes-actionscript-lint-schclass
+  - repo: https://github.com/jgstew/pre-commit-bigfix
+    rev: v0.3.3
+    hooks:
+      - id: bes-schema-validate
+      - id: bes-actionscript-lint-schclass
+      #  - id: bes-conventions-check
+
 
   - repo: https://github.com/jgstew/pre-commit-jgstew
     rev: v2.3.0
