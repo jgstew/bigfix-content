@@ -42,7 +42,7 @@ wait bash -c "apt-get install apt-transport-https ca-certificates curl software-
 					<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 					<Relevance>((unix of operating system) AND (exists debianpackages)) AND (4 != number of (packages "apt-transport-https" of it; packages "ca-certificates" of it; packages "curl" of it; packages "software-properties-common" of it) of debianpackages)</Relevance>
 				</BaselineComponent>
-				<BaselineComponent Name="Add Docker’s official GPG key - Debian/Ubuntu" IncludeInRelevance="true" SourceSiteURL="http://iemdev.jgstew.com:52311/cgi-bin/bfgather.exe/actionsite" SourceID="233" ActionName="Action1">
+				<BaselineComponent Name="Add Docker's official GPG key - Debian/Ubuntu" IncludeInRelevance="true" SourceSiteURL="http://iemdev.jgstew.com:52311/cgi-bin/bfgather.exe/actionsite" SourceID="233" ActionName="Action1">
 					<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 parameter "AptKeyGPG"="9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88"
 parameter "AptKeyShort"="0EBFCD88"

@@ -17,9 +17,9 @@
             <script language="javascript">InsertUtilityDiv();</script>
 
 <h1>IE DocumentMode:</h1>
-<h2 id="resultDocMode">detecting…</h2>
+<h2 id="resultDocMode">detecting...</h2>
 <h1>Detect IE/Edge version with JavaScript:</h1>
-<h2 id="result">detecting…</h2>
+<h2 id="result">detecting...</h2>
 <p id="details"> na </p>
 <hr />
 
@@ -69,7 +69,7 @@ document.getElementById('details').innerHTML = window.navigator.userAgent;
 function detectIE() {
   var ua = window.navigator.userAgent;
 
-  // Test values; Uncomment to check result …
+  // Test values; Uncomment to check result ...
 
   // IE 10
   // ua = 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)';

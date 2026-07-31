@@ -22,13 +22,17 @@ repos:
       - id: trailing-whitespace
       - id: detect-private-key
 
+  # - repo: https://github.com/jgstew/pre-commit-bigfix
+  #   rev: v0.3.1
+  #   hooks:
+  #     - id: bes-schema-validate
+  #     - id: bes-conventions-check
+  #     - id: bes-actionscript-lint-schclass
+
   - repo: https://github.com/jgstew/pre-commit-jgstew
-    rev: v1.6.2
+    rev: v2.3.0
     hooks:
-      # local pre-commit equivalent of the besxmllint github workflow:
-      - id: validate-bes
-      # - id: check-bes-conventions
-      - id: verify-files-are-ascii
+      - id: fix-files-to-ascii
         # manual: non-ASCII is legitimate in much of this content
         # (JS payloads, smart quotes in console exports)
         stages: [manual]
@@ -37,7 +41,10 @@ repos:
           (?x)^(
               .*\.reg|
               .*\.sql|
-              fixlet/javascript/.*
+              fixlet/javascript/.*|
+              fixlet/Get\ Azure\ Metadata\ -\ Universal\.bes|
+              fixlet/RESTAPI_\ Generate\ uninstall\ tasks\ for\ all\ MSI\ applications\ on\ target\ computer\ -\ Windows\.bes|
+              webreports/WordGame\.besrpt
           )$
 
   - repo: https://github.com/adrienverge/yamllint.git
@@ -53,7 +60,7 @@ repos:
         args: ["--verbose"]
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.2
+    rev: v2.4.3
     hooks:
       - id: codespell
         # `ths` is the session relevance inspector for html <th> elements:
