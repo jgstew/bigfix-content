@@ -24,9 +24,9 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 wait bash -c "apt-get remove docker docker-engine docker.io -y"
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>

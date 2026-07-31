@@ -24,7 +24,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // http://stackoverflow.com/questions/9362692/how-to-create-ls-in-windows-command-prompt
 // http://stackoverflow.com/questions/20530996/aliases-in-windows-command-prompt
 
@@ -40,7 +40,7 @@ END_OF_FILE
 
 delete {pathname of windows folders}\ls.bat
 copy __createfile {pathname of windows folders}\ls.bat
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Fixlet>
 </BES>

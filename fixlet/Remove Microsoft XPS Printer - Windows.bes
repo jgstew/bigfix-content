@@ -24,7 +24,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 
 waithidden printui.exe /dl /n "Microsoft XPS Document Writer"
 
@@ -33,7 +33,7 @@ waithidden printui.exe /dl /n "Microsoft XPS Document Writer"
 // https://www.msftnext.com/remove-xps-writer-windows-10/
 // https://bigfix.slack.com/archives/C03U4LJHU/p1535484777000100
 
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Fixlet>
 </BES>

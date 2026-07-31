@@ -29,7 +29,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 if { windows of operating system }
     // NOT TESTED
     run rundll32.exe powrprof.dll,SetSuspendState 0,1,0
@@ -47,7 +47,7 @@ if { unix of operating system }
     // http://superuser.com/questions/154934/what-is-the-shell-command-to-let-a-linux-box-go-sleep
     // https://www.linux.com/News/how-suspend-and-hibernate-laptop-under-linux
 endif
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>

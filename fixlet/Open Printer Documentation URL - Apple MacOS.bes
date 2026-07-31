@@ -22,11 +22,11 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // Enter your action script here
 
 run open "{ base64 decodes ("aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1vSGc1U0pZUkhBMA==") }"
-</ActionScript>
+]]></ActionScript>
 			<Settings>
 				<ActionUITitle>Open Printer Documentation URL - Apple MacOS</ActionUITitle>
 				<PreActionShowUI>false</PreActionShowUI>

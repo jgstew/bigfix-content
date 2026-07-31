@@ -24,12 +24,12 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // http://www.nirsoft.net/utils/nircmd.html
 prefetch NirCmd.exe sha1:9adfc7ab66348d84ebdd9c1e8093cad4cc8485ef size:44544 https://github.com/jgstew/bigfix-content/raw/f893e2654a3805da38e30d5e496a7f84ffc77eea/downloads/nircmd.exe sha256:31b3b228382dc359f22ae97b2602eee81dc743fb21196061eacc6619533881f5
 
 utility __Download\NirCmd.exe
-</ActionScript>
+]]></ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>

@@ -24,7 +24,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 if { windows of operating system }
 
 // TODO: test
@@ -48,7 +48,7 @@ if { exists file "/usr/bin/update-manager" }
 // https://askubuntu.com/questions/422465/command-to-run-gui-frontend-for-apt-get-update
 
 endif
-</ActionScript>
+]]></ActionScript>
 			<Settings>
 				<ActionUITitle>WARNING: This Computer is Missing Critical or Important Patches!</ActionUITitle>
 				<PreActionShowUI>false</PreActionShowUI>

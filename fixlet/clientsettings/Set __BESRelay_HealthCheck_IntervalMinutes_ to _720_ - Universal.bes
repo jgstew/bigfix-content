@@ -26,9 +26,9 @@
 				<Link>here</Link>
 				<PostLink> to set the Client Setting</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 setting "_BESRelay_HealthCheck_IntervalMinutes"="720" on "{ parameter "action issue date" of action}" for client
-			</ActionScript>
+]]></ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>

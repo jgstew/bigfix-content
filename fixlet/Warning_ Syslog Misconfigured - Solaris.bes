@@ -23,9 +23,9 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // NOTE: Solaris requires TAB characters between items in syslog.conf
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>

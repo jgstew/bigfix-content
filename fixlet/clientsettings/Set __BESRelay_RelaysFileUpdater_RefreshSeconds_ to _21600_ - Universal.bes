@@ -28,12 +28,12 @@
 				<Link>here</Link>
 				<PostLink> to set the Client Setting</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // The Default is 60 seconds
 // This setting affects how frequently the root server publishes a new actionsite version to update Relays.dat with new info when new relays are created.
 setting "_BESRelay_RelaysFileUpdater_RefreshSeconds"="21600" on "{ parameter "action issue date" of action}" for client
 
-</ActionScript>
+]]></ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>

@@ -22,7 +22,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 parameter "QNA_Path" = "{unique value of pathnames of files ("qna";"qna.exe") of storage folders of client}"
 
 parameter "TMP_Path" = "{ if windows of operating system then "/Windows/Temp" else "/tmp" }"
@@ -45,7 +45,7 @@ copy __createfile "{ parameter "TMP_Path" }/queryinput.qna.txt"
 delete "{ parameter "TMP_Path" }/queryoutput.qna.txt"
 
 run "{ parameter "QNA_Path" }" -t -showtypes -o "{ parameter "TMP_Path" }/queryoutput.qna.txt" "{ parameter "TMP_Path" }/queryinput.qna.txt"
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>

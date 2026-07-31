@@ -23,7 +23,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 setting "_BESClient_ArchiveManager_MaxArchiveSize"="91041152" on "{parameter "action issue date" of action}" for client
 setting "_BESClient_ArchiveManager_OperatingMode"="2" on "{parameter "action issue date" of action}" for client
 setting "_BESClient_ArchiveManager_FileSet-logs"="C:\Windows\Temp\EventLogBackupSecurity.evt" on "{parameter "action issue date" of action}" for client
@@ -31,7 +31,7 @@ setting "_BESClient_ArchiveManager_FileSet-logs"="C:\Windows\Temp\EventLogBackup
 archive now
 
 // NOTE:  _BESRelay_UploadManager_CompressedFileMaxSize   may need adjusted on the root server
-//    https://github.com/jgstew/bigfix-content/blob/master/fixlet/clientsettings/Set%20__BESRelay_UploadManager_CompressedFileMaxSize_%20to%20_100000000_%20-%20Universal.bes</ActionScript>
+//    https://github.com/jgstew/bigfix-content/blob/master/fixlet/clientsettings/Set%20__BESRelay_UploadManager_CompressedFileMaxSize_%20to%20_100000000_%20-%20Universal.bes]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>

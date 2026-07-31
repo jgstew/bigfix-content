@@ -128,7 +128,7 @@ exit {(maximum of (it as integer) whose(it != 0) of following texts of lasts ","
 				<Link>here</Link>
 				<PostLink> to view the SysInternals EULA.</PostLink>
 			</Description>
-			<ActionScript MIMEType="text/x-uri">https://docs.microsoft.com/en-us/sysinternals/license-terms</ActionScript>
+			<ActionScript MIMEType="text/x-uri"><![CDATA[https://docs.microsoft.com/en-us/sysinternals/license-terms]]></ActionScript>
 		</Action>
 		<Action ID="Action3">
 			<Description>
@@ -136,7 +136,7 @@ exit {(maximum of (it as integer) whose(it != 0) of following texts of lasts ","
 				<Link>here</Link>
 				<PostLink> to view the VirusTotal terms of service.</PostLink>
 			</Description>
-			<ActionScript MIMEType="text/x-uri">https://www.virustotal.com/en/about/terms-of-service/</ActionScript>
+			<ActionScript MIMEType="text/x-uri"><![CDATA[https://www.virustotal.com/en/about/terms-of-service/]]></ActionScript>
 		</Action>
 	</Task>
 </BES>

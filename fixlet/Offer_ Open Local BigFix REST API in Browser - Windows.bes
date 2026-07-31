@@ -24,7 +24,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 override wait
 hidden=true
 runas=currentuser
@@ -32,7 +32,7 @@ wait CMD /C start https://localhost:{ unique value of (it as integer) of values 
 
 // https://developer.bigfix.com/relevance/reference/socket.html
 // https://developer.bigfix.com/rest-api/api/help.html
-</ActionScript>
+]]></ActionScript>
 			<Settings>
 				<ActionUITitle>Open Local BigFix REST API in browser</ActionUITitle>
 				<PreActionShowUI>false</PreActionShowUI>

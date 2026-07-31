@@ -24,14 +24,14 @@
 				<Link>here</Link>
 				<PostLink> to set the Client Setting</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 action parameter query "NAME_OF_SETTING"
 
 action parameter query "DESIRED_VALUE"
 
 setting "{parameter "NAME_OF_SETTING" as trimmed string}"="{parameter "DESIRED_VALUE" as trimmed string}" on "{ now }" for client
 
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>

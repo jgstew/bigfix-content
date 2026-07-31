@@ -28,11 +28,11 @@
 				<Link>here</Link>
 				<PostLink> to Install.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">prefetch Dell-Command-Monitor.EXE sha1:cbcb3b2ad6a08852d90a75fc303b41b47c837460 size:25284016 https://downloads.dell.com/FOLDER04450833M/1/Dell-Command-Monitor_M6NJD_WIN_9.3.0.222_A00.EXE sha256:4e8329ca5c01849163573f5bf6b6b37b74ff2ead68b5cd719808461d47f3d945
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[prefetch Dell-Command-Monitor.EXE sha1:cbcb3b2ad6a08852d90a75fc303b41b47c837460 size:25284016 https://downloads.dell.com/FOLDER04450833M/1/Dell-Command-Monitor_M6NJD_WIN_9.3.0.222_A00.EXE sha256:4e8329ca5c01849163573f5bf6b6b37b74ff2ead68b5cd719808461d47f3d945
 
 // INSTALL: Dell Command | Monitor
 wait __Download\Dell-Command-Monitor.EXE /s
-</ActionScript>
+]]></ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>

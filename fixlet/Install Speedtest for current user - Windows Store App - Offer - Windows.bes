@@ -29,7 +29,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 parameter "AppxFile" = "Ookla.SpeedtestbyOokla_neutral___43tkc6nmykmb6.AppxBundle"
 
 
@@ -60,7 +60,7 @@ delete "{parameter "CurrentUserTempFolder"}\{parameter "AppxFile"}"
 // https://docs.microsoft.com/en-us/powershell/module/appx/add-appxpackage?view=win10-ps
 // https://docs.microsoft.com/en-us/powershell/module/dism/add-appxprovisionedpackage?view=win10-ps
 
-</ActionScript>
+]]></ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 			<Settings>
 				<ActionUITitle>Install Speedtest</ActionUITitle>

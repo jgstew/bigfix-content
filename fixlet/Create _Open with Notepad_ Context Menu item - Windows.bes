@@ -24,11 +24,11 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 regset "[HKEY_CLASSES_ROOT\*\shell\Open with Notepad\command]" ""="notepad %1"
 
 // https://www.howtogeek.com/107965/how-to-add-any-application-shortcut-to-windows-explorers-context-menu/
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Fixlet>
 </BES>

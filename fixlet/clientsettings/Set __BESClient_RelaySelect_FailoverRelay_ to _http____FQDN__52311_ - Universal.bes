@@ -25,7 +25,7 @@
 				<Link>here</Link>
 				<PostLink> to set the Client Setting</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">setting "_BESClient_RelaySelect_FailoverRelay"="http://_FQDN_:52311" on "{ parameter "action issue date" of action}" for client</ActionScript>
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[setting "_BESClient_RelaySelect_FailoverRelay"="http://_FQDN_:52311" on "{ parameter "action issue date" of action}" for client]]></ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>

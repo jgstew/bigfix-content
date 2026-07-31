@@ -27,9 +27,9 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 relay select
-</ActionScript>
+]]></ActionScript>
 			<Settings>
 				<ActionUITitle>Trigger Relay Selection</ActionUITitle>
 				<PreActionShowUI>false</PreActionShowUI>

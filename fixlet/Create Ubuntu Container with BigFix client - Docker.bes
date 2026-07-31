@@ -23,13 +23,13 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 parameter "Relay"="{ unique value whose(it does not start with "127.") of (it as trimmed string) of (preceding text of first ":" of it | it) of names of registration servers | (it as lowercase) of computer name }"
 // https://github.com/jgstew/tools/blob/master/bash/install_bigfix.sh
 // https://github.com/jgstew/tools/blob/master/bash/docker_bigfix_client.sh
 
 wait docker run -d ubuntu bash -c "apt-get update;apt-get install wget -y;wget https://raw.githubusercontent.com/jgstew/tools/master/bash/install_bigfix.sh;chmod u+x install_bigfix.sh;./install_bigfix.sh { parameter "Relay" };tail -f /dev/null"
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>

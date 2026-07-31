@@ -28,7 +28,7 @@
 				<Link>here</Link>
 				<PostLink> to run Adobe Remote Update Manager (RUM) v2.6.0.9.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // Download:
 prefetch RemoteUpdateManager.zip sha1:a8b5ab914342aaee6b98314f4798ee5effd67c46 size:1557930 https://deploymenttools.acp.adobeoobe.com/RUM/Win/RemoteUpdateManager.zip sha256:0397ab96bb7884c096401058f78c02c04189af62dc2c0ed424666d0b2a89db5c
 
@@ -44,7 +44,7 @@ wait __Download\unzip.exe -o "{pathname of client folder of current site}\__Down
 // Run Adobe RUM:
 run "{parameter "run_folder"}\RemoteUpdateManager.exe" --action=install
 
-// End</ActionScript>
+// End]]></ActionScript>
 			<SuccessCriteria Option="RunToCompletion"></SuccessCriteria>
 			<Settings>
 				<PreActionShowUI>false</PreActionShowUI>

@@ -25,7 +25,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 prefetch docker-compose sha1:e2c7c848e1fa388a2e5b8945fdb2660bf8d8adb1 size:8855632 https://github.com/docker/compose/releases/download/1.16.1/docker-compose-Linux-x86_64 sha256:1804b0ce6596efe707b9cab05d74b161833ed503f0535a937dd5d17bea8fc50a
 
 delete /usr/local/bin/docker-compose
@@ -34,7 +34,7 @@ copy __Download/docker-compose /usr/local/bin/docker-compose
 wait chmod +x /usr/local/bin/docker-compose
 
 exit {size of file "/usr/local/bin/docker-compose"}
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>

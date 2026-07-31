@@ -25,7 +25,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 waithidden cmd /C sc config tzautoupdate start= disabled
 
 // References:
@@ -34,7 +34,7 @@ waithidden cmd /C sc config tzautoupdate start= disabled
 //  - https://bigfix.me/relevance/details/3020300
 //  - https://bigfix.me/relevance/details/3020298
 //  - https://bigfix.me/relevance/details/3020297
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Fixlet>
 </BES>

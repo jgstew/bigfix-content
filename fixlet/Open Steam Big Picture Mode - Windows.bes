@@ -26,7 +26,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 override run
 RunAs=currentuser
 run "{ unique values of pathnames of files "Steam.exe" of parent folders of (files it) of unique values of (it as string) of values of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam" of (x64 registries; x32 registries) }" -start steam://open/bigpicture
@@ -34,7 +34,7 @@ run "{ unique values of pathnames of files "Steam.exe" of parent folders of (fil
 // https://steamcommunity.com/groups/bigpicture/discussions/2/882960163727915929/
 // unique values of local ports of sockets whose(exists processes whose(exists image files whose(it as string contains "Steam.exe") of it) of it) of networks
 // https://bigfix.me/relevance/details/3020266#comments
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>

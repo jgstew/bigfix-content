@@ -24,13 +24,13 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 parameter "ServiceName" = "{unique value of service names of services whose(start type of it != "disabled" AND display name of it contains "System Usage Report Service" AND display name of it contains "Intel")}"
 
 waithidden cmd /C sc config {parameter "ServiceName"} start= disabled
 
 waithidden cmd /C net stop {parameter "ServiceName"}
-</ActionScript>
+]]></ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 			<Settings>
 				<PreActionShowUI>false</PreActionShowUI>

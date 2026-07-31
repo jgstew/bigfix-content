@@ -29,7 +29,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // PG279Q
 // http://dlcdnet.asus.com/pub/ASUS/LCD%20Monitors/PG279/PG279Q_English.pdf
 prefetch PG279Q_English.pdf sha1:985f2e5b3aff6cac912d883cc99a3dac2ca1654a size:4123590 https://dlcdnets.asus.com/pub/ASUS/LCD%20Monitors/PG279/PG279_English.pdf sha256:8cd8762e9c38122dcce219ba36ddde08bbf9dc9be466b975b8a42598c7eb58bb
@@ -47,7 +47,7 @@ run explorer.exe {parameter "DestinationFile"}
 // - https://msdn.microsoft.com/en-us/library/aa394122(v=vs.85).aspx
 // - https://www.ibm.com/support/knowledgecenter/en/SS2TKN_9.5.0/com.ibm.bigfix.doc/Platform/Action/c_override.html
 // - https://stackoverflow.com/questions/6557920/how-to-open-a-pdf-in-fullscreen-view-via-command-line
-</ActionScript>
+]]></ActionScript>
 			<Settings>
 				<ActionUITitle>Open Monitor Manual - PG279Q</ActionUITitle>
 				<PreActionShowUI>false</PreActionShowUI>

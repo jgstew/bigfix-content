@@ -24,7 +24,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 regset "[HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Virtualization]" "MinVmVersionForCpuBasedMitigations"="1.0"
 regset64 "[HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Virtualization]" "MinVmVersionForCpuBasedMitigations"="1.0"
 
@@ -34,7 +34,7 @@ regset64 "[HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Virtualization]" "M
 action requires restart
 
 // https://forum.bigfix.com/t/ibm-bigfix-patch-content-released-patches-for-windows-published-2018-01-05/24084/7
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>

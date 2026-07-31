@@ -24,11 +24,11 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 wait bash -c "systemctl restart sshd.service"
 
 // https://www.cyberciti.biz/faq/how-do-i-restart-sshd-daemon-on-linux-or-unix/
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>

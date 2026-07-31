@@ -27,7 +27,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy Dell Command | Update v4.6.0.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // Download:
 prefetch Dell-Command-Update-Application.EXE sha1:b93ca72bf0e4083725482386a8ddb67058e36555 size:21838440 https://dl.dell.com/FOLDER08911630M/1/Dell-Command-Update-Application_T97XP_WIN_4.6.0_A00.EXE sha256:04d8962f907af8139d8394e232c62f562921cc6f709eff58b6d02a93b217058d
 
@@ -52,7 +52,7 @@ regset "[HKEY_LOCAL_MACHINE\SOFTWARE\Dell\CommandUpdate\Preferences]" "scheduled
 // Don't show setup popup on first launch
 regset "[HKEY_LOCAL_MACHINE\SOFTWARE\Dell\CommandUpdate\Preferences]" "showsetuppopup"="False"
 
-// End</ActionScript>
+// End]]></ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>

@@ -25,7 +25,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // https://github.com/SwiftOnSecurity/sysmon-config
 prefetch sysmonconfig-export.xml sha1:a61456878a619e0cf6ddf7cdbb7539e34fa04fba size:123257 https://raw.githubusercontent.com/SwiftOnSecurity/sysmon-config/1836897f12fbd6a0a473665ef6abc34a6b497e31/sysmonconfig-export.xml sha256:055febc600e6d7448cdf3812307275912927a62b1f94d0d933b64b294bc87162
 
@@ -40,7 +40,7 @@ action uses wow64 redirection {not x64 of operating system}
 waithidden __Download\unzip.exe -o __Download\Sysmon.zip -d __Download
 
 waithidden __Download\Sysmon{if x64 of operating system then "64" else ""}.exe -accepteula -i __Download\sysmonconfig-export.xml
-</ActionScript>
+]]></ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>

@@ -25,14 +25,14 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 waithidden cmd /C sc config besclient start= delayed-auto
 
 // References:
 //  - http://windowsitpro.com/systems-management/q-how-can-i-set-service-automatic-delayed-start-command-line
 //  - https://bigfix.me/relevance/details/3020297
 //  - https://bigfix.me/relevance/details/3020298
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Fixlet>
 </BES>

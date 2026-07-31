@@ -24,7 +24,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 prefetch e_us-2x2_4x4_rm_vd.pdf sha1:32196ecf7927b948b13be20e6485f20d669f579b size:2547750 https://tascam.com/content/downloads/products/889/e_us-2x2_4x4_rm_vd.pdf sha256:689e2cdd0051888bb3f9da110b11a4dfba844226b9339ebc16ee0697b81bd3ef
 
 delete /Users/Shared/Downloads/e_us-2x2_4x4_rm_vd.pdf
@@ -36,7 +36,7 @@ copy __Download/e_us-2x2_4x4_rm_vd.pdf /Users/Shared/Downloads/e_us-2x2_4x4_rm_v
 run open /Users/Shared/Downloads/e_us-2x2_4x4_rm_vd.pdf
 
 // Related: https://bigfix.me/fixlet/details/26639
-</ActionScript>
+]]></ActionScript>
 			<Settings>
 				<ActionUITitle>Open TASCAM US-2x2 Manual</ActionUITitle>
 				<PreActionShowUI>false</PreActionShowUI>

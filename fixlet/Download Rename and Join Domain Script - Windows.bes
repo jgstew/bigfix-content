@@ -26,7 +26,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // this will create a script on the target to help with rename and join domain
 action parameter query "ad-domain"
 
@@ -62,7 +62,7 @@ copy __createfile \Windows\Temp\Join_Domain_Rename_Computer.ps1
 // https://bigfix.me/relevance/details/3023193
 
 // todo - get list of domains from existing computers - use secure parameters to pass domain creds
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>

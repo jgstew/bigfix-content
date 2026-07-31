@@ -24,7 +24,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">// Set the different settings to allow direct downloads for each OS type
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[// Set the different settings to allow direct downloads for each OS type
 
 parameter "SettingTime" = "{ "01 Jan 2000 11:11:11" as universal time }"
 
@@ -84,7 +84,7 @@ setting "_BESClient_Raspbian_AllowAPTDownloads"="1" on "{ parameter "SettingTime
 
 endif
 
-// End</ActionScript>
+// End]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>

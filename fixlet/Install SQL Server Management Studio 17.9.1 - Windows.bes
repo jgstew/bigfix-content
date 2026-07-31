@@ -24,7 +24,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 //Release number: 17.9.1
 //Build number: 14.0.17289.0
 //Release date: November 21, 2018
@@ -38,7 +38,7 @@ waithidden __Download\SSMS-Setup-ENU.exe /install /quiet /norestart
 // https://svenaelterman.wordpress.com/2016/05/23/performing-a-silent-install-of-sql-server-management-studio-2016/
 // https://msdn.microsoft.com/en-us/library/mt238290.aspx
 // https://go.microsoft.com/fwlink/?linkid=837453
-// https://download.microsoft.com/download/3/1/D/31D734E0-BFE8-4C33-A9DE-2392808ADEE6/SSMS-Setup-ENU.exe</ActionScript>
+// https://download.microsoft.com/download/3/1/D/31D734E0-BFE8-4C33-A9DE-2392808ADEE6/SSMS-Setup-ENU.exe]]></ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>

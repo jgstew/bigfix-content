@@ -25,7 +25,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // -- START:DOWNLOADS -----------------------
 
 prefetch 7za.exe sha1:8c7659e6ee9fe5ead17cae2969d3148730be509b size:652800 https://github.com/jgstew/Patching-Tools/blob/95b6a6b5ffa94e889679a42022c9d354afa4e7b3/Downloads/7-Zip/7za.exe?raw=true sha256:e0e2c7d0f740fe2a4e8658ce54dfb6eb3c47c37fe90a44a839e560c685f1f1fa
@@ -48,7 +48,7 @@ waithidden __Download\BiosConfigUtility{if (x64 of operating system) then "64" e
 // Related:
 //  - https://bigfix.me/fixlet/details/3928
 //  - https://bigfix.me/fixlet/details/3896
-</ActionScript>
+]]></ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>

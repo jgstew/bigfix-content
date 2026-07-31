@@ -24,14 +24,14 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // TODO: test this part
 wait softwareupdate --ignore "macOS Catalina"
 
 // Related:
 //  - https://bigfix.me/relevance/details/3022811
 //  - https://babodee.wordpress.com/2018/12/11/ignore-a-specific-macos-update-using-softwareupdate/
-</ActionScript>
+]]></ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>

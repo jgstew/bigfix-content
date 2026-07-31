@@ -26,7 +26,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 wait /bin/systemctl daemon-reload
 wait /bin/systemctl enable elasticsearch.service
 wait /bin/systemctl start elasticsearch.service
@@ -44,7 +44,7 @@ copy __Download/9200 "{pathname of folders "Logs" of folders "__Global" of data 
 // https://unix.stackexchange.com/questions/157816/what-does-systemctl-enable-netctl-service-do
 
 // https://www.elastic.co/guide/en/elasticsearch/reference/7.9/deb.html
-</ActionScript>
+]]></ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>

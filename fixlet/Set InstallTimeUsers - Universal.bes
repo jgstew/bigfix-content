@@ -28,7 +28,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // get usernames of logged on users
 parameter "UserNames"="{ concatenations ";" of unique values of (it as trimmed string) of names of (logged on users; current users) }"
 
@@ -37,7 +37,7 @@ setting "InstallTimeUsers"="{ parameter "UserNames" }" on "{ now }" for client
 
 // exit code is number of minutes since subscribe time that this action ran. ideally this should be a very small number
 exit { (it / minute) of absolute values of (now - it) of minima of subscribe times of sites }
-</ActionScript>
+]]></ActionScript>
 			<Settings>
 				<PreActionShowUI>false</PreActionShowUI>
 				<HasRunningMessage>false</HasRunningMessage>

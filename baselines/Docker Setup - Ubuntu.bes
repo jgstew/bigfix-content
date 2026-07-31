@@ -23,9 +23,9 @@
 		<BaselineComponentCollection>
 			<BaselineComponentGroup>
 				<BaselineComponent Name="remove old versions of docker - Debian/Ubuntu" IncludeInRelevance="false" SourceSiteURL="http://iemdev.jgstew.com:52311/cgi-bin/bfgather.exe/actionsite" SourceID="231" ActionName="Action1">
-					<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+					<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 wait bash -c "apt-get remove docker docker-engine docker.io -y"
-</ActionScript>
+]]></ActionScript>
 					<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 					<Relevance>(((unix of operating system) AND (exists debianpackages)) AND (not exists packages "docker-ce" of debianpackages)) AND (exists (packages "docker" of it; packages "docker-engine" of it; packages "docker.io" of it) of debianpackages)</Relevance>
 				</BaselineComponent>
@@ -71,13 +71,13 @@ continue if{ exists lines whose( it contains (parameter "AptKeyShort") ) of file
 					<Relevance>((((unix of operating system) AND (exists packages "apt" of debianpackages)) AND (exists packages "curl" of debianpackages)) AND (exists files "/usr/bin/apt-key")) AND (not exists lines whose( it contains "0EBFCD88" ) of files "results_AptKeyGPG.txt" of folders "Logs" of folders "__Global" of data folders of client)</Relevance>
 				</BaselineComponent>
 				<BaselineComponent Name="Add Docker Stable Repository - Ubuntu" IncludeInRelevance="true" SourceSiteURL="http://iemdev.jgstew.com:52311/cgi-bin/bfgather.exe/actionsite" SourceID="240" ActionName="Action1">
-					<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+					<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 wait bash -c "add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\""
 
 wait bash -c "apt-get update"
 
 // https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-using-the-repository
-</ActionScript>
+]]></ActionScript>
 					<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 					<Relevance>((((unix of operating system) AND (exists architectures whose(it = "x86_64") of operating systems)) AND (exists packages "apt" of debianpackages)) AND (exists lines whose( it contains "0EBFCD88" ) of files "results_AptKeyGPG.txt" of folders "Logs" of folders "__Global" of data folders of client)) AND (not exists lines whose(it does not start with "#" AND it contains "https://download.docker.com/linux/ubuntu") of (files "sources.list" of it; files of folders "sources.list.d" of it) of folders "/etc/apt")</Relevance>
 				</BaselineComponent>

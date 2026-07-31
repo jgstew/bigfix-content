@@ -27,9 +27,9 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // No Action, just testing
-</ActionScript>
+]]></ActionScript>
 			<Settings>
 				<ActionUITitle>Test x-icon format SSA</ActionUITitle>
 				<PreActionShowUI>false</PreActionShowUI>

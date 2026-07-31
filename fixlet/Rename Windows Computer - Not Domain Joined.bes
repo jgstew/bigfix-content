@@ -24,7 +24,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 action parameter query "newComputerName" with description "Enter a new computer name:" and with default value ""
 
 parameter "oldComputerName"="{computer name}"
@@ -37,7 +37,7 @@ continue if {exit code of action = 0}
 action requires restart
 
 // Related: https://bigfix.me/fixlet/details/1393
-</ActionScript>
+]]></ActionScript>
 			<SuccessCriteria Option="CustomRelevance">computer name = parameter "oldComputerName"</SuccessCriteria>
 		</DefaultAction>
 	</Task>

@@ -43,9 +43,9 @@
 				<Link>here</Link>
 				<PostLink> to disable component updater of Google Chrome.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 regset64 "[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome]" "ComponentUpdatesEnabled"="1"
-</ActionScript>
+]]></ActionScript>
 			<SuccessCriteria Option="OriginalRelevance"></SuccessCriteria>
 		</DefaultAction>
 	</Task>

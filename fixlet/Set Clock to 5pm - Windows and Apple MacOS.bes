@@ -23,7 +23,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 
 if{ mac of operating system }
 // http://osxdaily.com/2012/07/04/set-system-time-mac-os-x-command-line/
@@ -41,7 +41,7 @@ endif
 // Related:
 //      - https://bigfix.me/fixlet/details/2587
 //      - https://bigfix.me/fixlet/details/2613
-</ActionScript>
+]]></ActionScript>
 			<Settings>
 				<ActionUITitle>Time To Go Home</ActionUITitle>
 				<PreActionShowUI>false</PreActionShowUI>

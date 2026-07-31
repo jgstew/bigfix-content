@@ -24,7 +24,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-PowerShell">$bekPath = "C:\Windows\Temp\wipe.bek"
+			<ActionScript MIMEType="application/x-Fixlet-Windows-PowerShell"><![CDATA[$bekPath = "C:\Windows\Temp\wipe.bek"
 $log = "C:\Windows\Temp\wipe_blr.log"
 $log_commands = "C:\Windows\Temp\wipe_blr_commands.log"
 Start-Transcript -Path $log -Append
@@ -47,7 +47,7 @@ Remove-Item "$(Split-Path $bekPath)\*.bek" -Force
 Initialize-Tpm -AllowClear -AllowPhysicalPresence
 
 shutdown /r /t 0
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>

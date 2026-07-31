@@ -24,10 +24,10 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // This doesn't do anything currently, warning only
 // See problem here: https://mrmacintosh.com/google-chrome-keystone-is-modifying-var-symlink-on-non-sip-macs-causing-boot-issues/
-</ActionScript>
+]]></ActionScript>
 			<Settings>
 				<ActionUITitle>Do NOT Reboot your Mac!!!</ActionUITitle>
 				<PreActionShowUI>true</PreActionShowUI>

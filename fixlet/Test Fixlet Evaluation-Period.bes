@@ -26,7 +26,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 // test of the fixlet header `X-Relevance-Evaluation-Period` "MIMEField"
 
 // Related Session Relevance:
@@ -36,7 +36,7 @@
 // Related Links:
 // - https://forum.bigfix.com/t/heartbeat-setting/9737/7
 // - https://forum.bigfix.com/t/pre-announcement-superseded-patch-changes-for-patches-for-windows/23780/2
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>

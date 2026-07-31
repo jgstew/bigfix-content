@@ -26,7 +26,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 
 // http://software.bigfix.com/download/bes/92/util/QNA9.2.10.25.zip
 //SHA1 232f026d21f9c3a2c509b367ba52be16aa5bd190
@@ -78,7 +78,7 @@ waithidden __Download\zipinst.exe /cfg "{pathname of client folder of current si
 // Delete extra Start Menu shortcuts
 delete "{pathname of files "Eval.lnk" of folders of folders "Fixlet Debugger" of folders "Microsoft\Windows\Start Menu\Programs" of folders (value of variable "ALLUSERSPROFILE" of environment)}"
 delete "{pathname of files "EvalSession.lnk" of folders of folders "Fixlet Debugger" of folders "Microsoft\Windows\Start Menu\Programs" of folders (value of variable "ALLUSERSPROFILE" of environment)}"
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Fixlet>
 </BES>

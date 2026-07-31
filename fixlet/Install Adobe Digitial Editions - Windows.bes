@@ -26,7 +26,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 prefetch ADE_Installer.exe sha1:1cbe6b3a78cf6cc9cfb8199b55bfd7b2e1c350b6 size:8647680 https://adedownload.adobe.com/pub/adobe/digitaleditions/ADE_4.5_Installer.exe sha256:e795308a6156dbf08e610526d7f49eac367599f426e947b6e814769b184e04fb
 
 
@@ -38,7 +38,7 @@ waithidden __Download\ADE_Installer.exe /S
 //    - https://bigfix.me/fixlet/details/3934
 //    - https://bigfix.me/fixlet/details/6085
 //    -
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>

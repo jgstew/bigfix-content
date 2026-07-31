@@ -24,7 +24,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 action parameter query "iDesiredBrightness" with description "Enter the Desired Brightness: (min 5, max 100)" and with default value "75"
 // parameter "iDesiredBrightness" = "10"
 
@@ -37,7 +37,7 @@ wait __Download\NirCmd setbrightness { ( maxima of (it; 5) ) of ( minima of (it;
 
 utility __Download\NirCmd.exe
 // https://msdn.microsoft.com/en-us/library/windows/desktop/aa394536(v=vs.85).aspx
-</ActionScript>
+]]></ActionScript>
 			<SuccessCriteria Option="CustomRelevance">(integer values of selects "CurrentBrightness FROM WmiMonitorBrightness WHERE Active=True" of wmis "ROOT/WMI") != ( maxima of (it; 5) ) of ( minima of (it; 100) ) of ( ((it as integer) of (parameter "iDesiredBrightness")) | 0 )</SuccessCriteria>
 		</DefaultAction>
 	</Task>

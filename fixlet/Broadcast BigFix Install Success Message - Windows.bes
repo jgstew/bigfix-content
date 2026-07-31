@@ -25,11 +25,11 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 action uses wow64 redirection {not x64 of operating system}
 
 run cmd /c "msg * BigFix Installed Successfully {(it / minute) of (now - it) of minima of subscribe times of sites} minutes ago."
-</ActionScript>
+]]></ActionScript>
 			<Settings>
 				<PreActionShowUI>false</PreActionShowUI>
 				<HasRunningMessage>false</HasRunningMessage>

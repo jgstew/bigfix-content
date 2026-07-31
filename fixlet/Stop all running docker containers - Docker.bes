@@ -24,7 +24,7 @@
 				<Link>here</Link>
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
-			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">
+			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 parameter "NumRunning"="{ number of (it as boolean) whose(it) of values of keys "Running" of values of keys "State" of jsons of files "config.v2.json" of folders of folders "/var/lib/docker/containers" | 0 }"
 
 wait bash -c "docker stop $(docker ps -a -q)"
@@ -32,7 +32,7 @@ wait bash -c "docker stop $(docker ps -a -q)"
 exit { (it as integer - (number of (it as boolean) whose(it) of values of keys "Running" of values of keys "State" of jsons of files "config.v2.json" of folders of folders "/var/lib/docker/containers" | 0) ) of (parameter "NumRunning") }
 
 // https://coderwall.com/p/ewk0mq/stop-remove-all-docker-containers
-</ActionScript>
+]]></ActionScript>
 		</DefaultAction>
 	</Task>
 </BES>
