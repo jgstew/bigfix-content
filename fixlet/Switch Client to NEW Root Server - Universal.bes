@@ -27,6 +27,7 @@
 				<PostLink> to deploy this action.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+// prefetch-ok: replace this prefetch with the real masthead download URL and file hashes before use:
 prefetch masthead.afxm sha1:__ size:99 http://localhost:52311/Uploads/NEW_actionsite.afxm sha256:___
 
 parameter "MastheadLocation"="{pathname of (file "/etc/opt/BESClient/actionsite.afxm" | file "actionsite.afxm" of storage folder of client) }"

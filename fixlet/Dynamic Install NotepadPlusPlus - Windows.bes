@@ -27,6 +27,7 @@
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[// Download:
 // must use prefetch block. parses prefetch block info from regular prefetch statement.
 // this could be made better by parsing the prefetch info using regex instead of preceding/following.
+// prefetch-ok: this is a dynamic install
 begin prefetch block
 add prefetch item name=npp.Installer.exe { ( (("sha1=" & it) of unique value of preceding texts of firsts " " of following texts of firsts "sha1:" of it) & ((" size=" & it) of unique value of preceding texts of firsts " " of following texts of firsts "size:" of it) & ( (" url=" & it) of unique value of ("http" & it) of preceding texts of firsts " " of following texts of firsts " http" of it) & ((" sha256=" & it) of unique value of following texts of firsts "sha256:" of it) ) of tuple string items 0 of concatenations ", " of unique values whose(it contains "x64.exe") of following texts of firsts ".exe " of following texts of firsts "prefetch npp." of lines containing "://github.com/notepad-plus-plus/" of files "Updates.fxf" of folders "Updates for Windows Applications" of data folders of client }
 end prefetch block
