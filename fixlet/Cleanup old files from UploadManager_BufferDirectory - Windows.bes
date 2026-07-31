@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Cleanup old files from UploadManager_BufferDirectory - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>On a BigFix root server, deletes files older than 15 days from the relay UploadManager buffer directory (_BESRelay_UploadManager_BufferDirectory sha1 subfolders), excluding Index.txt files, to reclaim disk space. Files are only actually deleted when the "Confirm" action parameter is set to "Yes"; otherwise the delete script is generated but not run.</P> ]]></Description>
 		<Relevance> /* Root Server Only */ exists main gather service</Relevance>
 		<Relevance><![CDATA[exists files whose(name of it != "Index.txt" AND exists (now - it) whose(it > 15 * day) of maxima of (creation times of it; modification times of it) of it) of folders of folders of folders "sha1" of (folders it) of values of settings "_BESRelay_UploadManager_BufferDirectory" of client]]></Relevance>
 		<Category></Category>

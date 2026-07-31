@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Run GRC's InSpectre tool - Windows - Offer</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads GRC's InSpectre utility from grc.com to C:\Users\Public\Downloads and runs it as the current user to report the system's Spectre and Meltdown vulnerability and protection status. Offered on Windows computers where the tool is not already running.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists (current users; logged on users)</Relevance>
 		<Relevance>not exists pathnames whose(it = "C:\Users\Public\Downloads\_bigfix_InSpectre.exe") of image files of processes "_bigfix_InSpectre.exe"</Relevance>

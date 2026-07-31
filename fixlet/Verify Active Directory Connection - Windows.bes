@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Verify Active Directory Connection - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>On domain-joined Windows endpoints, this task verifies the computer's secure channel to Active Directory by running "nltest /sc_verify" against the machine's AD DNS domain and writing the output to results_ad_verify.log in the client's __Global logs folder. It is a diagnostic task that makes no configuration changes.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists dns domainnames of local computers of active directories</Relevance>
 		<Category></Category>

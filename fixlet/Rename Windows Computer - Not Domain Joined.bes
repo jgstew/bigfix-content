@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Rename Windows Computer - Not Domain Joined</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Prompts for a new computer name and renames a non-domain-joined Windows computer using the WMIC computersystem rename call. Requires a restart to take effect. Applies only to Windows computers that are not joined to an Active Directory domain.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>not exists distinguished names of local computers of active directories</Relevance>
 		<Relevance>exists files "wmic.exe" of folders "wbem" of system folders</Relevance>

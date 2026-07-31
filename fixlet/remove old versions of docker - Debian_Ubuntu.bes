@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>remove old versions of docker - Debian/Ubuntu</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Removes the older docker, docker-engine, and docker.io packages on Debian/Ubuntu systems via apt-get, as a cleanup step before installing the current Docker packages. Relevant only when one of these older packages is present.</P> ]]></Description>
 		<Relevance>unix of operating system</Relevance>
 		<Relevance>exists debianpackages</Relevance>
 		<Relevance>exists (packages "docker" of it; packages "docker-engine" of it; packages "docker.io" of it) of debianpackages</Relevance>

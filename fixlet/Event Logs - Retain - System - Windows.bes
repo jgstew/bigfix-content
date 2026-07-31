@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Event Logs - Retain - System - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Configures the Windows System event log to automatically back up (archive) the log file when it becomes full, by setting the AutoBackupLogFiles policy value to 1. It downloads and extracts Microsoft's LGPO tool and applies the setting via local group policy.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>not exists (it as integer) whose(it = 1) of values "AutoBackupLogFiles" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Eventlog\System" of registries</Relevance>
 		<Category></Category>

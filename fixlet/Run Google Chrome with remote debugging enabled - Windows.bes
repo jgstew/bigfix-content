@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Run Google Chrome with remote debugging enabled - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Launches Google Chrome as the current user with the remote debugging port enabled on port 9222, for use with debugging tools. Offered on Windows computers where Chrome is installed in Program Files (x86) and not currently running.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists files "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"</Relevance>
 		<Relevance>not exists running applications "chrome.exe"</Relevance>

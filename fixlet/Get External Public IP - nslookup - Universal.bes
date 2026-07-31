@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Get External Public IP - nslookup - Universal</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Determines the endpoint's external public IP address by running an nslookup of myip.opendns.com against the OpenDNS resolver (resolver2.opendns.com), and saves the output to public_ip_nslookup.log in the client log folder. Works across Windows, macOS, and Linux; the action reapplies periodically to keep the data current.</P> ]]></Description>
 		<Relevance><![CDATA[not exists files whose(name of it as lowercase starts with "public_ip_nslookup" AND name of it as lowercase ends with ".log" AND (now - modification time of it) < 3*day ) of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
 		<Category></Category>
 		<DownloadSize>0</DownloadSize>

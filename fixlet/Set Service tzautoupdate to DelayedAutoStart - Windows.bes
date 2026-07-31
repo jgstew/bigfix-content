@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Set Service tzautoupdate to DelayedAutoStart - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>On Windows endpoints, this fixlet sets the Auto Time Zone Updater (tzautoupdate) service startup type to Automatic (Delayed Start) using "sc config tzautoupdate start= delayed-auto". It is relevant when the tzautoupdate service exists but is not already set to delayed automatic start.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists services "tzautoupdate"</Relevance>
 		<Relevance>not exists keys whose(name of it as lowercase = "tzautoupdate" as lowercase AND exists values "DelayedAutoStart" whose(it as integer = 1) of it AND exists values "Start" whose(it as integer = 2) of it) of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services" of registries</Relevance>

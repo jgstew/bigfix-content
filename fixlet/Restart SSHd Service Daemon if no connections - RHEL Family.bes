@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Restart SSHd Service Daemon if no connections - RHEL Family</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Restarts the sshd service on Linux/Unix systems using systemctl restart sshd.service, but only when there are no established SSH connections, to avoid disrupting active sessions. Applies to Unix computers where the sshd service exists.</P> ]]></Description>
 		<Relevance>/* Linux or Unix */ unix of operating system</Relevance>
 		<Relevance>exists services "sshd"</Relevance>
 		<Relevance>not exists sockets whose(established of tcp state of it AND "sshd" = name of process of it) of networks</Relevance>

@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Install/Update: SQL Server Management Studio 16.5.1 - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads and silently installs Microsoft SQL Server Management Studio (SSMS) 16.5.1 on Windows 7 or later where SSMS is not already at that version or newer. The installer download is large (roughly 900 MB).</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance><![CDATA[version of operating system >= "6.1"]]></Relevance>
 		<Relevance><![CDATA[not exists maxima whose(it >= "13.0.16100.1") of (it as string as version) of values "DisplayVersion" of keys whose(value "DisplayName" of it as string starts with "SQL Server " AND value "DisplayName" of it as string contains " Management Studio") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries; x32 registries)]]></Relevance>

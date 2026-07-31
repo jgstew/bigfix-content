@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>add NirCmd 2.8.1 to bigfix client utility cache - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads the NirCmd 2.8.1 command-line utility (nircmd.exe) and stores it in the BigFix client's __Global utility cache so it is available for use by other actions. Relevant only until the cached copy exists.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>not exists files "9adfc7ab66348d84ebdd9c1e8093cad4cc8485ef" whose(44544 = size of it) of folders "Utilities" of folders "__Cache" of folders "__Global" of data folders of clients</Relevance>
 		<Category>Configuration</Category>

@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Check Disk Usage - Linux</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Runs "du" to report disk usage (one level deep, excluding /mnt and /proc) starting from the root filesystem and writes the results to disk_usage.log in the BigFix client's __Global Logs folder. Relevance limits this to running at most once per hour.</P> ]]></Description>
 		<Relevance>unix of operating system</Relevance>
 		<Relevance><![CDATA[not exists files whose(name of it as lowercase starts with "disk_usage" AND name of it as lowercase ends with ".log" AND (now - modification time of it) < 1*hour ) of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
 		<Category></Category>

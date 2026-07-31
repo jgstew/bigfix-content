@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Borderlands - Set MaxSmoothedFrameRate to be higher than CurrentRefreshRate - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Raises the MaxSmoothedFrameRate setting in the Borderlands game INI file (under the [Engine.GameEngine] section) so it exceeds the display's current refresh rate, uncapping the smoothed frame rate. The value is set to the monitor's CurrentRefreshRate (from WMI) plus 7 via a VBScript INI editor. Applies to Windows systems where Borderlands is installed under Steam and the current value is below the refresh rate.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance><![CDATA[version of operating system > "6.1"]]></Relevance>
 		<Relevance><![CDATA[exists (it as integer) whose(it < maximum of integer values of selects "CurrentRefreshRate FROM Win32_VideoController" of wmis) of keys "MaxSmoothedFrameRate" of sections "Engine.GameEngine" of files whose(name of it ends with ".ini") of folders "Config" of folders of folders "Borderlands" of folders "Steam\steamapps\common" of folders whose(name of it starts with "Program Files") of folders "C:\"]]></Relevance>

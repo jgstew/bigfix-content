@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Create LS alias for DIR command - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>Creates an ls.bat file in the Windows directory so that typing "ls" at the command prompt runs the "dir" command, providing a Unix-style alias for listing directory contents.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>not exists lines whose(it contains "@dir %25*") of files "ls.bat" of windows folders</Relevance>
 		<Category></Category>

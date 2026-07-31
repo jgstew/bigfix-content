@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Set Log Rotate to 28 Weeks - Linux Unix</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>On Linux/Unix endpoints, this task edits /etc/logrotate.conf and changes the global "rotate" setting to 28, so logs are retained for 28 rotation periods (weeks) before removal. It becomes relevant only when the file exists and the rotate value is not already 28.</P> ]]></Description>
 		<Relevance>unix of operating system</Relevance>
 		<Relevance>NOT in proxy agent context</Relevance>
 		<Relevance>exists files "/etc/logrotate.conf"</Relevance>

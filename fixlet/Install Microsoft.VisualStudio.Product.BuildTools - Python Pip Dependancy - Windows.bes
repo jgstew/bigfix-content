@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Install Microsoft.VisualStudio.Product.BuildTools - Python Pip Dependancy - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads the Visual Studio 2019 Build Tools bootstrapper and silently installs the VCTools and MSBuildTools workloads (with recommended components), providing the C/C++ compiler toolchain needed to build Python pip packages from source on Windows. Does not force a restart.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance><![CDATA[version of operating system > "6.1.7601"]]></Relevance>
 		<Relevance>5 != number of unique values of preceding texts of firsts "," of names of folders whose(name of it starts with "Microsoft.VisualCpp.Redist.14.Latest" OR name of it starts with "Microsoft.PythonTools.BuildCore" OR name of it starts with "Microsoft.VisualStudio.Workload.MSBuildTools" OR name of it starts with "Microsoft.VisualStudio.Workload.VCTools" OR name of it starts with "Win10SDK") of folders "Microsoft\VisualStudio\Packages" of /* ProgramData */ csidl folders 35</Relevance>

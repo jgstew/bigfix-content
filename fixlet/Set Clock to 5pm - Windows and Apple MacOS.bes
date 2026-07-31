@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Its 5 OClock somewhere - Windows and Apple MacOS</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>A novelty task that sets the local system clock to 5:00 PM (17:00) on Windows and macOS endpoints, keeping the current date. It changes the actual system time, so it should not be run on production machines.</P> ]]></Description>
 		<Relevance>(mac of operating system) OR (windows of operating system)</Relevance>
 		<Category></Category>
 		<DownloadSize>0</DownloadSize>

@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Install/Update: Fixlet Debugger 9.2.10.25 - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads NirSoft zipinst and the BigFix Fixlet Debugger (QnA) 9.2.10.25 archive, then uses zipinst to install the Fixlet Debugger with a Start Menu shortcut and uninstall entry. Runs where that version is not already installed.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance><![CDATA[version of operating system >= "5.1"]]></Relevance>
 		<Relevance>not exists keys whose(value "DisplayName" of it as string contains "Fixlet Debugger" AND value "DisplayVersion" of it as string as version = "9.2.10.25") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of registry</Relevance>

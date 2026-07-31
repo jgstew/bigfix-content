@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Add Jenkins User AND Add to Docker Group - Linux</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>Creates a local "jenkins" user (with home directory and /bin/bash shell) and adds it to the existing "docker" group so Jenkins can run Docker commands. Caveat: the action sets a hard-coded placeholder password ("thisisabadpassword") that should be changed. Applies only where a docker group already exists and no jenkins user is present.</P> ]]></Description>
 		<Relevance>unix of operating system</Relevance>
 		<Relevance>not exists local users whose(name of it as lowercase = "jenkins")</Relevance>
 		<Relevance>exists it whose(it as lowercase = "docker") of preceding texts of firsts ":" of lines containing ":" of files "/etc/group"</Relevance>

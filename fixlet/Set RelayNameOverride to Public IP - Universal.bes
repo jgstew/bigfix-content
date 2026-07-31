@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Set RelayNameOverride to Public IP - Universal</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>On endpoints running the BigFix relay service (but not the root server), this task looks up the machine's public IP address via an OpenDNS nslookup query and sets the "_BESClient_Relay_NameOverride" client setting to that IP. This makes the relay advertise its public IP as its name so external clients can connect to it.</P> ]]></Description>
 		<Relevance>exists relay service</Relevance>
 		<Relevance>not exists main gather service</Relevance>
 		<Relevance>not exists settings "_BESClient_Relay_NameOverride" of client</Relevance>

@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Switch Client to NEW Root Server - Universal</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>This task migrates a BigFix client to a new root server by downloading a replacement masthead (actionsite.afxm), deleting the old masthead, moving the new one into place, and restarting the client. It is a template that must be edited with the real new server details (the placeholder _NEW_ROOT_SERVER_, download URL, and file hashes) before use, and it targets non-relay, non-root clients.</P> ]]></Description>
 		<Relevance>not exists relay service and not exists main gather service</Relevance>
 		<Relevance><![CDATA[version of client >= "9.0"]]></Relevance>
 		<Relevance><![CDATA[version of registration server >= "9.0"]]></Relevance>

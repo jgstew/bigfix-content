@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Force NTP Time Sync - Universal</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Forces an immediate time synchronization against the configured time server using the native tool for each platform: w32tm /resync on Windows, sntp on macOS, and ntpd -gq on Linux/Unix.</P> ]]></Description>
 		<Relevance>true</Relevance>
 		<Category></Category>
 		<Source>Internal</Source>

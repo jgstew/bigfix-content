@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Trigger Relay Selection - Offer</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Offered as a troubleshooting task, this forces the BigFix client to perform relay selection via the "relay select" command. It targets non-relay, non-root clients and is throttled so it will not run if relay selection occurred within the last 9 minutes. Use sparingly for troubleshooting only.</P> ]]></Description>
 		<Relevance><![CDATA[version of client >= "8.0"]]></Relevance>
 		<Relevance>not exists relay service</Relevance>
 		<Relevance>not exists main gather service</Relevance>

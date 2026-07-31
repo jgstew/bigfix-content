@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Set Root User Shell to false to prevent login - Apple Mac OS X</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>On macOS endpoints, this fixlet sets the root user's login shell to /usr/bin/false via dscl, which prevents interactive login to the root account as a security hardening measure. It is relevant when the root shell is not already set to /usr/bin/false.</P> ]]></Description>
 		<Relevance>mac of operating system</Relevance>
 		<Relevance>not exists strings 0 whose(it = "/usr/bin/false") of arrays "shell" of dictionaries of files "/var/db/dslocal/nodes/Default/users/root.plist"</Relevance>
 		<Category></Category>

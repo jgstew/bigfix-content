@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Test Fixlet Evaluation-Period</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>A diagnostic/testing task that demonstrates the X-Relevance-Evaluation-Period fixlet header (set here to one hour), which controls how often the client re-evaluates relevance. It becomes relevant only when a "true.bigfix" file exists in C:\Windows\Temp or /tmp, and its action performs no real changes. Intended for testing only.</P> ]]></Description>
 		<Relevance>exists files "true.bigfix" of (folders "C:\Windows\Temp"; folders "/tmp")</Relevance>
 		<Category></Category>
 		<Source>Internal</Source>

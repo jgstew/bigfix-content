@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Install 'cURL' - Ubuntu Debian Family</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Installs the curl package on Debian/Ubuntu-family endpoints. Runs 'apt-get update' first if the package cache has not been refreshed within the last hour.</P> ]]></Description>
 		<Relevance>unix of operating system</Relevance>
 		<Relevance>exists debianpackages</Relevance>
 		<Relevance>not exists packages "curl" whose(currently installed of it) of debianpackages</Relevance>

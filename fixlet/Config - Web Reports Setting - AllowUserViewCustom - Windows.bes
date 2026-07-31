@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Config - Web Reports Setting - AllowUserViewCustom - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>Sets the BigFix Web Reports "AllowUserViewCustom" registry value to 1 on the Web Reports server, which allows users to view custom content in Web Reports. The Web Reports service must be restarted for this change to take effect.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists (it as integer) whose(it != 1) of values "AllowUserViewCustom" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\BigFix\Enterprise Server\BESReports" of (x64 registries; x32 registries)</Relevance>
 		<Relevance>exists settings whose(name of it contains "_WebReports_") of client</Relevance>

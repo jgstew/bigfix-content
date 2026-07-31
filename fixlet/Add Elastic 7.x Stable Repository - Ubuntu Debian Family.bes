@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Add Elastic 7.x Stable Repository - Ubuntu Debian Family</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Adds the Elastic 7.x stable APT repository by writing /etc/apt/sources.list.d/elastic-7.x.list and refreshes the package index with apt-get update, enabling installation of Elasticsearch and related 7.x packages. Applies to Debian/Ubuntu-family systems with apt and apt-transport-https installed.</P> ]]></Description>
 		<Relevance>unix of operating system</Relevance>
 		<Relevance>exists packages "apt" of debianpackages</Relevance>
 		<Relevance>exists packages "apt-transport-https" whose(currently installed of it) of debianpackages</Relevance>

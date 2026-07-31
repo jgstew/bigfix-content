@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>download rename and join domain script - windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Writes a PowerShell helper script (Join_Domain_Rename_Computer.ps1) to C:\Windows\Temp on machines not already joined to a domain, using the Active Directory domain name entered at deploy time. The script is intended to be run interactively on the target to rename the computer and join it to the domain in one step; it prompts for credentials and a new name and requires a reboot to complete.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>NOT in proxy agent context</Relevance>
 		<Relevance>not exists distinguished names of local computers of active directories</Relevance>

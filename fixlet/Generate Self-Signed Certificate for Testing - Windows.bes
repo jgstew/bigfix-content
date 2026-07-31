@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Generate Self-Signed Certificate for Testing - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Generates a self-signed certificate for the FQDN entered at deploy time using PowerShell's New-SelfSignedCertificate, exports it as a .pfx file to C:\Windows\Temp, and then removes the certificate from the local machine store. Intended for testing only: the export uses a hardcoded password and self-signed certificates are not trusted for production use.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Category></Category>
 		<Source>Internal</Source>

@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Add AD Domain to DNS Suffix Search List if missing - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>On Windows domain-joined computers, this fixlet detects when the Active Directory DNS domain name is missing from the DNS suffix search list (the "SearchList" registry value under Tcpip\Parameters) and adds it. The corrective action appends the AD DNS domain to the existing comma-separated search list via the registry. Note: this action is marked as untested (TODO: Test).</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists dns domainnames of local computers of active directories</Relevance>
 		<Relevance>exists (it as trimmed string) whose(it != "") of substrings separated by "," of (it as string as lowercase) of values "SearchList" of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" of registries</Relevance>

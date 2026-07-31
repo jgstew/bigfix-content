@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Cleanup old log archives - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Deletes older "_Logs_*.7z" log archive files from C:\Windows\Temp, keeping only the most recently created archive. Files are only actually deleted when the "Confirm" action parameter is set to "Yes"; otherwise the delete script is generated but not run.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance><![CDATA[2 <= number of files whose(name of it starts with "_Logs_" AND name of it ends with ".7z") of folders "C:\Windows\Temp"]]></Relevance>
 		<Category></Category>

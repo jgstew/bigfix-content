@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>install xrdp - RHEL Family Linux</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Installs the xrdp remote desktop server on RHEL-family Linux systems via dnf (enabling the EPEL repository first), enables and starts the xrdp service, and opens TCP/UDP port 3389 in firewalld. Note: the ActionScript is marked as untested.</P> ]]></Description>
 		<Relevance>unix of operating system</Relevance>
 		<Relevance>exists rpms</Relevance>
 		<Relevance>exists processes ("Xorg";"gdm";"gdm-x-session")</Relevance>

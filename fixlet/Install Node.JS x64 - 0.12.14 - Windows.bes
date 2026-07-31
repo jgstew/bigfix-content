@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Install Node.JS x64 - 0.12.14 - Windows (Superseded)</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads the Node.js 0.12.14 x64 MSI and installs it silently (no restart) on 64-bit Windows endpoints that do not already have Node.js installed. This fixlet is superseded; the bundled Node.js version is very old.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>x64 of operating system</Relevance>
 		<Relevance>not exists keys whose(value "DisplayName" of it as string contains "Node.js") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)</Relevance>

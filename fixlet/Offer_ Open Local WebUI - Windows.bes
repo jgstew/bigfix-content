@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Offer: Open Local WebUI - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Offer that opens the locally running BigFix WebUI (https://localhost:3000) in the current user's default browser. Detection is based on a node.exe process listening on port 3000, so it may match a different Node application and assumes the default WebUI configuration.</P> ]]></Description>
 		<Relevance>exists sockets whose(exists local ports whose(it = 3000) of it AND exists names whose(it = "node.exe") of processes of it) of networks</Relevance>
 		<Category></Category>
 		<Source>Internal</Source>

@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Install packages to allow apt to use a repository over HTTPS - Debian/Ubuntu</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Installs the packages that allow apt to use a repository over HTTPS on Debian/Ubuntu endpoints: apt-transport-https, ca-certificates, curl, and software-properties-common. Runs 'apt-get update' first if the package cache has not been refreshed within the last hour.</P> ]]></Description>
 		<Relevance>unix of operating system</Relevance>
 		<Relevance>exists debianpackages</Relevance>
 		<Relevance>4 != number of (packages "apt-transport-https" of it; packages "ca-certificates" of it; packages "curl" of it; packages "software-properties-common" of it) of debianpackages</Relevance>

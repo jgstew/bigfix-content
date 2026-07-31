@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Add RSysLog Forwarding Config - Linux Unix</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Configures rsyslog to forward all logs over TCP to a specified syslog/SIEM server by creating /etc/rsyslog.d/zz-custom-forwarding.conf, then restarts the rsyslog service. The target server address is supplied as an action parameter (default 192.168.0.1, port 514) and an on-disk spool queue is configured for reliable delivery when the remote host is unreachable.</P> ]]></Description>
 		<Relevance>exists files "/etc/rsyslog.conf"</Relevance>
 		<Relevance>exists folders "/etc/rsyslog.d"</Relevance>
 		<Relevance>not exists files "/etc/rsyslog.d/zz-custom-forwarding.conf"</Relevance>

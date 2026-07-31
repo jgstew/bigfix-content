@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Require TLS1.2+ for Relays and Root Server - Universal</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>Sets the BigFix client setting _BESRelay_HTTPServer_RequireTLS12 to 1 to require TLS 1.2 or higher on BigFix Relays and the Root Server. Targets machines running a relay or main gather service where this setting is not already enabled; may require a service restart to take effect.</P> ]]></Description>
 		<Relevance>exists relay service OR exists main gather service</Relevance>
 		<Relevance>not exists values whose(it as integer = 1) of settings "_BESRelay_HTTPServer_RequireTLS12" of clients</Relevance>
 		<Category></Category>

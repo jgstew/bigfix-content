@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Remap Capslock to Rshift - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Remaps the Caps Lock key to act as a right Shift key on Windows by writing a Scancode Map value under the Keyboard Layout registry key. A reboot is required for the remapping to take effect.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layout" of registries</Relevance>
 		<Relevance>not exists values "Scancode Map" of keys "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layout" of registries</Relevance>

@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Disable Adobe Reader IE Add-on with LGPO - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Disables the Adobe Acrobat/Reader Internet Explorer browser add-on on systems where Acrobat Reader is installed. It downloads and extracts Microsoft's LGPO tool and applies a local group policy that adds the Adobe add-on CLSID to the IE add-on management deny list.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>not exists values "{CA8A9780-280D-11CF-A24D-444553540000}" whose(it as string as integer = 0) of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Ext\CLSID" of (x64 registries; x32 registries)</Relevance>
 		<Relevance>exists keys whose( exists values "DisplayName" whose(it as string as lowercase contains "Acrobat Reader" as lowercase) of it ) of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of ( x64 registries; x32 registries )</Relevance>

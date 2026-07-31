@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Set Service tzautoupdate to demand - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>On Windows endpoints, this fixlet sets the Auto Time Zone Updater (tzautoupdate) service startup type to Manual (demand start) using "sc config tzautoupdate start= demand". It is relevant when the tzautoupdate service exists but its start type is not already "demand".</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists services "tzautoupdate"</Relevance>
 		<Relevance>not exists start types whose(it = "demand") of services "tzautoupdate"</Relevance>

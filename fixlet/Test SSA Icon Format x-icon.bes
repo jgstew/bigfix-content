@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Test SSA Icon Format x-icon</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>A test task used to verify that the Self-Service Application (SSA) correctly displays an offer icon supplied as an image/x-icon (.ico) data URI in the action-ui-metadata field. It always evaluates as relevant and its action performs no changes. Intended for testing only.</P> ]]></Description>
 		<Relevance>true</Relevance>
 		<Category></Category>
 		<DownloadSize>0</DownloadSize>

@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Open current BigFix log in Visual Studio Code</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Opens today's BigFix client log file in Visual Studio Code, running as the currently logged-on user. On Windows it launches the installed Code.exe; on other platforms it invokes the "code" command from PATH.</P> ]]></Description>
 		<Relevance>1 = number of unique values of names of (logged on users; current users)</Relevance>
 		<Relevance><![CDATA[exists pathnames of files whose(name of it as lowercase ends with ((current year as string) & (current month as two digits as string) & (current day_of_month as two digits as string) & ".log")) of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
 		<Category></Category>

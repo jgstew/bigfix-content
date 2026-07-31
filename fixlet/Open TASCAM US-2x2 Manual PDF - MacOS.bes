@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Open TASCAM US-2x2 Manual PDF - MacOS</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads the TASCAM US-2x2/US-4x4 reference manual PDF from tascam.com to /Users/Shared/Downloads and opens it. Offered on macOS computers that have a TASCAM US-2x2 or US-4x4 USB audio interface connected.</P> ]]></Description>
 		<Relevance>mac of operating system</Relevance>
 		<Relevance>exists names whose(it = "US-2x2" OR it = "US-4x4") of nodes of nodes of nodes "AppleUSBLegacyRoot" of nodes "AppleUSBHostResources" of nodes "IOResources" of service planes of iokit registries</Relevance>
 		<Category></Category>

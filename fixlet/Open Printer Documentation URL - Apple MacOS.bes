@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Open Printer Documentation URL - Apple MacOS</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Opens a documentation URL (a base64-encoded YouTube link) in the default browser on macOS using the "open" command. This appears to be an example or placeholder task, as the encoded URL points to a YouTube video rather than actual printer documentation.</P> ]]></Description>
 		<Relevance>mac of operating system</Relevance>
 		<Category></Category>
 		<Source>Internal</Source>

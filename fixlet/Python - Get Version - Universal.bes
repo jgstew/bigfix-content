@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Python - Get Version - Universal</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Detects the installed Python interpreter (via PATH or, on Windows, the uninstall registry keys), runs it to print sys.version, and writes the result to python_version.log in the BigFix client __Global\Logs folder. The action exits with the Python major version number as its exit code.</P> ]]></Description>
 		<Relevance>not exists lines containing "." of files "python_version.log" of folders "Logs" of folders "__Global" of data folders of client</Relevance>
 		<Relevance>(exists files "/usr/bin/python") OR ( if (windows of operating system) then ( exists (files it) whose(name of it as lowercase is "python.exe") of (it as string) of values "DisplayIcon" of keys whose(value "DisplayName" of it as string as lowercase starts with "python ") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries; x32 registries) ) else FALSE ) OR ( exists it whose(name of it = "python" OR name of it = "python.exe") of files of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments )</Relevance>
 		<Category></Category>

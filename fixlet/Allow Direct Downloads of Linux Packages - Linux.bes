@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Allow Direct Downloads of Linux Packages - Linux</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>Enables direct package downloads by the BigFix client on Linux by setting the appropriate "_BESClient_..._AllowYumDownloads" or "_BESClient_..._AllowAPTDownloads" client setting for the detected distribution (CentOS, Red Hat, Rocky, Oracle, Amazon, Ubuntu, Debian, or Raspbian). This allows the client to fetch OS packages via yum/apt when running package-install actions.</P> ]]></Description>
 		<Relevance>exists names whose(it starts with "Linux") of operating system</Relevance>
 		<Relevance>not exists settings whose(name of it starts with "_BESClient_" AND name of it contains "_Allow" AND name of it contains "Downloads") of client</Relevance>
 		<Relevance>exists names whose(it starts with "Linux CentOS" OR it starts with "Linux Red Hat" OR it starts with "Linux Rocky" OR it starts with "Linux Oracle" OR it starts with "Linux Amazon" OR it starts with "Linux Ubuntu" OR it starts with "Linux Debian" OR it starts with "Linux Raspbian") of operating system </Relevance>

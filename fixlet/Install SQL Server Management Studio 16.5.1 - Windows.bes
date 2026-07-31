@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Install SQL Server Management Studio 16.5.1 - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads the SQL Server Management Studio (SSMS) 16.5.1 setup and installs it silently (no restart) on Windows endpoints that do not already have SSMS installed.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance><![CDATA[version of operating system >= "6.1"]]></Relevance>
 		<Relevance>not exists keys whose(value "DisplayName" of it as string contains "SQL Server Management Studio") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries;x32 registries)</Relevance>

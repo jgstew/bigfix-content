@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Update Windows Defender Virus Definitions - v1.247.1082.0 - 64bit - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>On 64-bit Windows 8.1 and later, this fixlet downloads Microsoft's mpam-fe.exe antimalware package and runs it silently to update Windows Defender / Microsoft Antimalware virus definitions to version 1.247.1082.0. It is relevant when the installed signature version is older than 1.247.1082.0. This is a point-in-time definition version and is likely superseded by newer updates.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>x64 of operating system</Relevance>
 		<Relevance><![CDATA[/* Win8.1 or higher */ exists versions whose(it > "6.3.9200") of operating systems]]></Relevance>

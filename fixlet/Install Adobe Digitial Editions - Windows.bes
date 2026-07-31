@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Install Adobe Digitial Editions - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads the Adobe Digital Editions 4.5 installer and performs a silent (/S) installation on Windows endpoints that do not already have Adobe Digital Editions installed.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance><![CDATA[version of operating system >= "5.1"]]></Relevance>
 		<Relevance>not exists keys whose(value "DisplayName" of it as string starts with "Adobe Digital Editions") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries; x32 registries)</Relevance>

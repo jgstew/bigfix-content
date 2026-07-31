@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Node.js - NPM Config - Set Progress False - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>Sets the global npm configuration option "progress" to false, which disables the npm progress bar. Runs on Windows where Node.js is installed and this setting is not already applied.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists (folders it) of unique values of (it as string) of values "InstallPath" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Node.js" of (x32 registries; x64 registries)</Relevance>
 		<Relevance>not exists keys "progress" whose(it as lowercase = "false") of files "npmrc" of folders "etc" of (folders it) of unique values of (it as string) of values "InstallPath" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Node.js" of (x32 registries; x64 registries)</Relevance>

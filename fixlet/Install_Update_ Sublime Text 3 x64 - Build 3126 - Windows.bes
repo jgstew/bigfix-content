@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Install/Update: Sublime Text 3 x64 - Build 3126 - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads and silently installs 64-bit Sublime Text 3 Build 3126 on Windows where it is not already at that build or newer. No desktop icon is created.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>x64 of operating system</Relevance>
 		<Relevance><![CDATA[version of operating system >= "5.1"]]></Relevance>

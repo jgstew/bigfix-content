@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Windows Defender - Test MAPS connection - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Runs the Windows Defender command-line tool (MpCmdRun.exe -validatemapsconnection) to verify that the endpoint can reach the Microsoft Active Protection Service (MAPS) cloud. The output is saved to the BigFix client log folder for reporting, and the action fails unless the log confirms the connection was successfully established.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists files "MpCmdRun.exe" of folders "Windows Defender" of (program files x64 folders; program files x32 folders)</Relevance>
 		<Category></Category>

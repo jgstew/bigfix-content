@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Backup Windows Security Log</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>Backs up the Windows Security event log to C:\Windows\Temp\EventLogBackupSecurity.evt using a PowerShell call to the Win32_NTEventlogFile BackupEventlog method. Runs only when that backup file does not already exist; the existing backup must be removed or moved before the action will run again.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>not exists files "C:\Windows\Temp\EventLogBackupSecurity.evt"</Relevance>
 		<Category></Category>

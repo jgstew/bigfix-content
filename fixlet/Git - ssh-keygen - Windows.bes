@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Git - ssh-keygen - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>On a Windows endpoint where Git for Windows is installed and the logged-on user has no SSH key, this runs the ssh-keygen.exe bundled with Git (as the current user) to generate a passwordless RSA key pair (id_rsa/id_rsa.pub) in the user's .ssh folder.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists keys whose(value "DisplayName" of it as string contains "Git") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)</Relevance>
 		<Relevance>1 = number of logged on users</Relevance>

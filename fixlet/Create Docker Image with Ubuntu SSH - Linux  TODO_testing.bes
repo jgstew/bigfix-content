@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Create Docker Image with Ubuntu SSH - Linux  TODO:testing</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Builds a Docker image named "ssh_ubuntu" on a Linux host with Docker installed. It writes a Dockerfile (based on ubuntu:latest, installing openssh-server and enabling root SSH login with a default password) to a temporary build folder and runs "docker build". Note: this is testing/example content that enables insecure root SSH login with a hardcoded password and should not be used as-is in production.</P> ]]></Description>
 		<Relevance>unix of operating system</Relevance>
 		<Relevance>exists folders "/tmp"</Relevance>
 		<Relevance>exists (packages "docker-ce" of it; packages "docker" of it; packages "docker-engine" of it; packages "docker.io" of it) whose(if exists properties whose(it as string contains "currently installed of ") then (currently installed of it) else TRUE) of (if exists properties whose(it as string contains "debianpackage:") then debianpackages else if exists properties whose(it as string contains "rpm:") then rpms else ERROR "The operators are not defined.")</Relevance>

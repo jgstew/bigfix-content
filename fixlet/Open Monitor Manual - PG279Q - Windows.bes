@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Open Monitor Manual - PG279Q - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads the ASUS ROG PG279Q monitor user manual PDF, copies it to the Public Documents folder, and opens it in the current user's default PDF viewer. Relevant only where a PG279Q monitor is detected and a user is logged on.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists (current users; logged on users)</Relevance>
 		<Relevance>exists string values whose(it contains "PG279Q") of selects "MonitorType from Win32_DesktopMonitor" of wmis</Relevance>

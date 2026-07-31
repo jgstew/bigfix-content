@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Compress and Upload System Logs - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads 7-Zip, copies the Application, System, and Security Windows event logs plus archived event logs, compresses them into a dated .7z archive in C:\Windows\Temp, then uploads it to the BigFix server via the client's Archive Manager. Caveat: an action parameter warns that this can create large storage usage on the BigFix root server, so use it on a limited number of systems.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Category></Category>
 		<DownloadSize>384846</DownloadSize>

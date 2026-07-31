@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Offer: Open Local BigFix REST API in Browser - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Offer that opens the locally running BigFix REST API help page in the current user's default browser. Relevant only on a BigFix Root Server where the REST API port is listening and a user is logged on.</P> ]]></Description>
 		<Relevance>exists sockets whose(exists local ports whose(it = unique value of (it as integer) of values of settings "_BESRelay_HTTPServer_PortNumber" of client) of it AND exists names whose(it = "BESRootServer.exe") of processes of it) of networks</Relevance>
 		<Relevance>exists (current users;logged on users)</Relevance>
 		<Category></Category>

@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>change permission on tmp folder - Linux</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Runs chmod on the /tmp folder to ensure the user, group, and other permission bits are each at least 6 (read/write), raising any that are lower. Relevant only when one of those permission masks is currently below 6.</P> ]]></Description>
 		<Relevance><![CDATA[exists (user masks of it; group masks of it; other masks of it) whose(it < 6) of folders "/tmp"]]></Relevance>
 		<Category></Category>
 		<DownloadSize>0</DownloadSize>

@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Compress and Upload System Logs - Linux</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Collects Linux system event and audit logs (audit, auth, and messages files under /var/log, /var/adm, and related folders) into a dated tar.gz archive in /tmp, then uploads it to the BigFix server via the client's Archive Manager. The action adjusts the client's ArchiveManager settings (max archive size, operating mode, and log file set) and triggers "archive now" to send the file.</P> ]]></Description>
 		<Relevance>unix of operating system</Relevance>
 		<Relevance>exists (folders "log" of it; /* Unix Log Folder: */ folders "adm" of it) of folders "/var"</Relevance>
 		<Relevance>exists files whose(exists (it as lowercase) whose(it starts with "audit" OR it starts with "auth" OR it starts with "messages") of name of it) of (folders "audit" of it; folders "authlog" of it; it) of (folders "log" of it; /* Unix Log Folder: */ folders "adm" of it) of folders "/var"</Relevance>

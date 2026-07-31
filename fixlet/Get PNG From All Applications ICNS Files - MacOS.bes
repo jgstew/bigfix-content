@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Get PNG From All Applications ICNS Files - MacOS</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads the osxiconutils tool and uses its icns2image utility to extract a 128px PNG icon from each application in /Applications on a macOS endpoint, saving them to /tmp/_BigFix/Icons and then base64-encoding each PNG. Intended for icon extraction/inventory.</P> ]]></Description>
 		<Relevance>mac of operating system</Relevance>
 		<Category></Category>
 		<DownloadSize>82663</DownloadSize>

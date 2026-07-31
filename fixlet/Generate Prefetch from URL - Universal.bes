@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Generate Prefetch from URL - Universal</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads a file from a URL entered at deploy time and generates a BigFix ActionScript "prefetch" statement for it (including the file name, sha1, size, URL, and sha256), saving the result to prefetch.txt in the client __Download folder. This is an authoring helper for building prefetch lines for other fixlets.</P> ]]></Description>
 		<Relevance>true</Relevance>
 		<Category></Category>
 		<Source>Internal</Source>

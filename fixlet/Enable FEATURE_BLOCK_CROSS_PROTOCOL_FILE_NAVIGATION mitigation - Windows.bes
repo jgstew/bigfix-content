@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Enable FEATURE_BLOCK_CROSS_PROTOCOL_FILE_NAVIGATION mitigation - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>Applies the Microsoft-recommended registry mitigation for CVE-2023-36884 by setting FEATURE_BLOCK_CROSS_PROTOCOL_FILE_NAVIGATION to 1 for the Microsoft Office executables (Excel, Graph, Access, Publisher, PowerPoint, Visio, Project, Word, and WordPad) in both 32-bit and 64-bit registry views.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>x64 of operating system</Relevance>
 		<Relevance>18 != number of values ("Excel.exe";"Graph.exe";"MSAccess.exe";"MSPub.exe";"Powerpnt.exe";"Visio.exe";"WinProj.exe";"WinWord.exe";"Wordpad.exe") whose(it as string as integer = 1) of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BLOCK_CROSS_PROTOCOL_FILE_NAVIGATION" of (x64 registries; x32 registries)</Relevance>

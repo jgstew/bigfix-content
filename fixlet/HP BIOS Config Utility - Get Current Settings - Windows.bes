@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>HP BIOS Config Utility - Get Current Settings - Windows TODO:testing</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>On HP-manufactured Windows endpoints, downloads and extracts the HP BIOS Configuration Utility (via 7-Zip) and runs it with /get to export the current BIOS settings to a results_bios_settings_hp.txt log file. Read-only reporting task; still marked as under testing.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists (it as string as trimmed string) whose(it = "HP" OR it contains "Hewlett-Packard") of (values "vendor" of structures "bios_information" of it; values "manufacturer" of structures "base_board_information" of it; values "manufacturer" of structures "system_information" of it) of smbioses</Relevance>
 		<Relevance>not exists files "results_bios_settings_hp.txt" of folders "__BESData\__Global\Logs" of parent folders of client</Relevance>

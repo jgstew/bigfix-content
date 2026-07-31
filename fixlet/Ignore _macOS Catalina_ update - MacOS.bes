@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Ignore "macOS Catalina" update - MacOS</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Runs 'softwareupdate --ignore "macOS Catalina"' on macOS endpoints (older than 10.15) to add the Catalina upgrade to the ignored updates list so it is not offered by Software Update. Note: the --ignore option was deprecated by Apple in later macOS releases.</P> ]]></Description>
 		<Relevance>mac of operating system</Relevance>
 		<Relevance><![CDATA[exists version whose(it < "10.15") of operating system]]></Relevance>
 		<Relevance>not exists strings whose(it = "macOS Catalina") of values of arrays "InactiveUpdates" of dictionaries of files "/Library/Preferences/com.apple.SoftwareUpdate.plist"</Relevance>

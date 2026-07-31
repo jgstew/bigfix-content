@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>broadcast message at bigfix install - *nix</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Uses the Unix "wall" command to broadcast a message to all logged-in users confirming that the BigFix client is installed and working, noting how long ago it first subscribed. Relevant only on systems that have wall and were first subscribed within the last 4 days.</P> ]]></Description>
 		<Relevance>exists files "/usr/bin/wall"</Relevance>
 		<Relevance><![CDATA[exists it whose(it < 4 * day) of absolute values of (now - it) of minima of subscribe times of sites]]></Relevance>
 		<Category></Category>

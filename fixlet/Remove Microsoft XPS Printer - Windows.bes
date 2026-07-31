@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Remove Microsoft XPS Printer - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>Removes the "Microsoft XPS Document Writer" virtual printer on Windows using printui.exe. Applies to Windows computers where that printer is present. Optionally, the XPS Services Windows feature can also be disabled (commented out in the action).</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists selects "Name from Win32_Printer where Name like 'Microsoft XPS Document Writer'" of wmis</Relevance>
 		<Category></Category>

@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Remove Dock Item - Calendar - dockutil - Mac</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads the dockutil script and uses it to remove the Calendar app icon from the macOS Dock for all user home directories (--allhomes). Applies to Mac computers that currently have Calendar pinned to the Dock.</P> ]]></Description>
 		<Relevance>mac of operating system</Relevance>
 		<Relevance>exists unique values whose(it = "Calendar") of strings "file-label" of dictionaries "tile-data" of dictionaries of values of arrays "persistent-apps" of dictionaries of files "Library/Preferences/com.apple.dock.plist" of folders of folders "/Users"</Relevance>
 		<Category></Category>

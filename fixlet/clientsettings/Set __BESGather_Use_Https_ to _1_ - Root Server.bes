@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Set "_BESGather_Use_Https" to "1" - Root Server</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>Sets the BigFix client setting _BESGather_Use_Https to 1 on the Root Server to enable HTTPS gathering (available in BigFix 9.5.0 and later). May require a restart of the BES Root service or the server to take effect.</P> ]]></Description>
 		<Relevance>exists main gather service</Relevance>
 		<Relevance><![CDATA[version of registration server >= "9.5.0"]]></Relevance>
 		<Relevance>not exists settings "_BESGather_Use_Https" whose("1" = value of it) of client</Relevance>

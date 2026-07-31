@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Offer: Open Local WebReports in Browser - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Offer that opens the locally running BigFix Web Reports server in the current user's default browser. Relevant only where the BigFix Web Reports server is running and listening on its configured port.</P> ]]></Description>
 		<Relevance>exists sockets whose(exists local ports whose(it = unique value of (it as integer) of values of settings "_WebReports_HTTPServer_PortNumber" of client) of it AND exists names whose(it = "BESWebReportsServer.exe") of processes of it) of networks</Relevance>
 		<Category></Category>
 		<Source>Internal</Source>

@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Install/Update Node.JS x64 - 4.7.3 - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads and silently installs the 64-bit Node.js 4.7.3 MSI on Windows where Node.js is not already at that version or newer.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>x64 of operating system</Relevance>
 		<Relevance><![CDATA[not exists keys whose(value "DisplayName" of it as string contains "Node.js" AND value "DisplayVersion" of it as string as version >= "4.7.3") of keys "HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall" of (x32 registries; x64 registries)]]></Relevance>

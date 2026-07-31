@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Suspend BitLocker Until Next Reboot - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>On Windows endpoints with BitLocker enabled on the system drive, this task suspends BitLocker protection until the next reboot (using manage-bde or the Suspend-BitLocker PowerShell cmdlet, with a reboot count of 1 on Windows 8/2012 and later). On older Windows 7/2008 R2 systems it adds a RunOnce entry to re-enable protection after reboot. Protection automatically resumes on the next restart.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists it whose( exists integer values whose(it = 1) of properties "ProtectionStatus" of it OR ( exists integer values whose(it = 0) of properties "ProtectionStatus" of it AND exists integer values whose(it = 2 OR it = 4) of properties "ConversionStatus" of it ) ) of select objects "ConversionStatus, ProtectionStatus, DriveLetter from Win32_EncryptableVolume" whose(string value of property "DriveLetter" of it starts with (name of drive of system folder)) of wmis "root\CIMv2\Security\MicrosoftVolumeEncryption"</Relevance>
 		<Category></Category>

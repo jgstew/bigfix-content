@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Open current BES Client Log file - BareTail - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads the BareTail log viewer to C:\ProgramData\BigFix and opens today's BigFix client log file in it as the current user. Offered on Windows computers where the logged-on user is a local administrator and BareTail is not already running.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>not exists processes "baretail.exe"</Relevance>
 		<Relevance>exists (it as string) whose(it contains name of logged on users) of members of local groups "Administrators"</Relevance>

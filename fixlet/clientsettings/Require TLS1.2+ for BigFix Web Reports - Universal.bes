@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Require TLS1.2+ for BigFix Web Reports - Universal</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>Sets the BigFix client setting _WebReports_HTTPServer_RequireTLS12 to 1 to require TLS 1.2 or higher on the BigFix Web Reports server. Targets machines running Web Reports where this setting is not already enabled; may require a service restart to take effect.</P> ]]></Description>
 		<Relevance>exists main gather service OR exists service "BESWebReportsServer"</Relevance>
 		<Relevance>not exists values whose(it as integer = 1) of settings "_WebReports_HTTPServer_RequireTLS12" of clients</Relevance>
 		<Category></Category>

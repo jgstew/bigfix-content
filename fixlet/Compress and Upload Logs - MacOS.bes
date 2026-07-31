@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Compress and Upload Logs - MacOS</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Collects macOS system logs (ASL logs, audit logs, install.log, and system.log) into a dated zip archive in /tmp, then uploads it to the BigFix server via the client's Archive Manager. The action adjusts the client's ArchiveManager settings (max archive size, operating mode, and log file set) and triggers "archive now" to send the file.</P> ]]></Description>
 		<Relevance>mac of operating system</Relevance>
 		<Category></Category>
 		<Source>Internal</Source>

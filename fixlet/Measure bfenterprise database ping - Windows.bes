@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Measure bfenterprise database ping - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>On BigFix servers with a bfenterprise ODBC entry, downloads tcping and runs a TCP ping to the BigFix database server and port (read from the ODBC settings) to measure connectivity. Results are written to the client log folder and the action exit code reflects the packet loss percentage.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists values "server" of keys whose(name of it as lowercase contains "bfenterprise") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\ODBC\ODBC.INI" of (registry; native registry)</Relevance>
 		<Category></Category>

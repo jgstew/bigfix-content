@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Cleanup old console caches - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Deletes old BigFix Enterprise Console cache folders (under each user's AppData\Local\BigFix\Enterprise Console) that have not been modified in more than 30 days, to reclaim disk space. The action removes one stale folder per run and is configured to reapply every 30 minutes so it repeats until all old caches are cleaned up.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance><![CDATA[exists (now - it) whose(it > 15*day) of modification times of folders of folders "AppData\Local\BigFix\Enterprise Console" of folders of folders "C:\Users"]]></Relevance>
 		<Category></Category>

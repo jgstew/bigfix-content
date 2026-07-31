@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title><![CDATA[Reboot Systems on Weekends if Uptime > 3 days]]></Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Restarts computers whose uptime exceeds 3 days. The reboot happens in the post-action, and the action is constrained to run only on Saturdays and Sundays. Not applicable to proxy agents.</P> ]]></Description>
 		<Relevance>NOT in proxy agent context</Relevance>
 		<Relevance><![CDATA[exists uptime whose(it > 3 * day) of operating system]]></Relevance>
 		<Category></Category>

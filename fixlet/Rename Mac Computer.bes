@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Rename Mac Computer</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Prompts for a new computer name and renames a Mac by setting ComputerName, LocalHostName, and HostName via scutil. Requires a restart to fully take effect. Not applicable to proxy agents.</P> ]]></Description>
 		<Relevance>mac of operating system</Relevance>
 		<Relevance>NOT in proxy agent context</Relevance>
 		<Category></Category>

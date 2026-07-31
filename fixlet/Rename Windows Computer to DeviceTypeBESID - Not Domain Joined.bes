@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Rename Windows Computer to DeviceTypeBESID - Not Domain Joined</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Renames a non-domain-joined Windows computer to an automatically generated name made from its device type (e.g. Laptop, Desktop, Server) concatenated with its BigFix computer ID, using the WMIC computersystem rename call. Requires a restart to take effect. Excludes domain-joined machines and the Infra group.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>NOT in proxy agent context</Relevance>
 		<Relevance>not exists distinguished names of local computers of active directories</Relevance>

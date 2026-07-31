@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Set BigFix Console FEATURE_ZONE_ELEVATION - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>Sets the Internet Explorer FEATURE_ZONE_ELEVATION registry value for BESConsole.exe to 1 (in both native and 32-bit registry views) so the BigFix Console's embedded browser can navigate between security zones. Applies to Windows computers with the BigFix Console installed where the value is not already set.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists regapps "BESConsole.exe"</Relevance>
 		<Relevance>not exists values "BESConsole.exe" whose(it as string as integer = 1) of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_ZONE_ELEVATION" of native registries</Relevance>

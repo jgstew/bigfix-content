@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Trigger Gather / Command Polling with file - BES Client</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>This fixlet becomes relevant when a trigger file whose name starts with "_BigFix_Trigger_Gather" is placed in /tmp or /Windows/Temp. Its action forces the BigFix client to gather (check in for new content) via "enable gathering" and then deletes the trigger file, providing a file-based way to prompt an immediate gather/command poll.</P> ]]></Description>
 		<Relevance>exists files whose(name of it starts with "_BigFix_Trigger_Gather") of (folders "/tmp"; folders "/Windows/Temp")</Relevance>
 		<Category></Category>
 		<Source>Internal</Source>

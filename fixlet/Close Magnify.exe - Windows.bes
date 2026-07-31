@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Close Magnify.exe - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Forcibly closes the Windows Magnifier (Magnify.exe) by running taskkill (with /T /F) against all Magnify.exe process IDs. Applies where a Magnify.exe process is running. Note: this action is marked as untested (TODO: test).</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists processes "Magnify.exe"</Relevance>
 		<Category></Category>

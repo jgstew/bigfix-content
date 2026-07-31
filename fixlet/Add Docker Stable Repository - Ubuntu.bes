@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Add Docker Stable Repository - Ubuntu</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Adds Docker's official stable APT repository for the current Ubuntu release (using add-apt-repository) and refreshes the package index with apt-get update, so that Docker CE can be installed from the repository. Applies to 64-bit (x86_64/amd64) Ubuntu systems that have Docker's GPG key already imported.</P> ]]></Description>
 		<Relevance>unix of operating system</Relevance>
 		<Relevance>exists architectures whose(it = "x86_64") of operating systems</Relevance>
 		<Relevance>exists packages "apt" of debianpackages</Relevance>

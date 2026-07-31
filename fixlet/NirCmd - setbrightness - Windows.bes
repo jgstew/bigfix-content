@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>NirCmd - setbrightness - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads the NirCmd utility and uses it to set the display brightness to a value entered when the action is taken (clamped between 5 and 100). Applies only to displays that support brightness control via WMI.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists integer values of selects "CurrentBrightness FROM WmiMonitorBrightness WHERE Active=True" of wmis "ROOT/WMI"</Relevance>
 		<Category>Configuration</Category>

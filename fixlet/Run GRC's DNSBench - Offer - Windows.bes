@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Run GRC's DNSBench - Offer - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads GRC's DNSBench utility from grc.com to the BigFix ProgramData tmp folder and runs it as the current user to benchmark DNS servers. Offered on Windows computers where DNSBench is not already running.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>not exists processes whose(name of it starts with "DNSBench")</Relevance>
 		<Category>Offer</Category>

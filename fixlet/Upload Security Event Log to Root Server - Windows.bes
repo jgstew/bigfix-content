@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Upload Security Event Log to Root Server - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>On Windows endpoints where C:\Windows\Temp\EventLogBackupSecurity.evt exists, this task uses the BigFix client Archive Manager to upload that Security event log backup file to the root server. It configures the archive manager settings (max size, manual operating mode, and file set) and then runs "archive now". The root server's _BESRelay_UploadManager_CompressedFileMaxSize may need to be increased to accept the file.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists files "C:\Windows\Temp\EventLogBackupSecurity.evt"</Relevance>
 		<Category></Category>

@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>BigFix Console: Set gather sites https - Windows - LGPO</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Configures the BigFix Enterprise Console to gather sites over HTTPS by setting the "GatherSitesUsingHttps" user preference (DWORD:1) via Local Group Policy. The action downloads Microsoft's LGPO utility, extracts it, applies the registry.pol setting, and runs gpupdate for logged-on users to apply the policy.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists keys "Software\BigFix\Enterprise Console" of keys of keys "HKEY_USERS" of registries</Relevance>
 		<Relevance>not exists (it as string as integer) whose(it = 1) of values "GatherSitesUsingHttps" of keys "Software\BigFix\Enterprise Console\Preferences" of keys of keys "HKEY_USERS" of registries</Relevance>

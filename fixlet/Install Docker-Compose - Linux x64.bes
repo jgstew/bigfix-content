@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Install Docker-Compose - Linux x64</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads the Docker Compose 1.16.1 x86_64 binary, installs it to /usr/local/bin/docker-compose, and makes it executable on 64-bit Linux endpoints that already have Docker installed.</P> ]]></Description>
 		<Relevance>unix of operating system</Relevance>
 		<Relevance>x64 of operating system</Relevance>
 		<Relevance>not exists files "/usr/local/bin/docker-compose"</Relevance>

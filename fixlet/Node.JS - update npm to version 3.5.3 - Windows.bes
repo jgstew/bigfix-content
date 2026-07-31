@@ -3,7 +3,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Fixlet>
 		<Title>Node.JS - update npm to version 3.5.3 - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the problem and the corrective action here&gt; ]]></Description>
+		<Description><![CDATA[<P>Updates the npm package manager bundled with an installed Node.js to version 3.5.3 by running npm install in the Node.js folder. Runs on Windows where npm is present but older than 3.5.3.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists folders "npm" of folders "node_modules" of (folders it) of unique values of (it as string) of values "InstallPath" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Node.js" of (x32 registries; x64 registries)</Relevance>
 		<Relevance><![CDATA[not exists values whose(it as string as version >= "3.5.3") of keys "version" of jsons of files "package.json" of folders "npm" of folders "node_modules" of (folders it) of unique values of (it as string) of values "InstallPath" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Node.js" of (x32 registries; x64 registries)]]></Relevance>

@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Install/Update Dell Command Configure 4.0 - Windows</Title>
-		<Description><![CDATA[&lt;enter a description of the task here&gt; ]]></Description>
+		<Description><![CDATA[<P>Downloads and silently installs Dell Command | Configure 4.0.0.391 on supported Dell systems (OptiPlex, Latitude, Precision, XPS, and Venue models). Only runs where the tool is not already installed at that version or newer.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance><![CDATA[not exists keys whose(value "DisplayName" of it as string as trimmed string starts with "Dell Command | Configure" AND value "DisplayVersion" of it as string as version >= "4.0.0.391") of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall" of (x64 registries; x32 registries)]]></Relevance>
 		<Relevance>/* DELL Only */ exists values "vendor" whose(it as string as uppercase contains "DELL") of structures "bios_information" of smbios</Relevance>
