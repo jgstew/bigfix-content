@@ -23,10 +23,12 @@ repos:
       - id: detect-private-key
 
   - repo: https://github.com/jgstew/pre-commit-bigfix
-    rev: v0.4.2
+    rev: v0.6.1
     hooks:
       - id: bes-schema-validate
       - id: bes-actionscript-lint-schclass
+      - id: bes-actionscript-validate-prefetch
+        # args: [--disable, "E401"]
       - id: bes-conventions-check
         args: [--strict, --disable, "W208,W207,W206"]
         exclude: |

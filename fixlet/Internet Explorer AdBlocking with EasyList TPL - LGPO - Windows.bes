@@ -34,7 +34,7 @@ parameter "numMissingBefore" = "{ number of it whose(not exists values "UrL" who
 
 prefetch LGPO.zip sha1:4335992dfb3f6592eb37d39e521d0e9459112cb3 size:626964 https://msdnshared.blob.core.windows.net/media/TNBlogsFS/prod.evol.blogs.technet.com/telligent.evolution.components.attachments/01/4062/00/00/03/65/94/11/LGPO.zip sha256:c7623ad8b2d6b50f030d63b87c9864b1ec5221e2c0a4c2aac87e91426f294d97
 // Download UnZip utility
-prefetch unzip.exe sha1:e1652b058195db3f5f754b7ab430652ae04a50b8 size:167936 http://software.bigfix.com/download/redist/unzip-5.52.exe sha256:8d9b5190aace52a1db1ac73a65ee9999c329157c8e88f61a772433323d6b7a4a
+prefetch unzip.exe sha1:84debf12767785cd9b43811022407de7413beb6f size:204800 http://software.bigfix.com/download/redist/unzip-6.0.exe sha256:2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
 // Add unzip.exe to the client utility cache
 utility __Download\unzip.exe
 

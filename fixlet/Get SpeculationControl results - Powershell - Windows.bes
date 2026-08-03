@@ -34,7 +34,7 @@
 prefetch speculationcontrol.nupkg sha1:64b07aa1c182073368218a2930595b6f6c2d7f28 size:23481 https://devopsgallerystorage.blob.core.windows.net/packages/speculationcontrol.1.0.7.nupkg sha256:98cbda6b1ff68c05a1801385dc620e40c4bdfec672d300f597b2b26243ab58c9
 
 //  - This unzip is a compiled verion of unzip v5.52 fom http://info-zip.org/
-prefetch unzip.exe sha1:e1652b058195db3f5f754b7ab430652ae04a50b8 size:167936 http://software.bigfix.com/download/redist/unzip-5.52.exe sha256:8d9b5190aace52a1db1ac73a65ee9999c329157c8e88f61a772433323d6b7a4a
+prefetch unzip.exe sha1:84debf12767785cd9b43811022407de7413beb6f size:204800 http://software.bigfix.com/download/redist/unzip-6.0.exe sha256:2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
 
 // -- END:DOWNLOADS -----------------------
 
@@ -81,7 +81,7 @@ waithidden cmd /C powershell -ExecutionPolicy Bypass -command "import-module '{p
 prefetch speculationcontrol.nupkg sha1:64b07aa1c182073368218a2930595b6f6c2d7f28 size:23481 https://devopsgallerystorage.blob.core.windows.net/packages/speculationcontrol.1.0.7.nupkg sha256:98cbda6b1ff68c05a1801385dc620e40c4bdfec672d300f597b2b26243ab58c9
 
 //  - This unzip is a compiled verion of unzip v5.52 fom http://info-zip.org/
-prefetch unzip.exe sha1:e1652b058195db3f5f754b7ab430652ae04a50b8 size:167936 http://software.bigfix.com/download/redist/unzip-5.52.exe sha256:8d9b5190aace52a1db1ac73a65ee9999c329157c8e88f61a772433323d6b7a4a
+prefetch unzip.exe sha1:84debf12767785cd9b43811022407de7413beb6f size:204800 http://software.bigfix.com/download/redist/unzip-6.0.exe sha256:2122557d350fd1c59fb0ef32125330bde673e9331eb9371b454c2ad2d82091ac
 
 // -- END:DOWNLOADS -----------------------
 

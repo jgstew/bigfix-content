@@ -55,6 +55,7 @@
 
 // https://support.microsoft.com/en-us/help/4072698/windows-server-guidance-to-protect-against-the-speculative-execution
 // https://www.powershellgallery.com/packages/SpeculationControl
+// prefetch-ok: template
 prefetch speculationcontrol.nupkg sha1:TEMPLATE_FILE_SHA1 size:123456789 TEMPLATE_FILE_LINK sha256:TEMPLATE_FILE_SHA2
 
 //  - This unzip is a compiled verion of unzip v5.52 fom http://info-zip.org/
@@ -102,6 +103,7 @@ waithidden cmd /C powershell -ExecutionPolicy Bypass -command "import-module '{p
 
 // https://support.microsoft.com/en-us/help/4072698/windows-server-guidance-to-protect-against-the-speculative-execution
 // https://www.powershellgallery.com/packages/SpeculationControl
+// prefetch-ok: template
 prefetch speculationcontrol.nupkg sha1:TEMPLATE_FILE_SHA1 size:123456789 TEMPLATE_FILE_LINK sha256:TEMPLATE_FILE_SHA2
 
 //  - This unzip is a compiled verion of unzip v5.52 fom http://info-zip.org/
