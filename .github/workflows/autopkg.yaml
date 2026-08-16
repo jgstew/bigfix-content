@@ -17,9 +17,9 @@ jobs:
         with:
           python-version: 3.9
       - name: git clone autopkg
-        run: git clone https://github.com/jgstew/autopkg.git
-      - name: switch autopkg branch
-        run: cd autopkg && git checkout dev
+        run: git clone https://github.com/autopkg/autopkg.git
+      # - name: switch autopkg branch
+      #   run: cd autopkg && git checkout dev
       - name: install requirements autopkg
         run: cd autopkg && pip3 install --requirement requirements.txt --quiet
       - name: create autopkg config dir
