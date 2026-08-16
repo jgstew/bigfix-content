@@ -13,15 +13,15 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
-          python-version: 3.9
+          python-version: "3.10"
       - name: git clone autopkg
-        run: git clone https://github.com/jgstew/autopkg.git
-      - name: switch autopkg branch
-        run: cd autopkg && git checkout dev
+        run: git clone https://github.com/autopkg/autopkg.git
+      # - name: switch autopkg branch
+      #   run: cd autopkg && git checkout dev
       - name: install requirements autopkg
-        run: cd autopkg && pip3 install --requirement requirements.txt --quiet
+        run: cd autopkg && pip3 install --requirement .github/workflows/requirements.txt --quiet
       - name: create autopkg config dir
         run: pwd && cd ~ && mkdir -p .config/Autopkg
       - name: create default autopkg config files
