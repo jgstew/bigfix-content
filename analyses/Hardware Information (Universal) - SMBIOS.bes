@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Analysis>
 		<Title>Hardware Information (Universal) - SMBIOS</Title>
-		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Description><![CDATA[Reports hardware details read from SMBIOS, such as system manufacturer, model, serial number, and BIOS information.]]></Description>
 		<Relevance>exists smbios</Relevance>
 		<Source>Internal</Source>
 		<SourceReleaseDate>2019-02-26</SourceReleaseDate>

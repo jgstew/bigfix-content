@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Analysis>
 		<Title>Authenticating Relay Info - Universal</Title>
-		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Description><![CDATA[Reports whether the BigFix Relay is an authenticating relay and related relay authentication settings.]]></Description>
 		<Relevance>exists relay service</Relevance>
 		<Relevance>exists values of (settings "_BESRelay_Comm_KeyExchangePassword" of it ; settings "_BESRelay_Comm_Authenticating" of it) of client</Relevance>
 		<Source>Internal</Source>

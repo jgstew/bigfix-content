@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Analysis>
 		<Title>SSH Config - Linux Unix</Title>
-		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Description><![CDATA[Reports the SSH server configuration in effect on Linux and Unix endpoints.]]></Description>
 		<Relevance>exists files "/etc/ssh/sshd_config"</Relevance>
 		<Source>Internal</Source>
 		<SourceReleaseDate>2020-08-04</SourceReleaseDate>

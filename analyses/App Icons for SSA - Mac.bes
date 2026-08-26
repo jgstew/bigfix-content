@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Analysis>
 		<Title>App Icons for SSA - Mac</Title>
-		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Description><![CDATA[Reports application icon data from installed macOS applications for use with the BigFix Self Service Application.]]></Description>
 		<Relevance>mac of operating system</Relevance>
 		<Relevance>exists files ending in ".png.base64" of folders "/tmp/_BigFix/Icons"</Relevance>
 		<Source>Internal</Source>

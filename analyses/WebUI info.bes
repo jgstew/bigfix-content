@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Analysis>
 		<Title>WebUI info</Title>
-		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Description><![CDATA[Reports information about the BigFix WebUI installation and configuration on the endpoint.]]></Description>
 		<Relevance>exists main gather service</Relevance>
 		<Relevance>exists folders "WebUI" of (folders it) of unique values of pathnames of (it; parent folders of it) of (folders it) of (preceding texts of lasts "\" of it) of values of settings whose(it as string contains "BES Server") of clients</Relevance>
 		<Source>Internal</Source>

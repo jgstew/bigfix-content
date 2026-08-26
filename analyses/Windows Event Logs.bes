@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Analysis>
 		<Title>Windows Event Logs</Title>
-		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Description><![CDATA[Reports information about the Windows event logs present on the endpoint, including log names, sizes, and settings.]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Source>Internal</Source>
 		<SourceReleaseDate>2020-03-19</SourceReleaseDate>

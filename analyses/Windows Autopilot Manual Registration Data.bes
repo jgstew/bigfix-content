@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Analysis>
 		<Title>Windows Autopilot Manual Registration Data</Title>
-		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Description><![CDATA[Reports the hardware hash and related data needed to manually register a Windows endpoint with Windows Autopilot.]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists string values of selects "DeviceHardwareData from MDM_DevDetail_Ext01 where InstanceID='Ext' AND ParentID='./DevDetail'" of wmis "root/cimv2/mdm/dmmap"</Relevance>
 		<Source>Internal</Source>

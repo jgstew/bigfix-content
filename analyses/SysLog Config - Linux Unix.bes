@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Analysis>
 		<Title>SysLog Config - Linux Unix</Title>
-		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Description><![CDATA[Reports the syslog configuration in use on Linux and Unix endpoints, including configured log destinations.]]></Description>
 		<Relevance>not exists files "/etc/rsyslog.conf" AND exists files "/etc/syslog.conf"</Relevance>
 		<Source>Internal</Source>
 		<SourceReleaseDate>2020-03-26</SourceReleaseDate>
