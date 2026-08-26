@@ -23,7 +23,7 @@ repos:
       - id: detect-private-key
 
   - repo: https://github.com/jgstew/pre-commit-bigfix
-    rev: v0.9.1
+    rev: v0.9.3
     hooks:
       - id: bes-schema-validate
       - id: bes-actionscript-lint-schclass
@@ -32,7 +32,7 @@ repos:
         # args: [--auto-fix-network, "yes"]
         # args: [--disable, "E401"]
       - id: bes-conventions-check
-        args: [--strict, --disable, "W208,W207,W206,W212"]
+        args: [--strict, --disable, "W207,W206,W212"]
         exclude: |
           (?x)^(
             fixlet/RESTAPI_\ Generate\ uninstall\ tasks\ for\ all\ MSI\ applications\ on\ target\ computer\ -\ Windows\.bes
