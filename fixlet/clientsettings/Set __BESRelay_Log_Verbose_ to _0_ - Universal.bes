@@ -2,7 +2,7 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
 		<Title>Set "_BESRelay_Log_Verbose" to "0" - Universal</Title>
-		<Description></Description>
+		<Description>Set "_BESRelay_Log_Verbose" to "0"</Description>
 		<Relevance>exists relay service OR exists main gather service</Relevance>
 		<Relevance>not exists settings "_BESRelay_Log_Verbose" whose("0" = value of it) of client</Relevance>
 		<Category>Configuration: Client Settings</Category>

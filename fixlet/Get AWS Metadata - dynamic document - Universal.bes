@@ -3,7 +3,7 @@
 	<Task>
 		<Title>Get AWS Metadata - dynamic document - Universal</Title>
 		<Description><![CDATA[<P>On AWS EC2 instances, retrieves the instance identity dynamic document from the EC2 metadata service (http://169.254.169.254/latest/dynamic/instance-identity/document) and saves it as aws_metadata_dynamic-doc.json in the client log folder for reporting. The action is configured to reapply periodically to keep the data current.</P> ]]></Description>
-		<Relevance> /* isAWS? */ exists ( (it as string) of values "manufacturer" of it, (it as string) of values "version" of it ) whose(item 0 of it starts with "Xen" AND item 1 of it as lowercase contains "amazon") of structures "system_information" of smbioses</Relevance>
+		<Relevance>/* isAWS? */ exists ( (it as string) of values "manufacturer" of it, (it as string) of values "version" of it ) whose(item 0 of it starts with "Xen" AND item 1 of it as lowercase contains "amazon") of structures "system_information" of smbioses</Relevance>
 		<Relevance><![CDATA[not exists files whose(name of it as lowercase starts with "aws_metadata_dynamic-doc.json" AND (now - modification time of it) < 3*day ) of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
 		<Category></Category>
 		<DownloadSize>0</DownloadSize>

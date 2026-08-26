@@ -4,7 +4,7 @@
 		<Title>WARNING: Do Not Reboot Mac! SymLink broken!</Title>
 		<Description><![CDATA[<P>A warning-only fixlet for macOS that detects when the /var symlink to /private/var is broken (a known issue caused by Google Chrome Keystone on non-SIP Macs) which would prevent the machine from booting. It takes no corrective action; the action only displays a prominent message telling the user not to reboot and to contact the helpdesk.</P> ]]></Description>
 		<Relevance>mac of operating system</Relevance>
-		<Relevance> /* detect broken symlink: */ 1 != number of unique values whose(multiplicity of it = 2) of modification times of (folders "/var"; folders "/private/var")</Relevance>
+		<Relevance>/* detect broken symlink: */ 1 != number of unique values whose(multiplicity of it = 2) of modification times of (folders "/var"; folders "/private/var")</Relevance>
 		<Category></Category>
 		<DownloadSize>0</DownloadSize>
 		<Source>Internal</Source>

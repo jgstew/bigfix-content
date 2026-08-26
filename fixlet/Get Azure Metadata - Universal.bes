@@ -3,7 +3,7 @@
 	<Task>
 		<Title>Get Azure Metadata - api2025-04-07 - Universal</Title>
 		<Description><![CDATA[ get azure metadata ]]></Description>
-		<Relevance> /* isMicrosoftVM? */ exists ( (it as string) of values "manufacturer" of it, (it as string) of values "product_name" of it, (it as string) of values "version" of it ) whose(item 0 of it starts with "Microsoft" AND item 1 of it starts with "Virtual") of structures "system_information" of smbioses</Relevance>
+		<Relevance>/* isMicrosoftVM? */ exists ( (it as string) of values "manufacturer" of it, (it as string) of values "product_name" of it, (it as string) of values "version" of it ) whose(item 0 of it starts with "Microsoft" AND item 1 of it starts with "Virtual") of structures "system_information" of smbioses</Relevance>
 		<Relevance>/* isAzure? */ exists (it as string as trimmed string) whose(it = "7783-7084-3265-9085-8269-3286-77") of values "asset_tag_number" of structures "system_enclosure_or_chassis" of smbioses</Relevance>
 		<Relevance><![CDATA[not exists files whose(name of it as lowercase starts with "azure_metadata.json" AND (now - modification time of it) < 1*day ) of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
 		<Relevance>( windows of operating system ) OR exists files whose(name of it as lowercase = "curl" OR name of it as lowercase = "curl.exe") of (folders it) of unique values of (it as trimmed string) of substrings separated by (";";":") of values of (variables "PATH" of it; (if (windows of operating system) then (x64 variables "PATH" of it) else NOTHINGS) ) of environments</Relevance>
