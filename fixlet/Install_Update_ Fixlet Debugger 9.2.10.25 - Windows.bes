@@ -35,10 +35,10 @@
 
 // Download zipinst
 //   http://www.nirsoft.net/utils/zipinst.html
-prefetch zipinst.exe sha1:6a1290fd85019dc80e34abeb4be5bcbbc742d012 size:39424 http://www.nirsoft.net/utils/zipinst.exe
+prefetch zipinst.exe sha1:6a1290fd85019dc80e34abeb4be5bcbbc742d012 size:39424 https://www.nirsoft.net/utils/zipinst.exe sha256:d5249a08f76092c4b05a3c3295426fe2f481eaa3c11d2ca1dc50c6b323bb6002
 
 // Download Fixlet Debugger
-prefetch FixletDebugger.zip sha1:232f026d21f9c3a2c509b367ba52be16aa5bd190 size:8303994 http://software.bigfix.com/download/bes/92/util/QNA9.2.10.25.zip
+prefetch FixletDebugger.zip sha1:232f026d21f9c3a2c509b367ba52be16aa5bd190 size:8303994 http://software.bigfix.com/download/bes/92/util/QNA9.2.10.25.zip sha256:cc23693628a25f56c4b9a5e4ec7228cc6fde39d6eec03f7a972e9d5b4becd1d5
 
 // Add zipinst.exe to Utility Cache (to use in multiple tasks)
 utility __Download\zipinst.exe
