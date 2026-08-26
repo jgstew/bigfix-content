@@ -37,7 +37,7 @@ continue if { exists lines containing "yes" whose(it starts with "ChallengeRespo
 // restart sshd service if no active ssh connections:
 if { not exists sockets whose(established of tcp state of it AND "sshd" = name of process of it) of networks }
 wait bash -c "systemctl restart sshd.service"
-elseif
+else
 // tag system for reboot if sshd service was not restarted:
 action requires restart "sshd.service sshd_config change"
 endif
