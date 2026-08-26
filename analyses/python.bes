@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Analysis>
-		<Title>python</Title>
-		<Description><![CDATA[&lt;enter a description of the analysis here&gt; ]]></Description>
+		<Title>python - Windows</Title>
+		<Description><![CDATA[This analyses gets info about python installed on windows.]]></Description>
 		<Relevance>NOT in proxy agent context</Relevance>
 		<Source>Internal</Source>
 		<SourceReleaseDate>2018-03-26</SourceReleaseDate>
