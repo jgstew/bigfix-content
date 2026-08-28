@@ -37,7 +37,7 @@ if{ mac of operating system }
 // https://superuser.com/questions/155785/mac-os-x-date-time-synchronization
 
 // if mojave or later:
-wait sntp -sS $(systemsetup -getnetworktimeserver|awk '{print $4}')
+wait sntp -sS $(systemsetup -getnetworktimeserver|awk '{{print $4}')
 
 endif
 
