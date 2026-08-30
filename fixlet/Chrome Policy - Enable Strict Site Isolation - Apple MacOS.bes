@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Chrome Policy - Enable Strict Site Isolation - Apple MacOS  TODO:testing</Title>
+		<Title>Chrome Policy - Enable Strict Site Isolation - Apple MacOS TODO:testing</Title>
 		<Description><![CDATA[<P>Enables Google Chrome's Strict Site Isolation (SitePerProcess) policy on macOS by writing a com.google.chrome.plist policy file to /Library/Preferences. Caveats: this task is marked TODO:testing, it assumes no other Chrome policy already exists (overwriting the plist), and Chrome may need to be restarted (or the machine rebooted if a prior policy existed) for the setting to take effect.</P> ]]></Description>
 		<Relevance>mac of operating system</Relevance>
 		<Relevance>not exists files "/Library/Preferences/com.google.chrome.plist"</Relevance>

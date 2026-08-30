@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:noNamespaceSchemaLocation='BES.xsd'>
 	<Fixlet>
-        <Title>Install: Identity Finder - Windows   File:TEMPLATE_FILE_NAME</Title>
+        <Title>Install: Identity Finder - Windows File:TEMPLATE_FILE_NAME</Title>
         <Description><![CDATA[<P>This is a template. This is not meant to be used directly. Please use this through the Fixlet Maker Dashboard.</P>
 <P>Read more here:&nbsp; <A href="https://help.hcltechsw.com/bigfix/9.5/patch/Patch/Patch_Windows/c_fixlet_maker_dashboard_overview.html">https://help.hcltechsw.com/bigfix/9.5/patch/Patch/Patch_Windows/c_fixlet_maker_dashboard_overview.html</A></P>
 <P>If importing into the console, it must be imported into a site called "Fixlet Templates" in order to show up and work in the Fixlet Maker Dashboard.</P>

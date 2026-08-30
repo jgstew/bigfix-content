@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Set "_BESClient_Download_UtilitiesCacheLimitMB" to "300" if lower  - Universal</Title>
+		<Title>Set "_BESClient_Download_UtilitiesCacheLimitMB" to "300" if lower - Universal</Title>
 		<Description><![CDATA[<P>This task will ensure the BigFix Client Utility Cache is at least 300MB in size. This allows certain BigFix actions that use utilities that are shared among many different actions to help make sure the file is only downloaded a single time even if it is used many times.</P>
 <P>&nbsp;</P>]]></Description>
 		<Relevance><![CDATA[not exists settings "_BESClient_Download_UtilitiesCacheLimitMB" whose(300 <= (it as string as integer) of value of it) of client]]></Relevance>

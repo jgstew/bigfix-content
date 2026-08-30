@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Enable Meltdown Mitigations - MinVmVersionForCpuBasedMitigations - Windows  TODO: Testing Verification</Title>
+		<Title>Enable Meltdown Mitigations - MinVmVersionForCpuBasedMitigations - Windows TODO: Testing Verification</Title>
 		<Description><![CDATA[<P>Sets the MinVmVersionForCpuBasedMitigations registry value to "1.0" (per Microsoft guidance for Spectre/Meltdown speculative execution mitigations on Hyper-V hosts). This task requires a restart to take effect; on a Hyper-V host all virtual machines should be fully shut down first. Note: this content is flagged as needing testing verification.</P> ]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>/* I think this is only needed if Hyper-V is in use */ exists keys "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Virtualization" of (x64 registries; x32 registries)</Relevance>
