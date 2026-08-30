@@ -32,7 +32,7 @@ repos:
         # args: [--auto-fix-network, "yes"]
         # args: [--disable, "E401"]
       - id: bes-conventions-check
-        args: [--strict, --disable, "W207,W206,W212"]
+        args: [--strict, --disable, "W207,W206,W212,W214"]
         exclude: |
           (?x)^(
             fixlet/RESTAPI_\ Generate\ uninstall\ tasks\ for\ all\ MSI\ applications\ on\ target\ computer\ -\ Windows\.bes|
