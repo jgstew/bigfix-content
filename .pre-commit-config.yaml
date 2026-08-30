@@ -23,7 +23,7 @@ repos:
       - id: detect-private-key
 
   - repo: https://github.com/jgstew/pre-commit-bigfix
-    rev: v1.2.2
+    rev: v1.2.3
     hooks:
       - id: bes-schema-validate
       - id: bes-actionscript-lint-schclass
