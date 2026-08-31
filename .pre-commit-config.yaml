@@ -3,11 +3,11 @@
 # automatically run on commit:      pre-commit install
 # check all files in repo:          pre-commit run --all-files
 # check all files manual stage:     pre-commit run --all-files --hook-stage manual
-# update all checks to latest:      pre-commit autoupdate
+# update all checks to latest:      pre-commit autoupdate --freeze
 # https://github.com/pre-commit/pre-commit-hooks
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # frozen: v6.0.0
     hooks:
       - id: check-yaml
       - id: check-added-large-files
@@ -23,7 +23,7 @@ repos:
       - id: detect-private-key
 
   - repo: https://github.com/jgstew/pre-commit-bigfix
-    rev: v1.2.12
+    rev: b133f542dafd5581c11520af3096549c2809b435  # frozen: v1.2.12
     hooks:
       - id: bes-schema-validate
       - id: bes-actionscript-lint-schclass
@@ -45,7 +45,7 @@ repos:
           )$
 
   - repo: https://github.com/jgstew/pre-commit-jgstew
-    rev: v2.3.0
+    rev: a04f4ccc5f9af2d1cda1dd5c519bb3888439648b  # frozen: v2.3.0
     hooks:
       - id: fix-files-to-ascii
         # manual: non-ASCII is legitimate in much of this content
@@ -63,19 +63,19 @@ repos:
           )$
 
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.38.0
+    rev: cba56bcde1fdd01c1deb3f945e69764c291a6530  # frozen: v1.38.0
     hooks:
       - id: yamllint
         args: [-c=.yamllint.yaml]
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.38.0
+    rev: c4654a7e007c9619a5eb63c39a456572a0fa1851  # frozen: 0.38.0
     hooks:
       - id: check-github-workflows
         args: ["--verbose"]
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.3
+    rev: 57b21406f092110c18776e39b0bda50d37c945c8  # frozen: v2.4.3
     hooks:
       - id: codespell
         # `ths` is the session relevance inspector for html <th> elements:
