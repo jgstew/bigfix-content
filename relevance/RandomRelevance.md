@@ -16,6 +16,7 @@
 1. Tabs open in Chrome (only if chrome isn't running): `concatenations ", " of unique values whose(it does not contain "chrome://newtab" AND it does not contain "https://g.co/doodle") of ("http" & it) of following texts of lasts "http" of preceding texts of firsts "%10%08%08" of ( concatenations of characters whose(it != "%00") of it) whose(it contains "http" AND it contains "%10%08%08") of locked lines of files "AppData\Local\Google\Chrome\User Data\Default\Current Tabs" whose(exists locked lines of it) of folders of folders "C:\users"`
 1. Configured Settings of Global Protect VPN - MacOS `keys of dictionaries "Settings" of dictionaries "GlobalProtect" of dictionaries "Palo Alto Networks" of dictionaries of files "/Library/Preferences/com.paloaltonetworks.GlobalProtect.settings.plist"`
 1. Cred Failure? Windows ` /* Is there a Cred Validation Failure? */ (not exists audit successes whose(it) of system policies of subcategories whose(name of it = "Credential Validation") of account logon categories of audit policies)`
+1. subjects of SystemCertificates `subjects of base64 der encoded certificates string of (base64 encodes it) of (hexadecimal strings it) of following texts of firsts 8 of following texts of firsts "2000000001000000" of (it as string) of values "blob" of keys of keys "Certificates" of keys of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\SystemCertificates" of native registry`
 
 ### Session Relevance:
 
