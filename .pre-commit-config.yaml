@@ -23,7 +23,7 @@ repos:
       - id: detect-private-key
 
   - repo: https://github.com/jgstew/pre-commit-bigfix
-    rev: b133f542dafd5581c11520af3096549c2809b435  # frozen: v1.2.12
+    rev: eecee30bfc2f1e52bd28ceaa1b3389f025e4a76d  # frozen: v1.4.2
     hooks:
       - id: bes-schema-validate
       - id: bes-actionscript-lint-schclass
@@ -69,7 +69,7 @@ repos:
         args: [-c=.yamllint.yaml]
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: c4654a7e007c9619a5eb63c39a456572a0fa1851  # frozen: 0.38.0
+    rev: 4f85d46a92dc17713078e5de73f8a13190edf6fc  # frozen: 0.38.2
     hooks:
       - id: check-github-workflows
         args: ["--verbose"]
