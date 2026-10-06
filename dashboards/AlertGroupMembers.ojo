@@ -1,0 +1,238 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<BES>
+	<Wizard>
+		<Title>Custom - Alert Group Members</Title>
+		<UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+		<DefaultPage>Page1</DefaultPage>
+		<Page Name="Page1" DocType="HTML5">
+			<Title>Alert Group Members</Title>
+			<Head><![CDATA[
+				<meta http-equiv="X-UA-Compatible" content="IE=11">
+				<script>window.onerror = function(event, source, lineno, colno, error){ if( -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
+			]]></Head>
+			<HTML>
+				<![CDATA[
+					<script language="javascript">InsertUtilityDiv();</script>
+					<style>
+						/* No CSS variables / gap / sticky: the console's embedded browser is IE-based */
+						body {
+							margin: 0;
+							padding: 12px 16px;
+							font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+							font-size: 13px;
+							color: #1f2933;
+							background: #f5f7fa;
+						}
+						a { color: #0b5cad; text-decoration: none; }
+						a:hover { text-decoration: underline; }
+
+						.toolbar { display: flex; align-items: center; margin-bottom: 10px; }
+						.toolbar > * { margin-right: 8px; }
+						.title { font-size: 16px; font-weight: 600; margin-right: 16px; }
+						.search {
+							flex: 1 1 auto; max-width: 360px; padding: 5px 9px;
+							border: 1px solid #c3ccd6; border-radius: 4px; font-size: 13px;
+						}
+						.search:focus, select:focus { outline: none; border-color: #0b5cad; }
+						select, .btn {
+							padding: 5px 8px; border: 1px solid #c3ccd6; border-radius: 4px;
+							background: #fff; font-size: 12px; color: #1f2933; cursor: pointer;
+						}
+						.btn:hover { background: #eef2f6; }
+						.summary { margin-left: auto; color: #52606d; font-size: 12px; white-space: nowrap; }
+
+						.group {
+							background: #fff; border: 1px solid #d9e0e7; border-radius: 6px;
+							margin-bottom: 8px; overflow: hidden;
+						}
+						.group-head {
+							display: flex; align-items: center; padding: 7px 10px;
+							cursor: pointer; background: #fbfcfd; border-left: 4px solid #e0a100;
+						}
+						.group-head:hover { background: #f1f5f9; }
+						.caret { width: 14px; color: #7b8794; font-size: 10px; }
+						.group-name { font-weight: 600; flex: 1 1 auto; }
+						.badge {
+							background: #fff4cf; color: #7a5a00; border: 1px solid #f0d78a;
+							border-radius: 10px; padding: 0 8px; font-size: 11px; font-weight: 600;
+						}
+
+						table { width: 100%; border-collapse: collapse; }
+						th {
+							text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .04em;
+							color: #7b8794; padding: 4px 10px; border-top: 1px solid #e4e9ee;
+							border-bottom: 1px solid #e4e9ee; background: #fafbfc;
+						}
+						td { padding: 3px 10px; border-bottom: 1px solid #f0f3f6; }
+						tr:last-child td { border-bottom: none; }
+						tbody tr:hover td { background: #f6f9fc; }
+						td.time { color: #52606d; width: 260px; white-space: nowrap; }
+
+						.msg { padding: 24px; text-align: center; color: #52606d; }
+						.error { background: #fdecea; border: 1px solid #f5b5ae; color: #8a1c10; text-align: left; border-radius: 6px; }
+					</style>
+
+					<div class="toolbar">
+						<span class="title">Alert Group Members</span>
+						<input id="search" class="search" type="text" placeholder="Filter by alert or computer name..." />
+						<select id="days" title="Computers that reported within this many days">
+							<option value="30">Last 30 days</option>
+							<option value="45" selected="selected">Last 45 days</option>
+							<option value="90">Last 90 days</option>
+							<option value="180">Last 180 days</option>
+						</select>
+						<button id="expand" class="btn" type="button">Expand all</button>
+						<button id="collapse" class="btn" type="button">Collapse all</button>
+						<button id="refresh" class="btn" type="button">Refresh</button>
+						<span id="summary" class="summary"></span>
+					</div>
+					<div id="content"><div class="msg">Loading...</div></div>
+
+					<script>
+						var FIELD = '<~>';
+						var RECORD = '<<~>>';
+						var groups = [];      // [{ name, members: [{ id, name, time }] }]
+						var collapsed = {};   // group name -> true
+
+						function esc(s) {
+							return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+								.replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+						}
+
+						// One singular string back from Relevance; fields/records use plain-ASCII delimiters
+						// that are very unlikely to appear in group or computer names.
+						function buildQuery(days) {
+							return 'concatenations "' + RECORD + '" of (item 0 of it & "' + FIELD + '" & item 1 of it) of ' +
+								'(name of it, (id of it as string & "' + FIELD + '" & name of it & "' + FIELD +
+								'" & (last report time of it as string)) of members whose(now - last report time of it < ' +
+								days + '*day) of it) of bes computer groups whose(name of it starts with "Alert")';
+						}
+
+						function parse(raw) {
+							var byName = {}, out = [];
+							if (!raw) { return out; }
+							var recs = raw.split(RECORD);
+							for (var i = 0; i < recs.length; i++) {
+								var f = recs[i].split(FIELD);
+								if (f.length < 4 || !/^\d+$/.test(f[1])) { continue; }
+								var g = byName[f[0]];
+								if (!g) { g = byName[f[0]] = { name: f[0], members: [] }; out.push(g); }
+								g.members.push({ id: f[1], name: f[2], time: f[3] });
+							}
+							out.sort(function (a, b) { return a.name < b.name ? -1 : a.name > b.name ? 1 : 0; });
+							for (var j = 0; j < out.length; j++) {
+								out[j].members.sort(function (a, b) {
+									var x = a.name.toLowerCase(), y = b.name.toLowerCase();
+									return x < y ? -1 : x > y ? 1 : 0;
+								});
+							}
+							return out;
+						}
+
+						function load() {
+							var days = parseInt(document.getElementById('days').value, 10);
+							document.getElementById('content').innerHTML = '<div class="msg">Loading...</div>';
+							document.getElementById('summary').innerHTML = '';
+
+							// Console Relevance() is async: results arrive as an object keyed by index ("0", "1", ...)
+							function onSuccess(res) {
+								var raw = (res && res["0"] !== undefined) ? res["0"] : '';
+								groups = parse(String(raw));
+								render();
+							}
+							function onFailure(err) {
+								groups = [];
+								document.getElementById('content').innerHTML =
+									'<div class="msg error">Relevance query failed: ' + esc(err && err.message ? err.message : err) + '</div>';
+							}
+							try {
+								Relevance(buildQuery(days), { success: onSuccess, failure: onFailure });
+							} catch (e) {
+								onFailure(e);
+							}
+						}
+
+						function render() {
+							var q = document.getElementById('search').value.toLowerCase();
+							var html = '', shownGroups = 0, shownRows = 0, unique = {}, uniqueCount = 0;
+
+							for (var i = 0; i < groups.length; i++) {
+								var g = groups[i];
+								var groupHit = q === '' || g.name.toLowerCase().indexOf(q) > -1;
+								var rows = [];
+								for (var j = 0; j < g.members.length; j++) {
+									var m = g.members[j];
+									if (groupHit || m.name.toLowerCase().indexOf(q) > -1) { rows.push(m); }
+								}
+								if (rows.length === 0) { continue; }
+								shownGroups++;
+								shownRows += rows.length;
+
+								var open = !collapsed[g.name];
+								html += '<div class="group"><div class="group-head" data-group="' + i + '">' +
+									'<span class="caret">' + (open ? '&#9660;' : '&#9654;') + '</span>' +
+									'<span class="group-name">' + esc(g.name) + '</span>' +
+									'<span class="badge">' + rows.length + '</span></div>';
+								if (open) {
+									html += '<table><thead><tr><th>Computer</th><th>Last report</th></tr></thead><tbody>';
+									for (var k = 0; k < rows.length; k++) {
+										var r = rows[k];
+										if (!unique[r.id]) { unique[r.id] = true; uniqueCount++; }
+										html += '<tr><td><a href="linkid:opencomputer(' + r.id + ')">' + esc(r.name) + '</a></td>' +
+											'<td class="time">' + esc(r.time) + '</td></tr>';
+									}
+									html += '</tbody></table>';
+								} else {
+									for (var n = 0; n < rows.length; n++) {
+										if (!unique[rows[n].id]) { unique[rows[n].id] = true; uniqueCount++; }
+									}
+								}
+								html += '</div>';
+							}
+
+							if (shownGroups === 0) {
+								html = '<div class="msg">' + (groups.length === 0
+									? 'No "Alert" groups have members that reported in this time window.'
+									: 'Nothing matches your filter.') + '</div>';
+							}
+							document.getElementById('content').innerHTML = html;
+							document.getElementById('summary').innerHTML = shownGroups + ' alert' +
+								(shownGroups === 1 ? '' : 's') + ' &middot; ' + uniqueCount + ' computer' +
+								(uniqueCount === 1 ? '' : 's');
+						}
+
+						function setAll(isCollapsed) {
+							collapsed = {};
+							if (isCollapsed) {
+								for (var i = 0; i < groups.length; i++) { collapsed[groups[i].name] = true; }
+							}
+							render();
+						}
+
+						// Elements above are already in the DOM, so wire up directly instead of waiting on window.onload
+						(function () {
+							document.getElementById('search').onkeyup = render;
+							document.getElementById('search').oninput = render;
+							document.getElementById('days').onchange = load;
+							document.getElementById('refresh').onclick = load;
+							document.getElementById('expand').onclick = function () { setAll(false); };
+							document.getElementById('collapse').onclick = function () { setAll(true); };
+							// Delegated click: toggle a group when its header is clicked (links are not in headers)
+							document.getElementById('content').onclick = function (ev) {
+								var el = ev.target || ev.srcElement;
+								while (el && el !== this && !(el.getAttribute && el.getAttribute('data-group'))) { el = el.parentNode; }
+								if (el && el !== this) {
+									var name = groups[parseInt(el.getAttribute('data-group'), 10)].name;
+									collapsed[name] = !collapsed[name];
+									render();
+								}
+							};
+							load();
+						})();
+					</script>
+				]]>
+			</HTML>
+		</Page>
+	</Wizard>
+</BES>

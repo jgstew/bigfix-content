@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE Domains
+[
+	<!ENTITY % GeneralContentInclude SYSTEM "DomainContent.xml">
+	<!ENTITY sitename ''>
+	<!ENTITY sites 'current bes site'>
+	<!ENTITY current_domain '(exists domain of it and domain of it is current domain)'>
+	<!ENTITY % GeneralContentInclude SYSTEM "DomainContent.xml">
+	%GeneralContentInclude;
+]>
+<Domains xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BESDomain_1_1.xsd">
+	<Domain ID="&BESCDomainID;" Title="&BESCDomainTitle;">
+		<Console Icon="&BESCConsoleIcon;" SortOrder="&BESCConsoleOrder;">
+			<DomainBar>
+				<Dashboard ShowCaption="false" Title="AlertGroupWarning" Expandable="false" Ojo="AlertGroupWarning.ojo" SortOrder="-1">
+					<Condition>exists members whose(now - last report time of it &lt; 45*day) of bes computer groups whose(name of it contains "Alert")</Condition>
+				</Dashboard>
+			</DomainBar>
+		</Console>
+	</Domain>
+	<Domain ID="&BESDomainID;" Title="&BESDomainTitle;">
+		<Console Icon="&BESConsoleIcon;" SortOrder="&BESConsoleOrder;">
+			<DomainBar>
+				<Dashboard ShowCaption="false" Title="AlertGroupWarning" Expandable="false" Ojo="AlertGroupWarning.ojo" SortOrder="-1">
+					<Condition>exists members whose(now - last report time of it &lt; 45*day) of bes computer groups whose(name of it contains "Alert")</Condition>
+				</Dashboard>
+			</DomainBar>
+		</Console>
+	</Domain>
+</Domains>
