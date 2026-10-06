@@ -11,7 +11,7 @@
 					<style>
 						body {
 							margin: 0;
-							padding: 0 0 4px 0;
+							padding: 0;
 							width: 100%;
 							font-family: Geneva, sans-serif;
 						}
@@ -19,22 +19,23 @@
 						.errorbox
 						{
 							font-family: Tahoma,Arial,sans-serif;
-							font-size: 12pt;
+							font-size: 10pt;
+							line-height: 1.25;
 							color: #000;
 							background-color: #ffffa9;
 							border: solid 2px #ffe70c;
-							padding: 5px;
+							padding: 3px 6px;
 							font-weight: bold;
 						}
 					</style>
 
-					<div>
+					<div id="alertBox" style="padding-bottom:4px;">
 						<div class="errorbox">
 							<div>
 								<!-- TODO: replace with approved message text -->
-								ALERT! Computers with Errors!
+								ALERT! Computer Errors!
 							</div>
-							<div style="font-weight:normal; font-size:10pt;">
+							<div style="font-weight:normal; font-size:9pt;">
 								Count: <span id="alertCount">...</span>
 								&ndash; <a id="detailsLink" href="linkid:openwizard(%7b%22CustomSiteName%22%3a%22Dashboards%22%7d,AlertGroupMembers.ojo)">View details</a>
 							</div>
@@ -43,9 +44,13 @@
 
 					<script>
 						window.onload = function() {
-							// Same member filter as the domain Condition, but counted for display
-							var count = Relevance('number of members whose(now - last report time of it < 45*day) of bes computer groups whose(name of it contains "Alert")');
-							document.getElementById('alertCount').innerHTML = count;
+							// The domain Condition already requires a 45-day check, so the box is always shown; this just fills in the count.
+							try {
+								var count = Relevance('number of members whose(now - last report time of it < 45*day) of bes computer groups whose(name of it starts with "Alert")');
+								document.getElementById('alertCount').innerHTML = count;
+							} catch (e) {
+								document.getElementById('alertCount').innerHTML = '?';
+							}
 						};
 					</script>
 				]]>

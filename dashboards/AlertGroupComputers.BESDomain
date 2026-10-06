@@ -12,18 +12,23 @@
 	<Domain ID="&BESCDomainID;" Title="&BESCDomainTitle;">
 		<Console Icon="&BESCConsoleIcon;" SortOrder="&BESCConsoleOrder;">
 			<DomainBar>
-				<Dashboard ShowCaption="false" Title="AlertGroupWarning" Expandable="false" Ojo="AlertGroupWarning.ojo" SortOrder="-1">
-					<Condition>exists members whose(now - last report time of it &lt; 45*day) of bes computer groups whose(name of it starts with "Alert")</Condition>
-				</Dashboard>
+				<!-- A tree node instead of a bar dashboard: it hides itself when empty, so no fixed-size blank slot -->
+				<Tree SortOrder="-1">
+					<List Title="Alert! Computers with ERRORS!" Type="Computer" HideIfEmpty="true" InitiallyExpanded="false">
+						<FilterRelevance>set of members whose(now - last report time of it &lt; 45*day) of bes computer groups whose(name of it starts with "Alert")</FilterRelevance>
+					</List>
+				</Tree>
 			</DomainBar>
 		</Console>
 	</Domain>
 	<Domain ID="&BESDomainID;" Title="&BESDomainTitle;">
 		<Console Icon="&BESConsoleIcon;" SortOrder="&BESConsoleOrder;">
 			<DomainBar>
-				<Dashboard ShowCaption="false" Title="AlertGroupWarning" Expandable="false" Ojo="AlertGroupWarning.ojo" SortOrder="-1">
-					<Condition>exists members whose(now - last report time of it &lt; 45*day) of bes computer groups whose(name of it starts with "Alert")</Condition>
-				</Dashboard>
+				<Tree SortOrder="-1">
+					<List Title="Alert Group Computers" Type="Computer" HideIfEmpty="true" InitiallyExpanded="false">
+						<FilterRelevance>set of members whose(now - last report time of it &lt; 45*day) of bes computer groups whose(name of it starts with "Alert")</FilterRelevance>
+					</List>
+				</Tree>
 			</DomainBar>
 		</Console>
 	</Domain>
