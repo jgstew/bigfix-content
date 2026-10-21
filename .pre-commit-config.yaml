@@ -23,7 +23,7 @@ repos:
       - id: detect-private-key
 
   - repo: https://github.com/jgstew/pre-commit-bigfix
-    rev: fdd287b7fba1a3fd0a85a4e10d208d1f43483749  # frozen: v1.5.0
+    rev: e2be9a8e47a2e9862c1f34a63b9a9467d6e79516  # frozen: v1.13.0
     hooks:
       - id: bes-schema-validate
       - id: bes-actionscript-lint-schclass
