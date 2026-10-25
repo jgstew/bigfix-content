@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Scan for PHP Installs with YARA-X - Windows</Title>
-		<Description><![CDATA[<P>Scans this computer for PHP installs, both package-managed and one-off (XAMPP, MAMP, Laragon, zips unpacked to a folder, static builds such as FrankenPHP), and records the exact version of each. It uses <A href="https://github.com/VirusTotal/yara-x">YARA-X</A> with the rules from <A href="https://github.com/jgstew/tools/tree/master/YARA/php">jgstew/tools YARA/php</A>; the version is read from strings compiled into the binaries, so PHP is never run.</P><P>Results: one line per file, &quot;path&lt;TAB&gt;version&quot; (&quot;unknown&quot; for files such as extensions that carry no version), in __BESData/__Global/Logs/yara_results_php.text. Activate the analysis &quot;PHP Installs from YARA-X Scan - Universal&quot; to report them. The task becomes relevant again when the results are more than a day old.</P><P>Runs as SYSTEM with 64-bit PowerShell and scans every local fixed drive; network, removable and optical drives, online-only cloud files, WinSxS and similar system folders, files of 512 MB or more and non-executable file types are skipped.</P><P>The scan runs in the background (started with run, so the agent stays free for other actions) from __BESData/__Global/yara_php_scan and reads the whole disk, which can take 10-30 minutes or more. The action completes when the scan starts; the results file appears when it finishes, and its console output goes to __BESData/__Global/Logs/yara_scan_php.log. While a scan is running the task is not relevant, so a second one is not started.</P>]]></Description>
+		<Title>Scan for PHP and Node.js Installs with YARA-X - Windows</Title>
+		<Description><![CDATA[<P>Scans this computer for PHP installs, both package-managed and one-off (XAMPP, MAMP, Laragon, zips unpacked to a folder, static builds such as FrankenPHP), and for Node.js, both standalone (node, distro libnode) and embedded in other software (Electron apps, single-executable applications, vercel/pkg builds), and records the exact version of each. It uses <A href="https://github.com/VirusTotal/yara-x">YARA-X</A> with the rules from <A href="https://github.com/jgstew/tools/tree/master/YARA">jgstew/tools YARA</A>, PHP and Node.js in one pass; the version is read from strings compiled into the binaries, so nothing is run.</P><P>Results: one line per product found in a file, &quot;path&lt;TAB&gt;product&lt;TAB&gt;version&quot;, where product is php, node or electron (an Electron framework gets a node and an electron line; &quot;unknown&quot; for files such as PHP extensions or Node addons that carry no version), in __BESData/__Global/Logs/yara_results_runtimes.text. Activate the analysis &quot;PHP and Node.js Installs from YARA-X Scan - Universal&quot; to report them. The task becomes relevant again when the results are more than a day old.</P><P>Runs as SYSTEM with 64-bit PowerShell and scans every local fixed drive; network, removable and optical drives, online-only cloud files, WinSxS and similar system folders, files of 512 MB or more and non-executable file types are skipped.</P><P>The scan runs in the background (started with run, so the agent stays free for other actions) from __BESData/__Global/yara_runtime_scan and reads the whole disk, which can take 10-30 minutes or more. The action completes when the scan starts; the results file appears when it finishes, and its console output goes to __BESData/__Global/Logs/yara_scan_runtimes.log. While a scan is running the task is not relevant, so a second one is not started.</P>]]></Description>
 		<Relevance><![CDATA[windows of operating system]]></Relevance>
 		<Relevance><![CDATA[x64 of operating system]]></Relevance>
 		<Relevance><![CDATA[version of operating system >= "10.0"]]></Relevance>
 		<Relevance><![CDATA[exists (it as string as version) whose(it >= "5.1") of values "PowerShellVersion" of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\PowerShell\3\PowerShellEngine" of native registry]]></Relevance>
 		<Relevance><![CDATA[not in proxy agent context]]></Relevance>
-		<Relevance><![CDATA[not exists files whose(name of it as lowercase starts with "yara_results_php.text" AND (now - modification time of it) < 1*day ) of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
-		<Relevance><![CDATA[not exists files whose(name of it = "scan.running" AND (now - modification time of it) < 12*hour) of folders "yara_php_scan" of folders "__Global" of data folders of client]]></Relevance>
+		<Relevance><![CDATA[not exists files whose(name of it as lowercase starts with "yara_results_runtimes.text" AND (now - modification time of it) < 1*day ) of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
+		<Relevance><![CDATA[not exists files whose(name of it = "scan.running" AND (now - modification time of it) < 12*hour) of folders "yara_runtime_scan" of folders "__Global" of data folders of client]]></Relevance>
 		<Category></Category>
 		<DownloadSize>9081400</DownloadSize>
 		<Source>Internal</Source>
 		<SourceID>jgstew</SourceID>
-		<SourceReleaseDate>2026-10-21</SourceReleaseDate>
+		<SourceReleaseDate>2026-10-25</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Wed, 21 Oct 2026 14:58:28 +0000</Value>
+			<Value>Sun, 25 Oct 2026 19:06:21 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
 			<Description>
 				<PreLink>Click </PreLink>
 				<Link>here</Link>
-				<PostLink> to scan for PHP installs.</PostLink>
+				<PostLink> to scan for PHP and Node.js installs.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
-// Scan for PHP installs and their versions with YARA-X - Windows
-// Generated by YARA/php/make_bigfix_content.py from powershell/yara_x_scan_windows.ps1 in
+// Scan for PHP and Node.js installs and their versions with YARA-X - Windows
+// Generated by YARA/make_bigfix_content.py from powershell/yara_x_scan_windows.ps1 in
 // https://github.com/jgstew/tools - change the script there and regenerate.
 
 // yr (YARA-X CLI) release archive for this OS/CPU; the script still checks its SHA256
@@ -39,12 +39,12 @@ begin prefetch block
 	add prefetch item name=yara-x-v1.22.0-x86_64-pc-windows-msvc.zip sha1=344da50ce1693edd32b92c7d32eaf26d99c97f17 size=9081400 url=https://github.com/VirusTotal/yara-x/releases/download/v1.22.0/yara-x-v1.22.0-x86_64-pc-windows-msvc.zip sha256=eac36a58699b94d3732a7fe1d8453fe89e0077bb18ac2c99b4c2ee102a431f2e
 end prefetch block
 
-// Where the "path<TAB>version" results are copied to (read by the analysis):
+// Where the "path<TAB>product<TAB>version" results are copied to (read by the analysis):
 parameter "destination_folder" = "{pathname of folders "Logs" of folders "__Global" of data folders of client}"
-parameter "results_file" = "yara_results_php.text"
+parameter "results_file" = "yara_results_runtimes.text"
 // The scan runs in the background from here, not __Download: the client clears
 // __Download when the action ends, and the scan outlives the action
-parameter "temp_folder" = "{pathname of folders "__Global" of data folders of client}\yara_php_scan"
+parameter "temp_folder" = "{pathname of folders "__Global" of data folders of client}\yara_runtime_scan"
 
 folder delete "{parameter "temp_folder"}"
 folder create "{parameter "temp_folder"}"
@@ -55,19 +55,24 @@ delete __createfile
 createfile until _END_OF_SCRIPT_
 <#
 .SYNOPSIS
-    Self-contained YARA-X scan for Windows that finds PHP installs and their versions.
+    Self-contained YARA-X scan for Windows that finds PHP and Node.js installs and their versions.
 
 .DESCRIPTION
     Windows counterpart of bash/yara_x_scan_macos.sh:
       1. downloads the YARA-X CLI (yr.exe) release
       2. verifies the SHA256 of the download against a pinned value
       3. unpacks it into a temporary folder (removed on exit)
-      4. scans the target (recursively) with the YARA rule embedded below
-         (a copy of YARA/php/php_detect.yar)
+      4. scans the target (recursively) with the YARA rules embedded below
+         (copies of YARA/php/php_detect.yar and YARA/node/node_detect.yar,
+         one rule file so PHP and Node.js are found in one scan)
       5. writes results + a log to OutputDir; for text format:
            yara_results_<host>_<time>.raw.text  full yr output (rules, meta, strings)
-           yara_results_<host>_<time>.text      "path<TAB>version", one per line
-         Files matched with no version string are listed with version "unknown".
+           yara_results_<host>_<time>.text      "path<TAB>product<TAB>version",
+                                                one line per product in a file
+         product is php, node or electron; an Electron framework gets a node
+         and an electron line. Files matched with no version string (PHP
+         extensions without a version resource, Node addons) are listed with
+         version "unknown".
          json / ndjson write a single yara_results_<host>_<time>.json / .ndjson.
 
     With no -Path, every local fixed drive (DriveType 3) is scanned. Network,
@@ -75,8 +80,10 @@ createfile until _END_OF_SCRIPT_
     mounted VHDs report themselves as fixed and are scanned too.
 
     Junctions and directory symlinks are not followed (avoids loops and scanning
-    the same files twice). File-level reparse points are scanned: they can be
-    real local files (deduplicated volumes, hydrated OneDrive files).
+    the same files twice). File symlinks list with no size and are skipped like
+    empty files (their target is scanned where it lives); other file-level
+    reparse points are scanned: they can be real local files (deduplicated
+    volumes, hydrated OneDrive files).
 
     Run as Administrator for a full scan; otherwise protected folders are logged
     as unreadable and skipped.
@@ -86,41 +93,60 @@ createfile until _END_OF_SCRIPT_
 
     Skipped by default (each skip is reported while running; files over the size
     cap are listed in the log). A skipped folder that contains the target is not
-    skipped, and none of the skips apply when the target is a single file.
+    skipped, and none of the skips apply when the target is a single file. To
+    scan just one skipped folder, target it (e.g. -Path C:\Windows\WinSxS);
+    -NoSkips turns off all of these skips except empty files, cloud
+    placeholders and this script's own folders.
       - Files of MaxMB (512) MB or more: PHP builds are ~20-40 MB, the largest
-        known (FrankenPHP, static PHP in Go) ~180 MB; this cuts pagefile.sys,
-        VM disks, WSL/Docker .vhdx, media. Use -MaxMB 0 to include.
-      - Images, media, archives, documents, fonts, web/source/text files: the
-        rules only match executables (by header) and php-config/php_version.h.
-        Files with no extension, .exe, .dll, .h, .so, .o are kept. Use
-        -IncludeNonBinary to include.
+        known (FrankenPHP, static PHP in Go) ~180 MB, node.exe 8.x-25.x
+        22-91 MB, Electron frameworks 125-350 MB (macOS); this cuts
+        pagefile.sys, VM disks, WSL/Docker .vhdx, media. Use -MaxMB 0 to
+        include.
+      - Images, media, archives, installers, documents, fonts, web/source/text
+        files, C headers, debug symbols (.pdb), event logs, databases,
+        component manifests, BigFix Fixlet files (.fxf) and virtual disks: the
+        rules only match executables (by header). Files with no extension, .exe,
+        .dll, .so, .o are kept.
+      - Empty files.
       - Cloud placeholders (OneDrive Files On-Demand, Dropbox, iCloud, etc.):
         files and folders with the Offline, RecallOnOpen or RecallOnDataAccess
-        attribute are only online, and reading them would download them. Use
-        -IncludeCloudFiles to include.
-      - System folders that can't hold a PHP install, on every scanned drive:
+        attribute are only online, and reading them would download them.
+      - System folders that can't hold a PHP or Node.js install, on every
+        scanned drive:
           \Windows\WinSxS               component store: Microsoft side-by-side
                                         components only, mostly hard links to
                                         System32 (double scan), 100k+ files
           \Windows\SoftwareDistribution Windows Update download cache
+          \Windows\servicing            component servicing store: manifests,
+                                        100k+ files on a server
+          \Windows\assembly, \Windows\Microsoft.NET  .NET framework and
+                                        native-image caches
+          \ProgramData\Microsoft\Windows Defender  antivirus definitions
+          \Users\*\AppData\Local\BigFix\Enterprise Console  BigFix Console
+                                        cache (can be many GB)
           \$Recycle.Bin                 deleted files, not installs
           \System Volume Information    restore points/shadow copy data, not
                                         readable even as Administrator
           \pagefile.sys, \hiberfil.sys, \swapfile.sys  locked by the OS
         The rest of C:\Windows is scanned on purpose: old PHP setup guides told
-        people to copy php5ts.dll / php.ini into C:\Windows\System32. Use
-        -IncludeSystemPaths to include these too.
+        people to copy php5ts.dll / php.ini into C:\Windows\System32.
       - This script's own output and temp folders (old results contain matched
         strings).
-    Nothing where PHP is plausible is skipped: C:\xampp, C:\wamp*, C:\laragon,
-    C:\php*, C:\tools (Chocolatey), Program Files, Program Files (x86) (IIS PHP
-    Manager / Web PI), ProgramData, user profiles.
+    Nothing where PHP or Node.js is plausible is skipped: C:\xampp, C:\wamp*,
+    C:\laragon, C:\php*, C:\tools (Chocolatey), Program Files, Program Files
+    (x86) (IIS PHP Manager / Web PI), ProgramData, user profiles (nvm, Electron
+    apps in AppData\Local\Programs).
+
+    The scan runs at BelowNormal priority (this PowerShell process and yr.exe)
+    and yr uses 1 thread (-Threads 2 for faster scans), so a full scan doesn't take over the
+    machine. It's meant to run unattended; in an interactive session the
+    priority stays lowered until that PowerShell window is closed.
 
     Exit codes: 0 = scan ran, no matches; 1 = scan ran, matches found;
                 2 = usage error; 3 = download/verify/unpack error; 4 = scan error
 
     Release: https://github.com/VirusTotal/yara-x/releases/tag/v1.22.0
-    Related: https://github.com/jgstew/tools/tree/master/YARA/php
+    Related: https://github.com/jgstew/tools/tree/master/YARA
              https://github.com/jgstew/tools/blob/master/bash/yara_x_scan_macos.sh
 
 .PARAMETER Path
@@ -134,8 +160,9 @@ createfile until _END_OF_SCRIPT_
 .PARAMETER Format
     yr output format: text, json or ndjson. Default: text
 
-.PARAMETER KeepBinary
-    Keep the downloaded yr.exe in OutputDir\bin for reuse.
+.PARAMETER KeepArchive
+    Keep the downloaded yr release zip in OutputDir, to reuse later with
+    -YaraXArchive <OutputDir> (its SHA256 is checked again).
 
 .PARAMETER YaraXArchive
     Use a local yr release zip instead of downloading: the file, or a folder
@@ -143,16 +170,20 @@ createfile until _END_OF_SCRIPT_
     SHA256 is still checked.
 
 .PARAMETER MaxMB
-    Skip files of MaxMB MB or larger; 0 = no limit. Default: 512
+    Skip files of MaxMB MB or larger; 0 = no limit. Default: 512, or 0 with -NoSkips
 
-.PARAMETER IncludeSystemPaths
-    Also scan the system folders listed above (WinSxS, Recycle Bin, ...).
+.PARAMETER Threads
+    Number of yr scan threads. Default: 1 (2 finishes sooner, at about twice the peak CPU)
 
-.PARAMETER IncludeNonBinary
-    Also scan file types that can't be executables.
+.PARAMETER ExcludePath
+    Folders to skip, comma-separated (-ExcludePath D:\backup,E:\media). A
+    folder that contains the target is not skipped.
 
-.PARAMETER IncludeCloudFiles
-    Also read online-only cloud files. This downloads them.
+.PARAMETER NoSkips
+    Turn off the default skips listed above: system folders, non-executable
+    file types and the size cap (unless -MaxMB is given). Empty files and
+    online-only cloud files are still skipped. -ExcludePath still applies.
+    To scan just one skipped folder, target it with -Path instead.
 
 .PARAMETER Help
     Show this help.
@@ -167,7 +198,7 @@ createfile until _END_OF_SCRIPT_
     Scan all local fixed drives, writing results to .\yara_results.
 
 .EXAMPLE
-    .\yara_x_scan_windows.ps1 -Path C:\xampp, D:\web -OutputDir C:\Temp\yara -KeepBinary
+    .\yara_x_scan_windows.ps1 -Path C:\xampp, D:\web -OutputDir C:\Temp\yara -KeepArchive
 
 .EXAMPLE
     .\yara_x_scan_windows.ps1 -Format ndjson -MaxMB 0
@@ -190,17 +221,18 @@ param(
     # Validated in the script body (not ValidateSet/[int]) so bad values exit with code 2
     [string]$Format = 'text',
 
-    [switch]$KeepBinary,
+    [switch]$KeepArchive,
 
     [string]$YaraXArchive,
 
-    [string]$MaxMB = '512',
+    # Omitted = 512, or 0 with -NoSkips (see Invoke-Main)
+    [string]$MaxMB,
 
-    [switch]$IncludeSystemPaths,
+    [string]$Threads = '1',
 
-    [switch]$IncludeNonBinary,
+    [string[]]$ExcludePath,
 
-    [switch]$IncludeCloudFiles,
+    [switch]$NoSkips,
 
     [switch]$Help,
 
@@ -218,8 +250,12 @@ $YaraXUrl     = "https://github.com/VirusTotal/yara-x/releases/download/v$YaraXV
 # GitHub-computed asset digest for v1.22.0 (releases API, assets[].digest)
 $YaraXSha256  = 'eac36a58699b94d3732a7fe1d8453fe89e0077bb18ac2c99b4c2ee102a431f2e'
 
-# Same list as NONBINARY_EXT_RE in bash/yara_x_scan_macos.sh: extensions of files
-# that can't start with an executable header and aren't php-config / php_version.h.
+# Same base list as NONBINARY_EXTS in bash/yara_x_scan_macos.sh: extensions of files
+# that can't start with an executable header. The last two lines are Windows-only: debug
+# symbols, installers/cabinets, import libraries, event logs, ESE databases;
+# then (measured on a server: none of these held an executable) component and
+# policy manifests, BigFix Fixlet files, VS extensions, app resources, crash
+# dumps, WebAssembly and virtual disks.
 $NonBinaryExtensions = @(
     'jpg', 'jpeg', 'png', 'gif', 'heic', 'tif', 'tiff', 'bmp', 'webp', 'ico', 'icns', 'svg', 'svgz',
     'mov', 'mp4', 'm4v', 'avi', 'mkv', 'mp3', 'm4a', 'aac', 'wav', 'aiff', 'caf', 'flac',  # codespell:ignore caf
@@ -227,12 +263,19 @@ $NonBinaryExtensions = @(
     'docx', 'xlsx', 'pptx', 'doc', 'xls', 'ppt', 'pages', 'numbers', 'key',
     'txt', 'md', 'rst', 'json', 'js', 'mjs', 'cjs', 'ts', 'tsx', 'jsx', 'map', 'css', 'scss', 'html', 'htm',
     'xml', 'plist', 'strings', 'nib', 'car', 'py', 'pyc', 'rb', 'php', 'java', 'class', 'go', 'rs',
-    'c', 'cc', 'cpp', 'hpp', 'm', 'swift', 'yml', 'yaml', 'toml', 'ini', 'csv', 'tsv', 'log',
-    'sqlite', 'db', 'sqlite-wal', 'sqlite-shm', 'ttf', 'otf', 'woff', 'woff2', 'mo', 'po', 'lock', 'sum'
+    'c', 'cc', 'cpp', 'h', 'hpp', 'm', 'swift', 'yml', 'yaml', 'toml', 'ini', 'csv', 'tsv', 'log',
+    'sqlite', 'db', 'sqlite-wal', 'sqlite-shm', 'ttf', 'otf', 'woff', 'woff2', 'mo', 'po', 'lock', 'sum',
+    'pdb', 'cab', 'msi', 'msp', 'nupkg', 'lib', 'cat', 'etl', 'evtx', 'edb', 'chm',
+    'manifest', 'mum', 'mfl', 'adml', 'admx', 'fxf', 'vsix', 'pak', 'data', 'ttc', 'dmp', 'wasm', 'vhd', 'vhdx'
 )
 
 # System folders / files skipped on every scanned drive (see help for why)
-$SystemSkipDirs  = @('Windows\WinSxS', 'Windows\SoftwareDistribution', '$Recycle.Bin', 'System Volume Information')
+# Program Files\WindowsApps stays in scope: MSIX/Store packages are installed software.
+$SystemSkipDirs  = @('Windows\WinSxS', 'Windows\SoftwareDistribution', 'Windows\servicing', 'Windows\assembly',
+                     'Windows\Microsoft.NET', 'ProgramData\Microsoft\Windows Defender', '$Recycle.Bin',
+                     'System Volume Information')
+# Skipped in every user profile on a scanned drive (see help)
+$ProfileSkipDirs = @('AppData\Local\BigFix\Enterprise Console')
 $SystemSkipFiles = @('pagefile.sys', 'hiberfil.sys', 'swapfile.sys')
 
 # FILE_ATTRIBUTE_OFFLINE | FILE_ATTRIBUTE_RECALL_ON_OPEN | FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS.
@@ -240,8 +283,10 @@ $SystemSkipFiles = @('pagefile.sys', 'hiberfil.sys', 'swapfile.sys')
 $CloudAttributeMask = 0x1000 -bor 0x40000 -bor 0x400000
 
 # ---- embedded YARA rule -----------------------------------------------------
-# PHP install detection + version. Copy of YARA/php/php_detect.yar - keep in
-# sync. The version is in the printed strings ($ver, $pv, $cfg_ver, $hdr_ver).
+# PHP and Node.js install detection + version, in one rule file so both are
+# found in one scan. Copied from YARA/php/php_detect.yar and
+# YARA/node/node_detect.yar by YARA/sync_rules.py - edit there, not here. The
+# version is in the printed strings ($ver, $pv, $rel, $electron).
 $EmbeddedRule = @'
 /*
   PHP install detection + version, all OSes (Linux ELF, Windows PE, macOS Mach-O).
@@ -257,7 +302,6 @@ $EmbeddedRule = @'
                               (php.exe, php-cgi.exe, php8ts.dll, ext\php_*.dll);
                               $pv holds ProductVersion
     PHP_Binary_Broad        - catch-all: any executable with any PHP marker
-    PHP_Build_Artifact      - php-config / php_version.h left by source installs
 
   No modules are imported so the rules also work in embedded YARA engines
   (osquery, EDRs) that are built without the pe/elf/macho modules.
@@ -265,14 +309,45 @@ $EmbeddedRule = @'
   See README.md for tested samples and the API number -> branch table.
 */
 
+// Condition copied from is_executable.yar by sync_rules.py - edit it there
 private rule PHP_Detect_IsExecutable
 {{
   condition:
-    uint32(0) == 0x464C457F                                 // ELF
-    or uint16(0) == 0x5A4D                                  // PE (MZ)
-    or uint32(0) == 0xFEEDFACE or uint32(0) == 0xFEEDFACF   // Mach-O 32/64
-    or uint32(0) == 0xCEFAEDFE or uint32(0) == 0xCFFAEDFE   // Mach-O 32/64, byte-swapped
-    or uint32(0) == 0xBEBAFECA                              // Mach-O universal (CAFEBABE)
+    // ELF executable (2) or shared object (3, also PIE executables); e_type is
+    // in the byte order given by EI_DATA (1 = little, 2 = big endian)
+    (uint32(0) == 0x464C457F and
+      ((uint8(5) == 1 and (uint16(16) == 2 or uint16(16) == 3)) or
+       (uint8(5) == 2 and (uint16be(16) == 2 or uint16be(16) == 3))))
+    // PE: MZ header whose e_lfanew (0x3C) points at "PE\0\0"
+    or (uint16(0) == 0x5A4D and uint32(uint32(0x3C)) == 0x00004550)
+    // Mach-O 32/64 execute (2), dylib (6) or bundle (8, e.g. PHP extensions)
+    or ((uint32(0) == 0xFEEDFACE or uint32(0) == 0xFEEDFACF) and
+        (uint32(12) == 2 or uint32(12) == 6 or uint32(12) == 8))
+    // same, byte-swapped (big-endian) Mach-O
+    or ((uint32(0) == 0xCEFAEDFE or uint32(0) == 0xCFFAEDFE) and
+        (uint32be(12) == 2 or uint32be(12) == 6 or uint32be(12) == 8))
+    // Mach-O universal (CAFEBABE) with 1-19 architectures whose first slice
+    // passes the thin Mach-O check above, so universal static libraries (.a),
+    // object files and dSYMs are rejected. Java .class files also start with
+    // CAFEBABE, but bytes 4-7 hold their class version (major >= 45), not an
+    // architecture count. The header is big-endian; the first slice's offset
+    // is at 16 (fat_arch.offset).
+    or (uint32(0) == 0xBEBAFECA and uint32be(4) > 0 and uint32be(4) < 20 and
+        (((uint32(uint32be(16)) == 0xFEEDFACE or uint32(uint32be(16)) == 0xFEEDFACF) and
+          (uint32(uint32be(16) + 12) == 2 or uint32(uint32be(16) + 12) == 6 or
+           uint32(uint32be(16) + 12) == 8)) or
+         ((uint32(uint32be(16)) == 0xCEFAEDFE or uint32(uint32be(16)) == 0xCFFAEDFE) and
+          (uint32be(uint32be(16) + 12) == 2 or uint32be(uint32be(16) + 12) == 6 or
+           uint32be(uint32be(16) + 12) == 8))))
+    // same for the rare 64-bit universal header (CAFEBABF): fat_arch_64.offset
+    // is 8 bytes at 16; slices sit well below 4 GB, so its low half (20) is used
+    or (uint32(0) == 0xBFBAFECA and uint32be(4) > 0 and uint32be(4) < 20 and
+        (((uint32(uint32be(20)) == 0xFEEDFACE or uint32(uint32be(20)) == 0xFEEDFACF) and
+          (uint32(uint32be(20) + 12) == 2 or uint32(uint32be(20) + 12) == 6 or
+           uint32(uint32be(20) + 12) == 8)) or
+         ((uint32(uint32be(20)) == 0xCEFAEDFE or uint32(uint32be(20)) == 0xCFFAEDFE) and
+          (uint32be(uint32be(20) + 12) == 2 or uint32be(uint32be(20) + 12) == 6 or
+           uint32be(uint32be(20) + 12) == 8))))
 }
 
 rule PHP_Runtime_Version
@@ -299,8 +374,9 @@ rule PHP_Windows_VersionInfo
     $pname = {{ 50 00 72 00 6F 00 64 00 75 00 63 00 74 00 4E 00 61 00 6D 00 65 00 [2-4] 50 00 48 00 50 00 00 00 }
     $pv = /ProductVersion\x00[0-9]{{1,2}\.[0-9]{{1,2}\.[0-9]{{1,3}[0-9A-Za-z.\-]{{0,20}/ wide
   condition:
-    // #pv >= 0 is always true: $pv is only there so -s prints the version
-    uint16(0) == 0x5A4D and $pname and #pv >= 0
+    // A real PE (MZ + PE signature). #pv >= 0 is always true: $pv is only
+    // there so -s prints the version
+    uint16(0) == 0x5A4D and PHP_Detect_IsExecutable and $pname and #pv >= 0
 }
 
 rule PHP_Binary_Broad
@@ -325,25 +401,129 @@ rule PHP_Binary_Broad
     )
 }
 
-rule PHP_Build_Artifact
+/*
+  Node.js install detection + version, all OSes (Linux ELF, Windows PE, macOS Mach-O).
+
+  Finds standalone node / node.exe, distro libnode, and Node embedded in other
+  software (Electron, single-executable applications, vercel/pkg, apps that
+  bundle libnode). Deliberately broad: Node_Binary_Broad flags anything that
+  looks Node-related so nothing is missed; the other rules carry the exact
+  version string. Run with `yara -s` (or `yr scan -s`) to print the matched
+  version text.
+
+  Rules:
+    Node_Runtime_Version  - Node runtime or a runtime embedding Node; $ver holds
+                            the exact version (node.js/v22.23.4), or for pkg
+                            builds with no inspector $rel (the release URL)
+    Node_Electron_Version - Electron framework; $electron holds Electron's
+                            version, $ver the embedded Node version
+    Node_Binary_Broad     - catch-all: any executable with any Node marker,
+                            incl. native addons (.node) and the distro node
+                            launchers that load libnode
+
+  Bun is not detected and not excluded: Bun-compiled executables match only
+  Node_Binary_Broad (an accepted false positive, reported with no version).
+
+  No modules are imported so the rules also work in embedded YARA engines
+  (osquery, EDRs) that are built without the pe/elf/macho modules.
+
+  See README.md for tested samples and the ABI number -> Node major table.
+*/
+
+// Condition copied from is_executable.yar by sync_rules.py - edit it there
+private rule Node_Detect_IsExecutable
+{{
+  condition:
+    // ELF executable (2) or shared object (3, also PIE executables); e_type is
+    // in the byte order given by EI_DATA (1 = little, 2 = big endian)
+    (uint32(0) == 0x464C457F and
+      ((uint8(5) == 1 and (uint16(16) == 2 or uint16(16) == 3)) or
+       (uint8(5) == 2 and (uint16be(16) == 2 or uint16be(16) == 3))))
+    // PE: MZ header whose e_lfanew (0x3C) points at "PE\0\0"
+    or (uint16(0) == 0x5A4D and uint32(uint32(0x3C)) == 0x00004550)
+    // Mach-O 32/64 execute (2), dylib (6) or bundle (8, e.g. PHP extensions)
+    or ((uint32(0) == 0xFEEDFACE or uint32(0) == 0xFEEDFACF) and
+        (uint32(12) == 2 or uint32(12) == 6 or uint32(12) == 8))
+    // same, byte-swapped (big-endian) Mach-O
+    or ((uint32(0) == 0xCEFAEDFE or uint32(0) == 0xCFFAEDFE) and
+        (uint32be(12) == 2 or uint32be(12) == 6 or uint32be(12) == 8))
+    // Mach-O universal (CAFEBABE) with 1-19 architectures whose first slice
+    // passes the thin Mach-O check above, so universal static libraries (.a),
+    // object files and dSYMs are rejected. Java .class files also start with
+    // CAFEBABE, but bytes 4-7 hold their class version (major >= 45), not an
+    // architecture count. The header is big-endian; the first slice's offset
+    // is at 16 (fat_arch.offset).
+    or (uint32(0) == 0xBEBAFECA and uint32be(4) > 0 and uint32be(4) < 20 and
+        (((uint32(uint32be(16)) == 0xFEEDFACE or uint32(uint32be(16)) == 0xFEEDFACF) and
+          (uint32(uint32be(16) + 12) == 2 or uint32(uint32be(16) + 12) == 6 or
+           uint32(uint32be(16) + 12) == 8)) or
+         ((uint32(uint32be(16)) == 0xCEFAEDFE or uint32(uint32be(16)) == 0xCFFAEDFE) and
+          (uint32be(uint32be(16) + 12) == 2 or uint32be(uint32be(16) + 12) == 6 or
+           uint32be(uint32be(16) + 12) == 8))))
+    // same for the rare 64-bit universal header (CAFEBABF): fat_arch_64.offset
+    // is 8 bytes at 16; slices sit well below 4 GB, so its low half (20) is used
+    or (uint32(0) == 0xBFBAFECA and uint32be(4) > 0 and uint32be(4) < 20 and
+        (((uint32(uint32be(20)) == 0xFEEDFACE or uint32(uint32be(20)) == 0xFEEDFACF) and
+          (uint32(uint32be(20) + 12) == 2 or uint32(uint32be(20) + 12) == 6 or
+           uint32(uint32be(20) + 12) == 8)) or
+         ((uint32(uint32be(20)) == 0xCEFAEDFE or uint32(uint32be(20)) == 0xCFFAEDFE) and
+          (uint32be(uint32be(20) + 12) == 2 or uint32be(uint32be(20) + 12) == 6 or
+           uint32be(uint32be(20) + 12) == 8))))
+}
+
+rule Node_Runtime_Version
 {{
   meta:
-    description = "php-config script or php_version.h header from a PHP build/install; $v* = version"
+    description = "Node.js runtime (node, node.exe, libnode, or a runtime embedding Node: Electron, SEA, pkg); $ver = exact Node version"
+    confidence = "high"
+  strings:
+    // Inspector /json/version "Browser" value: "node.js/" NODE_VERSION. In
+    // every official build 8.17.0-25.9.0, distro libnode, Electron and SEA.
+    // A suffix only after "-" (-rc.1, -nightly...): the compiler can merge the
+    // literal with the next string (linux-x64 24.22.1: "v24.22.1Protocol-...")
+    $ver = /node\.js\/v[0-9]{{1,2}\.[0-9]{{1,3}\.[0-9]{{1,3}(-[0-9A-Za-z.]{{1,20})?/
+    // process.release.sourceUrl / headersUrl. Also in Bun (Node compatibility),
+    // so it only counts together with the NODE_MODULE ABI symbol, which Bun
+    // lacks; needed for vercel/pkg builds, which have no inspector string.
+    // No "not Bun" exclusion: it could hide a real Node binary whose embedded
+    // JavaScript mentions Bun.
+    $rel = /https:\/\/nodejs\.org\/download\/release\/v[0-9]{{1,2}\.[0-9]{{1,3}\.[0-9]{{1,3}/
+    // NODE_MODULE registration symbol, ABI = NODE_MODULE_VERSION (10.x and later)
+    $abi = /node_register_module_v[0-9]{{2,3}/
+  condition:
+    Node_Detect_IsExecutable and ($ver or ($rel and $abi))
+}
+
+rule Node_Electron_Version
+{{
+  meta:
+    description = "Electron framework (embeds Node.js); $electron = Electron version, $ver = embedded Node version"
+    confidence = "high"
+  strings:
+    // Electron user agent. Both keep a "-" suffix (31.0.0-nightly.20240101), the
+    // same as Node_Runtime_Version's $ver, so one file gives one node version
+    $electron = /Electron\/[0-9]{{1,3}\.[0-9]{{1,3}\.[0-9]{{1,3}(-[0-9A-Za-z.]{{1,20})?/
+    $ver = /node\.js\/v[0-9]{{1,2}\.[0-9]{{1,3}\.[0-9]{{1,3}(-[0-9A-Za-z.]{{1,20})?/
+  condition:
+    Node_Detect_IsExecutable and $electron and $ver
+}
+
+rule Node_Binary_Broad
+{{
+  meta:
+    description = "Broad catch-all: Node runtime, libnode launcher, or native addon (.node)"
     confidence = "medium"
   strings:
-    // php-config (installed next to the php binary by `make install` and -dev packages)
-    $cfg_ver   = /version="[0-9]{{1,2}\.[0-9]{{1,2}\.[0-9]{{1,3}[0-9A-Za-z.+~_-]{{0,40}"/
-    $cfg_a     = "php_cli_binary="
-    $cfg_b     = "--php-binary"
-    // main/php_version.h
-    $hdr_ver   = /#define PHP_VERSION "[0-9]{{1,2}\.[0-9]{{1,2}\.[0-9]{{1,3}[0-9A-Za-z.+~_-]{{0,40}"/
-    $hdr_a     = "#define PHP_MAJOR_VERSION"
+    $ver    = "node.js/v"
+    $rel    = "https://nodejs.org/download/release/v"
+    $abi    = /node_register_module_v[0-9]{{2,3}/   // NODE_MODULE ABI, also in addons
+    $napi   = "napi_register_module_v1"              // N-API addon export
+    $napiim = "napi_module_register"                 // N-API addon import
+    $start  = "_ZN4node5StartEiPPc"                  // distro launcher importing node::Start from libnode
   condition:
-    filesize < 64KB and
-    (
-      ($cfg_ver and $cfg_a and $cfg_b)
-      or ($hdr_ver and $hdr_a)
-    )
+    // Also matches Bun-compiled executables (release URL, N-API): an accepted
+    // false positive, reported as "node unknown"
+    Node_Detect_IsExecutable and any of them
 }
 '@
 
@@ -398,11 +578,12 @@ function Test-PathWithin
 function Get-YaraX
 {{
     # Downloads (or copies -ArchivePath), verifies and unpacks yr.exe into
-    # $WorkDir; returns its path. Throws on any failure (the caller maps that
-    # to exit code 3).
+    # $WorkDir; returns its path. With -KeepDir, the verified archive is also
+    # copied there. Throws on any failure (the caller maps that to exit code 3).
     param(
         [Parameter(Mandatory = $true)][string]$WorkDir,
-        [string]$ArchivePath
+        [string]$ArchivePath,
+        [string]$KeepDir
     )
 
     $zipPath = Join-Path -Path $WorkDir -ChildPath $YaraXAsset
@@ -459,6 +640,20 @@ function Get-YaraX
     }
     Write-ScanLog "SHA256 verified: $actual"
 
+    if ($KeepDir)
+    {{
+        # A failed copy only costs a download next time, so it doesn't stop the scan
+        try
+        {{
+            Copy-Item -LiteralPath $zipPath -Destination $KeepDir -Force
+            Write-ScanLog "Kept $(Join-Path -Path $KeepDir -ChildPath $YaraXAsset) (reuse with -YaraXArchive $KeepDir)"
+        }
+        catch
+        {{
+            Write-ScanLog "WARNING: could not keep the archive in ${{KeepDir}: $($_.Exception.Message)"
+        }
+    }
+
     $binDir = Join-Path -Path $WorkDir -ChildPath 'bin'
     try
     {{
@@ -498,6 +693,8 @@ function Invoke-NativeToFile
     $psi.StandardErrorEncoding = $Utf8NoBom
 
     $process = [System.Diagnostics.Process]::Start($psi)
+    # Background scan: keep the machine responsive. Best effort; yr runs either way.
+    try {{ $process.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::BelowNormal } catch {{ $null = $_ }
     # Read stderr asynchronously so neither pipe can fill up and block yr
     $stderrTask = $process.StandardError.ReadToEndAsync()
     $out = [System.IO.File]::Create($StdoutPath)
@@ -550,7 +747,7 @@ function Get-ScanFile
         [bool]$SkipCloud = $true
     )
 
-    $stats = [pscustomobject]@{{ Listed = 0L; SizeSkipped = 0L; ExtSkipped = 0L; CloudSkipped = 0L; LinksSkipped = 0L; Errors = 0L }
+    $stats = [pscustomobject]@{{ Listed = 0L; SizeSkipped = 0L; ExtSkipped = 0L; EmptySkipped = 0L; CloudSkipped = 0L; LinksSkipped = 0L; Errors = 0L }
     $dirAttr = [int][System.IO.FileAttributes]::Directory
     $reparseAttr = [int][System.IO.FileAttributes]::ReparsePoint
 
@@ -618,6 +815,11 @@ function Get-ScanFile
                             continue
                         }
                     }
+                    if ($entry.Length -eq 0)
+                    {{
+                        $stats.EmptySkipped++
+                        continue
+                    }
                     if ($MaxBytes -gt 0 -and $entry.Length -ge $MaxBytes)
                     {{
                         $LogWriter.WriteLine("skipped (>= $($MaxBytes / 1MB) MB): $($entry.FullName)")
@@ -650,27 +852,32 @@ function Get-ScanFile
     return $stats
 }
 
-function ConvertTo-PhpVersionSummary
+function ConvertTo-VersionSummary
 {{
     <#
-    PowerShell port of YARA/php/php_versions.awk - keep in sync.
+    PowerShell port of YARA/versions.awk - keep in sync.
     Reads `yr scan --print-meta --print-strings` text output and returns sorted,
-    unique "path<TAB>version" lines; matched files with no version string get
-    "unknown".
+    unique "path<TAB>product<TAB>version" lines, one per product found in a
+    file (php, node, electron). Versions: php from $ver / $pv; node from $ver,
+    or from $rel (the release URL) when no $ver matched; electron from
+    $electron. Matched files with no version string get "unknown".
     #>
     param([Parameter(Mandatory = $true)][string]$RawPath)
 
     # rule line: "<RULE> <path>", or with --print-meta "<RULE> [k="v",...] <path>".
     # The meta pattern skips quoted values, so a ']' inside a description is fine.
-    $ruleLine = [regex]'^PHP_\S* (?:\[(?:"(?:[^"\\]|\\.)*"|[^\]"])*\] )?(?<path>.*)$'
+    $ruleLine = [regex]'^(?<rule>PHP|Node)_\S* (?:\[(?:"(?:[^"\\]|\\.)*"|[^\]"])*\] )?(?<path>.*)$'
     # string line: "0xOFFSET:LENGTH:$id: <matched text>"
-    $stringLine = [regex]':\$(?:ver|pv|cfg_ver|hdr_ver): '
+    $stringLine = [regex]':\$(?<id>ver|pv|rel|electron): '
     $version = [regex]'[0-9]+\.[0-9]+\.[0-9]+[0-9A-Za-z.+~_-]*'
 
     $results = New-Object -TypeName 'System.Collections.Generic.HashSet[string]' -ArgumentList ([System.StringComparer]::Ordinal)
+    # "path<TAB>product" keys: matched, versioned, and $rel versions per key
     $seen = New-Object -TypeName 'System.Collections.Generic.List[string]'
     $versioned = New-Object -TypeName 'System.Collections.Generic.HashSet[string]' -ArgumentList ([System.StringComparer]::Ordinal)
+    $relVersions = New-Object -TypeName 'System.Collections.Generic.List[string]'
     $file = $null
+    $product = $null
 
     $reader = New-Object -TypeName System.IO.StreamReader -ArgumentList $RawPath, $Utf8NoBom
     try
@@ -681,20 +888,28 @@ function ConvertTo-PhpVersionSummary
             if ($m.Success)
             {{
                 $file = $m.Groups['path'].Value
-                $seen.Add($file)
+                $product = $m.Groups['rule'].Value.ToLowerInvariant()
+                $seen.Add("$file`t$product")
                 continue
             }
-            if ($null -ne $file -and $stringLine.IsMatch($line))
+            $s = $stringLine.Match($line)
+            if ($null -ne $file -and $s.Success)
             {{
                 # UTF-16 matches ($pv) are printed with escaped NULs: 8\x00.\x002\x00...
                 $text = $line.Replace('\x00', '')
                 $space = $text.IndexOf(' ')
                 $text = $text.Substring($space + 1)
                 $v = $version.Match($text)
-                if ($v.Success)
+                if (-not $v.Success) {{ continue }
+                switch ($s.Groups['id'].Value)
                 {{
-                    [void]$results.Add("$file`t$($v.Value)")
-                    [void]$versioned.Add($file)
+                    'electron' {{ [void]$results.Add("$file`telectron`t$($v.Value)") }
+                    'rel' {{ $relVersions.Add("$file`t$product`t$($v.Value)") }
+                    default
+                    {{
+                        [void]$results.Add("$file`t$product`t$($v.Value)")
+                        [void]$versioned.Add("$file`t$product")
+                    }
                 }
             }
         }
@@ -703,9 +918,18 @@ function ConvertTo-PhpVersionSummary
     {{
         $reader.Dispose()
     }
-    foreach ($f in $seen)
+    foreach ($r in $relVersions)
     {{
-        if (-not $versioned.Contains($f)) {{ [void]$results.Add("$f`tunknown") }
+        $key = $r.Substring(0, $r.LastIndexOf("`t"))
+        if (-not $versioned.Contains($key)) {{ [void]$results.Add($r) }
+    }
+    foreach ($key in $seen)
+    {{
+        if ($versioned.Contains($key)) {{ continue }
+        $prefix = "$key`t"
+        $fromRel = $false
+        foreach ($r in $relVersions) {{ if ($r.StartsWith($prefix, [System.StringComparison]::Ordinal)) {{ $fromRel = $true; break } }
+        if (-not $fromRel) {{ [void]$results.Add("$key`tunknown") }
     }
     $sorted = [string[]]@($results)
     [System.Array]::Sort($sorted, [System.StringComparer]::Ordinal)
@@ -720,12 +944,12 @@ function Invoke-Main
         [string[]]$Path,
         [string]$OutputDir,
         [string]$Format,
-        [switch]$KeepBinary,
+        [switch]$KeepArchive,
         [string]$YaraXArchive,
         [string]$MaxMB,
-        [switch]$IncludeSystemPaths,
-        [switch]$IncludeNonBinary,
-        [switch]$IncludeCloudFiles,
+        [string]$Threads = '1',
+        [string[]]$ExcludePath,
+        [switch]$NoSkips,
         [switch]$Help,
         [string[]]$ExtraArgs
     )
@@ -756,12 +980,19 @@ function Invoke-Main
         Write-UsageError "Invalid -Format '$Format' (use text, json or ndjson)."
         return 2
     }
+    # -NoSkips lifts the size cap too, unless -MaxMB is given
+    if (-not $PSBoundParameters.ContainsKey('MaxMB')) {{ $MaxMB = if ($NoSkips) {{ '0' } else {{ '512' } }
     if ($MaxMB -notmatch '^[0-9]{{1,7}$')
     {{
         Write-UsageError "Invalid -MaxMB '$MaxMB' (whole number of MB, 0 = no limit)."
         return 2
     }
     $maxBytes = [long]$MaxMB * 1MB
+    if ($Threads -notmatch '^[0-9]{{1,3}$' -or [int]$Threads -lt 1)
+    {{
+        Write-UsageError "Invalid -Threads '$Threads' (number of threads, 1 or more)."
+        return 2
+    }
 
     if (-not (Test-IsWindowsHost))
     {{
@@ -824,7 +1055,16 @@ function Invoke-Main
         # ---- download, verify, unpack -------------------------------------------
         try
         {{
-            $yr = Get-YaraX -WorkDir $workDir -ArchivePath $YaraXArchive
+            $keepDir = $null
+            if ($KeepArchive -and $YaraXArchive)
+            {{
+                Write-ScanLog "Not keeping the archive (-KeepArchive): it is already local at $YaraXArchive"
+            }
+            elseif ($KeepArchive)
+            {{
+                $keepDir = $OutputDir
+            }
+            $yr = Get-YaraX -WorkDir $workDir -ArchivePath $YaraXArchive -KeepDir $keepDir
             $yrVersion = (& $yr --version 2>&1 | Out-String).Trim()
             if ($LASTEXITCODE -ne 0) {{ throw "yr --version failed: $yrVersion" }
             Write-ScanLog "Unpacked $yrVersion"
@@ -839,34 +1079,46 @@ function Invoke-Main
         [System.IO.File]::WriteAllText($ruleFile, $EmbeddedRule, $Utf8NoBom)
 
         # ---- build list of files to scan ------------------------------------------
+        # Unattended background scan: the file walk (this process) runs at
+        # BelowNormal like yr.exe (see Invoke-NativeToFile). Best effort.
+        try {{ [System.Diagnostics.Process]::GetCurrentProcess().PriorityClass = [System.Diagnostics.ProcessPriorityClass]::BelowNormal } catch {{ $null = $_ }
         if (-not (Test-IsAdministrator))
         {{
             Write-Warning 'Not running as Administrator - protected folders will be skipped (see log)'
         }
 
         $skipExt = $null
-        if (-not $IncludeNonBinary)
+        if (-not $NoSkips)
         {{
             $skipExt = New-Object -TypeName 'System.Collections.Generic.HashSet[string]' -ArgumentList ([string[]]$NonBinaryExtensions), ([System.StringComparer]::OrdinalIgnoreCase)
-            Write-ScanLog 'Skipping non-executable file types (use -IncludeNonBinary to include)'
+            Write-ScanLog 'Skipping non-executable file types (use -NoSkips to include)'
         }
-        if (-not $IncludeCloudFiles)
-        {{
-            Write-ScanLog 'Skipping online-only cloud files (use -IncludeCloudFiles to include)'
-        }
+        # Always, even with -NoSkips: reading online-only files would download them
+        Write-ScanLog 'Skipping online-only cloud files'
         if ($maxBytes -gt 0)
         {{
             Write-ScanLog "Skipping files of $MaxMB MB or more (use -MaxMB 0 to include)"
         }
-        if (-not $IncludeSystemPaths)
+        if (-not $NoSkips)
         {{
-            Write-ScanLog "Skipping system folders: $($SystemSkipDirs -join ', ') (use -IncludeSystemPaths to include)"
+            Write-ScanLog "Skipping system folders: $($SystemSkipDirs -join ', '), Users\*\$($ProfileSkipDirs -join ', Users\*\') (target one with -Path, or -NoSkips, to include)"
+        }
+        # powershell.exe -File passes "A,B" as one string, so split on commas here
+        $excludeDirs = @()
+        foreach ($x in @($ExcludePath | Where-Object {{ $_ } | ForEach-Object {{ $_ -split ',' } | ForEach-Object {{ $_.Trim() } | Where-Object {{ $_ }))
+        {{
+            if (-not (Test-Path -LiteralPath $x -PathType Container))
+            {{
+                Write-ScanLog "WARNING: -ExcludePath folder not found, ignored: $x"
+                continue
+            }
+            $excludeDirs += (Resolve-Path -LiteralPath $x).ProviderPath.TrimEnd('\', '/')
         }
 
         $scanList = Join-Path -Path $workDir -ChildPath 'scan_list.txt'
         $listWriter = New-Object -TypeName System.IO.StreamWriter -ArgumentList $scanList, $false, $Utf8NoBom
         $listWriter.NewLine = "`n"
-        $totals = @{{ Listed = 0L; SizeSkipped = 0L; ExtSkipped = 0L; CloudSkipped = 0L; LinksSkipped = 0L; Errors = 0L }
+        $totals = @{{ Listed = 0L; SizeSkipped = 0L; ExtSkipped = 0L; EmptySkipped = 0L; CloudSkipped = 0L; LinksSkipped = 0L; Errors = 0L }
         try
         {{
             foreach ($target in $targets)
@@ -885,13 +1137,22 @@ function Invoke-Main
                 {{
                     if (-not (Test-PathWithin -Child $target -Parent $d)) {{ [void]$skipDirs.Add($d) }
                 }
+                foreach ($d in $excludeDirs)
+                {{
+                    if (Test-PathWithin -Child $target -Parent $d) {{ Write-ScanLog "Not skipping $d (-ExcludePath): it contains $target" }
+                    else {{ [void]$skipDirs.Add($d); Write-ScanLog "Skipping $d (-ExcludePath)" }
+                }
                 $skipRootFiles = $null
-                if (-not $IncludeSystemPaths)
+                if (-not $NoSkips)
                 {{
                     $root = [System.IO.Path]::GetPathRoot($target)
-                    foreach ($rel in $SystemSkipDirs)
+                    $systemDirs = @($SystemSkipDirs | ForEach-Object {{ Join-Path -Path $root -ChildPath $_ })
+                    foreach ($userProfile in @(Get-ChildItem -LiteralPath (Join-Path -Path $root -ChildPath 'Users') -Directory -Force -ErrorAction SilentlyContinue))
                     {{
-                        $d = Join-Path -Path $root -ChildPath $rel
+                        $systemDirs += @($ProfileSkipDirs | ForEach-Object {{ Join-Path -Path $userProfile.FullName -ChildPath $_ })
+                    }
+                    foreach ($d in $systemDirs)
+                    {{
                         # A skip whose folder contains the target is turned off
                         if (-not (Test-PathWithin -Child $target -Parent $d)) {{ [void]$skipDirs.Add($d) }
                     }
@@ -901,7 +1162,7 @@ function Invoke-Main
                 Write-ScanLog "Listing files under $target"
                 $stats = Get-ScanFile -Root $target -ListWriter $listWriter -LogWriter $logWriter `
                     -SkipDirs $skipDirs -SkipRootFiles $skipRootFiles -SkipExtensions $skipExt `
-                    -MaxBytes $maxBytes -SkipCloud (-not $IncludeCloudFiles)
+                    -MaxBytes $maxBytes -SkipCloud $true
                 foreach ($k in @($totals.Keys)) {{ $totals[$k] += $stats.$k }
             }
         }
@@ -915,15 +1176,16 @@ function Invoke-Main
         if ($totals.CloudSkipped -gt 0) {{ Write-ScanLog "Skipped $($totals.CloudSkipped) online-only cloud file(s)/folder(s)" }
         if ($totals.SizeSkipped -gt 0) {{ Write-ScanLog "Skipped $($totals.SizeSkipped) file(s) of $MaxMB MB or more (listed in $logFile)" }
         if ($null -ne $skipExt) {{ Write-ScanLog "Skipped $($totals.ExtSkipped) non-executable file type(s)" }
+        if ($totals.EmptySkipped -gt 0) {{ Write-ScanLog "Skipped $($totals.EmptySkipped) empty file(s)" }
         Write-ScanLog "Found $($totals.Listed) file(s) to scan"
 
         # ---- scan -----------------------------------------------------------------
-        Write-ScanLog 'Scanning...'
+        Write-ScanLog "Scanning with $Threads thread(s) at low priority..."
         Write-ScanLog "Results: $resultFile"
         try
         {{
             $scan = Invoke-NativeToFile -FilePath $yr -StdoutPath $resultFile -Arguments @(
-                'scan', '--scan-list', '--print-meta', '--print-strings',
+                'scan', '--scan-list', '--print-meta', '--print-strings', '--threads', $Threads,
                 '--output-format', $Format, $ruleFile, $scanList)
         }
         catch
@@ -942,17 +1204,9 @@ function Invoke-Main
 
         if ($null -ne $summaryFile)
         {{
-            $lines = ConvertTo-PhpVersionSummary -RawPath $resultFile
+            $lines = ConvertTo-VersionSummary -RawPath $resultFile
             [System.IO.File]::WriteAllLines($summaryFile, $lines, $Utf8NoBom)
-            Write-ScanLog "Versions: $summaryFile ($($lines.Count) path(s))"
-        }
-
-        if ($KeepBinary)
-        {{
-            $keepDir = Join-Path -Path $OutputDir -ChildPath 'bin'
-            $null = New-Item -Path $keepDir -ItemType Directory -Force
-            Copy-Item -LiteralPath $yr -Destination (Join-Path -Path $keepDir -ChildPath 'yr.exe') -Force
-            Write-ScanLog "Kept yr binary at $(Join-Path -Path $keepDir -ChildPath 'yr.exe')"
+            Write-ScanLog "Versions: $summaryFile ($($lines.Count) line(s))"
         }
 
         # Any output in text/ndjson mode means at least one match; json always prints an object
@@ -999,15 +1253,17 @@ if ($MyInvocation.InvocationName -ne '.')
         Path               = $Path
         OutputDir          = $OutputDir
         Format             = $Format
-        KeepBinary         = $KeepBinary
+        KeepArchive        = $KeepArchive
         YaraXArchive       = $YaraXArchive
         MaxMB              = $MaxMB
-        IncludeSystemPaths = $IncludeSystemPaths
-        IncludeNonBinary   = $IncludeNonBinary
-        IncludeCloudFiles  = $IncludeCloudFiles
+        Threads            = $Threads
+        ExcludePath        = $ExcludePath
+        NoSkips            = $NoSkips
         Help               = $Help
         ExtraArgs          = $ExtraArgs
     }
+    # Pass -MaxMB on only when given, so Invoke-Main can tell "omitted" from "-MaxMB ''"
+    if (-not $PSBoundParameters.ContainsKey('MaxMB')) {{ $mainArgs.Remove('MaxMB') }
     exit (Invoke-Main @mainArgs)
 }
 _END_OF_SCRIPT_
@@ -1027,7 +1283,7 @@ New-Item -ItemType File -Force -Path $running | Out-Null
 # A separate 64-bit powershell.exe: the scan script ends with "exit"
 & "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File (Join-Path -Path $T -ChildPath 'yara_x_scan_windows.ps1') -YaraXArchive $T -OutputDir (Join-Path -Path $T -ChildPath 'results') *>&1 | Out-File -FilePath $console -Encoding utf8
 $rc = $LASTEXITCODE
-"scan exit code: $rc (0 = no PHP found, 1 = PHP found, 2-4 = error)" | Out-File -FilePath $console -Encoding utf8 -Append
+"scan exit code: $rc (0 = no PHP or Node.js found, 1 = found, 2-4 = error)" | Out-File -FilePath $console -Encoding utf8 -Append
 if (-not (Test-Path -LiteralPath $D)) {{ New-Item -ItemType Directory -Force -Path $D | Out-Null }
 # Only a finished scan replaces the results; written under a temp name first so
 # the analysis never reads a partial file
@@ -1042,7 +1298,7 @@ if ($rc -eq 0 -or $rc -eq 1)
         Move-Item -LiteralPath $tmp -Destination (Join-Path -Path $D -ChildPath '{parameter "results_file"}') -Force
     }
 }
-Copy-Item -LiteralPath $console -Destination (Join-Path -Path $D -ChildPath 'yara_scan_php.log') -Force
+Copy-Item -LiteralPath $console -Destination (Join-Path -Path $D -ChildPath 'yara_scan_runtimes.log') -Force
 Remove-Item -Path (Join-Path -Path $T -ChildPath 'yara-x-v*') -Force -ErrorAction SilentlyContinue
 Remove-Item -LiteralPath $running -Force -ErrorAction SilentlyContinue
 _END_OF_SCRIPT_
