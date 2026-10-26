@@ -18,7 +18,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Sun, 25 Oct 2026 19:06:21 +0000</Value>
+			<Value>Mon, 26 Oct 2026 17:19:40 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -444,7 +444,8 @@ rule PHP_Binary_Broad
                             the exact version (node.js/v22.23.4), or for pkg
                             builds with no inspector $rel (the release URL)
     Node_Electron_Version - Electron framework; $electron holds Electron's
-                            version, $ver the embedded Node version
+                            version, $ver the embedded Node version (none
+                            in very old Electron, around 2.x)
     Node_Binary_Broad     - catch-all: any executable with any Node marker,
                             incl. native addons (.node) and the distro node
                             launchers that load libnode
@@ -532,8 +533,11 @@ rule Node_Electron_Version
     // same as Node_Runtime_Version's $ver, so one file gives one node version
     $electron = /Electron\/[0-9]{{1,3}\.[0-9]{{1,3}\.[0-9]{{1,3}(-[0-9A-Za-z.]{{1,20})?/
     $ver = /node\.js\/v[0-9]{{1,2}\.[0-9]{{1,3}\.[0-9]{{1,3}(-[0-9A-Za-z.]{{1,20})?/
+    // Old Electron (2.x) has no node.js/v, only the NODE_MODULE registration
+    // function; it is then reported by its Electron version alone
+    $reg = "node_module_register"
   condition:
-    Node_Detect_IsExecutable and $electron and $ver
+    Node_Detect_IsExecutable and $electron and ($ver or $reg)
 }
 
 rule Node_Binary_Broad
@@ -548,6 +552,7 @@ rule Node_Binary_Broad
     $napi   = "napi_register_module_v1"              // N-API addon export
     $napiim = "napi_module_register"                 // N-API addon import
     $start  = "_ZN4node5StartEiPPc"                  // distro launcher importing node::Start from libnode
+    $reg    = "node_module_register"                 // NODE_MODULE: legacy (non-N-API) addons, old runtimes
   condition:
     // Also matches Bun-compiled executables (release URL, N-API): an accepted
     // false positive, reported as "node unknown"

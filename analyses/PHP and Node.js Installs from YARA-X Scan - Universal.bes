@@ -2,21 +2,21 @@
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Analysis>
 		<Title>PHP and Node.js Installs from YARA-X Scan - Universal</Title>
-		<Description><![CDATA[<P>Reports the results of the &quot;Scan for PHP and Node.js Installs with YARA-X&quot; tasks (macOS, Linux, Windows), once a day: the distinct PHP, Node.js and Electron versions found, how many PHP and Node.js files were found (Node.js files include native addons, which have no version), and when the scan ran. Each computer's full list (&quot;path&lt;TAB&gt;product&lt;TAB&gt;version&quot; per product found in a file) is in __BESData/__Global/Logs/yara_results_runtimes.text. A computer that was scanned and has neither reports 0 files.</P>]]></Description>
+		<Description><![CDATA[<P>Reports the results of the &quot;Scan for PHP and Node.js Installs with YARA-X&quot; tasks (macOS, Linux, Windows), every hour: the distinct PHP, Node.js and Electron versions found, how many PHP and Node.js files were found (Node.js files include native addons, which have no version), and when the scan ran. Each computer's full list (&quot;path&lt;TAB&gt;product&lt;TAB&gt;version&quot; per product found in a file) is in __BESData/__Global/Logs/yara_results_runtimes.text. A computer that was scanned and has neither reports 0 files.</P>]]></Description>
 		<Relevance><![CDATA[exists files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
 		<Source>Internal</Source>
 		<SourceID>jgstew</SourceID>
 		<SourceReleaseDate>2026-10-25</SourceReleaseDate>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Sun, 25 Oct 2026 19:06:21 +0000</Value>
+			<Value>Mon, 26 Oct 2026 17:19:40 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
-		<Property Name="PHP Versions Found" ID="1" EvaluationPeriod="P1D"><![CDATA[unique values of following texts of firsts "%09php%09" of lines of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>
-		<Property Name="PHP Files Found" ID="2" EvaluationPeriod="P1D"><![CDATA[(number of unique values of preceding texts of firsts "%09php%09" of lines of it) of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>
-		<Property Name="Scan Time" ID="3" EvaluationPeriod="P1D"><![CDATA[modification times of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>
-		<Property Name="Node.js Versions Found" ID="4" EvaluationPeriod="P1D"><![CDATA[unique values of following texts of firsts "%09node%09" of lines of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>
-		<Property Name="Node.js Files Found" ID="5" EvaluationPeriod="P1D"><![CDATA[(number of unique values of preceding texts of firsts "%09node%09" of lines of it) of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>
-		<Property Name="Electron Versions Found" ID="6" EvaluationPeriod="P1D"><![CDATA[unique values of following texts of firsts "%09electron%09" of lines of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>
+		<Property Name="PHP Versions Found" ID="1" EvaluationPeriod="PT1H"><![CDATA[unique values of following texts of firsts "%09php%09" of lines of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>
+		<Property Name="PHP Files Found" ID="2" EvaluationPeriod="PT1H"><![CDATA[(number of unique values of preceding texts of firsts "%09php%09" of lines of it) of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>
+		<Property Name="Scan Time" ID="3" EvaluationPeriod="PT1H"><![CDATA[modification times of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>
+		<Property Name="Node.js Versions Found" ID="4" EvaluationPeriod="PT1H"><![CDATA[unique values of following texts of firsts "%09node%09" of lines of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>
+		<Property Name="Node.js Files Found" ID="5" EvaluationPeriod="PT1H"><![CDATA[(number of unique values of preceding texts of firsts "%09node%09" of lines of it) of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>
+		<Property Name="Electron Versions Found" ID="6" EvaluationPeriod="PT1H"><![CDATA[unique values of following texts of firsts "%09electron%09" of lines of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>
 	</Analysis>
 </BES>
