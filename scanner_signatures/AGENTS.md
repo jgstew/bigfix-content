@@ -97,7 +97,7 @@ Shape of a body:
 | `StringCrop` | `startString`, `endString`, `inputString` are required, plus `seekFrom="left"` or `"right"`. Returns the text between the first `startString` and the next `endString`. `startString=""` crops from the beginning: `StringCrop endString="-" startString=""` on `8.2.35-1~deb12u1` gives `8.2.35`. Wrap it in `<VectorToScalar>` when the result is used as a scalar (the majority pattern). |
 | `StringCrop`: separator not found | A `startString` that isn't there crops from the beginning; an `endString` that isn't there (or `""`) runs to the end. So `start=":" end=""` on `18.20.4+dfsg` returns it unchanged, and chained crops (`:`, `-`, `+`, `~`) are safe when a separator is absent. On a multi-line file, a missing `startString` returns the first line, so check with `Contains` first. |
 | `StringCrop seekFrom="right"` | `startString="" endString="."` returns the text before the **last** `.`: `22.23.4.0` gives `22.23.4`, but `22.23.4` gives `22.23`. Use it only when the part count is known (`WinFileInfo` is always 4). `endString="include/node/"` on `/opt/node/include/node/` gives `/opt/node/`. |
-| `Contains inputString=... searchedString=... position="contains|start|end"` | Boolean. Takes **attributes**, not child elements. |
+| `Contains inputString=... searchedString=... position="contains\|start\|end"` | Boolean. Takes **attributes**, not child elements. |
 | `ValueOf value="$(a).$(b).$(c)"` | Joins variables (there's also `Concat`). |
 | `Vector` with several children | Union: `<Vector><DpkgProductList filter="nodejs"/><DpkgProductList filter="libnode*"/></Vector>` iterates both. |
 | A failing scalar expression | Drops the **whole instance** (with a "Scalar expression [...] failed" warning): e.g. `ReadFile` on a missing file, or `XmlValue`. That's why every `ReadFile` is guarded. |
@@ -107,7 +107,7 @@ Shape of a body:
 | `DpkgProductInfo code=... field=...` | `field` is one of `name`, `version`, `displayVersion`, `description`. `version` = dpkg version, e.g. `8.2.35-1~deb12u1`, `8.3.6-0ubuntu0.24.04.13`, metapackage `2:93`. |
 | `RpmProductList filter="*php-common-*" type="any"` | Iterates **name-version-release.arch** strings (`php-common-8.0.30-8.el9_8.1.x86_64`), so a filter needs a trailing `-*` or `*`. A leading `*` works (it also matches Remi `php83-php-common-...`). |
 | `RpmProductInfo field="version"` | **Returns `8.0.30.8.el9_8.1`** (version.release joined with a dot), which `Compare type="version"` **can't** handle. Use `field="displayVersion"` (`8.0.30-8.el9_8.1`) and crop at `-`. `displayVersion` **leaves out the epoch**: RHEL's `nodejs` is `1:16.20.2-8.el9_4` and gives `16.20.2-8.el9_4`. Other fields: `name`, `release`, `vendor`, `arch`, `installDir` (comma list, e.g. `/etc/,/usr/,/var/lib/`), `installDate`, ... |
-| `Compare relation="lt|le|eq|ne|ge|gt" type="version|string|cistring|integer|hex|boolean"` | `version` compares dotted numbers. Feed it clean `X.Y.Z` (crop distro suffixes first). |
+| `Compare relation="lt\|le\|eq\|ne\|ge\|gt" type="version\|string\|cistring\|integer\|hex\|boolean"` | `version` compares dotted numbers. Feed it clean `X.Y.Z` (crop distro suffixes first). |
 | A provider missing on the OS | E.g. `RpmProductList` on Debian or `DpkgProductList` on RHEL: a *warning* ("Vector expression [...] failed"). That signature matches nothing, and the others still run. This is expected. |
 | `PackageInfoMatch name vendor version` | Boolean match against installed packages. Used by some CommunityContent signatures *(behavior not verified here)*. |
 
