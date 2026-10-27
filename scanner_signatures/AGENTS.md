@@ -8,7 +8,8 @@ Inventory as custom catalog content. The same format is used in
 
 Everything below was verified with the CIT scanner **11.0.44.0**
 (`linux-x86_64_11.0.44.0.tgz`) on Debian 12, Ubuntu 24.04 and Rocky Linux 9
-(amd64 containers), in October 2026. Facts marked *(not verified)* weren't.
+(amd64 containers), and with `w64-ix86_11.0.44.0.zip` on Windows Server 2022
+(section 5.6, partly), in October 2026. Facts marked *(not verified)* weren't.
 
 | File | What it detects |
 |---|---|
@@ -79,6 +80,8 @@ Shape of a body:
 |---|---|
 | `FindFilePathEx name="..."` / `names="a,b"` | Searches the **file index built by `wscanfs`**, not the disk. A file whose name isn't in the scan config's `FileMask` list is never found. Wildcards work (`php*`). With `appendFileName="false"` it returns the folder (`/usr/bin/`); with `"true"` the full path (`/usr/bin/php8.2`). |
 | `FindFilePathEx` and symlinks | **Symlinks are skipped.** `name="php"` never finds Debian/Ubuntu `/usr/bin/php`, which is a symlink to `/etc/alternatives/php`. On RHEL it's a real file and is found. |
+| `FindFilePathEx` on Windows | **Unresolved:** in a standalone Windows install it returned nothing, though `wscanfs` walked and listed the files (section 5.6). Don't treat a Windows file-based signature as tested until a real BigFix Inventory scan matches it. |
+| `WinFileInfo absolutePath=... field="version"` | Windows file version as 4 parts: `php.exe` 8.3.35 gives `8.3.35.0`. `Compare type="version"` against 3-part ranges works (`8.3.35.0` < `8.3.36`). |
 | `Vector filter="..."` | The pattern must match the **whole** string. `*/usr/bin/` matches the folder returned with `appendFileName="false"`. To filter full paths (`appendFileName="true"`), use `*/usr/bin/*`. |
 | `FileExists`, `ReadFile`, `FileInfoCompare` | Read the disk directly. No index or `FileMask` needed. |
 | `ReadFile` | Always guard it with `FileExists` and `FileInfoCompare field="size" relation="le" value="5120000"` (repo convention: 512 KB-5 MB). |
@@ -350,7 +353,7 @@ python3 scanner_test.py php-debian /opt/cit scanner_signatures/software_PHP_*.xm
 | Debian 12 + a planted `/srv/build/php-src/main/php.h` and `../NEWS` with `21 Nov 2025, PHP 8.3.28` | - | - | **8.3.28 / true** | as above | - |
 
 Expected warnings: `RpmProductList` failed (Debian/Ubuntu) and `DpkgProductList` failed (Rocky).
-Signature #1 (Windows) needs a Windows host *(not tested)*.
+Signature #1 (Windows) is covered in section 5.6. Its version logic is verified, but its `FindFilePathEx` file search isn't.
 
 ### 5.4 Probing scanner behavior
 
@@ -380,6 +383,92 @@ which breaks Debian's `/lib` symlinks). It worked with these workarounds:
 
 Use this to test the task itself. For testing signatures, section 5.1 is simpler.
 
+### 5.6 Windows (partly verified)
+
+Tested on Windows Server 2022 over SSH (PowerShell 5.1, run as an administrator). Send multi-line
+scripts as `powershell -NoProfile -NonInteractive -EncodedCommand <base64 of the UTF-16LE script>`
+to avoid quoting problems. All paths stay under one test folder.
+
+**Install (verified).** These are the same steps as HCL's task. Its `7za e` extracts the bundle
+flat, and its redistributable DLLs are only needed when `api-ms-win-crt*` is missing from System32.
+
+```powershell
+$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'
+[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+$T = 'C:\bfi_sig_test'
+New-Item -ItemType Directory -Force -Path "$T\installer", "$T\download" | Out-Null
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+function Get-Verified($url, $sha256) {
+    $f = Join-Path "$T\download" ([IO.Path]::GetFileName($url))
+    Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $f
+    if ((Get-FileHash $f -Algorithm SHA256).Hash.ToLower() -ne $sha256) { throw "SHA256 mismatch: $url" }
+    $f
+}
+function Expand-Flat($zip, $dest) {   # like '7za e': no folders
+    $a = [IO.Compression.ZipFile]::OpenRead($zip)
+    foreach ($e in $a.Entries) { if ($e.Name) { [IO.Compression.ZipFileExtensions]::ExtractToFile($e, (Join-Path $dest $e.Name), $true) } }
+    $a.Dispose()
+}
+Expand-Flat (Get-Verified 'https://software.bigfix.com/download/tema/scanner/11.0.44.0-20260915-1200/w64-ix86_11.0.44.0.zip' 'fcf79e161867103d5223a26ed13f012a031528a28bf24de7e05277c57cc8254c') "$T\installer"
+$p = Start-Process -FilePath "$T\installer\wcitinst.exe" -Wait -PassThru -NoNewWindow -RedirectStandardOutput "$T\installer\installCITlog.txt" `
+    -ArgumentList @('i', 'BFI-PRIVATE', '-s', "`"$T\installer\CIT_win64.spb`"", '-d', "`"$T\cit`"", '-c', "`"$T\cit\logs`"", '-p')
+"wcitinst exit code: $($p.ExitCode)"   # 0, log ends with "Done."
+if (-not (Get-ChildItem "$env:WINDIR\System32" -Filter 'api-ms-win-crt*' -ErrorAction SilentlyContinue)) {
+    Expand-Flat (Get-Verified 'https://software.bigfix.com/download/tema/scanner/api-ms-win_redist_dlls_x64.zip' '1dff7809092e300b023eb61646fa5e428bd4c2479e6363aae872ede8264ff581') "$T\cit\bin"
+}
+```
+
+- `BFI-PRIVATE` installs a private copy. On a host that already had a system CIT 9.2.23
+  (`%WINDIR%\cit\cit.ini`, from an existing BigFix client), `%WINDIR%\cit` was unchanged
+  (same files and hashes before and after). Registry changes weren't checked.
+- The scanner's file cache lives in `$T\cit\cache_data\__<user>` (`Cit.properties`:
+  `fscanner.provider=provider_cache2`, `globalCache=false`).
+- To remove everything: `Remove-Item -Recurse -Force C:\bfi_sig_test`.
+
+**Test fixture (verified):** the official
+`https://windows.php.net/downloads/releases/archives/php-8.3.35-nts-Win32-vs16-x64.zip`
+(SHA256 `25a8e2ac9ff30f1d768d1447c09a600617fa6e6082729f6e95f008b59c91fe45`), expanded into
+`$T\php`. Its `php.exe` has `FileVersion 8.3.35`, which is in the affected range.
+
+**Scan:**
+- Wrap signature #1 as in level 3, with `<Platform type="WINDOWS"/>`.
+- Make the scan config from `$T\cit\bin\config.xml`, replacing its `FSScan` element with
+  `<FSScan version="1.0" priority="normal"><IncludeDirectory value="C:\"/><FileMask value="php.exe"/><Age value="60"/><Timeout value="1800"/><OutputData value="BASIC"/></FSScan>`.
+- Copy both files over with `scp` (`scp f jgstew@host:C:/bfi_sig_test/`).
+- Run `wscanfs.exe -c <config> -reset`, `wscanfs.exe -c <config> -o fs.xml`, then
+  `wscansw.exe -i <sigs> -c <config> -o sw.xml -e warn.xml`. Use `Start-Process -Wait` with
+  `-RedirectStandardOutput` and `-RedirectStandardError`. `wscansw -l MAX` writes a detailed
+  trace to stderr, and `$T\cit\logs\traceCIT.log` accumulates across runs.
+- The `wscanfs` walk of `C:\` took about 45 seconds. "path too long" messages for very deep
+  folders are just skipped paths.
+
+**Results for signature #1 (PHP 8.3.35):**
+
+| What | Result |
+|---|---|
+| `wscanfs` | Walked `C:\` and listed every `php.exe` in `fs.xml` (4 copies) |
+| Signature #1 as shipped, and the diag copy | **No match.** `FindFilePathEx name="php.exe"` returned nothing |
+| Signature #1 with only its iterator replaced by `<Vector><ValueOf value="C:\bfi_sig_test\php\"/></Vector>` | **`DETAILED_VER=8.3.35.0`, `IS_INSTALLED=true`** for both shipped and diag: the `WinFileInfo` read and the version test are correct |
+
+**The unresolved `FindFilePathEx` problem:**
+- The `wscansw` trace shows the query `Executing fs query [FILENAME]=="php.exe"` returning
+  `vector size=0`, then "Signature ... skipped because no instances are available".
+- `traceCIT.log` shows `FS_Cache2::executeQueryCacheOnlyEx - Existing tree for 'C:\' in the cache is not valid. Removing it, then recreating.`
+  during `wscansw`, and the cache's file table (`fsc_fil.dat`) stays about 250 bytes.
+- Preprocessing does register the pattern (`FindFilePathEx::emitPrereqFile ... Pattern emitted: php.exe`).
+- None of these changed the result: running `wscansw` before `wscanfs`, `Age` 0 or 60, a `-reset`
+  before each run.
+- The same approach works on Linux.
+- On Windows, BigFix Inventory 11 also installs the **BigFix Scanner service** (`bf-scanner`,
+  `bf-scanner-windows-amd64.zip` in the install task), which this setup doesn't include. Real
+  deployments may rely on it for file searches *(not verified)*.
+
+Next steps to resolve it:
+1. Install the scanner with the real task on a Windows BigFix client, through
+   bigfix-actionscript-runner (section 5.5) or a real action, so `bf-scanner` is present.
+2. Or run a real BigFix Inventory software scan on a Windows endpoint, and check the signature's
+   result in BigFix Inventory.
+
 ## 6. CI (future)
 
 Everything above runs unattended on a GitHub `ubuntu-latest` (x86_64) runner. Suggested jobs:
@@ -393,8 +482,10 @@ Everything above runs unattended on a GitHub `ubuntu-latest` (x86_64) runner. Su
    - Compare the JSON with a checked-in expectations file, e.g. `scanner_signatures/tests/<signature file>.expected.json`, mapping container to signature `#n` to `[DETAILED_VER, IS_INSTALLED]` for shipped and diag. Fail on any difference.
    - Fixtures that a package manager can't provide (e.g. a source tree) are planted by a small setup script per row.
 3. **Never commit HCL files** (scanner binaries, `config/xss/*.xsd`, `config.xml`). Download them in CI.
-4. Windows signatures need a `windows-latest` job with the Windows CIT bundle
-   (`w64-ix86_11.0.44.0.zip`, see the install task) and `wscansw.exe` *(not tested)*.
+4. **Windows:** a `windows-latest` job can install the scanner with section 5.6's verified
+   PowerShell and check version logic (fixed-path copies of a signature). File-based
+   matching (`FindFilePathEx`) can't be tested that way until the section 5.6 problem is
+   resolved.
 
 ## 7. Publishing to CommunityContent
 
