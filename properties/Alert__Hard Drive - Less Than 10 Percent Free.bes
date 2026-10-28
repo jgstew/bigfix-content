@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Property Name="Alert::Hard Drive - Less Than 10 Percent Free" EvaluationPeriod="PT1H"><![CDATA[exists ((free space of it)*100/(total space of it)) whose(it <= 10) of drives whose(exists name of it AND exists free space of it AND exists type of it AND exists total space of it AND type of it = "DRIVE_FIXED" AND total space of it != 0 AND total space of it > 1024*1024*1024)]]></Property>
+</BES>
