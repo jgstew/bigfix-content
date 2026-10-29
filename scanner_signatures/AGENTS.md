@@ -9,9 +9,14 @@ Inventory as custom catalog content. The same format is used in
 Everything below was verified with the CIT scanner **11.0.44.0**
 (`linux-x86_64_11.0.44.0.tgz`) on Debian 12, Ubuntu 24.04 and Rocky Linux 9
 (amd64 containers), and with `w64-ix86_11.0.44.0.zip` on Windows Server 2022
-(section 5.6), in October 2026. Facts marked *(not verified)* weren't.
-macOS wasn't scanned with a real macOS scanner: the macOS-only paths were
-tested by planting the same files in a Linux container.
+(section 5.6), in October 2026. The Brotli files (section 9) were also run on
+Debian 13 and unstable, Ubuntu 22.04, Rocky Linux 8, Fedora 42, Amazon Linux 2023,
+openSUSE Leap 15 and Arch. Facts marked *(not verified)* weren't.
+
+**Extended signatures don't run on macOS** (section 5.7). There, HCL's
+"Install or Upgrade Scanner" task deploys only the `bf-scanner` service, which has
+no signature engine. The macOS-only paths below were tested by planting the same
+files in a Linux container. They only matter if a macOS endpoint runs CIT.
 
 | File | What it detects |
 |---|---|
@@ -19,6 +24,8 @@ tested by planting the same files in a Linux container.
 | `software_Node.js_all_Affected_by_CVE-2026-111497-0.AFFECTED.xml` | Node.js affected by CVE-2026-111497 (Brotli): 5 signatures (Windows `node.exe`, Windows MSI, `include/node/node_version.h` layouts, dpkg, RPM). Section 8. |
 | `software_Node.js_ANY-0.any_version.xml` | Every Node.js found, with its version: the same 5 signatures, no version filter. Section 8. |
 | `software_Electron_ANY-0.any_version.xml` | Electron (embeds Node.js), with the Electron version: 2 signatures (macOS framework `Info.plist`, unpacked Electron distribution). Section 8. |
+| `software_Brotli_all_Affected_by_CVE-2026-111497-0.AFFECTED.xml` | Brotli (the library, CLI and Python package) affected by CVE-2026-111497: 4 signatures (dpkg, RPM, pip `dist-info`/`egg-info`, Arch pacman), with distro fixed builds skipped. Section 9. |
+| `software_Brotli_ANY-0.any_version.xml` | Every Brotli found, with its version: the same 4 signatures, no version filter and no fixed-build skip. Section 9. |
 
 ## 1. File format
 
@@ -96,16 +103,17 @@ Shape of a body:
 | `ReadFile` | Always guard it with `FileExists` and `FileInfoCompare field="size" relation="le" value="5120000"` (repo convention: 512 KB-5 MB). |
 | `StringCrop` | `startString`, `endString`, `inputString` are required, plus `seekFrom="left"` or `"right"`. Returns the text between the first `startString` and the next `endString`. `startString=""` crops from the beginning: `StringCrop endString="-" startString=""` on `8.2.35-1~deb12u1` gives `8.2.35`. Wrap it in `<VectorToScalar>` when the result is used as a scalar (the majority pattern). |
 | `StringCrop`: separator not found | A `startString` that isn't there crops from the beginning; an `endString` that isn't there (or `""`) runs to the end. So `start=":" end=""` on `18.20.4+dfsg` returns it unchanged, and chained crops (`:`, `-`, `+`, `~`) are safe when a separator is absent. On a multi-line file, a missing `startString` returns the first line, so check with `Contains` first. |
-| `StringCrop seekFrom="right"` | `startString="" endString="."` returns the text before the **last** `.`: `22.23.4.0` gives `22.23.4`, but `22.23.4` gives `22.23`. Use it only when the part count is known (`WinFileInfo` is always 4). `endString="include/node/"` on `/opt/node/include/node/` gives `/opt/node/`. |
-| `Contains inputString=... searchedString=... position="contains\|start\|end"` | Boolean. Takes **attributes**, not child elements. |
+| `StringCrop seekFrom="right"` | `startString="" endString="."` returns the text before the **last** `.`: `22.23.4.0` gives `22.23.4`, but `22.23.4` gives `22.23`. Use it only when the part count is known (`WinFileInfo` is always 4). `endString="include/node/"` on `/opt/node/include/node/` gives `/opt/node/`. With a non-empty `startString`, the crop starts at its **last** occurrence: `startString="rotli-" endString=".dist-info"` on `/srv/brotli-app/venv/.../Brotli-1.1.0.dist-info/` gives `1.1.0`, where `seekFrom="left"` gives `app/venv/.../Brotli-1.1.0`. |
+| Cropping a version out of a path | A folder higher up the path can contain the same marker (`/srv/brotli-app/`), so crop with `seekFrom="right"`. Also skip results that still contain `/` or `\`: a `Vector filter` like `*/brotli-*-info/` also matches **every** `*-info` folder under such a parent (`pip-…`, `setuptools-…`). |
+| `Contains inputString=... searchedString=... position="contains\|start\|end"` | Boolean. Takes **attributes**, not child elements. Several of them (or `Compare`s) can be combined in an `<Or>`/`<And>` inside one `Variable`. |
 | `ValueOf value="$(a).$(b).$(c)"` | Joins variables (there's also `Concat`). |
 | `Vector` with several children | Union: `<Vector><DpkgProductList filter="nodejs"/><DpkgProductList filter="libnode*"/></Vector>` iterates both. |
 | A failing scalar expression | Drops the **whole instance** (with a "Scalar expression [...] failed" warning): e.g. `ReadFile` on a missing file, or `XmlValue`. That's why every `ReadFile` is guarded. |
 | `XmlValue file=... xpath=...` | Failed on Apple XML plists (which have a `DOCTYPE` with an external DTD), with a simple `following-sibling` XPath. Use `ReadFile` + `StringCrop` instead. |
 | An `<Instance>` with no children | Invalid: "Not enough children for [Instance]", and nothing matches. Probes need at least one `Variable`. |
-| `DpkgProductList filter="php*-common" type="any"` | Native dpkg provider. Iterates **package names** (`php8.2-common`, `php-common`). Only installed packages: Debian's known-but-absent `libnode64`/`libnode72`/... aren't listed. |
+| `DpkgProductList filter="php*-common" type="any"` | Native dpkg provider. Iterates **package names** (`php8.2-common`, `php-common`). Only installed packages: Debian's known-but-absent `libnode64`/`libnode72`/... aren't listed. A multiarch package installed for two architectures (`libbrotli1:amd64` + `libbrotli1:i386`) gives **one** instance. |
 | `DpkgProductInfo code=... field=...` | `field` is one of `name`, `version`, `displayVersion`, `description`. `version` = dpkg version, e.g. `8.2.35-1~deb12u1`, `8.3.6-0ubuntu0.24.04.13`, metapackage `2:93`. |
-| `RpmProductList filter="*php-common-*" type="any"` | Iterates **name-version-release.arch** strings (`php-common-8.0.30-8.el9_8.1.x86_64`), so a filter needs a trailing `-*` or `*`. A leading `*` works (it also matches Remi `php83-php-common-...`). |
+| `RpmProductList filter="*php-common-*" type="any"` | Iterates **name-version-release.arch** strings (`php-common-8.0.30-8.el9_8.1.x86_64`), so a filter needs a trailing `-*` or `*`. A leading `*` works (it also matches Remi `php83-php-common-...`). The filter matches that whole string, so `*brotli-*` does **not** match SUSE's `libbrotlidec1-1.0.7-...`: add a second `RpmProductList` for names like that. |
 | `RpmProductInfo field="version"` | **Returns `8.0.30.8.el9_8.1`** (version.release joined with a dot), which `Compare type="version"` **can't** handle. Use `field="displayVersion"` (`8.0.30-8.el9_8.1`) and crop at `-`. `displayVersion` **leaves out the epoch**: RHEL's `nodejs` is `1:16.20.2-8.el9_4` and gives `16.20.2-8.el9_4`. Other fields: `name`, `release`, `vendor`, `arch`, `installDir` (comma list, e.g. `/etc/,/usr/,/var/lib/`), `installDate`, ... |
 | `Compare relation="lt\|le\|eq\|ne\|ge\|gt" type="version\|string\|cistring\|integer\|hex\|boolean"` | `version` compares dotted numbers. Feed it clean `X.Y.Z` (crop distro suffixes first). |
 | A provider missing on the OS | E.g. `RpmProductList` on Debian or `DpkgProductList` on RHEL: a *warning* ("Vector expression [...] failed"). That signature matches nothing, and the others still run. This is expected. |
@@ -588,7 +596,31 @@ WINHOST=<user>@<windows-host> python3 win_scanner_test.py 'C:\bfi_sig_test_node'
 | Signature #1 as shipped and diag, with the fixed config | **`C:\bfi_sig_test\php\` `8.3.35.0` / true**, plus other `php.exe` copies already on the host (8.3.35 / true, 8.3.36 / false in diag) |
 | Before the config fix | No match (`FindFilePathEx` returned nothing). With its iterator replaced by a fixed path the result was the same `8.3.35.0` / true |
 
-Node.js and Electron results on Windows are in section 8.4.
+Node.js and Electron results on Windows are in section 8.4, and Brotli results in section 9.4.
+
+### 5.7 macOS: no signature engine (verified)
+
+On macOS, HCL's **Install or Upgrade Scanner** task (checked: 11.0.43.1) deploys only the
+**Scanner Service**: `bf-scanner-darwin-amd64.zip` / `-arm64.zip`, installed as the
+`/Library/LaunchDaemons/BigFixScannerService.plist` service. There is no CIT `wscanfs`/`wscansw` for
+macOS. On macOS 15 (x86_64), `bf-scanner` 11.0.43.1 was unpacked into a test folder and its
+configuration created there, without installing the service:
+
+- Its commands are `config`, `dex`, `export hwinventory`, `run`, `service` and `upgrade`.
+  None of them takes a signature file.
+- Its configuration covers monitors (`FSMon`, `PkgMon`, `ProcMon`, `DevMon`, `EventMon`, CPU,
+  memory, disk). Nothing in it configures software signatures.
+- The binary contains none of `MultipleInstance`, `ExtendedSignature`, `FindFilePathEx` or
+  `DpkgProductList`.
+
+So **extended signatures (every file here) don't run on macOS endpoints** with the current scanner.
+Whether BigFix Inventory matches macOS software some other way (server-side, from the service's
+file and package data) wasn't checked *(not verified)*.
+
+Download for reference, with the SHA256 from the task. `bfiuploadserver.prod.hclpnp.com` didn't
+resolve from the test machine, but the same path on `software.bigfix.com` worked:
+`https://software.bigfix.com/download/tema/bfscanner/11.0.43.1-202607201810/bf-scanner-darwin-amd64.zip`,
+SHA256 `cf13434218f2540052b44a40f32b3ad48734a33479550b890fa9726ca5ac48f8`.
 
 ## 6. CI (future)
 
@@ -607,15 +639,23 @@ Everything above runs unattended on a GitHub `ubuntu-latest` (x86_64) runner. Su
    PowerShell and run the signatures with the section 5.6 config (`FSScan` excludes matching the
    `FSScanner` plugin's), including `FindFilePathEx`. Fixtures: the PHP zip and the Node zips and
    MSI from section 8.4.
+5. **Brotli:** the section 9.4 matrix (19 images, several of them in two states: patched and
+   unpatched, or library-only). Fixtures a mirror can't provide (Ubuntu ESM builds, a patched SUSE
+   build before the mirror has it) are dummy `.deb`/`.rpm` packages with the exact version
+   strings, built with `dpkg-deb -b` / `rpmbuild -bb`.
 
 ## 7. Publishing to CommunityContent
 
 CommunityContent keeps signatures as top-level `Signatures/*.xml`. Its PR workflow validates
-them against `signature.xsd` (level 1 only). Run levels 2-4 here first. The PHP file here is
-the same as `Signatures/software_PHP_all_Affected_by_CVE-2026-109618_and_CVE-2026-109619-0.AFFECTED.xml`
-on CommunityContent's `php-signature-fixes` branch. Keep the two in sync.
+them against `signature.xsd` (level 1 only). Run levels 2-4 here first, and keep the two copies
+identical. As of 2026-10-29:
 
-The Node.js and Electron files aren't in CommunityContent yet.
+- The PHP, Node.js and Electron files here are identical to CommunityContent `main`.
+- The Brotli files here are the ones in
+  [bigfix/CommunityContent#51](https://github.com/bigfix/CommunityContent/pull/51) (branch
+  `brotli-signature-fixes`), which updates the versions from
+  [bigfix/CommunityContent#48](https://github.com/bigfix/CommunityContent/pull/48) on `main`.
+  If #51 changes before it's merged, sync them again.
 
 ## 8. Node.js and Electron
 
@@ -775,10 +815,120 @@ One install can be reported more than once, always with the same version:
 
 ### 8.7 Not tested
 
-- A real macOS scanner (the macOS layouts were planted in Linux), `MacPkgList` for the nodejs.org
-  `.pkg` (not used: the `.pkg` installs `/usr/local/include/node`, which #3 covers *(not verified)*).
+- macOS. The current macOS scanner can't run extended signatures at all (section 5.7), so the
+  macOS layouts (Node #3 Homebrew, Electron #1) were only planted in Linux. `MacPkgList` for the
+  nodejs.org `.pkg` isn't used: the `.pkg` installs `/usr/local/include/node`, which #3 covers
+  *(not verified)*.
 - winget/Chocolatey/Scoop installs; the 32-bit (`x86`) MSI; `nodejs<NN>` RPM names (SUSE, Amazon
   Linux 2023); Fedora; snap.
 - A real BigFix Inventory deployment (all results here are from standalone CIT).
 - Pre-release Node builds (e.g. `-rc` or nightly headers), and Electron's `version` file on macOS
   dists (macOS uses the plist).
+
+## 9. Brotli
+
+Two files share one design:
+
+- `software_Brotli_all_Affected_by_CVE-2026-111497-0.AFFECTED.xml` (CVE)
+- `software_Brotli_ANY-0.any_version.xml` (inventory)
+
+They have the **same 4 detection bodies**. They differ in the `IS_INSTALLED` block and in the
+CVE file's fixed-build skip lists. Vendor `Google`. They cover the system library, the CLI and the
+Python package. Node.js's embedded Brotli is covered by the Node files (section 8).
+
+### 9.1 What they report
+
+CVE-2026-111497 is the same Brotli decoder flaw as section 8. Affected (`IS_INSTALLED=true`):
+`1.0.3`-`< 1.0.10`, `1.1.0`-`< 1.1.1`, `1.2.0`-`< 1.2.1`. These ranges match the Ubuntu and Debian
+trackers, and the upstream fixes are tagged v1.0.10, v1.1.1 and v1.2.1.
+
+Unlike the Node files, the CVE file **skips distro fixed builds** with an exact
+`Compare type="string"` on the full package version. Sources (October 2026):
+
+| Distro | Fixed builds skipped | Source |
+|---|---|---|
+| Debian | `1.0.9-2+deb12u1`, `1.1.0-2+deb13u1`, `1.2.0-4.1` (unstable) | security-tracker.debian.org |
+| Ubuntu | `1.0.9-2ubuntu0.1`, `1.1.0-2ubuntu0.1`, `1.2.0-3ubuntu0.1`, `1.2.0-4ubuntu0.1`, ESM `1.0.7-6ubuntu0.1+esm1`, `1.0.3-1ubuntu1.3+esm1`, `1.0.3-1ubuntu1~16.04.2+esm1` | ubuntu.com/security |
+| RHEL (and rebuilds) | `1.0.6-5.el8_10`, `1.0.6-4.el8_4.1`, `1.0.6-4.el8_6.1`, `1.0.6-4.el8_8.1`, `1.0.9-10.el9_8.1`, `1.0.9-6.el9_2.3`, `1.0.9-6.el9_4.3`, `1.0.9-7.el9_6.3`, `1.1.0-8.el10_2.1`, `1.1.0-6.el10_0.3` | `access.redhat.com/hydra/rest/securitydata/cve/<CVE>.json` (`affected_release`) |
+| SLE / openSUSE Leap 15 | `1.0.7-150200.3.8.1` | suse.com/security/cve |
+| Amazon Linux 2023 | `1.1.0-1.amzn2023.0.2` | ALAS2023-2026-3334 |
+
+- **An exact match misses later rebuilds** (Debian binNMU `+bN`, a newer RPM release), which are
+  then flagged by version number (a false positive). Fedora and Arch aren't listed: Fedora 44 and
+  Arch ship 1.2.1.
+- The Red Hat JSON is easier to parse than the HTML pages. SUSE's page also lists SUSE Liberty
+  Linux (RHEL rebuild) builds, which matched Red Hat's.
+
+### 9.2 Detection methods
+
+| # | Evidence | `DETAILED_VER` | `INSTALL_PATH` |
+|---|---|---|---|
+| 1 | `DpkgProductList` `libbrotli1*`, `brotli`, `python3-brotli` | dpkg version up to the first `-`, then after any `:` | `/usr/lib/` |
+| 2 | `RpmProductList` `*brotli-*` + `libbrotlidec1-*`, keeping only names `libbrotli`, `brotli`, `libbrotlidec1` (so `-devel`, `python3-brotli` and debuginfo are ignored) | `displayVersion` up to `-` | `RpmProductInfo installDir` |
+| 3 | pip: `FindFilePathEx names="METADATA,PKG-INFO"` in `*/Brotli-*-info/`, `*/brotli-*-info/` and the `\` forms; skips `/usr/lib/python*` and `/usr/lib64/python*` (distro-managed, covered by #1/#2) | crop `seekFrom="right"` after `rotli-`, then at `.dist-info`, `.egg-info` and `-py`; skip any value containing `/` or `\` | the `*-info` folder |
+| 4 | Arch: `FindFilePathEx name="desc"` in `*/pacman/local/brotli-*` | crop after `/pacman/local/brotli-` up to `-` | the pacman DB folder |
+
+Why these:
+
+- **Debian/Ubuntu `brotli` and `python3-brotli` are statically linked.** They don't depend on
+  `libbrotli1`, and `ldd` shows no `libbrotli`, so a host with only those has the vulnerable decoder
+  and no `libbrotli1`. RHEL's `brotli`/`python3-brotli` require `libbrotli`, so #2 only needs the
+  library and CLI names.
+- **pip wheels are self-contained** (`_brotli*.so` links no `libbrotli`), so they're reported
+  separately from the system library.
+- **`/usr/lib*/python*` is skipped** so that a distro `python3-brotli` (Debian `Brotli-*.egg-info`,
+  RPM `Brotli-X.Y.Z-pyN.M.egg-info`) is judged by the package signatures and their fixed-build
+  lists, not by its version number alone.
+
+### 9.3 Duplicates (expected)
+
+- dpkg: up to 3 instances per host (`libbrotli1`, `brotli`, `python3-brotli`), all from one source
+  package and one version. RPM: `libbrotli` + `brotli`.
+- A `Brotli-X.dist-info` under a parent folder whose name contains `brotli-` is reported twice,
+  because both the `Brotli-` and `brotli-` filters match the path.
+- A host with both the package and pip installs reports each of them.
+
+### 9.4 Expected results (verified)
+
+`scanner_test.py` on amd64 containers and `win_scanner_test.py` on Windows Server 2022, at
+CommunityContent `d08aea55`. "CVE" is the shipped CVE file. The inventory file reports every row,
+including the skipped ones, with `IS_INSTALLED=true`.
+
+| Host / fixture | CVE |
+|---|---|
+| `debian:12` unpatched `libbrotli1` `1.0.9-2+b6` | 1.0.9 / true |
+| `debian:12` unpatched `brotli` + `python3-brotli` `1.0.9-2+b6` only (no `libbrotli1`) | 1.0.9 / true (×2) |
+| `debian:12` patched `1.0.9-2+deb12u1`; venvs `Brotli-1.1.0`, `brotli-1.2.0`, `brotlicffi`; a copy of the `Brotli-1.1.0` venv under `/srv/brotli-app/` | package skipped; pip 1.1.0 ×3, 1.2.0; `brotlicffi` and the other packages ignored |
+| `debian:12` dummy packages `1.0.3-1ubuntu1~16.04.2+esm1`, `1.2.0-4.1`, `1.0.7-6ubuntu0.1+esm1` and a `1.0.7-6ubuntu0.1` control | fixed builds skipped; control 1.0.7 / true |
+| `debian:13` unpatched `1.1.0-2+b7` (amd64 + i386) / patched `+deb13u1` | 1.1.0 / true (one instance) / skipped |
+| `debian:sid` `1.2.0-4.1` (real packages) | skipped |
+| `ubuntu:24.04` patched `1.1.0-2ubuntu0.1` / unpatched `1.1.0-2build2`, `python3-brotli` only | skipped / 1.1.0 / true |
+| `ubuntu:22.04` patched `1.0.9-2ubuntu0.1` | skipped |
+| `rockylinux:9` `libbrotli` `1.0.9-10.el9_8` (also with `brotli`, `python3-brotli`, `brotli-devel`) + pip `Brotli-1.1.0` in `/usr/local/lib64` | 1.0.9 / true, pip 1.1.0 / true; distro `Brotli-1.0.9-py3.9.egg-info` ignored |
+| `rockylinux:9` patched `1.0.9-10.el9_8.1` / `rockylinux:8` patched `1.0.6-5.el8_10` | skipped / skipped |
+| `fedora:42` `1.2.0-1.fc42` | 1.2.0 / true (×2; no fixed build listed) |
+| `amazonlinux:2023` unpatched `1.1.0-1.amzn2023.0.1` | 1.1.0 / true (×2) |
+| `opensuse/leap:15` `libbrotlidec1` only, unpatched `1.0.7-150200.3.5.1`, plus a planted `/usr/local/lib/python3.6/site-packages/Brotli-1.0.7-py3.6.egg-info` | 1.0.7 / true (RPM), 1.0.7 / true (pip) |
+| `opensuse/leap:15` patched `libbrotlidec1` `1.0.7-150200.3.8.1` (dummy RPM) | skipped |
+| `archlinux` `brotli-1.2.1-1` + planted `brotli-1.1.0-3`, `lib32-brotli-…`, `python-brotli-…` | 1.1.0 / true only |
+| Windows: pip `Brotli-1.1.0`, `brotli-1.2.0` in `C:\bfi_sig_test_brotli\py\Lib\site-packages`, a copy under `…\brotli-app\Lib\site-packages`, and a planted `pip-24.0.dist-info` there | 1.1.0 ×3, 1.2.0 ×2; `pip` ignored |
+
+Notes on the fixtures:
+
+- Pin an unpatched Debian/Ubuntu build by removing the security and updates sources and
+  installing `=<version>` (`apt-cache madison` lists them).
+- Under amd64 emulation on Apple Silicon, `fedora:latest` (44) couldn't create directories
+  ("Function not implemented"), so `fedora:42` was used.
+- `amazonlinux:2023` and `opensuse/leap:15` need `tar` before the scanner tree can be copied in.
+
+Expected warnings: the providers missing on each OS. There should be no `Scalar expression
+[Compare] failed` warning. Before #51 that warning came from path fragments and `-pyN.M` versions.
+
+### 9.5 Not covered / not tested
+
+- **macOS** (section 5.7): no signature engine. Homebrew `Cellar/brotli` and MacPorts aren't
+  detected.
+- **Bundled copies:** Node.js (section 8), Electron/Chromium, statically linked curl; also conda,
+  vcpkg, Alpine (`apk`) and `brotlicffi` (its own version scheme).
+- **Not tested:** real Ubuntu Pro ESM systems (dummy packages only), arm64, RHEL itself (Rocky was
+  used), a real BigFix Inventory deployment.
