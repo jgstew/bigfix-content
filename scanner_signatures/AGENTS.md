@@ -24,8 +24,8 @@ files in a Linux container. They only matter if a macOS endpoint runs CIT.
 | `software_Node.js_all_Affected_by_CVE-2026-111497-0.AFFECTED.xml` | Node.js affected by CVE-2026-111497 (Brotli): 5 signatures (Windows `node.exe`, Windows MSI, `include/node/node_version.h` layouts, dpkg, RPM). Section 8. |
 | `software_Node.js_ANY-0.any_version.xml` | Every Node.js found, with its version: the same 5 signatures, no version filter. Section 8. |
 | `software_Electron_ANY-0.any_version.xml` | Electron (embeds Node.js), with the Electron version: 2 signatures (macOS framework `Info.plist`, unpacked Electron distribution). Section 8. |
-| `software_Brotli_all_Affected_by_CVE-2026-111497-0.AFFECTED.xml` | Brotli (the library, CLI and Python package) affected by CVE-2026-111497: 4 signatures (dpkg, RPM, pip `dist-info`/`egg-info`, Arch pacman), with distro fixed builds skipped. Section 9. |
-| `software_Brotli_ANY-0.any_version.xml` | Every Brotli found, with its version: the same 4 signatures, no version filter and no fixed-build skip. Section 9. |
+| `software_Brotli_all_Affected_by_CVE-2026-111497-0.AFFECTED.xml` | Brotli (the library, CLI and Python package) affected by CVE-2026-111497: 5 signatures (dpkg, RPM, pip `dist-info`/`egg-info`, Arch pacman, root pip installs in the system `site-packages`), with distro fixed builds skipped. Section 9. |
+| `software_Brotli_ANY-0.any_version.xml` | Every Brotli found, with its version: the same 5 signatures, no version filter and no fixed-build skip. Section 9. |
 
 ## 1. File format
 
@@ -832,7 +832,7 @@ Two files share one design:
 - `software_Brotli_all_Affected_by_CVE-2026-111497-0.AFFECTED.xml` (CVE)
 - `software_Brotli_ANY-0.any_version.xml` (inventory)
 
-They have the **same 4 detection bodies**. They differ in the `IS_INSTALLED` block and in the
+They have the **same 5 detection bodies**. They differ in the `IS_INSTALLED` block and in the
 CVE file's fixed-build skip lists. Vendor `Google`. They cover the system library, the CLI and the
 Python package. Node.js's embedded Brotli is covered by the Node files (section 8).
 
@@ -856,6 +856,8 @@ Unlike the Node files, the CVE file **skips distro fixed builds** with an exact
 - **An exact match misses later rebuilds** (Debian binNMU `+bN`, a newer RPM release), which are
   then flagged by version number (a false positive). Fedora and Arch aren't listed: Fedora 44 and
   Arch ship 1.2.1.
+- SUSE's CVE page listed `1.0.7-150200.3.8.1` under "packages in QA", not as released, when
+  checked on 2026-10-29. Recheck before relying on it.
 - The Red Hat JSON is easier to parse than the HTML pages. SUSE's page also lists SUSE Liberty
   Linux (RHEL rebuild) builds, which matched Red Hat's.
 
@@ -864,26 +866,38 @@ Unlike the Node files, the CVE file **skips distro fixed builds** with an exact
 | # | Evidence | `DETAILED_VER` | `INSTALL_PATH` |
 |---|---|---|---|
 | 1 | `DpkgProductList` `libbrotli1*`, `brotli`, `python3-brotli` | dpkg version up to the first `-`, then after any `:` | `/usr/lib/` |
-| 2 | `RpmProductList` `*brotli-*` + `libbrotlidec1-*`, keeping only names `libbrotli`, `brotli`, `libbrotlidec1` (so `-devel`, `python3-brotli` and debuginfo are ignored) | `displayVersion` up to `-` | `RpmProductInfo installDir` |
-| 3 | pip: `FindFilePathEx names="METADATA,PKG-INFO"` in `*/Brotli-*-info/`, `*/brotli-*-info/` and the `\` forms; skips `/usr/lib/python*` and `/usr/lib64/python*` (distro-managed, covered by #1/#2) | crop `seekFrom="right"` after `rotli-`, then at `.dist-info`, `.egg-info` and `-py`; skip any value containing `/` or `\` | the `*-info` folder |
+| 2 | `RpmProductList` `*brotli-*`, `libbrotlidec1-*` and `python3*-Brotli-*`, keeping only names `libbrotli`, `brotli`, `libbrotlidec1`, `python3-brotli` and `python3*-Brotli` (SUSE) (so `-devel` and debuginfo are ignored) | `displayVersion` up to `-` | `RpmProductInfo installDir` |
+| 3 | pip: `FindFilePathEx names="METADATA,PKG-INFO"` in `*/Brotli-*-info/`, `*/brotli-*-info/` and the `\` forms; skips `/usr/lib/python*` and `/usr/lib64/python*` (distro packages there are covered by #1/#2, root pip installs by #5) | crop `seekFrom="right"` after `rotli-`, then at `.dist-info`, `.egg-info` and `-py`; skip any value containing `/` or `\` | the `*-info` folder |
 | 4 | Arch: `FindFilePathEx name="desc"` in `*/pacman/local/brotli-*` | crop after `/pacman/local/brotli-` up to `-` | the pacman DB folder |
+| 5 | Root pip installs in the system `site-packages`: `FindFilePathEx name="INSTALLER"` in `/usr/lib/python*/` and `/usr/lib64/python*/` `Brotli-*-info/` / `brotli-*-info/`, kept only when `INSTALLER` starts with `pip` or `uv` (size-guarded `ReadFile`) | same as #3 | the `*-info` folder |
 
 Why these:
 
-- **Debian/Ubuntu `brotli` and `python3-brotli` are statically linked.** They don't depend on
-  `libbrotli1`, and `ldd` shows no `libbrotli`, so a host with only those has the vulnerable decoder
-  and no `libbrotli1`. RHEL's `brotli`/`python3-brotli` require `libbrotli`, so #2 only needs the
-  library and CLI names.
+- **The distro Python bindings are statically linked everywhere checked.** `ldd` on `_brotli*.so`
+  shows no `libbrotli`, and the package doesn't require the library: Debian/Ubuntu `python3-brotli`
+  (and the Debian `brotli` CLI), Rocky 8/9 and Fedora 42 `python3-brotli`, Amazon Linux 2023
+  `python3-brotli`, SUSE `python3-Brotli` (`rpm -qR`). A host with only the bindings has the
+  vulnerable decoder and no library package, so #1 and #2 list the Python package names too. On
+  RHEL, `python3-brotli` comes from the same source package as `libbrotli`, so the fixed-build list
+  applies. SUSE's `python-Brotli` is a separate source package (`1.0.7-1.6`), and SUSE lists no SLE
+  15 fix for it (October 2026), so it's judged by version number.
 - **pip wheels are self-contained** (`_brotli*.so` links no `libbrotli`), so they're reported
   separately from the system library.
-- **`/usr/lib*/python*` is skipped** so that a distro `python3-brotli` (Debian `Brotli-*.egg-info`,
-  RPM `Brotli-X.Y.Z-pyN.M.egg-info`) is judged by the package signatures and their fixed-build
-  lists, not by its version number alone.
+- **`/usr/lib*/python*` is skipped by #3** so that a distro `python3-brotli` (Debian
+  `Brotli-*.egg-info`, RPM `Brotli-X.Y.Z-pyN.M.egg-info`, Fedora `Brotli-*.dist-info`) is judged by
+  the package signatures and their fixed-build lists, not by its version number alone.
+- **But a root `pip install` also lands there** on some distros: Arch
+  (`/usr/lib/python3.14/site-packages/brotli-1.2.0.dist-info`, with `--break-system-packages`) and
+  openSUSE Leap 15 (`/usr/lib64/python3.6/site-packages/Brotli-1.0.9.dist-info`). Debian, Ubuntu,
+  Fedora and RHEL use `/usr/local` for that. #5 catches these by the `INSTALLER` file that pip
+  (`pip`) and uv (`uv`) write. Distro builds don't say `pip`: the egg-info ones have no `INSTALLER`,
+  Fedora's dist-info has `rpm`, and Arch's `python-brotli` dist-info has none.
 
 ### 9.3 Duplicates (expected)
 
 - dpkg: up to 3 instances per host (`libbrotli1`, `brotli`, `python3-brotli`), all from one source
-  package and one version. RPM: `libbrotli` + `brotli`.
+  package and one version. RPM: `libbrotli` + `brotli` + `python3-brotli` (on SUSE,
+  `python3-Brotli` has its own version).
 - A `Brotli-X.dist-info` under a parent folder whose name contains `brotli-` is reported twice,
   because both the `Brotli-` and `brotli-` filters match the path.
 - A host with both the package and pip installs reports each of them.
@@ -891,7 +905,8 @@ Why these:
 ### 9.4 Expected results (verified)
 
 `scanner_test.py` on amd64 containers and `win_scanner_test.py` on Windows Server 2022, at
-CommunityContent `d08aea55`. "CVE" is the shipped CVE file. The inventory file reports every row,
+CommunityContent `11bbbd6c` (every row was re-run there, or at `d08aea55` and then again at
+`11bbbd6c` with the old and new files compared). "CVE" is the shipped CVE file. The inventory file reports every row,
 including the skipped ones, with `IS_INSTALLED=true`.
 
 | Host / fixture | CVE |
@@ -905,12 +920,15 @@ including the skipped ones, with `IS_INSTALLED=true`.
 | `ubuntu:24.04` patched `1.1.0-2ubuntu0.1` / unpatched `1.1.0-2build2`, `python3-brotli` only | skipped / 1.1.0 / true |
 | `ubuntu:22.04` patched `1.0.9-2ubuntu0.1` | skipped |
 | `rockylinux:9` `libbrotli` `1.0.9-10.el9_8` (also with `brotli`, `python3-brotli`, `brotli-devel`) + pip `Brotli-1.1.0` in `/usr/local/lib64` | 1.0.9 / true, pip 1.1.0 / true; distro `Brotli-1.0.9-py3.9.egg-info` ignored |
+| `rockylinux:9` unpatched `python3-brotli` `1.0.9-10.el9_8` only (no `libbrotli`), planted `/usr/lib64/…/Brotli-1.0.8.dist-info` (`INSTALLER` `rpm`), `/usr/lib/…/brotli-1.1.0.dist-info` (`uv`), `/usr/lib64/…/brotli-app/x/setuptools-69.0.dist-info` (`pip`) | #2 1.0.9 / true; #5 1.1.0 / true only. Upgraded to `el9_8.1`: #2 skipped |
 | `rockylinux:9` patched `1.0.9-10.el9_8.1` / `rockylinux:8` patched `1.0.6-5.el8_10` | skipped / skipped |
-| `fedora:42` `1.2.0-1.fc42` | 1.2.0 / true (×2; no fixed build listed) |
-| `amazonlinux:2023` unpatched `1.1.0-1.amzn2023.0.1` | 1.1.0 / true (×2) |
+| `fedora:42` `1.2.0-1.fc42` (`libbrotli`, `brotli`, `python3-brotli`) | 1.2.0 / true (×3; no fixed build listed); the `rpm` dist-info isn't reported by #5 |
+| `amazonlinux:2023` unpatched `1.1.0-1.amzn2023.0.1` (`libbrotli`, `brotli`, `python3-brotli`) | 1.1.0 / true (×3) |
 | `opensuse/leap:15` `libbrotlidec1` only, unpatched `1.0.7-150200.3.5.1`, plus a planted `/usr/local/lib/python3.6/site-packages/Brotli-1.0.7-py3.6.egg-info` | 1.0.7 / true (RPM), 1.0.7 / true (pip) |
 | `opensuse/leap:15` patched `libbrotlidec1` `1.0.7-150200.3.8.1` (dummy RPM) | skipped |
+| `opensuse/leap:15` `python3-Brotli` `1.0.7-1.6` with `libbrotlidec1` removed, + root `pip3 install Brotli==1.0.9` (`/usr/lib64/python3.6/site-packages/Brotli-1.0.9.dist-info`) | #2 1.0.7 / true, #5 1.0.9 / true (the PR's earlier `d08aea55` files: nothing) |
 | `archlinux` `brotli-1.2.1-1` + planted `brotli-1.1.0-3`, `lib32-brotli-…`, `python-brotli-…` | 1.1.0 / true only |
+| `archlinux` `brotli-1.2.1-1` + root `pip install --break-system-packages Brotli==1.2.0` (`/usr/lib/python3.14/site-packages/brotli-1.2.0.dist-info`) / pacman `python-brotli` `1.2.1-1` instead | #5 1.2.0 / true / nothing (no `INSTALLER`) |
 | Windows: pip `Brotli-1.1.0`, `brotli-1.2.0` in `C:\bfi_sig_test_brotli\py\Lib\site-packages`, a copy under `…\brotli-app\Lib\site-packages`, and a planted `pip-24.0.dist-info` there | 1.1.0 ×3, 1.2.0 ×2; `pip` ignored |
 
 Notes on the fixtures:
@@ -930,5 +948,9 @@ Expected warnings: the providers missing on each OS. There should be no `Scalar 
   detected.
 - **Bundled copies:** Node.js (section 8), Electron/Chromium, statically linked curl; also conda,
   vcpkg, Alpine (`apk`) and `brotlicffi` (its own version scheme).
+- **Arch `python-brotli`** (statically linked, dist-info with no `INSTALLER`): skipped by #3 and
+  #5, and #4 only reads `brotli-*`. Arch ships the fixed 1.2.1.
+- **Legacy root `setup.py install` / egg-info** under `/usr/lib*/python*`: no `INSTALLER`, so not
+  reported.
 - **Not tested:** real Ubuntu Pro ESM systems (dummy packages only), arm64, RHEL itself (Rocky was
   used), a real BigFix Inventory deployment.
