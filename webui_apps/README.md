@@ -15,6 +15,7 @@ Examples in this folder. Each one builds into a `.webui` file:
 - It is front-end only: HTML, JS, CSS, and fonts. **No back-end code is ever installed on the WebUI server.**
 - The official way to build one is with React and HCL's WebUI SDK app template, which uses the `bfcore-react` WebUI components and the HCL Patronus design system. You can also hand-write the HTML, as long as the package has the same layout (see [Plain HTML without the template](#plain-html-without-the-template)).
 - It is packaged as a `<name>-<version>.webui` zip and installed into a **custom site** (or delivered from an **external site**). Access to the app follows access to that site.
+- Once installed, it is served at `/ui_extensions/<name>-<siteId>`. WebUI's **Extensions** menu opens extensions **in a new browser tab**, so the rest of WebUI is usually still open in another tab (confirmed in `bfcore-react`'s nav code).
 - It talks to BigFix only through WebUI SDK REST APIs (`/api/sdk/...`). These run as the logged-in WebUI operator, so the normal BigFix permissions apply.
 - It cannot read the BFEnterprise database directly. Data comes from **session relevance**, which needs **BigFix Web Reports**.
 
@@ -102,7 +103,7 @@ To post XML, pass `{ headers: { 'Content-Type': 'application/xml' } }` as the th
 
 ### Without `BfHttpClient`: plain `fetch`
 
-You can call the SDK APIs with `fetch` if you do the same three things `BfHttpClient` does (from reading its bundled code). The example app's [`sessionRelevanceApi.js`](session-relevance-query/src/SessionRelevanceQuery/sessionRelevanceApi.js) uses this approach. This was confirmed against a live WebUI server. Leaving out the `X-XSRF-TOKEN` header gets **403 `invalid csrf token`**.
+You can call the SDK APIs with `fetch` if you do the same three things `BfHttpClient` does (from reading its bundled code). `webuiFetch()` in [session-relevance-query-html's `app.js`](session-relevance-query-html/src/static/js/app.js) does this, installed and running on a live WebUI server. The React example's [`sessionRelevanceApi.js`](session-relevance-query/src/SessionRelevanceQuery/sessionRelevanceApi.js) does the same, but that build hasn't been installed. Leaving out the `X-XSRF-TOKEN` header gets **403 `invalid csrf token`**.
 
 Session relevance response on a live server:
 
@@ -122,6 +123,8 @@ if (res.status === 401 || res.headers.get('iem-login-required')) {
   window.location.href = '/timeout?nextpage=' + encodeURIComponent(location.pathname + location.search)
 }
 ```
+
+**Troubleshooting API calls on a server:** install [sdk-api-tester](sdk-api-tester/), run **Run all safe tests** (read-only, apart from one private dashboard variable that it deletes again), then expand **Log** and click **Copy report**. The report includes every request's status, timing, and error body, plus which of the 26 operations passed. Redaction of the server address and user name is on by default.
 
 `BfApp` is the one piece that can't easily be replaced, because it provides the standard WebUI header and navigation. Since `bfcore-react` depends on Patronus, Patronus stays in the bundle even if your own code never imports it.
 
@@ -153,11 +156,22 @@ sandbox allow-same-origin allow-scripts allow-forms allow-popups allow-modals al
 frame-ancestors 'self'
 ```
 
-It also sent `X-Frame-Options: DENY`.
+It also sent `X-Frame-Options: DENY` and `X-Content-Type-Options: nosniff`.
 
 - **No CDNs or external hosts.** Scripts, styles, fonts, and images must ship inside the `.webui` file. `fetch` and XHR can only reach the WebUI server itself, plus any `wss:` WebSocket.
-- **Inline scripts and styles are allowed** by this policy. The example keeps them out anyway, in case a later WebUI tightens the policy.
+- **Inline scripts and styles are allowed** by this policy. The examples keep their own code out of inline scripts anyway, in case a later WebUI tightens the policy.
 - **Images:** `img-src` allows only the server itself and `blob:` URLs, so `data:` image URLs are blocked.
+- **`nosniff`:** the browser only runs a file as a script if the server sends a JavaScript `Content-Type`. `.js` files are fine. Don't count on `.mjs` working as a `<script type="module" src>`. To run an ES module, fetch its text and run it as an inline `<script type="module">`, which `'unsafe-inline'` allows.
+
+### Large libraries and WebAssembly (confirmed)
+
+[session-relevance-query-html](session-relevance-query-html/) runs [bigfix-relevance-analyzer](https://github.com/jgstew/bigfix-relevance-analyzer) (a Python package compiled to WebAssembly with componentize-py) inside an extension. On a real server it loaded and passed verification in about 1 second. What made it work:
+
+- **`'unsafe-eval'`** in `script-src` lets the page compile WebAssembly (`WebAssembly.compileStreaming`).
+- **`DecompressionStream("gzip")`** and **`crypto.subtle`** are available, because WebUI is served over https. The page inflates gzipped `.wasm` files in the browser and checks every file's SHA-256 before using it.
+- **Glue code that fetches its own `.wasm` files:** wrap `window.fetch` so requests for those file names are answered from the verified bytes, sent as `Content-Type: application/wasm`. Run the glue inline, as in the `nosniff` note above.
+- **Don't block the page:** start loading after the page is usable, and keep a fallback path (here: plain session relevance) until the library is ready or if it fails.
+- **Keep big binaries out of git:** a fetch script downloads a pinned release (version plus SHA-256) into a git-ignored folder that the packager includes. See [`fetch_analyzer.py`](session-relevance-query-html/fetch_analyzer.py).
 
 For a minimal stand-in for `BfApp`, show the user name from `GET /me`, ping `GET /loggedin` every 30 seconds, and link to `/` and `/logout`. The example's [`pack.py`](session-relevance-query-html/pack.py) builds the zip with only the Python standard library.
 
@@ -183,6 +197,28 @@ This is the complete list of 26 operations, taken from the server's own OpenAPI 
 | Upload a file | `POST /api/sdk/site/custom/{siteName}/file`, `POST /api/sdk/site/operator/file` | multipart field `file`; query `force=true` to overwrite, `isClientFile=1` to let clients download it |
 | Add a file to a computer's mailbox | `POST /api/sdk/mailbox/{computerId}` | multipart field `file`. **Bug seen on 11.0.7:** the file is stored, but the call returns `500 Cannot read properties of undefined (reading 'ID')`. Check with a passthrough `GET api/mailbox/{computerId}`. |
 | BigFix Query | `POST /api/sdk/clientquery`, then `GET /api/sdk/clientqueryresults/{queryId}` | `{"ClientQuery": {"ApplicabilityRelevance": "true", "QueryText": "...", "Target": {"ComputerID": [...]}}}`. `Target` takes exactly one of `ComputerID`, `ComputerName`, `ComputerGroup` or `CustomRelevance`. The results URL takes `filter`, `stats=1`, `start` and `count`. |
+
+#### Responses seen on a live server (BigFix 11.0.7.61)
+
+| Call | Response |
+| --- | --- |
+| Session relevance | `{"done": true, "value": [...], "id": {}}`. Values are strings, and tuple rows are arrays of strings. |
+| Get content | BES XML whose first element matches the type (`<Fixlet>`, `<Task>`, `<Analysis>`, `<Baseline>`, `<ComputerGroup>`) |
+| Get content, unknown id | `404 {"message": "Resource with id <id> does not exists."}` |
+| Get content, bad `resourceType` | `400`, with a message listing the allowed values |
+| Import BES XML | BESAPI XML containing the new item's `<ID>` (used for the edit and delete that follow) |
+| Edit, then delete content | Both succeed. After a delete, reading the item returns 404. |
+| Upload a file | `{"done": true, "id": <fileId>, "value": "The file <name> was uploaded with ID: <fileId> on site <site>"}` |
+| Stop actions | An array with one `{"done": true, "value": "ok", "id": <actionId>}` per action |
+| All dashboard variables | `value` is an array of `{Dashboard, Name, IsPrivate, User, Value}`, **including other operators' variables** (692 variables, about 788 KB, on the test server) |
+| Dashboard variable that doesn't exist | `404 {"message": "Not Found"}` |
+| BigFix Query submit | `{"done": true, "id": <queryId>, ...}` |
+| BigFix Query results | `value` is `{reportingAgents, totalResults, results: [{computerID, computerName, subQueryID, isFailure, result, ResponseTime}]}` |
+| Any call without `X-XSRF-TOKEN` | `403 invalid csrf token` |
+
+**BigFix Query targets:** computers that are online answered in **3 to 5 seconds**. **Offline computers never answer**, and the results simply stay at `reportingAgents: 0`. Session relevance can't sort, so to target the computers that reported most recently, fetch `(id of it, (now - last report time of it) / second) of bes computers whose (now - last report time of it < 1 * hour)`, which returns (computer id, integer seconds), then sort in the page. [session-relevance-query-html](session-relevance-query-html/) picks the 5 freshest this way.
+
+**Site ids:** custom sites (and operator sites) have no `id` in session relevance; `id of site of <fixlet>` fails with "Singular expression refers to nonexistent object". So for an analysis in a custom site, it isn't clear what `siteID` the analyses activate and deactivate APIs expect. The console's wizard API used the master action site id.
 
 Not a REST API: the Take Action dialog helpers (`TakeFixletAction`, `TakeSecureFixletAction`, `TakeFixletActionOnComputers` and `TakeSecureFixletActionOnComputers`) come from `useBfTakeFixletAction()` in `bfcore-react`.
 
@@ -213,6 +249,8 @@ Install from a file:
 2. Click **Install extension from file**, pick a custom site, upload the `.webui` file, and click **Install**.
 3. Click **Launch** on the installed row.
 
+Size: WebUI accepted an **8.3 MB** `.webui` upload (session-relevance-query-html with the analyzer). I don't know the actual limit.
+
 Update: bump `version`, rebuild, and run **Install extension from file** again with the same site. WebUI sees the same `name` with a newer `version`, shows **Confirm upgrade extension**, and replaces the old one (confirmed). The **Update** item in the row's Action menu crashed with a blank page on the test server, from a `ReferenceError` in Extensions Management's own code, so use the install button instead. In a dev loop, `npm run update -- -u=<user> -p=<password> -s=<server:port> [-f]` pushes the build over an existing custom-site install. It uses the undocumented `/ui_extensions/updateextensioncustomsite` endpoint and puts the password on the command line, so use it only on dev machines.
 
 Repair: after a WebUI reinstall or a DR restore, **Repair an extension** reinstalls it from what is stored in the site.
@@ -228,6 +266,10 @@ Repair: after a WebUI reinstall or a DR restore, **Repair an extension** reinsta
 - What is the minimum BigFix platform version for WebUI extensions? The December 2022 WebUI release that introduced them came out the same day as 10.0.8, but neither announcement states a requirement.
 - Is there a newer `bfcore-react` than 6.0.65?
 - What do `done` and `id` in the session relevance response mean? Can `done` ever be `false`, meaning paged or partial results? It never was in testing.
+- Does **Install extension from site** need `<name>-<version>.webui` file names? Uploading a file works regardless, because the name and version come from the `package.json` inside. A short name like `relevance-query.webui` in a site hasn't been tried.
+- Can a BigFix 11.0.7 **repository site** (for example [bigfix-site-webui-jgstew](https://github.com/jgstew/bigfix-site-webui-jgstew), with the `.webui` in `ServerFiles/`) feed **Install extension from site**? Or does that need an HCL-signed external site?
+- What `siteID` do `POST /api/sdk/analyses/activate` and `.../deactivate` expect for an analysis in a custom site, which has no site id in session relevance? Neither call has been run on a real server yet.
+- What is the upload size limit for a `.webui` file? 8.3 MB worked.
 
 ## History
 
