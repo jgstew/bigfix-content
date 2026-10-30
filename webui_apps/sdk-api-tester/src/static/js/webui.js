@@ -3,7 +3,7 @@
 'use strict'
 window.SAT = window.SAT || {}
 ;(function (SAT) {
-  SAT.VERSION = '1.0.1'
+  SAT.VERSION = '1.0.2'
   SAT.lines = []
   SAT.sensitive = new Set() // strings replaced by <REDACTED_n> in copied output when "Redact" is checked
   SAT.state = {} // values shared between tests (ids found by lookups, the test dashboard variable, ...)
@@ -59,7 +59,8 @@ window.SAT = window.SAT || {}
     list.forEach((s, i) => {
       text = text.split(s).join('<REDACTED_' + (i + 1) + '>')
     })
-    return text
+    // BigFix server URLs inside responses, e.g. Resource="https://bigfix.example.com:52311/api/..."
+    return text.replace(/(https?:\/\/)([^/:\s"'<>]+)(:\d+)/gi, '$1<SERVER>$3')
   }
 
   async function copyText(text, label) {

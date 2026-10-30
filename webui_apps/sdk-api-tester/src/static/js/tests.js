@@ -621,7 +621,8 @@
 
   const uploadQuery = () => '?force=' + SAT.checked('in-file-force') + '&isClientFile=' + (SAT.checked('in-file-client') ? 1 : 0)
 
-  const uploadTest = (id, title, api, target, urlFor) =>
+  // verifyFailure(file) may return a WARN message when the upload landed despite an error response
+  const uploadTest = (id, title, api, target, urlFor, verifyFailure) =>
     SAT.test({
       id,
       group: 'Files',
@@ -636,7 +637,9 @@
         const form = new FormData()
         form.append('file', file)
         const res = await SAT.api('POST', urlFor(), { body: form })
-        res.ok ? t.pass(SAT.snippet(res.text, 300)) : t.fail(SAT.message(res))
+        if (res.ok) return t.pass(SAT.snippet(res.text, 300))
+        const landed = verifyFailure && (await verifyFailure(file))
+        landed ? t.warn(landed + ' Server said: ' + SAT.message(res)) : t.fail(SAT.message(res))
       }
     })
 
@@ -653,7 +656,16 @@
     "Add a file to a computer's mailbox",
     'POST /api/sdk/mailbox/{computerId}',
     () => /^\d+$/.test(input('in-mailbox-id')) && 'the mailbox of computer ' + input('in-mailbox-id'),
-    () => '/api/sdk/mailbox/' + input('in-mailbox-id')
+    () => '/api/sdk/mailbox/' + input('in-mailbox-id'),
+    // Seen on WebUI with BigFix 11.0.7: the file is stored, but the SDK handler fails to parse the platform's
+    // <ComputerMailboxFile> reply and returns 500 "Cannot read properties of undefined (reading 'ID')".
+    // Listing the mailbox through the passthrough (needs "Can use REST API") shows whether the file landed.
+    async (file) => {
+      const list = await SAT.api('GET', '/api/sdk/passthrough/api/mailbox/' + input('in-mailbox-id'))
+      if (!list.ok) return null
+      const m = new RegExp('<Name>' + file.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '</Name>\\s*<ID>(\\d+)</ID>').exec(list.text)
+      return m ? 'Uploaded as mailbox file ' + m[1] + ' (confirmed with passthrough GET api/mailbox), but the SDK call returned an error (WebUI bug).' : null
+    }
   )
 
   // ---- Manual: BigFix Query ---------------------------------------------------------------------

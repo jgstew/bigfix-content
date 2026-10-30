@@ -66,6 +66,9 @@ def main():
     package = load_package_json()
     root = f"{package['name']}-{package['version']}"
     files = source_files()
+    if not (SRC_DIR / "static" / "analyzer" / "manifest.json").is_file():
+        print("WARNING: src/static/analyzer/ is missing; run fetch_analyzer.py first.")
+        print("         Without it the package runs session relevance only (no analyzer, no Auto mode).")
     out_path = OUT_DIR / f"{root}.webui"
 
     print(f"Packaging {package['displayName']} as {out_path.relative_to(HERE)}")

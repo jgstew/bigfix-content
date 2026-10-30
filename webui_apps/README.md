@@ -7,7 +7,7 @@ Examples in this folder. Each one builds into a `.webui` file:
 | Example | Stack | HCL code in the build | Build needs | `.webui` size |
 | --- | --- | --- | --- | --- |
 | [sdk-api-tester](sdk-api-tester/) | Plain HTML/JS. Calls all 26 SDK operations as examples and tests, with a copyable log and report. | none | Python 3 (`pack.py`) | about 18 KB |
-| [session-relevance-query-html](session-relevance-query-html/) | Plain HTML, CSS, and JS, with a minimal header that links back to WebUI | none | Python 3 (`pack.py`) | about 6 KB |
+| [session-relevance-query-html](session-relevance-query-html/) | Plain HTML/JS "Relevance Query", with [bigfix-relevance-analyzer](https://github.com/jgstew/bigfix-relevance-analyzer) running as WebAssembly. Auto mode runs client relevance as a BigFix Query and session relevance through the SDK API. | none | Python 3 (`fetch_analyzer.py`, `pack.py`) | about 8.5 MB (about 10 KB without the analyzer) |
 | [session-relevance-query](session-relevance-query/) | React on the WebUI SDK template, with `BfApp` providing the standard WebUI nav bar | `bfcore-react` and Patronus | Template, Node, HCL network | about 2.2 MB |
 
 ## What a custom app is
@@ -181,7 +181,7 @@ This is the complete list of 26 operations, taken from the server's own OpenAPI 
 | Create custom site | `POST /api/sdk/site/custom` | `{"siteName": "..."}` (1 to 32 characters) |
 | Import BES XML | `POST /api/sdk/site/custom/{siteName}/import`, `POST /api/sdk/site/operator/import` | BES XML (`application/xml`) |
 | Upload a file | `POST /api/sdk/site/custom/{siteName}/file`, `POST /api/sdk/site/operator/file` | multipart field `file`; query `force=true` to overwrite, `isClientFile=1` to let clients download it |
-| Add a file to a computer's mailbox | `POST /api/sdk/mailbox/{computerId}` | multipart field `file` |
+| Add a file to a computer's mailbox | `POST /api/sdk/mailbox/{computerId}` | multipart field `file`. **Bug seen on 11.0.7:** the file is stored, but the call returns `500 Cannot read properties of undefined (reading 'ID')`. Check with a passthrough `GET api/mailbox/{computerId}`. |
 | BigFix Query | `POST /api/sdk/clientquery`, then `GET /api/sdk/clientqueryresults/{queryId}` | `{"ClientQuery": {"ApplicabilityRelevance": "true", "QueryText": "...", "Target": {"ComputerID": [...]}}}`. `Target` takes exactly one of `ComputerID`, `ComputerName`, `ComputerGroup` or `CustomRelevance`. The results URL takes `filter`, `stats=1`, `start` and `count`. |
 
 Not a REST API: the Take Action dialog helpers (`TakeFixletAction`, `TakeSecureFixletAction`, `TakeFixletActionOnComputers` and `TakeSecureFixletActionOnComputers`) come from `useBfTakeFixletAction()` in `bfcore-react`.

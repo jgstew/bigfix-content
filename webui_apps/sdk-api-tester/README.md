@@ -49,6 +49,8 @@ The `TakeFixletAction` family is not covered. It comes from the client-side `use
 - **Passthrough URIs need the `api/` prefix:** `passthrough/api/sites` works, and `passthrough/sites` returns 404 from the BigFix server.
 - **Missing dashboard variable:** reading a dashboard ID or variable that doesn't exist returns `404 {"message": "Not Found"}`.
 - **Custom sites have no site ID** in session relevance (`id of site` fails), so the analysis card prefills the master action site ID. The console's wizard API worked the same way.
+- **File uploads** to a custom site or the operator site return `{"done": true, "id": <fileId>, "value": "The file <name> was uploaded with ID: <fileId> on site <site>"}`.
+- **The mailbox upload has a bug.** `POST /api/sdk/mailbox/{computerId}` stores the file, but then returns `500 {"message": "Cannot read properties of undefined (reading 'ID')"}`. A passthrough `GET api/mailbox/{computerId}` shows the file as a `<ComputerMailboxFile>` with its `<ID>`, so WebUI's SDK handler seems to choke on that reply. `file.mailbox` checks the mailbox this way and reports WARN instead of FAIL when the file arrived. Seen with BigFix 11.0.7.61.
 
 ## Build and install
 
@@ -61,7 +63,7 @@ Then in WebUI open **Extensions Management**, click **Install extension from fil
 ## Using the log
 
 - **Copy report** gives the header (tester version, user agent, BigFix version, master operator flag), the results, the API coverage, and the full log.
-- **Redact server address and user name when copying** is on by default. It replaces the WebUI host name or IP and your user name with `<REDACTED_n>`. It doesn't scrub data in response bodies, such as computer or site names, so check before pasting outside your organization.
+- **Redact server address and user name when copying** is on by default. It replaces the WebUI host name or IP and your user name with `<REDACTED_n>`, and replaces the host in any `https://host:port` URL with `<SERVER>`, such as the BigFix server name in `Resource="..."` attributes. It doesn't scrub other data in response bodies, such as computer names in BigFix Query results or site names, so check before pasting outside your organization.
 - **Log response bodies of successful calls** adds the first 400 characters of each successful response. Failed calls always log up to 1,000 characters of the body.
 - **Clipboard blocked:** if the browser won't allow clipboard access, the report goes into the log box and is selected, so you can press Ctrl+C or Cmd+C.
 - **Session expiry:** on a 401 the tester logs a warning instead of redirecting to the login page, so the log isn't lost.
@@ -96,4 +98,11 @@ Then in WebUI open **Extensions Management**, click **Install extension from fil
   - **`cq.results` passed** against an online computer. The answer arrived on the second poll, about 5 seconds after submitting. The response `value` is `{reportingAgents, totalResults, results: [...]}`, and each result row is `{computerID, computerName, subQueryID, isFailure, result, ResponseTime}`.
   - **An earlier run gave WARN** with `{"reportingAgents": 0, "totalResults": 0, "results": []}` for 60 seconds. Its target came from **Use lowest computer id**, which picked a computer that last reported in 2018, so nothing could answer. In 1.0.1 the helper is **Use a recently reporting computer**: it picks a computer that reported in the last hour, and falls back to the lowest ID if none did.
 
-  Not run on a real server yet: `ana.activate`, `ana.deactivate`, `site.create`, `content.opimport`, the three file uploads, and the passthrough POST/PUT/DELETE/GET custom tests.
+  Later manual runs on 1.0.1:
+
+  - **`file.custom` and `file.operator` passed.** Each returned the new file ID.
+  - **`file.mailbox` failed with 500**, even though the file was stored. This is the WebUI bug described above. 1.0.2 confirms the upload through the passthrough and reports WARN.
+  - **`cq.submit` and `cq.results` passed again**, against the computer picked by **Use a recently reporting computer**. The answer came in about 5 seconds.
+  - **`pt.get.custom` passed** with `api/serverinfo`. That response includes the database type, name, and schema version.
+
+  Not run on a real server yet: `ana.activate`, `ana.deactivate`, `site.create`, `content.opimport`, and passthrough POST/PUT/DELETE.

@@ -6,6 +6,25 @@
   --srq-header-fg: #f4f4f4;
   --srq-error: #da1e28;
   --srq-surface: #f4f4f4;
+  --srq-ok: #198038;
+
+  /* variables the analyzer's CodeMirror editor (static/analyzer/editor.js) reads for its theme and tokens */
+  --fg: #161616;
+  --bg: #ffffff;
+  --muted: #6f6f6f;
+  --border: #c6c6c6;
+  --panel: #ffffff;
+  --accent: #0f62fe;
+  --error: #da1e28;
+  --mono: ui-monospace, 'SF Mono', Consolas, 'Liberation Mono', monospace;
+  --hl-keyword: #6d28d9;
+  --hl-string: #a31515;
+  --hl-escape: #8a4b00;
+  --hl-number: #0b6e4f;
+  --hl-constant: #0550ae;
+  --hl-comment: #5f6672;
+  --selection: #c7d2fe;
+  --active-line: rgba(15, 98, 254, 0.06);
 }
 
 * {
@@ -64,30 +83,6 @@ body {
 
 .srq-label {
   font-weight: 600;
-}
-
-.srq-examples {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.srq-example {
-  max-width: 24rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding: 0.125rem 0.5rem;
-  border: 1px solid var(--srq-border);
-  border-radius: 1rem;
-  background: transparent;
-  font-family: monospace;
-  cursor: pointer;
-}
-
-.srq-example:hover {
-  border-color: var(--srq-accent);
 }
 
 .srq-input {
@@ -201,4 +196,168 @@ body {
   position: sticky;
   top: 0;
   background: var(--srq-surface);
+}
+
+/* ---- analyzer editor (mounted over the text box once the analyzer loads) ---- */
+
+.srq-editor .cm-editor {
+  min-height: 6rem;
+  font: 0.875rem/1.4 var(--mono);
+  color: var(--fg);
+  background: var(--panel);
+  border: 1px solid #8d8d8d;
+  border-radius: 2px;
+}
+
+.srq-editor .cm-editor.cm-focused {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.srq-editor .cm-scroller {
+  font: inherit;
+  min-height: 6rem;
+}
+
+.srq-editor .cm-gutters {
+  background: var(--srq-surface);
+  border-right-color: var(--border);
+  color: var(--muted);
+}
+
+.srq-editor .cm-tooltip {
+  color: var(--fg);
+  background: #fff;
+  border-color: var(--border);
+}
+
+.srq-editor .cm-content {
+  caret-color: var(--fg);
+}
+
+.srq-editor .cm-activeLine {
+  background: var(--active-line);
+}
+
+.srq-editor .cm-bfr-action {
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.srq-analyzer-status {
+  font-size: 0.8125rem;
+}
+
+.srq-muted {
+  color: var(--srq-muted);
+}
+
+.srq-ready {
+  color: var(--srq-ok);
+}
+
+/* ---- mode and targets ---- */
+
+.srq-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.25rem;
+}
+
+.srq-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.srq-inline select,
+.srq-targets {
+  padding: 0.375rem 0.5rem;
+  border: 1px solid #8d8d8d;
+  border-radius: 2px;
+  font: inherit;
+  font-weight: normal;
+}
+
+.srq-targets {
+  width: 18rem;
+}
+
+.srq-link {
+  border: 0;
+  background: transparent;
+  color: var(--srq-accent);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---- results ---- */
+
+.srq-route {
+  margin: 0;
+}
+
+.srq-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.srq-section-title {
+  margin: 0.5rem 0 0;
+  font-size: 0.9375rem;
+}
+
+.srq-note {
+  margin: 0;
+}
+
+.srq-error-text {
+  color: var(--srq-error);
+  white-space: pre-wrap;
+}
+
+.srq-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.srq-badge {
+  padding: 0.125rem 0.5rem;
+  border: 1px solid var(--srq-border);
+  border-radius: 1rem;
+  font-family: monospace;
+}
+
+.srq-badge.srq-ok {
+  border-color: var(--srq-ok);
+  color: var(--srq-ok);
+}
+
+.srq-badge.srq-bad {
+  border-color: var(--srq-error);
+  color: var(--srq-error);
+}
+
+.srq-fix {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.srq-fix code {
+  padding: 0.125rem 0.375rem;
+  background: var(--srq-surface);
+}
+
+.srq-failure td {
+  color: var(--srq-error);
 }

@@ -1,2 +1,4 @@
 # built packages; rebuild with: python3 pack.py
 output/
+# analyzer browser build; download with: python3 fetch_analyzer.py
+src/static/analyzer/

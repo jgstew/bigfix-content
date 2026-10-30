@@ -1,12 +1,23 @@
-# Session Relevance Query (plain HTML) - BigFix WebUI extension
+# Relevance Query (plain HTML) - BigFix WebUI extension
 
-The same session relevance query tool as [../session-relevance-query](../session-relevance-query/), written as plain HTML, CSS, and JavaScript:
+A BigFix WebUI extension that runs **session relevance** and **client relevance**, written as plain HTML, CSS, and JavaScript. It has the [bigfix-relevance-analyzer](https://github.com/jgstew/bigfix-relevance-analyzer) (MIT) built in, running in the browser as WebAssembly:
 
-- **No HCL code.** No `bfcore-react` and no Patronus, so the source and the built `.webui` file can be shared or committed.
-- **No build step.** You don't need Node, npm, the SDK template, or an HCL network connection. Edit the files in `src/` and repackage.
-- **Small.** The `.webui` file is about 6 KB, compared with about 2.2 MB for the React template version.
+- **Editor:** the analyzer's CodeMirror editor and language server, the same ones its playground and VS Code extension use. You get highlighting, inspector completion, hover help, lint underlines, and quick fixes.
+- **Analysis panel:** dialect, parse and type errors, diagnostics, unknown inspectors, complexity and evaluation cost, and a suggested fix you can apply with one click.
+- **Auto mode:** the analyzer decides whether the statement is client or session relevance, and the page runs it the right way, using only WebUI SDK APIs:
 
-The trade-off is that it doesn't have the standard WebUI navigation bar or WebUI's look. A small header has a **← BigFix WebUI** link to `/`, the app title, the logged-in user name, and **Log out**. WebUI opens extensions in a new browser tab, so the full WebUI is usually still open in another tab.
+  | Dialect | How it runs |
+  | --- | --- |
+  | session | `POST /api/sdk/sessionrelevance/evaluate` |
+  | client | BigFix Query: `POST /api/sdk/clientquery`, then `GET /api/sdk/clientqueryresults/{id}` every 3 seconds for up to 60 seconds. Results show per computer as they arrive. |
+  | both | Both at once, in separate sections |
+  | uncertain or undetermined, or the statement doesn't parse | Not run. Choose **Session** or **Client** under **Mode** to run it anyway. |
+
+**The analyzer loads in the background.** The page works the moment it opens, with a plain text box, and every query runs as session relevance until the analyzer is ready. Then the editor replaces the text box (keeping what you typed) and Auto mode starts. If the analyzer can't load, the page stays on session relevance and says why; **Mode** can still run a BigFix Query.
+
+**BigFix Query targets** are filled in automatically when the page opens, with the 5 computers that reported most recently. Computers that are offline never answer a BigFix Query. You can type other computer IDs at any time. **Use the 5 most recently reporting computers** fills them in again.
+
+There's **no HCL code**: no `bfcore-react` and no Patronus. A small header replaces the WebUI nav bar, with **← BigFix WebUI**, the app title, the logged-in user name, and **Log out**.
 
 ## Files
 
@@ -14,28 +25,37 @@ The trade-off is that it doesn't have the standard WebUI navigation bar or WebUI
 | --- | --- |
 | `package.json` | `name`, `displayName`, `version`, `description` (read by WebUI) |
 | `src/index.html` | Page markup. Asset paths use `./HOMEPAGE/` (see below). |
-| `src/static/js/app.js` | WebUI request helper, shell (user name and keep-alive), and the query UI |
-| `src/static/css/app.css` | Styles |
+| `src/static/js/analyzer.js` | Loads and verifies the analyzer in the background |
+| `src/static/js/app.js` | WebUI request helper, shell (user name and keep-alive), editor swap, analysis panel, and session and client runs |
+| `src/static/css/app.css` | Styles, including the CSS variables the analyzer's editor reads |
+| `fetch_analyzer.py` | Downloads the pinned analyzer release into `src/static/analyzer/` (git-ignored) |
 | `pack.py` | Builds `output/<name>-<version>.webui` using only the Python standard library |
 
 ## Build
 
 ```bash
+python3 fetch_analyzer.py
+```
+
+```bash
 python3 pack.py
 ```
 
-This writes `output/session-relevance-query-<version>.webui`. Run `python3 pack.py --dry-run` to validate `package.json` and list the files without writing anything.
+`fetch_analyzer.py` downloads `bigfix-relevance-analyzer-web.zip` from the analyzer's **v1.43.0** GitHub release. Both the version and the zip's SHA-256 are pinned in the script. It checks the zip against that hash, then checks every file against the set's `manifest.json`, and unpacks into `src/static/analyzer/`. That folder is git-ignored, so the roughly 9 MB of WebAssembly is never committed. To move to a newer analyzer, update `ANALYZER_VERSION` and `ZIP_SHA256` from that release's `SHA256SUMS.txt`.
 
-`pack.py` produces the same zip layout as the SDK template's `npm run packit`:
+Without `src/static/analyzer/`, `pack.py` warns and builds a session-only package, which is about 10 KB.
+
+`pack.py` writes `output/session-relevance-query-<version>.webui`, about 8.5 MB with the analyzer. `python3 pack.py --dry-run` validates and lists the files without writing anything. The zip layout is the same as the SDK template's `npm run packit`:
 
 ```
 package.json                      package.json plus "main": "./index.html"
 <name>-<version>/index.html
-<name>-<version>/static/js/app.js
+<name>-<version>/static/js/...
 <name>-<version>/static/css/app.css
+<name>-<version>/static/analyzer/manifest.json, editor.js, glue.mjs, analyzer.core*.wasm.gz
 ```
 
-The `name` is the same as the React version (`session-relevance-query`) and the version is 1.1.0, so installing it with **Install extension from file** into the same site upgrades the React version in place. Bump `version` whenever you change anything.
+The `name` is still `session-relevance-query`, so installing 2.0.0 into the same site upgrades the earlier versions in place.
 
 ## Install
 
@@ -44,43 +64,53 @@ The `name` is the same as the React version (`session-relevance-query`) and the 
    - **To upgrade**, use this same button with the same site. WebUI sees the same `name` with a newer `version` and asks to replace it (**Confirm upgrade extension**). The **Update** item in the row's Action menu crashed with a blank page on the test server: a `ReferenceError` in WebUI's own Extensions Management code.
 3. Click **Launch**. The app is served at `/ui_extensions/<name>-<siteId>`.
 
+Permissions: session relevance needs **Can use WebUI** and BigFix Web Reports. BigFix Query needs whatever WebUI requires for BigFix Query on the targeted computers.
+
 ## How it works
 
-- **`./HOMEPAGE/` paths:** `index.html` references its assets as `./HOMEPAGE/static/...` with `<base href="./HOMEPAGE/">`, exactly like the create-react-app build the template produces. On install, the WebUI server rewrites `./HOMEPAGE/` to `/ui_extensions/<name>-<siteId>/`. This was confirmed on a real server with this hand-written page.
-- **No inline script or style:** everything is in `static/`. The real server's CSP does allow inline scripts and styles, but keeping them out means the page won't break if a later WebUI tightens the policy. The CSP does **not** allow loading anything from other hosts (`default-src 'self'`, `connect-src 'self' wss:`), so every library has to ship inside the `.webui` file. No CDNs.
+- **`./HOMEPAGE/` paths:** `index.html` references its assets as `./HOMEPAGE/static/...` with `<base href="./HOMEPAGE/">`, like the create-react-app build the template produces. On install, the WebUI server rewrites `./HOMEPAGE/` to `/ui_extensions/<name>-<siteId>/` (confirmed on a real server).
+- **Content-Security-Policy:** WebUI serves extensions with `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' wss:` and `X-Content-Type-Options: nosniff`.
+  - The page's own code is in `static/`.
+  - The analyzer has to run as inline scripts (`'unsafe-inline'`) and compile WebAssembly (`'unsafe-eval'`).
+  - Nothing can be loaded from another host, so the analyzer ships inside the `.webui` file.
+- **Analyzer loading** (`analyzer.js`) follows the analyzer's consumer contract (`tools/playground-wasm/SPLIT_ANALYZER.md` in its repo):
+  1. Fetch `manifest.json` and every file with `cache: "no-cache"`.
+  2. Check every file's size and SHA-256 with `crypto.subtle`. A core that the server already inflated is checked against `raw_size` and `raw_sha256`.
+  3. Answer the glue's fetches of `analyzer.coreN.wasm` from the checked bytes, inflated with `DecompressionStream("gzip")` and served as `application/wasm`.
+  4. Run `editor.js` and the glue as inline scripts. The glue is run inline because WebUI serves `.mjs` files with a type that `nosniff` blocks for module scripts.
+  5. Await `__component.$init`, and refuse to start if `version()` differs from the manifest.
 - **Requests:** `webuiFetch()` in `app.js` does what the template's `BfHttpClient` does:
   - sends the session cookies (`credentials: 'same-origin'`)
   - sends the `XSRF-TOKEN` cookie back as an `X-XSRF-TOKEN` header
   - redirects to `/timeout?nextpage=...` on a 401 or an `iem-login-required` response header
   - rejects with the server's `message` on errors
-- **Shell:** WebUI's own page frame does three things this shell copies:
-  - shows the user name from `GET /me` (`userName`)
-  - pings `GET /loggedin` every 30 seconds, so an open page keeps the session alive
-  - has a logout link to `/logout`
-
-  `/me`, `/loggedin`, and `/logout` are not documented APIs. Their use here matches what WebUI's own `bfcore-react` code does.
+- **Shell:** copies what WebUI's own page frame does:
+  - shows the user name from `GET /me`
+  - pings `GET /loggedin` every 30 seconds to keep the session alive
+  - links to `/logout`
+- **BigFix Query targets:** session relevance can't sort, so the page asks for `(id of it, (now - last report time of it) / second) of bes computers` that reported in the last hour, widening to a day if fewer than 5 did. It sorts by age and takes the 5 freshest.
 - **Safe output:** results are written with `textContent`, never `innerHTML`, because relevance results can contain HTML.
-- **Query API:** `POST /api/sdk/sessionrelevance/evaluate` with `{"session_relevance": "..."}`. It needs **Can use WebUI** and BigFix Web Reports. On a real WebUI the response is `{"done": true, "value": [...], "id": {}}`. Every value comes back as a **string**, including numbers and booleans, and tuple rows are arrays of strings. `normalizeRows()` also accepts a bare array, which is what the OpenAPI doc describes.
+- **Response shapes:**
+  - **Session relevance:** `{"done": true, "value": [...], "id": {}}`. Every value comes back as a string, and tuple rows are arrays of strings.
+  - **BigFix Query results:** `value` is `{reportingAgents, totalResults, results: [{computerID, computerName, subQueryID, isFailure, result, ResponseTime}]}`.
 
 ## Testing status
 
-- **Mock server (passed):** tested in a browser against a local mock WebUI server that rewrites `./HOMEPAGE/`, enforces a strict CSP, checks the XSRF header, and fakes `/me`, `/loggedin`, and the query API. These all worked:
-  - tuple and singular results
-  - the 1000-row cap
-  - HTML in results shown as text
-  - server error messages
-  - Ctrl+Enter and the example buttons
-  - redirect to `/timeout` on a 401
-  - the 30-second keep-alive
-- **Real WebUI API (passed):** the same request code was run from a logged-in WebUI browser session, without installing the extension. Results:
-  - `GET /me` returns 200 with `userName` and `userPermission`.
-  - `GET /loggedin` returns 200 with the body `true`.
-  - A query with the XSRF header returns 200. The same query without it returns **403 `invalid csrf token`**, so the header is required.
-  - A relevance error returns **500** `{"message": "The operator \"error\" is not defined."}`. The app shows that message.
-  - `done` was `true` every time, including for a 27,386-row result returned in about 1.5 seconds.
-- **Installed on a real WebUI (passed):** 1.1.0 was installed as an upgrade over the React 1.0.0 in a custom site, then launched. Results:
-  - `./HOMEPAGE/` was rewritten to `/ui_extensions/session-relevance-query-<siteId>/`, and the CSS and JS loaded.
-  - The header showed the logged-in user name.
-  - The computers tuple query returned 142 rows in 4 columns, in about 340 ms.
-  - A bad relevance query showed the server's error message.
-  - Ctrl+Enter works.
+- **2.0.0, local mock WebUI:** the mock uses the real server's CSP and `nosniff` header, and serves the v1.43.0 analyzer set. These passed:
+  - The analyzer loaded and was verified. Its `version()` matched, and the editor mounted with the typed text and connected to the language server; completion showed.
+  - **Non-blocking:** with the analyzer download held back by 4 seconds, a query run during that time ran as session relevance and said so.
+  - **Auto routing:** session, client (BigFix Query results arrived after the mock's 2-second delay), both (ran both), uncertain (mixed dialects, not run), parse error (line and column shown, not run), and undetermined (misspelled inspectors listed, not run).
+  - **Mode override:** **Session** ran a statement Auto would not run.
+  - **Targets:** filled with the 5 freshest computers before the analyzer was ready. The button fills them in again, and typed IDs are kept and used.
+  - **Not exercised:** **Apply fix**, because none of the test statements produced a whole-statement fix.
+- **2.0.0, real WebUI (BigFix 11.0.7.61):** installed with **Install extension from file** as an upgrade over 1.1.0. WebUI accepted the roughly 8.3 MB upload. Results:
+  - The analyzer loaded and passed verification in about **1 second**. The editor replaced the text box, and completion and hover work.
+  - The targets box filled with 5 computer IDs as the page opened. The query that picks them, `(id of it, (now - last report time of it) / second) of bes computers whose (now - last report time of it < 1 * hour)`, returns `(computer id, integer seconds)` pairs.
+  - **Auto with a client statement** (`name of operating system`): dialect `client`, BigFix Query only. **5 of 5** computers answered in about 3 seconds, with no failures (Ubuntu, Windows Server, macOS, Windows 11).
+  - **Auto with a session statement** (`number of bes computers`): dialect `session`, session relevance only, 1 result in about 320 ms.
+  - **Auto with a statement valid as both** ran BigFix Query and session relevance together. BigFix Query returned 5 of 5.
+- **1.1.0, real WebUI (passed):** installed as an upgrade over the React 1.0.0 and launched. Results:
+  - `./HOMEPAGE/` was rewritten and the page loaded.
+  - The computers tuple query returned 142 rows in about 340 ms.
+  - A request without the XSRF header got 403.
+  - A relevance error showed the server's message.
