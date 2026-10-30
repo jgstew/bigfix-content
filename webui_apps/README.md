@@ -22,7 +22,7 @@ Examples in this folder. Each one builds into a `.webui` file:
 
 | Item | Notes |
 | --- | --- |
-| BigFix WebUI | The HCL docs describe this in **11.0** (Extensions Management). I couldn't confirm it exists in 10.x. |
+| BigFix WebUI | WebUI extensions first shipped in the **December 2022** WebUI release (site "WebUI Extensions" version 1), alongside BigFix 10.0.8. The 10.0 and 11.0 docs both cover Extensions Management. See [History](#history). |
 | Web Reports | Needed for `/api/sdk/sessionrelevance/evaluate`. |
 | HCL network access | The template and the Patronus npm packages are HCL-internal. The npm registry is set in the template's `.npmrc`. |
 | Node.js | The template README says Node 16. A build with Node 26 / npm 11 also worked, and only showed a bundle-size warning. |
@@ -225,11 +225,23 @@ Repair: after a WebUI reinstall or a DR restore, **Repair an extension** reinsta
 
 ## Open questions
 
-- Does WebUI 10.x support Extensions Management, and which minimum 11.0 patch level is needed?
+- What is the minimum BigFix platform version for WebUI extensions? The December 2022 WebUI release that introduced them came out the same day as 10.0.8, but neither announcement states a requirement.
 - Is there a newer `bfcore-react` than 6.0.65?
 - What do `done` and `id` in the session relevance response mean? Can `done` ever be `false`, meaning paged or partial results? It never was in testing.
 
+## History
+
+- **15 Dec 2022:** WebUI extensions were introduced in the [December 2022 WebUI release](https://forum.bigfix.com/t/bigfix-webui-new-release-available-december-2022/43756), as "the ability to extend WebUI beyond what is delivered". Extension development was limited to HCL, and an official SDK was planned. The release published site "WebUI Extensions" version 1.
+- **Same day:** [BigFix 10.0 Patch 8 (10.0.8.37)](https://forum.bigfix.com/t/bigfix-10-0-patch-8-is-now-available/43749) was the current platform release. Neither post states a minimum platform version for extensions.
+- **"WebUI Extensions" site versions in later WebUI releases:**
+  - 3 in [May 2023](https://forum.bigfix.com/t/bigfix-webui-new-release-available-may-2023/45100)
+  - 8 in [May 2024](https://forum.bigfix.com/t/bigfix-webui-new-release-available-may-2024/48647)
+  - 11 in [March 2025](https://forum.bigfix.com/t/bigfix-webui-new-release-available-march-2025/51122)
+  - 12 in [April 2025](https://forum.bigfix.com/t/bigfix-webui-new-release-available-april-2025/51420)
+  - 14 in [April 2026](https://forum.bigfix.com/t/bigfix-webui-new-release-available-april-2026/54434)
+
 ## References
 
-- HCL docs: [Get Started with Extensions Management (11.0)](https://help.hcl-software.com/bigfix/11.0/mcm/WebUI/Users_Guide/c_get_started_with_extension.html), [WebUI server settings](https://help.hcl-software.com/bigfix/11.0/mcm/WebUI/Admin_Guide/c_server_settings_definitions.html), [Accessing WebUI server settings](https://help.hcl-software.com/bigfix/11.0/mcm/WebUI/Admin_Guide/c_access_webui_server_settings.html)
+- HCL docs: Get Started with Extensions Management ([10.0](https://help.hcl-software.com/bigfix/10.0/mcm/WebUI/Users_Guide/c_get_started_with_extension.html), [11.0](https://help.hcl-software.com/bigfix/11.0/mcm/WebUI/Users_Guide/c_get_started_with_extension.html)), [WebUI server settings](https://help.hcl-software.com/bigfix/11.0/mcm/WebUI/Admin_Guide/c_server_settings_definitions.html), [Accessing WebUI server settings](https://help.hcl-software.com/bigfix/11.0/mcm/WebUI/Admin_Guide/c_access_webui_server_settings.html)
+- [What is new in BigFix 10 Platform](https://help.hcltechsw.com/bigfix/10.0/platform/Platform/Installation/c_versions.html)
 - [Session relevance guide](https://developer.bigfix.com/relevance/guide/session/), [BigFix REST API](https://developer.bigfix.com/rest-api/api/)
