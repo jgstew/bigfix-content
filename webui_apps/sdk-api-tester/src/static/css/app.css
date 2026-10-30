@@ -1,0 +1,295 @@
+:root {
+  --sat-accent: #0f62fe;
+  --sat-border: #c6c6c6;
+  --sat-muted: #6f6f6f;
+  --sat-header-bg: #161616;
+  --sat-header-fg: #f4f4f4;
+  --sat-surface: #f4f4f4;
+  --sat-pass: #198038;
+  --sat-fail: #da1e28;
+  --sat-warn: #b28600;
+  --sat-skip: #6f6f6f;
+  --sat-info: #0043ce;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #fff;
+  color: #161616;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 0.875rem;
+}
+
+code {
+  font-family: monospace;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ---- shell header (same as session-relevance-query-html) ---- */
+
+.shell-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0 1rem;
+  height: 3rem;
+  background: var(--sat-header-bg);
+  color: var(--sat-header-fg);
+}
+
+.shell-header a {
+  color: var(--sat-header-fg);
+  text-decoration: none;
+}
+
+.shell-header a:hover,
+.shell-header a:focus-visible {
+  text-decoration: underline;
+}
+
+.shell-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.shell-user {
+  margin-left: auto;
+  opacity: 0.8;
+}
+
+/* ---- layout ---- */
+
+.sat {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem 1rem 3rem;
+}
+
+.sat h2 {
+  margin: 0.5rem 0 0;
+  font-size: 1rem;
+}
+
+.sat-intro {
+  margin: 0;
+  max-width: 70rem;
+  line-height: 1.5;
+}
+
+.sat-toolbar,
+.sat-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+.sat-status {
+  color: var(--sat-muted);
+}
+
+/* ---- buttons ---- */
+
+.sat-button {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--sat-accent);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--sat-accent);
+  font: inherit;
+  cursor: pointer;
+}
+
+.sat-button-primary {
+  background: var(--sat-accent);
+  color: #fff;
+}
+
+.sat-button-ghost {
+  border-color: transparent;
+  text-decoration: underline;
+}
+
+.sat-button-small {
+  padding: 0.125rem 0.5rem;
+}
+
+.sat-button:hover:not(:disabled) {
+  filter: brightness(0.9);
+}
+
+.sat-button:disabled {
+  border-color: var(--sat-border);
+  background: #e0e0e0;
+  color: #8d8d8d;
+  cursor: not-allowed;
+}
+
+/* ---- results table ---- */
+
+.sat-results {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sat-results th,
+.sat-results td {
+  padding: 0.25rem 0.5rem;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: left;
+  vertical-align: top;
+}
+
+.sat-results th {
+  background: var(--sat-surface);
+}
+
+.sat-group td {
+  padding-top: 0.75rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--sat-border);
+}
+
+.sat-id {
+  color: var(--sat-muted);
+  font-size: 0.75rem;
+}
+
+.sat-api {
+  max-width: 22rem;
+  font-family: monospace;
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+.sat-msg {
+  min-width: 16rem;
+  overflow-wrap: anywhere;
+}
+
+.sat-badge {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sat-NONE {
+  color: var(--sat-muted);
+}
+
+.sat-PASS {
+  color: var(--sat-pass);
+}
+
+.sat-FAIL {
+  color: var(--sat-fail);
+}
+
+.sat-WARN {
+  color: var(--sat-warn);
+}
+
+.sat-SKIP {
+  color: var(--sat-skip);
+}
+
+.sat-INFO {
+  color: var(--sat-info);
+}
+
+/* ---- manual test cards ---- */
+
+.sat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+  gap: 1rem;
+}
+
+.sat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--sat-border);
+  border-radius: 2px;
+}
+
+.sat-card-wide {
+  grid-column: 1 / -1;
+}
+
+.sat-card h3 {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.sat-card p {
+  margin: 0;
+  color: var(--sat-muted);
+}
+
+.sat-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+.sat-card label.sat-inline,
+label.sat-inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: normal;
+}
+
+.sat-card input:not([type='checkbox']):not([type='file']),
+.sat-card select,
+.sat-card textarea {
+  padding: 0.375rem 0.5rem;
+  border: 1px solid #8d8d8d;
+  border-radius: 2px;
+  font: inherit;
+  font-weight: normal;
+}
+
+.sat-card textarea {
+  font-family: monospace;
+  resize: vertical;
+}
+
+/* ---- log ---- */
+
+.sat-log {
+  border: 1px solid var(--sat-border);
+  border-radius: 2px;
+  padding: 0.5rem 0.75rem;
+}
+
+.sat-log summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.sat-log[open] summary {
+  margin-bottom: 0.5rem;
+}
+
+.sat-log-text {
+  width: 100%;
+  height: 40vh;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #8d8d8d;
+  font-family: monospace;
+  font-size: 0.75rem;
+  resize: vertical;
+}

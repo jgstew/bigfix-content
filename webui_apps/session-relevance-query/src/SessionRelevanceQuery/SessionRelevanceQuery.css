@@ -29,16 +29,72 @@
   border-color: #0f62fe;
 }
 
-.bf-srq-input.hcl-textarea {
+.bf-srq-label {
+  font-weight: 600;
+}
+
+.bf-srq-input {
+  box-sizing: border-box;
   width: 100%;
   min-height: 6rem;
+  padding: 0.5rem;
+  border: 1px solid #8d8d8d;
+  border-radius: 2px;
   font-family: monospace;
+  font-size: 0.875rem;
+  resize: vertical;
+}
+
+.bf-srq-input:focus {
+  outline: 2px solid #0f62fe;
+  outline-offset: -2px;
 }
 
 .bf-srq-actions {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.bf-srq-button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #0f62fe;
+  border-radius: 2px;
+  background: transparent;
+  color: #0f62fe;
+  font: inherit;
+  cursor: pointer;
+}
+
+.bf-srq-button-primary {
+  background: #0f62fe;
+  color: #fff;
+}
+
+.bf-srq-button:hover:not(:disabled) {
+  filter: brightness(0.9);
+}
+
+.bf-srq-button:disabled {
+  border-color: #c6c6c6;
+  background: #e0e0e0;
+  color: #8d8d8d;
+  cursor: not-allowed;
+}
+
+.bf-srq-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #e0e0e0;
+  border-top-color: #0f62fe;
+  border-radius: 50%;
+  animation: bf-srq-spin 0.8s linear infinite;
+}
+
+@keyframes bf-srq-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .bf-srq-hint {

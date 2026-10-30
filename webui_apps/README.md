@@ -2,12 +2,18 @@
 
 Notes on building custom apps for the BigFix WebUI with the WebUI SDK. HCL calls these "UI extensions" or "WebUI custom apps". These notes collect what we know so far. Each item says whether it was **confirmed** (seen in code, a build, or the HCL docs) or is **planned** (listed as planned but not yet seen working).
 
-Example in this folder: [session-relevance-query](session-relevance-query/). It is a session relevance query tool that builds into a `.webui` file.
+Examples in this folder. Each one builds into a `.webui` file:
+
+| Example | Stack | HCL code in the build | Build needs | `.webui` size |
+| --- | --- | --- | --- | --- |
+| [sdk-api-tester](sdk-api-tester/) | Plain HTML/JS. Calls all 26 SDK operations as examples and tests, with a copyable log and report. | none | Python 3 (`pack.py`) | about 18 KB |
+| [session-relevance-query-html](session-relevance-query-html/) | Plain HTML, CSS, and JS, with a minimal header that links back to WebUI | none | Python 3 (`pack.py`) | about 6 KB |
+| [session-relevance-query](session-relevance-query/) | React on the WebUI SDK template, with `BfApp` providing the standard WebUI nav bar | `bfcore-react` and Patronus | Template, Node, HCL network | about 2.2 MB |
 
 ## What a custom app is
 
 - It is front-end only: HTML, JS, CSS, and fonts. **No back-end code is ever installed on the WebUI server.**
-- It is built with React from HCL's WebUI SDK app template. It uses the `bfcore-react` WebUI components and the HCL Patronus design system.
+- The official way to build one is with React and HCL's WebUI SDK app template, which uses the `bfcore-react` WebUI components and the HCL Patronus design system. You can also hand-write the HTML, as long as the package has the same layout (see [Plain HTML without the template](#plain-html-without-the-template)).
 - It is packaged as a `<name>-<version>.webui` zip and installed into a **custom site** (or delivered from an **external site**). Access to the app follows access to that site.
 - It talks to BigFix only through WebUI SDK REST APIs (`/api/sdk/...`). These run as the logged-in WebUI operator, so the normal BigFix permissions apply.
 - It cannot read the BFEnterprise database directly. Data comes from **session relevance**, which needs **BigFix Web Reports**.
@@ -42,7 +48,7 @@ update-extension.js  dev helper that pushes a rebuilt .webui over an existing in
 - `name` must match `/^[a-z0-9_-]*$/`.
 - `version` must match `/^\d+(\.\d+)*$/`.
 - `displayName` is what WebUI shows. If it's left at the default, `packit` stops and prompts for one.
-- Leave `"homepage": "./HOMEPAGE"` alone. Every asset path in the built `index.html` becomes `./HOMEPAGE/...`, and the WebUI server is assumed to rewrite that on install. That part is not confirmed.
+- Leave `"homepage": "./HOMEPAGE"` alone. Every asset path in the built `index.html` becomes `./HOMEPAGE/...`, and on install the WebUI server rewrites that to `/ui_extensions/<name>-<siteId>/` (confirmed).
 
 ### Commands
 
@@ -94,29 +100,95 @@ new BfHttpClient()
 
 To post XML, pass `{ headers: { 'Content-Type': 'application/xml' } }` as the third argument to `post`.
 
+### Without `BfHttpClient`: plain `fetch`
+
+You can call the SDK APIs with `fetch` if you do the same three things `BfHttpClient` does (from reading its bundled code). The example app's [`sessionRelevanceApi.js`](session-relevance-query/src/SessionRelevanceQuery/sessionRelevanceApi.js) uses this approach. This was confirmed against a live WebUI server. Leaving out the `X-XSRF-TOKEN` header gets **403 `invalid csrf token`**.
+
+Session relevance response on a live server:
+
+- **Success:** `200 {"done": true, "value": [...], "id": {}}`. Every value is a **string**, including numbers and booleans, and a tuple row is an array of strings. `done` was `true` in every test, including one with 27,386 rows.
+- **Relevance error:** `500 {"message": "..."}`, for example `The operator "error" is not defined.`
+
+```js
+const xsrf = document.cookie.split('; ').find((c) => c.startsWith('XSRF-TOKEN='))?.slice('XSRF-TOKEN='.length)
+
+const res = await fetch('/api/sdk/sessionrelevance/evaluate', {
+  method: 'POST',
+  credentials: 'same-origin', // WebUI session cookies
+  headers: { 'Content-Type': 'application/json', ...(xsrf && { 'X-XSRF-TOKEN': decodeURIComponent(xsrf) }) },
+  body: JSON.stringify({ session_relevance: 'names of bes computers' })
+})
+if (res.status === 401 || res.headers.get('iem-login-required')) {
+  window.location.href = '/timeout?nextpage=' + encodeURIComponent(location.pathname + location.search)
+}
+```
+
+`BfApp` is the one piece that can't easily be replaced, because it provides the standard WebUI header and navigation. Since `bfcore-react` depends on Patronus, Patronus stays in the bundle even if your own code never imports it.
+
+### What `BfApp` contains
+
+This is from reading the minified `bfcore-react` 6.0.65 bundle. There are no docs for it.
+
+- **Document title and translations:** sets `document.title`, and wraps the app in i18next translations. Also adds a `<link href="/fonts/fonts.css">`, which WebUI serves.
+- **Navigation bar:** the logo linking to `/`; the Devices, Apps, Deployments, Reports and Extensions tabs; the gear menu; and the user and logout links. It builds these from undocumented endpoints: `/me`, `/apps`, `/platformversion`, `/ivr/api/hasAccess`, `/isRunningApp?appName=uiextensions`, `/ui_extensions/get_extensions`, `/getGearApps`, `/getUserMenu` and `/logout`.
+- **Page container:** the title bar; the `bigfix` body class and theme classes from `localStorage["bigfix-webui-theme"]`; and a session keep-alive (`GET /loggedin` every 30 seconds).
+
+## Plain HTML without the template
+
+The `.webui` file is just a zip, so you don't need React or the template. [session-relevance-query-html](session-relevance-query-html/) is a working example. Copy these parts of the template build:
+
+- `package.json` at the zip root, with `name`, `displayName`, `version`, `description`, and `"main": "./index.html"`.
+- Files under `<name>-<version>/`, with `index.html` at the top.
+- Asset references in the form `<base href="./HOMEPAGE/">` and `./HOMEPAGE/static/...`. The server rewrites `./HOMEPAGE/` to `/ui_extensions/<name>-<siteId>/`. This was confirmed with the hand-written example.
+- Everything packaged in the `.webui` file (see the CSP below).
+
+### Content-Security-Policy on extension pages (confirmed)
+
+The WebUI server sent this policy for an installed extension:
+
+```
+default-src 'self'; img-src 'self' blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval';
+style-src 'self' 'unsafe-inline'; connect-src 'self' wss:;
+sandbox allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads;
+frame-ancestors 'self'
+```
+
+It also sent `X-Frame-Options: DENY`.
+
+- **No CDNs or external hosts.** Scripts, styles, fonts, and images must ship inside the `.webui` file. `fetch` and XHR can only reach the WebUI server itself, plus any `wss:` WebSocket.
+- **Inline scripts and styles are allowed** by this policy. The example keeps them out anyway, in case a later WebUI tightens the policy.
+- **Images:** `img-src` allows only the server itself and `blob:` URLs, so `data:` image URLs are blocked.
+
+For a minimal stand-in for `BfApp`, show the user name from `GET /me`, ping `GET /loggedin` every 30 seconds, and link to `/` and `/logout`. The example's [`pack.py`](session-relevance-query-html/pack.py) builds the zip with only the Python standard library.
+
 ### SDK endpoints
 
 The SDK endpoints only need **Can use WebUI**. The platform REST pass-through needs **Can use REST API** as well.
 
-| Purpose | Endpoint | Source |
+This is the complete list of 26 operations, taken from the server's own OpenAPI spec (`GET /api/openapi.json`, "WebUI SDK APIs") on BigFix 11.0.7. [sdk-api-tester](sdk-api-tester/) calls every one of them. Every response is an `objectResponse`: `{"done": true, "id": ..., "value": ...}`.
+
+| Purpose | Endpoint | Request |
 | --- | --- | --- |
-| Evaluate session relevance | `POST /api/sdk/sessionrelevance/evaluate` with body `{"session_relevance": "..."}` | template sample (confirmed) |
-| Stop actions | `POST /api/sdk/actions/stop` with body `{"ids": [<int>, ...]}` | template sample |
-| Activate / deactivate analyses | `POST /api/sdk/analyses/activate`, `.../deactivate` with body `{"analyses": ...}` of `{siteID, analysisID}` objects | template sample (copy the exact shape from the sample) |
-| Create custom site | `POST /api/sdk/site/custom` with body `{"siteName": "..."}` | template sample |
-| Upload a file to a custom site | `POST /api/sdk/site/custom/{siteName}/file` (multipart, field `file`) | template sample |
-| Import BES XML into a custom site | `POST /api/sdk/site/custom/{siteName}/import` (`application/xml`) | template sample |
-| Open Take Action dialog, prefilled | `useBfTakeFixletAction()` from `bfcore-react`, which provides `TakeFixletAction`, `TakeSecureFixletAction`, `TakeFixletActionOnComputers`, and `TakeSecureFixletActionOnComputers` | template sample / README |
-| Platform REST pass-through | `GET/POST/PUT/DELETE /api/sdk/passthrough/{resource}`, which forwards to `<bfserver>:52315/api/{resource}` | planned (unverified) |
-| Dashboard variables | `GET/POST/PUT/DELETE /api/sdk/dashboardvariable/{dashboardID}/{name}` | planned (unverified) |
-| Operator-site import / file | `POST /api/sdk/site/operator/import`, `POST /api/sdk/site/operator/file` | planned (unverified) |
-| Mailbox file | `POST /api/sdk/mailbox/{computerid}` | planned (unverified) |
-| Edit content | `PUT /api/sdk/{fixlet,task,analysis,baseline,computergroup}/{siteType}/{siteName}/{id}` | planned (unverified) |
-| Delete content in bulk | `DELETE /api/sdk/{fixlets,tasks,analyses,baselines,computergroups}`, body `[{"siteType","siteName","id"}]` | planned (unverified) |
+| Evaluate session relevance | `POST /api/sdk/sessionrelevance/evaluate` | `{"session_relevance": "..."}` |
+| Get content | `GET /api/sdk/resources/{type}/{id}` | `type` is one of `fixlet`, `task`, `analysis`, `baseline`, `computergroup`. Works in custom, master and operator sites, and returns BES XML. |
+| Get content from an external site | `GET /api/sdk/resources/{type}/external/{siteName}/{id}` | |
+| Edit content | `PUT /api/sdk/resources/{type}/{id}/edit` | BES XML (`application/xml`) |
+| Delete content | `POST /api/sdk/resources/{type}/delete` | `{"ids": [<int>, ...]}` |
+| Dashboard variables | `GET /api/sdk/dashboardvariables` (all), `GET /api/sdk/dashboardvariable/{dashboardId}`, and `GET/POST/PUT/DELETE /api/sdk/dashboardvariable/{dashboardId}/{name}` | POST/PUT body: `{"value": "...", "private": true}` |
+| Platform REST passthrough | `GET/POST/PUT/DELETE /api/sdk/passthrough/{uri}` | The `uri` **must include `api/`**, for example `passthrough/api/sites`. POST/PUT take `application/xml` or `text/plain`. Needs **Can use REST API**. |
+| Stop actions | `POST /api/sdk/actions/stop` | `{"ids": [<int>, ...]}` |
+| Activate / deactivate analyses | `POST /api/sdk/analyses/activate`, `.../deactivate` | `{"analyses": [{"siteID": "<digits>", "analysisID": <int>}]}` |
+| Create custom site | `POST /api/sdk/site/custom` | `{"siteName": "..."}` (1 to 32 characters) |
+| Import BES XML | `POST /api/sdk/site/custom/{siteName}/import`, `POST /api/sdk/site/operator/import` | BES XML (`application/xml`) |
+| Upload a file | `POST /api/sdk/site/custom/{siteName}/file`, `POST /api/sdk/site/operator/file` | multipart field `file`; query `force=true` to overwrite, `isClientFile=1` to let clients download it |
+| Add a file to a computer's mailbox | `POST /api/sdk/mailbox/{computerId}` | multipart field `file` |
+| BigFix Query | `POST /api/sdk/clientquery`, then `GET /api/sdk/clientqueryresults/{queryId}` | `{"ClientQuery": {"ApplicabilityRelevance": "true", "QueryText": "...", "Target": {"ComputerID": [...]}}}`. `Target` takes exactly one of `ComputerID`, `ComputerName`, `ComputerGroup` or `CustomRelevance`. The results URL takes `filter`, `stats=1`, `start` and `count`. |
 
-The "planned" rows come from a list of intended APIs, not a spec, and may differ in the shipped product. For example, the planned stop-action path doesn't match the one the template uses. Check them against the live API docs before relying on them.
+Not a REST API: the Take Action dialog helpers (`TakeFixletAction`, `TakeSecureFixletAction`, `TakeFixletActionOnComputers` and `TakeSecureFixletActionOnComputers`) come from `useBfTakeFixletAction()` in `bfcore-react`.
 
-**Live API docs:** set the WebUI server setting `_WebUIAppEnv_ENABLE_API_DOC_SETTING=1` and restart WebUI. The docs (OpenAPI 3) are then served at `https://<webui-server>/api/api-docs`.
+The design doc's planned paths for passthrough, edit and delete differ from the shipped ones. For example, it planned `PUT /api/sdk/fixlet/{siteType}/{siteName}/{id}` and bulk `DELETE /api/sdk/fixlets`. Use the table above.
+
+**API docs:** `GET /api/openapi.json` returns the spec with no server setting. The Swagger UI at `https://<webui-server>/api/api-docs` needs the WebUI server setting `_WebUIAppEnv_ENABLE_API_DOC_SETTING=1` and a WebUI restart.
 
 ## Enabling Extensions Management in WebUI
 
@@ -138,10 +210,10 @@ Permissions (from the HCL docs):
 Install from a file:
 
 1. Open **Extensions Management** (`https://<webui-server>/ui_extensions/next`).
-2. Click **Install app from file**, pick a custom site, upload the `.webui` file, and confirm.
+2. Click **Install extension from file**, pick a custom site, upload the `.webui` file, and click **Install**.
 3. Click **Launch** on the installed row.
 
-Update: bump `version`, run `npm run packit`, then use **Update an extension** in Extensions Management. In a dev loop, `npm run update -- -u=<user> -p=<password> -s=<server:port> [-f]` pushes the build over an existing custom-site install. It uses the undocumented `/ui_extensions/updateextensioncustomsite` endpoint and puts the password on the command line, so use it only on dev machines.
+Update: bump `version`, rebuild, and run **Install extension from file** again with the same site. WebUI sees the same `name` with a newer `version`, shows **Confirm upgrade extension**, and replaces the old one (confirmed). The **Update** item in the row's Action menu crashed with a blank page on the test server, from a `ReferenceError` in Extensions Management's own code, so use the install button instead. In a dev loop, `npm run update -- -u=<user> -p=<password> -s=<server:port> [-f]` pushes the build over an existing custom-site install. It uses the undocumented `/ui_extensions/updateextensioncustomsite` endpoint and puts the password on the command line, so use it only on dev machines.
 
 Repair: after a WebUI reinstall or a DR restore, **Repair an extension** reinstalls it from what is stored in the site.
 
@@ -154,10 +226,8 @@ Repair: after a WebUI reinstall or a DR restore, **Repair an extension** reinsta
 ## Open questions
 
 - Does WebUI 10.x support Extensions Management, and which minimum 11.0 patch level is needed?
-- How exactly does the server rewrite `./HOMEPAGE/`? Can a hand-written (non-React) `index.html` packaged the same way work?
-- What does the WebUI server's Content-Security-Policy (Helmet) allow? For example, inline scripts, or external origins for iframe content.
 - Is there a newer `bfcore-react` than 6.0.65?
-- Is the response shape of `/api/sdk/sessionrelevance/evaluate` (`{value: [...]}` vs a bare array) and its typed values documented in `/api/api-docs`?
+- What do `done` and `id` in the session relevance response mean? Can `done` ever be `false`, meaning paged or partial results? It never was in testing.
 
 ## References
 

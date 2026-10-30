@@ -1,11 +1,8 @@
 // Example BigFix WebUI extension: evaluate session relevance and show results as a table.
-// Uses only the SDK endpoint POST /api/sdk/sessionrelevance/evaluate via BfHttpClient,
+// Uses only the SDK endpoint POST /api/sdk/sessionrelevance/evaluate (see sessionRelevanceApi.js),
 // which needs "Can use WebUI" (not "Can use REST API") and requires BigFix Web Reports.
 import React, { useState, useCallback, useEffect, useRef } from 'react'
-import { BfHttpClient } from 'bfcore-react'
-import { Button } from '@patron/patron-react/button'
-import { CircleProgressIndicator } from '@patron/patron-react/progressindicator'
-import { TextArea } from '@patron/patron-react/textarea'
+import { evaluateSessionRelevance } from './sessionRelevanceApi'
 import './SessionRelevanceQuery.css'
 
 // rendering very large results freezes the browser; limit the relevance itself for big queries
@@ -35,35 +32,35 @@ const SessionRelevanceQuery = ({ relevance = EXAMPLE_QUERIES[1] }) => {
   const [loading, setLoading] = useState(false)
   const [elapsedMs, setElapsedMs] = useState(null)
   const [lastQuery, setLastQuery] = useState('')
-  const subscriptionRef = useRef(null)
+  const abortRef = useRef(null)
 
-  // drop any in-flight request when the component unmounts
-  useEffect(() => () => subscriptionRef.current?.unsubscribe(), [])
+  // cancel any in-flight request when the component unmounts
+  useEffect(() => () => abortRef.current?.abort(), [])
 
-  const evaluate = useCallback(() => {
+  const evaluate = useCallback(async () => {
     const trimmed = query.trim()
     if (!trimmed) return
 
-    subscriptionRef.current?.unsubscribe()
+    abortRef.current?.abort()
+    const controller = new AbortController()
+    abortRef.current = controller
+
     setLoading(true)
     setError(null)
     setLastQuery(trimmed)
     const started = Date.now()
 
-    const bfHttpClient = new BfHttpClient()
-    subscriptionRef.current = bfHttpClient.post('/api/sdk/sessionrelevance/evaluate', { session_relevance: trimmed }).subscribe({
-      next: (response) => {
-        setRows(normalizeRows(response))
-        setElapsedMs(Date.now() - started)
-        setLoading(false)
-      },
-      error: (err) => {
-        setRows(null)
-        setError(err?.data?.message || err?.statusText || 'Unknown error evaluating session relevance')
-        setElapsedMs(Date.now() - started)
-        setLoading(false)
-      }
-    })
+    try {
+      const response = await evaluateSessionRelevance(trimmed, controller.signal)
+      setRows(normalizeRows(response))
+    } catch (err) {
+      // a newer query or unmount cancelled this one; leave state to whoever replaced it
+      if (err.name === 'AbortError') return
+      setRows(null)
+      setError(err.message || 'Unknown error evaluating session relevance')
+    }
+    setElapsedMs(Date.now() - started)
+    setLoading(false)
   }, [query])
 
   const onChange = useCallback((e) => setQuery(e.currentTarget.value), [])
@@ -90,7 +87,7 @@ const SessionRelevanceQuery = ({ relevance = EXAMPLE_QUERIES[1] }) => {
   return (
     <div className='bf-srq'>
       <div className='bf-srq-examples'>
-        <span className='hcl-font-semibold'>Examples:</span>
+        <span className='bf-srq-label'>Examples:</span>
         {EXAMPLE_QUERIES.map((example) => (
           <button type='button' key={example} className='bf-srq-example' onClick={() => setQuery(example)} title={example}>
             {example}
@@ -98,25 +95,34 @@ const SessionRelevanceQuery = ({ relevance = EXAMPLE_QUERIES[1] }) => {
         ))}
       </div>
 
-      <div onKeyDown={onKeyDown}>
-        <TextArea value={query} onChange={onChange} className='bf-srq-input' placeholder='Session relevance, e.g. names of bes computers' />
-      </div>
+      <label htmlFor='bf-srq-input' className='bf-srq-label'>
+        Session relevance
+      </label>
+      <textarea
+        id='bf-srq-input'
+        className='bf-srq-input'
+        value={query}
+        onChange={onChange}
+        onKeyDown={onKeyDown}
+        placeholder='e.g. names of bes computers'
+        spellCheck={false}
+      />
 
       <div className='bf-srq-actions'>
-        <Button onClick={evaluate} disabled={loading || query.trim() === ''}>
+        <button type='button' className='bf-srq-button bf-srq-button-primary' onClick={evaluate} disabled={loading || query.trim() === ''}>
           Evaluate
-        </Button>
-        <Button onClick={copyResults} disabled={!rows || rows.length === 0}>
+        </button>
+        <button type='button' className='bf-srq-button' onClick={copyResults} disabled={!rows || rows.length === 0}>
           Copy as TSV
-        </Button>
+        </button>
         <span className='bf-srq-hint'>Ctrl+Enter to evaluate</span>
       </div>
 
-      {loading && <CircleProgressIndicator type='indeterminate' />}
+      {loading && <div className='bf-srq-spinner' role='status' aria-label='Evaluating' />}
 
       {!loading && error && (
         <div className='bf-srq-error' role='alert'>
-          <div className='hcl-font-semibold'>Error</div>
+          <div className='bf-srq-label'>Error</div>
           <pre>{error}</pre>
         </div>
       )}

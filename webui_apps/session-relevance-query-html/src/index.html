@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!--
+      Asset paths start with ./HOMEPAGE/ like a create-react-app build of the WebUI SDK template.
+      The WebUI server rewrites them when the extension is installed; keep this form.
+      No inline <script> or <style>: everything is in static/ so a strict Content-Security-Policy still allows it.
+    -->
+    <base href="./HOMEPAGE/" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Session Relevance Query</title>
+    <link rel="stylesheet" href="./HOMEPAGE/static/css/app.css" />
+    <script defer src="./HOMEPAGE/static/js/app.js"></script>
+  </head>
+  <body>
+    <header class="shell-header">
+      <a class="shell-back" href="/" title="Back to BigFix WebUI">&larr; BigFix WebUI</a>
+      <h1 class="shell-title">Session Relevance Query</h1>
+      <span class="shell-user" id="shell-user"></span>
+      <a class="shell-logout" href="/logout">Log out</a>
+    </header>
+
+    <main class="srq">
+      <div class="srq-examples" id="srq-examples">
+        <span class="srq-label">Examples:</span>
+      </div>
+
+      <label for="srq-input" class="srq-label">Session relevance</label>
+      <textarea id="srq-input" class="srq-input" spellcheck="false" placeholder="e.g. names of bes computers">(id of it, name of it, operating system of it, last report time of it) of bes computers</textarea>
+
+      <div class="srq-actions">
+        <button type="button" id="srq-evaluate" class="srq-button srq-button-primary">Evaluate</button>
+        <button type="button" id="srq-copy" class="srq-button" disabled>Copy as TSV</button>
+        <span class="srq-hint">Ctrl+Enter to evaluate</span>
+      </div>
+
+      <div id="srq-spinner" class="srq-spinner" role="status" aria-label="Evaluating" hidden></div>
+
+      <div id="srq-error" class="srq-error" role="alert" hidden>
+        <div class="srq-label">Error</div>
+        <pre id="srq-error-text"></pre>
+      </div>
+
+      <div id="srq-result" hidden>
+        <div id="srq-summary" class="srq-summary"></div>
+        <div class="srq-table-wrap">
+          <table class="srq-table">
+            <caption id="srq-caption"></caption>
+            <thead id="srq-thead"></thead>
+            <tbody id="srq-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <noscript>This app needs JavaScript.</noscript>
+  </body>
+</html>

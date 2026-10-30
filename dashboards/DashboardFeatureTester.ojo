@@ -210,8 +210,11 @@ DoBrowseDialogWithFlags(ext, filters, forFolder, initialPath, fileMustExist, pat
 <div class="body">
 <pre>DownloadFile(url, scratchSub);  DownloadFileWithSHA1(url, scratchSub);  DownloadFile(url, absolutePath, callback)   // Grinnell+ async
 UploadFile(fullPath [, callback]);  ArchiveAndUploadFile(fullPath, archiveName, recurse [, callback]);  ArchiveAndUploadFile2(...)  // returns object
-Undocumented (11.x signatures, behavior unverified): DownloadFileEx(url, filePath, hashAlgorithm);  UploadFileEx(filePath, hashAlgorithm);
-  UploadFileWithName(inputPath, outputPath, callback);  ArchiveAndUploadFileEx(filePath, archiveName, recurseFlag, hashAlgorithm)</pre>
+Observed on 11.x: async callbacks get {url, size, sha1, sha256, error, referenceID}; sync UploadFile returns the url string;
+  sync ArchiveAndUploadFile returns "url\tsize\tsha1"; ArchiveAndUploadFile2 returns {url, size, sha1, sha256, referenceID}.
+Undocumented (11.x): DownloadFileEx(url, absolutePath, hashAlgorithm) returns a JSON string {path, size, sha256};
+  UploadFileWithName(inputPath, outputName, callback) works like async UploadFile with a new name;
+  UploadFileEx(filePath, hashAlgorithm) and ArchiveAndUploadFileEx(filePath, archiveName, recurseFlag, hashAlgorithm) returned "" (unexplained)</pre>
     URL <input id="fftUrl" size="70" value="https://raw.githubusercontent.com/jgstew/bigfix-content/main/README.md"><br>
     <button onclick="fftDownload('sync');">DownloadFile (sync)</button>
     <button onclick="fftDownload('sha1');">DownloadFileWithSHA1</button>
@@ -403,7 +406,7 @@ textarea#fftRelInput { width: 98%; font-family: Consolas, monospace; }
 // State
 // ------------------------------------------------------------------
 var FFT = {
-    version: "2026-10-30.5",
+    version: "2026-10-30.6",
     lines: [],
     latest: {},
     tests: [],
@@ -1148,7 +1151,18 @@ function fftBrowse(kind) {
         return fftCall("DoBrowseDialogWithFlags", ["*.*", "All Files (*.*)|*.*||", false, "", true, true, false, true, false, false, false, false, true]);
     });
     if (r === "") { fftLog("INFO", "Browse returned empty string (Cancel)"); }
-    if (r) { fftSensitive(r); fftSet("fftPath", String(r)); }
+    if (!r) { return; }
+    var s = String(r);
+    // Multi-select dialogs normally return "folder\0file1\0file2"; on an 11.x console only the folder came back,
+    // so log what separators (if any) survived the trip through the host
+    if (kind === "flags") {
+        var parts = s.split(/[\u0000\r\n\t]+/);
+        fftLog("INFO", "multi-select result: " + s.length + " chars, " + parts.length + " part(s)" +
+            (s.indexOf("\u0000") !== -1 ? ", contains NUL separators" : ", no NUL separators (only the folder survived?)"));
+        if (parts.length > 1) { fftLog("INFO", "folder=" + parts[0] + " files=" + parts.slice(1).join(", ")); }
+    }
+    fftSensitive(s);
+    fftSet("fftPath", s);
 }
 
 function fftPathInfo() {
@@ -2118,9 +2132,12 @@ fftTest("env", "env.signatures", "Log parameter lists of documented and undocume
     t.info("see the 'Signatures of ...' log lines");
 });
 fftTest("env", "env.sources", "Log wizards.js source of functions that misbehaved", function(t) {
-    // MoveFile and LoadPresentation sources were captured in an earlier run (thin wrappers), so only ColorizeRelevance now
-    var c = fftLogSource("ColorizeRelevance", 3000).length;
-    t.info("ColorizeRelevance " + c + " chars of source logged");
+    // MoveFile, LoadPresentation and ColorizeRelevance were explained by earlier runs.
+    // UploadFileEx and ArchiveAndUploadFileEx returned "" on an 11.x console; their source should show why.
+    var names = ["UploadFileEx", "ArchiveAndUploadFileEx", "DownloadFileEx", "DoBrowseDialogWithFlags"];
+    var parts = [];
+    for (var i = 0; i < names.length; i++) { parts.push(names[i] + " " + fftLogSource(names[i], 3000).length); }
+    t.info(parts.join(", ") + " chars of source logged");
 });
 // Undocumented helpers that only format values or inspect the DOM (no console state changes).
 // Each runs in its own try/catch so one failure does not hide the others.

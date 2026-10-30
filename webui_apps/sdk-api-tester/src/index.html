@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!--
+      Same packaging rules as session-relevance-query-html:
+      ./HOMEPAGE/ is rewritten by the WebUI server to /ui_extensions/<name>-<siteId>/ on install,
+      and everything is in static/ (no inline script/style, no CDNs: the extension CSP only allows 'self').
+    -->
+    <base href="./HOMEPAGE/" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>SDK API Tester</title>
+    <link rel="stylesheet" href="./HOMEPAGE/static/css/app.css" />
+    <script defer src="./HOMEPAGE/static/js/webui.js"></script>
+    <script defer src="./HOMEPAGE/static/js/tests.js"></script>
+    <script defer src="./HOMEPAGE/static/js/app.js"></script>
+  </head>
+  <body>
+    <header class="shell-header">
+      <a class="shell-back" href="/" title="Back to BigFix WebUI">&larr; BigFix WebUI</a>
+      <h1 class="shell-title">SDK API Tester</h1>
+      <span class="shell-user" id="shell-user"></span>
+      <a class="shell-logout" href="/logout">Log out</a>
+    </header>
+
+    <main class="sat">
+      <p class="sat-intro">
+        Exercises every WebUI SDK REST API (<code>/api/sdk/...</code>) with a minimal example call.
+        <b>Run all safe tests</b> only reads data, plus it creates and deletes one private dashboard variable.
+        Everything that changes BigFix is in the cards below, runs only from its own button, and asks first.
+        When something fails, expand <b>Log</b> at the bottom and use <b>Copy report</b>.
+      </p>
+
+      <div class="sat-toolbar">
+        <button type="button" id="btn-run-safe" class="sat-button sat-button-primary">Run all safe tests</button>
+        <button type="button" id="btn-copy-report-top" class="sat-button">Copy report</button>
+        <span id="run-status" class="sat-status" role="status"></span>
+      </div>
+
+      <table class="sat-results">
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Test</th>
+            <th>API</th>
+            <th>Result</th>
+            <th>ms</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="results-body"></tbody>
+      </table>
+
+      <h2>Manual tests (change BigFix)</h2>
+      <div class="sat-cards">
+        <section class="sat-card">
+          <h3>Content lifecycle</h3>
+          <p>Imports a never-relevant task, reads it, edits its title, then deletes it.</p>
+          <label>Custom site <select id="in-site-select"><option value="">loading...</option></select></label>
+          <div class="sat-row">
+            <button type="button" id="btn-content" class="sat-button">Run import &rarr; get &rarr; edit &rarr; delete</button>
+            <button type="button" id="btn-opimport" class="sat-button">Operator site import + delete</button>
+          </div>
+        </section>
+
+        <section class="sat-card">
+          <h3>Files</h3>
+          <p>Uploads to the custom site above, your operator site, or a computer's mailbox. There is no SDK delete for files.</p>
+          <label>File <input type="file" id="in-file" /></label>
+          <label class="sat-inline"><input type="checkbox" id="in-file-force" /> force (overwrite)</label>
+          <label class="sat-inline"><input type="checkbox" id="in-file-client" /> isClientFile (clients can download)</label>
+          <label>Mailbox computer id <input id="in-mailbox-id" inputmode="numeric" placeholder="e.g. 1234567" /></label>
+          <div class="sat-row">
+            <button type="button" class="sat-button" data-run="file.custom">Upload to custom site</button>
+            <button type="button" class="sat-button" data-run="file.operator">Upload to operator site</button>
+            <button type="button" class="sat-button" data-run="file.mailbox">Add to mailbox</button>
+            <button type="button" class="sat-button sat-button-ghost" data-fill="computer" data-target="in-mailbox-id">Use a recently reporting computer</button>
+          </div>
+        </section>
+
+        <section class="sat-card">
+          <h3>BigFix Query</h3>
+          <p>Sends a read-only client query to the listed computers and polls for results.</p>
+          <label>Computer ids <input id="in-cq-ids" placeholder="e.g. 1234567, 7654321" /></label>
+          <label>Applicability relevance <input id="in-cq-applicability" value="true" /></label>
+          <label>Query <input id="in-cq-query" value="computer name" /></label>
+          <div class="sat-row">
+            <button type="button" id="btn-cq" class="sat-button">Submit and poll</button>
+            <button type="button" class="sat-button sat-button-ghost" data-fill="computer" data-target="in-cq-ids">Use a recently reporting computer</button>
+          </div>
+        </section>
+
+        <section class="sat-card">
+          <h3>Analyses</h3>
+          <p>Site id must be numeric. For custom sites, which have no id of their own, this is prefilled with the master action site id.</p>
+          <label>Site id <input id="in-ana-site" inputmode="numeric" /></label>
+          <label>Analysis id <input id="in-ana-id" inputmode="numeric" /></label>
+          <div class="sat-row">
+            <button type="button" class="sat-button" data-run="ana.activate">Activate</button>
+            <button type="button" class="sat-button" data-run="ana.deactivate">Deactivate</button>
+            <button type="button" class="sat-button sat-button-ghost" id="btn-fill-analysis">Find an analysis</button>
+          </div>
+        </section>
+
+        <section class="sat-card">
+          <h3>Actions</h3>
+          <label>Action ids to stop <input id="in-stop-ids" placeholder="e.g. 123, 456" /></label>
+          <div class="sat-row"><button type="button" class="sat-button" data-run="act.stop">Stop actions</button></div>
+        </section>
+
+        <section class="sat-card">
+          <h3>Sites</h3>
+          <label>New custom site name <input id="in-site-name" maxlength="32" value="SdkApiTesterSite" /></label>
+          <div class="sat-row"><button type="button" class="sat-button" data-run="site.create">Create custom site</button></div>
+        </section>
+
+        <section class="sat-card sat-card-wide">
+          <h3>Platform REST passthrough</h3>
+          <p>
+            The uri must include the <code>api/</code> prefix: <code>api/sites</code> calls <code>&lt;bfserver&gt;:52311/api/sites</code>.
+            Needs <b>Can use REST API</b>. Example DELETE to remove the test site: <code>api/site/custom/SdkApiTesterSite</code>.
+          </p>
+          <label>uri <input id="in-pt-uri" value="api/serverinfo" /></label>
+          <label>Content-Type
+            <select id="in-pt-type">
+              <option value="application/xml">application/xml</option>
+              <option value="text/plain">text/plain</option>
+            </select>
+          </label>
+          <label>Body (POST / PUT) <textarea id="in-pt-body" rows="4" spellcheck="false"></textarea></label>
+          <div class="sat-row">
+            <button type="button" class="sat-button" data-run="pt.get.custom">GET</button>
+            <button type="button" class="sat-button" data-run="pt.post">POST</button>
+            <button type="button" class="sat-button" data-run="pt.put">PUT</button>
+            <button type="button" class="sat-button" data-run="pt.delete">DELETE</button>
+          </div>
+        </section>
+      </div>
+
+      <details id="log-details" class="sat-log">
+        <summary>Log (<span id="log-count">0</span> lines) - expand to view, copy, or clear</summary>
+        <div class="sat-row">
+          <button type="button" id="btn-copy-report" class="sat-button sat-button-primary">Copy report</button>
+          <button type="button" id="btn-copy-log" class="sat-button">Copy log</button>
+          <button type="button" id="btn-clear-log" class="sat-button">Clear</button>
+          <label class="sat-inline"><input type="checkbox" id="log-redact" checked /> Redact server address and user name when copying</label>
+          <label class="sat-inline"><input type="checkbox" id="log-verbose" /> Log response bodies of successful calls</label>
+        </div>
+        <textarea id="log-text" class="sat-log-text" readonly spellcheck="false" wrap="off"></textarea>
+      </details>
+    </main>
+
+    <noscript>This app needs JavaScript.</noscript>
+  </body>
+</html>

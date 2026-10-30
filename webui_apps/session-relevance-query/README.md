@@ -20,18 +20,29 @@ This SDK endpoint needs the operator to have **Can use WebUI**. It does not need
 
 ## How it works
 
-These files are not a standalone project. They go on top of HCL's WebUI SDK app template (React 17, `bfcore-react`, Patronus). The template provides:
+These files are not a standalone project. They go on top of HCL's WebUI SDK app template (React 17, `bfcore-react`, Patronus). From the template, the app uses only:
 
-- `BfHttpClient` from `bfcore-react`: an axios wrapper that returns an RxJS Observable. It sends the WebUI session cookies and the `XSRF-TOKEN` cookie back as an `X-XSRF-TOKEN` header. On a 401 response it redirects to `/timeout`.
-- `BfApp`: the standard WebUI page chrome.
+- `BfApp` from `bfcore-react`: the standard WebUI page chrome (header and navigation). This is the only `bfcore-react` import.
 - `npm run packit`: builds the app and zips it into `output/<name>-<version>.webui` (`package.json` plus the build folder).
+
+Everything else is plain React, HTML, CSS, and `fetch`:
+
+- No Patronus components are imported. The text area, buttons, spinner, and table are standard HTML elements styled in `SessionRelevanceQuery.css`.
+- `bfcore-react`'s `BfHttpClient` is not used. `sessionRelevanceApi.js` does the same job for this one call:
+  - sends the WebUI session cookies (`credentials: 'same-origin'`)
+  - sends the `XSRF-TOKEN` cookie back as an `X-XSRF-TOKEN` header
+  - redirects to `/timeout?nextpage=...` on a 401 or an `iem-login-required` response header
+  - rejects with the server's `message` on errors
+
+`BfApp` depends on Patronus itself, so Patronus is still installed and still in the built bundle. Dropping our direct use of it doesn't make the `.webui` file any smaller.
 
 Files in this folder:
 
 | File | Purpose |
 | --- | --- |
-| `src/App.js` | Replaces the template's `src/App.js`. It renders `SessionRelevanceQuery` instead of the samples accordion. |
+| `src/App.js` | Replaces the template's `src/App.js`. It renders `SessionRelevanceQuery` inside `BfApp` instead of the samples accordion. |
 | `src/SessionRelevanceQuery/SessionRelevanceQuery.js` | The component |
+| `src/SessionRelevanceQuery/sessionRelevanceApi.js` | `fetch` client for `POST /api/sdk/sessionrelevance/evaluate` |
 | `src/SessionRelevanceQuery/SessionRelevanceQuery.css` | Styles |
 
 ## Build
@@ -62,7 +73,7 @@ To develop locally, use `npm start` (port 3006). The API calls only work when th
 ## Install
 
 1. In WebUI, open **Extensions Management** (`https://<webui-server>/ui_extensions/next`).
-2. Click **Install app from file**, pick a custom site, upload the `.webui` file, and confirm.
+2. Click **Install extension from file**, pick a custom site, upload the `.webui` file, and click **Install**. To upgrade, do the same again with the same site and a higher `version`. The row's **Update** action crashed on the test server.
 3. Click **Launch** on the installed extension.
 
 Operators can see the app only if they can access the custom site it was installed to.
@@ -71,6 +82,6 @@ To push a rebuilt version over an existing install on a custom site, the templat
 
 ## Notes
 
-- The template's own `BigfixSamplesExtensions/BigfixSessionRelevanceSample` reads results from `response.value`. The OpenAPI doc describes a bare array. `normalizeRows` accepts either shape.
+- On a real WebUI the response is `{"done": true, "value": [...], "id": {}}`, and every value is a string. The OpenAPI doc describes a bare array, so `normalizeRows` accepts either shape.
 - WebUI SDK API docs are served at `https://<webui-server>/api/api-docs` once the WebUI server setting `_WebUIAppEnv_ENABLE_API_DOC_SETTING=1` is set.
 - Session relevance reference: https://developer.bigfix.com/relevance/guide/session/
