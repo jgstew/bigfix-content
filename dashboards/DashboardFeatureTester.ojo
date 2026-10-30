@@ -1,0 +1,2214 @@
+<?xml version="1.0"?>
+<!-- vim: set syntax=xml: -->
+<!--
+  Dashboard Feature Tester
+
+  A single dashboard that exercises (and shows a minimal example of) every console
+  dashboard / wizard APIs.
+
+  Everything is logged to the text area at the bottom of the page because the browser
+  console is not readily available inside BigFix Console dashboards.
+
+  "Run all safe tests" only runs tests that are read-only or only touch this dashboard's
+  scratch folder / a private dashboard variable. Anything that creates content, takes or
+  stops actions, uploads files, or changes deployment settings is a manual button and asks
+  for confirmation first.
+
+  Notes for authors (all of these bit this file while it was being written):
+    - The console replaces processing instructions everywhere in the page HTML, including
+      inside <script> string literals, so strings that must contain a PI are split: "<" + "?Relevance ...".
+    - This HTML lives in a CDATA section, so the CDATA terminator must never appear literally.
+      Generated XML that needs a nested CDATA closes it with ']]' + '>'.
+    - A literal closing script tag inside a JS string ends the script block, so it is split too.
+    - Keep JavaScript ES5 only (no let/const, arrow functions, template literals, Promise):
+      the console renders dashboards with the IE11 engine.
+    - typeof on console host methods (window.external.*) can return "unknown" in IE; treat that as present.
+
+  UIHooks alternatives:
+    <UIHooks Menu="Foo/Bar" NavBar="Foo" LaunchType="Document" RequiresAuthoring="false"></UIHooks>
+    <UIHooks Menu='(if (exists bes site whose (name of it = "BES Support")) then "Dashboards" else "")' LaunchType="Document"></UIHooks>
+    <UIHooks Menu="" PostEvans="true" LaunchType="Document"></UIHooks>
+-->
+<BES>
+  <Wizard>
+    <Title>Custom - Dashboard Feature Tester</Title>
+    <UIHooks LaunchType="Document" RequiresAuthoring="false" Menu="Dashboards"></UIHooks>
+    <DefaultPage>DefaultPage</DefaultPage>
+    <Page Name="DefaultPage" DocType="HTML5" >
+        <Title>Dashboard Feature Tester</Title>
+        <Head><![CDATA[
+            <meta http-equiv="X-UA-Compatible" content="IE=11">
+            <script>
+            // Capture errors before the logger exists. Errors from wizards.js at 0:0 are a known harmless IE11 issue and are suppressed (but counted).
+            window.FFT_EARLY = [];
+            window.FFT_SUPPRESSED = 0;
+            window.onerror = function(event, source, lineno, colno, error) {
+                if (source && -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { window.FFT_SUPPRESSED++; return true; }
+                var line = "window.onerror: " + event + " @ " + source + ":" + lineno + ":" + colno;
+                if (window.fftLog) { window.fftLog("JSERR", line); } else { window.FFT_EARLY.push(line); }
+                return false;
+            };
+            </script>
+        ]]></Head>
+        <HTML><![CDATA[
+<script language="javascript">InsertUtilityDiv();</script>
+
+<!-- Contents of TheDataStore are preserved across linkpage: navigation (used here to keep the log) -->
+<div id="TheDataStore" style="display: none;"></div>
+<!-- RegisterRefreshHandler fires onclick on this element whenever console data changes -->
+<div id="fftRefreshHandler" style="display: none;" onclick="fftOnRefreshSignal();"></div>
+
+<div id="fftHeader">
+    <h2>Dashboard Feature Tester</h2>
+    <div class="fft-sub">
+        IE documentMode: <b id="fftDocMode">?</b> &nbsp;|&nbsp;
+        Dashboard id (PI in JS): <b id="fftDashIdOut">?</b> &nbsp;|&nbsp;
+        Version: <b id="fftVersion">?</b>
+    </div>
+    <div class="fft-run">
+        <button class="primary" onclick="fftRunAll();">Run all safe tests</button>
+        <button onclick="fftCopyReport();">Copy report</button>
+        <button onclick="fftExpandAll(true);">Expand all</button>
+        <button onclick="fftExpandAll(false);">Collapse all</button>
+        <span id="fftRunStatus"></span>
+    </div>
+    <div id="fftToc"></div>
+</div>
+
+<div id="fftResultsWrap" style="display: none;">
+    <h3>Results</h3>
+    <div id="fftResults"></div>
+</div>
+
+<!-- ============================================================ -->
+<div class="sec" id="sec-env" data-title="Environment &amp; API inventory">
+<div class="body">
+    <p>Feature detection for every documented console function. Functions may live on <code>window</code> (wizards.js) or <code>window.external</code> (console host).</p>
+    <button onclick="fftRunGroup('env');">Run section tests</button>
+    <button onclick="fftDumpGlobals();">Log all non-native global functions</button>
+    <button onclick="fftLogSignatures();">Log function signatures (incl. undocumented)</button>
+    <br>Function <input id="fftSrcName" value="MoveFile" size="28">
+    <button onclick="fftLogSource(fftVal('fftSrcName'));">Log its source</button>
+    <button class="warn" onclick="fftProbeGetters();">Probe undocumented getters</button>
+    <button onclick="fftRenderInventory();">Refresh inventory table</button>
+    <div id="fftInventory"></div>
+</div></div>
+
+<!-- ============================================================ -->
+<div class="sec" id="sec-pi" data-title="&lt;?Relevance?&gt; processing instructions &amp; html inspectors">
+<div class="body">
+    <p>Relevance PIs are evaluated when the page loads and the result is html-escaped unless it is already of type html.</p>
+<pre>&lt;?Relevance now ?&gt;
+&lt;?Relevance "AT&amp;T &lt;b&gt;not bold&lt;/b&gt;" ?&gt;            (string: escaped)
+&lt;?Relevance html "&lt;b&gt;bold&lt;/b&gt;" ?&gt;                     (html: not escaped)
+&lt;?Relevance html tag ("span", attr list of (("class","fft-demo"); ("title","AT&amp;T")), "text") ?&gt;
+&lt;?Relevance unordered list of ("&lt;"; "&gt;"; "&amp;") ?&gt;
+&lt;?Relevance ("x" as integer as string | "fallback") ?&gt;    (| catches runtime errors)
+var x = "&lt;?Relevance dashboard id of current wizard ?&gt;"; (PI inside a JS string)</pre>
+    <table class="kv">
+        <tr><td>now</td><td id="piNow"><?Relevance now ?></td></tr>
+        <tr><td>string (escaped)</td><td id="piEscape"><?Relevance "AT&T <b>not bold</b>" ?></td></tr>
+        <tr><td>html (unescaped)</td><td id="piHtml"><?Relevance html "<b>bold via html cast</b>" ?></td></tr>
+        <tr><td>html tag + attr list</td><td id="piTag"><?Relevance html tag ("span", attr list of (("class", "fft-demo"); ("title", "AT&T")), "span with class and title") ?></td></tr>
+        <tr><td>unordered list</td><td id="piList"><?Relevance unordered list of ("<"; ">"; "&") ?></td></tr>
+        <tr><td>definition list</td><td id="piDl"><?Relevance definition list of ("Master operator"; (if master flag of current console user then "yes" else "no")) ?></td></tr>
+        <tr><td>number of bes computers</td><td id="piCount"><?Relevance number of bes computers as string ?></td></tr>
+        <tr><td>format inspector</td><td id="piFormat"><?Relevance format "{0} computers are visible to this operator" + (number of bes computers as string) ?></td></tr>
+        <tr><td>| fallback</td><td id="piErr"><?Relevance ("x" as integer as string | "fallback via | operator") ?></td></tr>
+        <tr><td>link of current console user</td><td id="piLinkUser"><?Relevance (link of current console user | html "n/a") ?></td></tr>
+        <tr><td>link of current wizard</td><td id="piLinkWizard"><?Relevance (link of current wizard | html "n/a") ?></td></tr>
+        <tr><td>hxlat PI</td><td><span id="hxlatTest"><?hxlat Hello from hxlat?></span></td></tr>
+    </table>
+    <button onclick="fftRunGroup('pi');">Run section tests</button>
+</div></div>
+
+<!-- ============================================================ -->
+<div class="sec" id="sec-refresh" data-title="Refreshing relevance &amp; RegisterRefreshHandler">
+<div class="body">
+<pre>&lt;?BeginRefreshRelevance id="fftClock" ManualRefresh="00:00:00"?&gt; ... &lt;?EndRefreshRelevance id="fftClock"?&gt;
+ManualRefresh("fftClock");  ManualRefreshAll();
+RegisterRefreshHandler("fftRefreshHandler", "");   // element onclick fires; signal name in theRegisterRefreshSignalName</pre>
+    <table class="kv">
+        <tr><td>Manual refresh (fftClock)</td><td><?BeginRefreshRelevance id="fftClock" ManualRefresh="00:00:00"?><span id="fftClockVal"><?Relevance now ?></span><?EndRefreshRelevance id="fftClock"?></td></tr>
+        <tr><td>Every refresh cycle (fftCycle)</td><td><?BeginRefreshRelevance id="fftCycle" RefreshCycle="00:00:00"?><?Relevance now ?><?EndRefreshRelevance id="fftCycle"?></td></tr>
+        <tr><td>Computers / Actions / CustomContent changes (fftCounts)</td><td><?BeginRefreshRelevance id="fftCounts" Computers="00:00:00" Actions="00:00:30" CustomContent="00:00:00"?><?Relevance (number of bes computers as string) & " computers, " & (number of bes actions as string) & " actions, " & (number of bes fixlets whose (custom flag of it) as string) & " custom items" ?><?EndRefreshRelevance id="fftCounts"?></td></tr>
+    </table>
+    <button onclick="fftDo('ManualRefresh(fftClock)', function(){ return fftCall('ManualRefresh', ['fftClock']); });">ManualRefresh("fftClock")</button>
+    <button onclick="fftDo('ManualRefreshAll()', function(){ return fftCall('ManualRefreshAll', []); });">ManualRefreshAll()</button>
+    <label><input type="checkbox" id="fftLogSignals" checked> log refresh signals</label>
+    <div id="fftSignals"></div>
+    <button onclick="fftRunGroup('refresh');">Run section tests</button>
+</div></div>
+
+<!-- ============================================================ -->
+<div class="sec" id="sec-rel" data-title="EvaluateRelevance / Relevance (sync &amp; async) evaluator">
+<div class="body">
+<pre>var s = EvaluateRelevance("now");               // string, or array of strings if plural; throws on error (e.description)
+var r = Relevance("(1, \"a\")");                 // Evans+: native types, tuples as arrays, plural as special array (.length, [i], sort(), toArray())
+Relevance("now", { success: function(r){...}, failure: function(e){...} });   // async</pre>
+    <textarea id="fftRelInput" rows="3">names of bes sites</textarea><br>
+    <button onclick="fftEvalBox('er');">EvaluateRelevance</button>
+    <button onclick="fftEvalBox('rel');">Relevance (sync)</button>
+    <button onclick="fftEvalBox('async');">Relevance (async)</button>
+    <button onclick="fftColorizeBox();">Colorize (undocumented ColorizeRelevance)</button>
+    <pre id="fftRelOut" class="out"></pre>
+    <div id="fftColorOut" class="out"></div>
+    <button onclick="fftRunGroup('rel');">Run section tests</button>
+</div></div>
+
+<!-- ============================================================ -->
+<div class="sec" id="sec-vars" data-title="Dashboard variables (data store) &amp; RegisterRelevance">
+<div class="body">
+<pre>StorePrivateVariable(dashID, name, value);   StoreSharedVariable(dashID, name, value);   StoreVariable(dashID, name, value, isPrivate);
+DeletePrivateVariable(dashID, name);         DeleteSharedVariable(dashID, name);         DeleteVariable(dashID, name, isPrivate);
+Relevance: private variable "name" of current wizard / shared variable "name" of current wizard / variables of current wizard
+RegisterRelevance(expr, {success:..., failure:...}, id);  // fires when the data store changes and expr is true; unregister with expr "false"</pre>
+    Name <input id="fftVarName" value="FFT_Manual"> Value <input id="fftVarValue" value="hello">
+    <br>
+    <button onclick="fftVarStore(true);">Store private</button>
+    <button class="warn" onclick="fftVarStore(false);">Store shared</button>
+    <button onclick="fftVarRead(true);">Read private</button>
+    <button onclick="fftVarRead(false);">Read shared</button>
+    <button onclick="fftVarDelete(true);">Delete private</button>
+    <button class="warn" onclick="fftVarDelete(false);">Delete shared</button>
+    <button onclick="fftVarList();">List variables of current wizard</button>
+    <pre id="fftVarOut" class="out"></pre>
+    <button onclick="fftRunGroup('vars');">Run section tests</button>
+</div></div>
+
+<!-- ============================================================ -->
+<div class="sec" id="sec-files" data-title="Scratch file operations &amp; LoadPresentation">
+<div class="body">
+<pre>GetScratchRootPath();  MakeFolder(sub);  WriteFile(text, sub, append);  CopyFile(fullIn, sub, overwrite);  CopyFolder(fullIn, sub, recurse);
+MoveFile(subSrc, subDest, overwrite);  DeleteFile(sub);  DeleteAllFiles(sub, recurse);  DeleteFolder(sub);  DeleteTree(sub);
+MakeArchive(fullIn, sub, recurse);  GetFileSize(full);  GetFileSHA1(full);  CalculateFileInfo(full [, callback]);
+LoadPresentation(full)   // loads an html file and evaluates its relevance PIs
+CompleteHashSet("sha1", hash, callback)   // asks the server for the matching sha256</pre>
+    <p>The scratch folder is removed when this dashboard window closes.</p>
+    <button onclick="fftRunGroup('files');">Run section tests</button>
+    <button onclick="fftEnsureScratchFile(true);">Create scratch test file</button>
+    <div id="fftLoadPresOut" class="out"></div>
+</div></div>
+
+<!-- ============================================================ -->
+<div class="sec" id="sec-browse" data-title="Browse dialogs &amp; local file info (interactive)">
+<div class="body">
+<pre>BrowseForFolder([initialPath]);   // documented without arguments; the 11.x wizards.js signature is BrowseForFolder(initialPath)
+BrowseForFile(extension, filters, initialPath);
+DoBrowseDialogWithFlags(ext, filters, forFolder, initialPath, fileMustExist, pathMustExist, noValidate, hideReadOnly,
+                        overwritePrompt, createPrompt, noReadOnlyReturn, noTestFileCreate, allowMultiSelect);</pre>
+    <button onclick="fftBrowse('folder');">BrowseForFolder</button>
+    <button onclick="fftBrowse('file');">BrowseForFile</button>
+    <button onclick="fftBrowse('flags');">DoBrowseDialogWithFlags (multi-select)</button>
+    <br>Path <input id="fftPath" size="70" value="">
+    <button onclick="fftPathInfo();">File info (size / sha1 / sha256)</button>
+    <button onclick="fftCopyToScratch();">CopyFile into scratch</button>
+</div></div>
+
+<!-- ============================================================ -->
+<div class="sec" id="sec-updown" data-title="Download / upload (network, manual)">
+<div class="body">
+<pre>DownloadFile(url, scratchSub);  DownloadFileWithSHA1(url, scratchSub);  DownloadFile(url, absolutePath, callback)   // Grinnell+ async
+UploadFile(fullPath [, callback]);  ArchiveAndUploadFile(fullPath, archiveName, recurse [, callback]);  ArchiveAndUploadFile2(...)  // returns object
+Undocumented (11.x signatures, behavior unverified): DownloadFileEx(url, filePath, hashAlgorithm);  UploadFileEx(filePath, hashAlgorithm);
+  UploadFileWithName(inputPath, outputPath, callback);  ArchiveAndUploadFileEx(filePath, archiveName, recurseFlag, hashAlgorithm)</pre>
+    URL <input id="fftUrl" size="70" value="https://raw.githubusercontent.com/jgstew/bigfix-content/main/README.md"><br>
+    <button onclick="fftDownload('sync');">DownloadFile (sync)</button>
+    <button onclick="fftDownload('sha1');">DownloadFileWithSHA1</button>
+    <button onclick="fftDownload('async');">DownloadFile (async)</button>
+    <br>Uploads use the Path field above, or the scratch test file if Path is empty. Uploads put the file on the root server.<br>
+    <button class="warn" onclick="fftUpload('sync');">UploadFile</button>
+    <button class="warn" onclick="fftUpload('async');">UploadFile (async)</button>
+    <button class="warn" onclick="fftUpload('archive');">ArchiveAndUploadFile</button>
+    <button class="warn" onclick="fftUpload('archive-async');">ArchiveAndUploadFile (async)</button>
+    <button class="warn" onclick="fftUpload('archive2');">ArchiveAndUploadFile2</button>
+    <br>Undocumented variants (probes; hash algorithm <input id="fftHashAlg" value="sha256" size="8">):
+    <button onclick="fftDownload('ex');">DownloadFileEx</button>
+    <button class="warn" onclick="fftUpload('ex');">UploadFileEx</button>
+    <button class="warn" onclick="fftUpload('withname');">UploadFileWithName</button>
+    <button class="warn" onclick="fftUpload('archive-ex');">ArchiveAndUploadFileEx</button>
+</div></div>
+
+<!-- ============================================================ -->
+<div class="sec" id="sec-content" data-title="Content lifecycle: ImportXML, EditFixlet, TakeFixletAction, DeleteFixlet">
+<div class="body">
+    <p>Creates a test Task with relevance <code>false</code> and a no-op action script, so taking its action targets nothing by relevance.
+    The task description also demonstrates the <code>ontakeaction</code> hook feeding a parameter into <code>TakeFixletAction</code>.</p>
+<pre>ids = ImportXML(xml, openDocuments [, customSiteName, computerIDs]);   ImportXMLToSite(xml, customSiteName, openDocuments);
+EditFixlet(id, xml);  DeleteFixlet(id);  DeleteFixlets([ids]);
+TakeFixletAction(id, siteID, "Action1" [, params, callback]);   TakeSecureFixletAction(id, siteID, "Action1", params, secureParams, callback);
+TakeFixletActionOnComputers(id, siteID, "Action1", params, computerIDs, callback);   TakeSecureFixletActionOnComputers(..., computerIDs, callback);</pre>
+    Custom site name (blank = operator / master action site) <input id="fftSite" value="">
+    Computer IDs <input id="fftCids" value="" size="30"> <button onclick="fftFirstComputers();">use first 5</button>
+    <br>
+    <button class="warn" onclick="fftImportTask('operator');">ImportXML</button>
+    <button class="warn" onclick="fftImportTask('open');">ImportXML (open document)</button>
+    <button class="warn" onclick="fftImportTask('site');">ImportXMLToSite</button>
+    <button class="warn" onclick="fftImportTask('computers');">ImportXML with computer IDs</button>
+    <br>Task id <input id="fftTaskId" size="10"> Site id <input id="fftSiteId" size="22"> <button onclick="fftDetectSiteId();">detect site id</button>
+    <button onclick="fftOpenTask();">open task (link href)</button>
+    <br>
+    <button class="warn" onclick="fftEditTask();">EditFixlet</button>
+    <button class="warn" onclick="fftTakeAction('plain');">TakeFixletAction</button>
+    <button class="warn" onclick="fftTakeAction('params');">TakeFixletAction + params + callback</button>
+    <button class="warn" onclick="fftTakeAction('secure');">TakeSecureFixletAction</button>
+    <button class="warn" onclick="fftTakeAction('oncomputers');">TakeFixletActionOnComputers</button>
+    <button class="warn" onclick="fftTakeAction('secureoncomputers');">TakeSecureFixletActionOnComputers</button>
+    <br>
+    <button onclick="fftExportTaskXml();">Export task XML via relevance (probe)</button>
+    <button class="warn" onclick="fftCopyTaskToSite();">Copy task to custom site (CopyFixletsToSite pattern)</button>
+    <button class="danger" onclick="fftDeleteTask(false);">DeleteFixlet</button>
+    <button class="danger" onclick="fftDeleteTask(true);">DeleteFixlets (all created this session)</button>
+</div></div>
+
+<!-- ============================================================ -->
+<div class="sec" id="sec-actions" data-title="Actions &amp; analyses">
+<div class="body">
+<pre>StopAction(actionID [, options]);  StopActions([actionIDs] [, options]);   // options: undocumented 11.x parameter, not used here
+MakeIDListFromArray([1,2,3]) == "1,2,3"
+ActivateAnalysis("siteid:analysisid");  DeactivateAnalysis(id);  ReactivateAnalysis(id);  (plural forms take arrays)</pre>
+    <button onclick="fftListMyOpenActions();">List my open actions</button>
+    Action id(s) <input id="fftActionId" size="30">
+    <button class="danger" onclick="fftStopActions();">StopAction / StopActions</button>
+    <br>
+    <button onclick="fftListAnalyses();">List analyses</button>
+    <select id="fftAnalysisSel"><option value="">(load analyses first)</option></select>
+    <button class="warn" onclick="fftAnalysis('ActivateAnalysis');">Activate</button>
+    <button class="warn" onclick="fftAnalysis('DeactivateAnalysis');">Deactivate</button>
+    <button class="warn" onclick="fftAnalysis('ReactivateAnalysis');">Reactivate</button>
+    <button class="warn" onclick="fftAnalysis('ActivateAnalyses');">ActivateAnalyses([id])</button>
+</div></div>
+
+<!-- ============================================================ -->
+<div class="sec" id="sec-computers" data-title="Computers: OpenComputerGroup &amp; Wake-on-LAN">
+<div class="body">
+<pre>OpenComputerGroup(ids [, title]);   SendWakeOnLANRequest(id or [ids]);   EnableWakeOnLAN(bool)   // global deployment setting
+Relevance: enabled of bes wakeonlan status</pre>
+    Uses the Computer IDs field from the content section.
+    <button onclick="fftFirstComputers();">use first 5</button>
+    <button onclick="fftOpenGroup();">OpenComputerGroup</button>
+    <button class="warn" onclick="fftWol();">SendWakeOnLANRequest</button>
+    <button class="danger" onclick="fftEnableWol(true);">EnableWakeOnLAN(true)</button>
+    <button class="danger" onclick="fftEnableWol(false);">EnableWakeOnLAN(false)</button>
+</div></div>
+
+<!-- ============================================================ -->
+<div class="sec" id="sec-filters" data-title="Filters: OpenFindDialog &amp; global filters">
+<div class="body">
+<pre>id = external.OpenFindDialog(type, initialFilterId);   // type: Fixlet, Task, Baseline, Analysis, Computer Group Search, Computer, Action, User, Unmanaged Asset
+external.AddGlobalFilter(id);   external.ClearAllGlobalFilters();   external.ClearGlobalFilterOfType(type);</pre>
+    Type <select id="fftFilterType"><option>Computer</option><option>Fixlet</option><option>Task</option><option>Baseline</option><option>Analysis</option><option>Computer Group Search</option><option>Action</option><option>User</option><option>Unmanaged Asset</option></select>
+    Filter id <input id="fftFilterId" size="8" value="0">
+    <button onclick="fftListFilters();">List bes filters</button>
+    <button onclick="fftOpenFind();">OpenFindDialog</button>
+    <button class="warn" onclick="fftFilter('AddGlobalFilter');">AddGlobalFilter</button>
+    <button onclick="fftFilter('ClearGlobalFilterOfType');">ClearGlobalFilterOfType</button>
+    <button onclick="fftFilter('ClearAllGlobalFilters');">ClearAllGlobalFilters</button>
+</div></div>
+
+<!-- ============================================================ -->
+<div class="sec" id="sec-admin" data-title="Sites, properties, mailbox &amp; other dashboards">
+<div class="body">
+<pre>CreateCustomSite(name);   DeleteProperty(id);  DeleteProperties([ids]);   AddFileToSite(siteName, fullPath, clientFile);
+AddFileToMailbox(computerID, fullPath, fileName);   win = external.OpenWizard(siteID, dashboardID);   GetCurrentDSN();  GetCurrentUser();</pre>
+    Name / id <input id="fftAdminArg" size="30">
+    <button class="danger" onclick="fftCreateSite();">CreateCustomSite</button>
+    <button class="danger" onclick="fftDeleteProperty();">DeleteProperty</button>
+    <br>
+    <button class="warn" onclick="fftAddFileToSite();">AddFileToSite (scratch test file, non-client)</button>
+    <button class="warn" onclick="fftAddFileToMailbox();">AddFileToMailbox (first computer id field)</button>
+    <br>
+    <button onclick="fftListWizards();">List wizards</button>
+    <select id="fftWizardSel"><option value="">(list wizards first)</option></select>
+    <button onclick="fftOpenWizard();">external.OpenWizard</button>
+</div></div>
+
+<!-- ============================================================ -->
+<div class="sec" id="sec-links" data-title="linkid: protocol, linkpage: &amp; TheDataStore">
+<div class="body">
+    <p>Links generated by relevance (portable to Web Reports) and literal <code>linkid:</code> links (console only).</p>
+    <ul>
+        <li><?Relevance (link "open my operator document" of current console user | html "link of current console user failed") ?></li>
+        <li><?Relevance (link "open the lowest-id computer" of it) of bes computers whose (id of it = minimum of ids of bes computers) ?></li>
+        <li><a href="linkid:allComputers">linkid:allComputers</a> | <a href="linkid:viewAnalyses">linkid:viewAnalyses</a> | <a href="linkid:consoleOperators">linkid:consoleOperators</a> | <a href="linkid:manageSiteSubscriptions">linkid:manageSiteSubscriptions</a> | <a href="linkid:customTask">linkid:customTask</a></li>
+        <li><a href="#" onclick="fftNavigate('linkid:allComputers'); return false;">window.location = "linkid:allComputers" (from script)</a></li>
+        <li><a href="linkpage:SecondPage">linkpage:SecondPage</a> - goes to page 2 of this wizard; the log survives in TheDataStore. <a href="#" onclick="fftNavigate('linkpage:SecondPage'); return false;">(from script)</a></li>
+    </ul>
+    <button onclick="fftRunGroup('nav');">Run section tests</button>
+</div></div>
+
+<!-- ============================================================ -->
+<div class="sec" id="sec-rest" data-title="REST API object (API.Get / API.Post)">
+<div class="body">
+<pre>API.Get("serverinfo", function(error, status, body){ ... });     // relative to the server /api/; 11.x signature Get(uri, options, callback)
+API.Post("action/123/stop", function(error, status, body){ ... }); // used by StopOpenCompletedActions.ojo</pre>
+    GET path <input id="fftRestPath" value="serverinfo" size="40">
+    <button onclick="fftRestGet();">API.Get</button>
+    <button onclick="fftRunGroup('rest');">Run section tests</button>
+    <pre id="fftRestOut" class="out"></pre>
+</div></div>
+
+<div id="fftSpacer"></div>
+
+<!-- ============================================================ -->
+<div id="fftLogPanel">
+    <div class="bar">
+        <b>Log</b>
+        <button onclick="fftCopyReport();">Copy report</button>
+        <button onclick="fftCopyLog();">Copy log</button>
+        <button onclick="fftSelectLog();">Select all</button>
+        <button onclick="fftClearLog();">Clear</button>
+        <button onclick="fftSaveReportVar();">Save report to private variable</button>
+        <button onclick="fftLoadReportVar();">Load saved report</button>
+        <label><input type="checkbox" id="fftVerbose"> verbose</label>
+        <label title="Replaces user names, DSN, paths and server names collected during tests with placeholders in copied reports"><input type="checkbox" id="fftRedact" checked> redact report</label>
+        <button onclick="fftResizeLog();">&#8597;</button>
+    </div>
+    <textarea id="fftLog" wrap="off" readonly></textarea>
+</div>
+
+<style>
+body { font-family: Segoe UI, Arial, sans-serif; font-size: 12px; margin: 0 8px; }
+div#wr_datapage > br + br { display: none; }
+h2 { margin: 4px 0; }
+h3 { margin: 6px 0; }
+.fft-sub { color: #555; margin-bottom: 4px; }
+.fft-run { margin: 6px 0; }
+button { font-size: 12px; margin: 2px 1px; }
+button.primary { font-weight: bold; }
+button.warn { border: 1px solid #c80; }
+button.danger { border: 1px solid #c00; color: #900; }
+#fftToc a { margin-right: 10px; white-space: nowrap; }
+.sec { border: 1px solid #ccc; margin: 6px 0; }
+.sec > .hdr { background: #eef2f6; padding: 4px 6px; cursor: pointer; font-weight: bold; }
+.sec > .body { padding: 6px; }
+pre { background: #f6f6f6; border: 1px solid #ddd; padding: 4px; white-space: pre-wrap; font-size: 11px; }
+pre.out, div.out { background: #fffff0; min-height: 1em; max-height: 200px; overflow: auto; }
+table.kv td { border-bottom: 1px solid #eee; padding: 2px 6px; vertical-align: top; }
+table.kv td:first-child { color: #555; white-space: nowrap; }
+table.res { border-collapse: collapse; }
+table.res td, table.res th { border: 1px solid #ddd; padding: 2px 6px; vertical-align: top; text-align: left; }
+.PASS { color: #070; font-weight: bold; } .FAIL { color: #c00; font-weight: bold; } .WARN { color: #b60; font-weight: bold; }
+.SKIP { color: #888; } .INFO { color: #036; }
+.fft-demo { background: #ffe; border: 1px dotted #aa0; }
+textarea#fftRelInput { width: 98%; font-family: Consolas, monospace; }
+#fftSpacer { height: 34vh; }
+#fftLogPanel { position: fixed; left: 0; right: 0; bottom: 0; height: 30vh; background: #fff; border-top: 2px solid #567; z-index: 100; }
+#fftLogPanel .bar { padding: 2px 6px; background: #e4e9ee; }
+#fftLog { position: absolute; top: 30px; bottom: 0; left: 0; width: 100%; box-sizing: border-box; font-family: Consolas, monospace; font-size: 11px; border: 0; }
+</style>
+
+<script language="javascript">
+// ------------------------------------------------------------------
+// State
+// ------------------------------------------------------------------
+var FFT = {
+    version: "2026-10-30.5",
+    lines: [],
+    latest: {},
+    tests: [],
+    sensitive: [],
+    signals: {},
+    state: { createdTaskIds: [] },
+    running: false
+};
+
+// PI evaluated by the console while loading the page, inside a JS string literal
+var FFT_PI_DASHID = "<?Relevance (dashboard id of current wizard | (name of current wizard & ".ojo") | "unknown") ?>";
+// jxlat preprocessing instruction inside a JS string (Evans localization); unprocessed it stays literal
+var FFT_JXLAT = "<?jxlat Hello from jxlat?>";
+
+// Every function documented for dashboards. Checked on window first, then window.external.
+var FFT_API_NAMES = [
+    "EvaluateRelevance", "Relevance", "InsertUtilityDiv", "ToggleSectionVisibility", "ExpandAll", "CollapseAll",
+    "ImportXML", "ImportXMLToSite", "EditFixlet", "DeleteFixlet", "DeleteFixlets", "DeleteProperty", "DeleteProperties",
+    "TakeFixletAction", "TakeSecureFixletAction", "TakeFixletActionOnComputers", "TakeSecureFixletActionOnComputers",
+    "CreateCustomSite", "StoreVariable", "StorePrivateVariable", "StoreSharedVariable",
+    "DeleteVariable", "DeletePrivateVariable", "DeleteSharedVariable",
+    "BrowseForFolder", "BrowseForFile", "DoBrowseDialogWithFlags", "LoadPresentation",
+    "OpenComputerGroup", "SendWakeOnLANRequest", "EnableWakeOnLAN",
+    "OpenFindDialog", "AddGlobalFilter", "ClearAllGlobalFilters", "ClearGlobalFilterOfType",
+    "RegisterRefreshHandler", "RegisterRelevance", "ManualRefresh", "ManualRefreshAll",
+    "GetScratchRootPath", "MakeArchive", "CopyFile", "CopyFolder", "MoveFile", "DeleteFile", "DeleteAllFiles",
+    "DeleteFolder", "DeleteTree", "MakeFolder", "WriteFile",
+    "UploadFile", "ArchiveAndUploadFile", "ArchiveAndUploadFile2", "DownloadFile", "DownloadFileWithSHA1",
+    "GetFileSHA1", "GetFileSize", "CalculateFileInfo", "CompleteHashSet",
+    "StopAction", "StopActions", "MakeIDListFromArray",
+    "ActivateAnalysis", "ActivateAnalyses", "DeactivateAnalysis", "DeactivateAnalyses", "ReactivateAnalysis", "ReactivateAnalyses",
+    "BESFixletID", "BESFixletIDToString", "OpenWizard", "AddFileToMailbox", "AddFileToSite",
+    "GetCurrentDSN", "GetCurrentUser", "API"
+];
+
+// Undocumented globals seen in a BigFix 11.x console's wizards.js.
+// Not called by this dashboard: "Log signatures" prints their parameter lists so examples can be added safely.
+var FFT_UNDOCUMENTED_NAMES = [
+    "ArchiveAndUploadFileEx", "DownloadFileEx", "UploadFileEx", "UploadFileWithName",
+    "CreateFastQuestion", "GetFastQuestionResults", "OpenVisualization", "SyncBaseline", "EnableExternalSite",
+    "GetSelectedUnmanagedAssets", "ResetSelectedUnmanagedAssets", "GetOfflineToleranceDiff", "SendUpdateLicenseRequest",
+    "SiteCertificateUpdateNeeded", "RegisterPluginCorrConfig",
+    "GenerateExplorerAuthCertificate", "GetExplorerCertificateAuthority", "GetExplorerRootCert",
+    "GenerateWebUIAuthCertificate", "GetWebUICertificateAuthority", "GetWebUIRootCert", "RotateWebUIAuthCertificate",
+    "ColorizeRelevance", "BooleanToText", "ToggleAll", "ToggleVisibility", "ToggleCodeIndent",
+    "ToggleDownloadDetailsVisibility", "ToggleSectionVisibilityOfImage", "hasClass", "parentTag"
+];
+
+// Predefined element ids the console injects (a page must not reuse them)
+var FFT_TAG_IDS = [
+    "TheUtilityScripts", "BrowseData", "theBrowseResultFullPath", "LoadPresentationData", "thePresentationResult",
+    "RegisterRefreshHandlerData", "theRegisterRefreshSignalName", "ScratchFileOpsData", "theScratchFileResult",
+    "StopActionData", "theStopActionIDList", "ActivateAnalysisData", "ConnectionInfoData", "theConnectionInfoCurrentDSN"
+];
+
+// ------------------------------------------------------------------
+// Logging
+// ------------------------------------------------------------------
+function fftPad(n, w) { var s = String(n); while (s.length < w) { s = "0" + s; } return s; }
+function fftNow() { return new Date().getTime(); }
+function fftTs() {
+    var d = new Date();
+    return fftPad(d.getHours(), 2) + ":" + fftPad(d.getMinutes(), 2) + ":" + fftPad(d.getSeconds(), 2) + "." + fftPad(d.getMilliseconds(), 3);
+}
+function fftVerbose() { var el = document.getElementById("fftVerbose"); return el && el.checked; }
+
+function fftLog(level, msg) {
+    var line = fftTs() + " [" + level + "] " + msg;
+    FFT.lines.push(line);
+    if (FFT.lines.length > 2000) { FFT.lines.shift(); }
+    var ta = document.getElementById("fftLog");
+    if (ta) {
+        ta.value += line + "\r\n";
+        ta.scrollTop = ta.scrollHeight;
+    }
+    fftPersistLog();
+}
+window.fftLog = fftLog;
+
+function fftDebug(msg) { if (fftVerbose()) { fftLog("DEBUG", msg); } }
+
+// Keep the last 500 log lines in TheDataStore so they survive linkpage: navigation
+function fftPersistLog() {
+    var ds = document.getElementById("TheDataStore");
+    if (ds) { ds.innerText = FFT.lines.slice(-500).join("\n"); }
+}
+
+function fftErr(e) {
+    if (e === undefined || e === null) { return String(e); }
+    if (typeof e === "string") { return e; }
+    var parts = [];
+    if (e.name) { parts.push(e.name); }
+    if (e.description) { parts.push(e.description); } else if (e.message) { parts.push(e.message); }
+    if (e.number !== undefined) { parts.push("number=" + e.number); }
+    if (e.errorCode !== undefined) { parts.push("errorCode=" + e.errorCode); }
+    if (e.errorMessage) { parts.push(e.errorMessage); }
+    if (e.error) { parts.push(String(e.error)); }
+    if (e.responseText) { parts.push(e.responseText); }
+    return parts.length ? parts.join(": ") : String(e);
+}
+
+// Describe any value, including console relevance result arrays and host objects
+function fftStr(v, max) {
+    max = max || 500;
+    var s;
+    try {
+        if (v === undefined) { s = "undefined"; }
+        else if (v === null) { s = "null"; }
+        else if (typeof v === "string") { s = JSON.stringify(v); }
+        else if (typeof v === "number" || typeof v === "boolean") { s = String(v); }
+        else if (v instanceof Date) { s = "Date(" + v.toString() + ")"; }
+        else if (typeof v === "object" && typeof v.length === "number") {
+            var items = [];
+            for (var i = 0; i < v.length && i < 20; i++) { items.push(fftStr(v[i], 100)); }
+            s = (v instanceof Array ? "Array" : "ArrayLike") + "[" + v.length + "](" + items.join(", ") + (v.length > 20 ? ", ..." : "") + ")";
+        }
+        else if (typeof v === "object") { s = JSON.stringify(v); }
+        else { s = "(" + typeof v + ") " + String(v); }
+    } catch (e) {
+        s = "(" + typeof v + ", unprintable: " + fftErr(e) + ")";
+    }
+    if (s && s.length > max) { s = s.substring(0, max) + "...(" + s.length + " chars)"; }
+    return s;
+}
+
+// Relevance results can be host array-likes, so join them by index
+function fftJoin(r, sep) {
+    if (r === undefined || r === null) { return ""; }
+    if (typeof r === "string") { return r; }
+    var out = [];
+    for (var i = 0; i < r.length; i++) { out.push(String(r[i])); }
+    return out.join(sep);
+}
+
+function fftType(v) {
+    if (v === null) { return "null"; }
+    if (v instanceof Array) { return "Array"; }
+    if (v instanceof Date) { return "Date"; }
+    return typeof v;
+}
+
+// Values to replace in copied reports when "redact report" is checked
+function fftSensitive(v) {
+    if (v === undefined || v === null) { return; }
+    var s = String(v);
+    if (s.length < 3) { return; }
+    for (var i = 0; i < FFT.sensitive.length; i++) { if (FFT.sensitive[i] === s) { return; } }
+    FFT.sensitive.push(s);
+}
+
+function fftRedact(text) {
+    var el = document.getElementById("fftRedact");
+    if (!el || !el.checked) { return text; }
+    var list = FFT.sensitive.slice(0).sort(function(a, b) { return b.length - a.length; });
+    for (var i = 0; i < list.length; i++) {
+        text = text.split(list[i]).join("<REDACTED_" + (i + 1) + ">");
+    }
+    // server host names inside URLs, e.g. http://bigfix.example.com:52311/
+    text = text.replace(/(https?:\/\/)([^\/:\s"']+)(:52311)/gi, "$1<SERVER>$3");
+    // Windows profile folders in local paths (e.g. the linkid:openwizard link of a Debug-loaded dashboard)
+    text = text.replace(/([A-Za-z]:[\\\/]+Users[\\\/]+)[^\\\/\s,)"']+/gi, "$1<USER>");
+    return text;
+}
+
+// Mirror console.log/warn/error into the log panel (IE11 only has console while dev tools are open)
+(function() {
+    if (!window.console) { window.console = {}; }
+    var levels = ["log", "info", "warn", "error"];
+    for (var i = 0; i < levels.length; i++) {
+        (function(level) {
+            var orig = window.console[level];
+            window.console[level] = function() {
+                var parts = [];
+                for (var j = 0; j < arguments.length; j++) { parts.push(typeof arguments[j] === "string" ? arguments[j] : fftStr(arguments[j])); }
+                fftLog("console." + level, parts.join(" "));
+                if (orig) { try { orig.apply(window.console, arguments); } catch (e) { /* host console may not support apply */ } }
+            };
+        })(levels[i]);
+    }
+})();
+
+// ------------------------------------------------------------------
+// Calling console functions
+// ------------------------------------------------------------------
+// Returns "window", "external" or "" depending on where a console function is defined
+function fftWhere(name) {
+    try { if (typeof window[name] !== "undefined") { return "window"; } } catch (e) { /* ignore */ }
+    try { if (window.external && typeof window.external[name] !== "undefined") { return "external"; } } catch (e2) { /* host may throw for unknown members */ }
+    return "";
+}
+
+// Host methods cannot be called with .apply in IE, so dispatch on argument count
+function fftCall(name, args) {
+    var where = fftWhere(name);
+    if (!where) { throw new Error(name + " is not available in this context"); }
+    var o = (where === "window") ? window : window.external;
+    var a = args || [];
+    fftDebug("call " + where + "." + name + "(" + a.length + " args)");
+    switch (a.length) {
+        case 0: return o[name]();
+        case 1: return o[name](a[0]);
+        case 2: return o[name](a[0], a[1]);
+        case 3: return o[name](a[0], a[1], a[2]);
+        case 4: return o[name](a[0], a[1], a[2], a[3]);
+        case 5: return o[name](a[0], a[1], a[2], a[3], a[4]);
+        case 6: return o[name](a[0], a[1], a[2], a[3], a[4], a[5]);
+        case 7: return o[name](a[0], a[1], a[2], a[3], a[4], a[5], a[6]);
+        default:
+            return o[name](a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12]);
+    }
+}
+
+// Run a manual operation with logging and timing
+function fftDo(label, fn) {
+    var t = fftNow();
+    fftLog("RUN", label);
+    try {
+        var r = fn();
+        fftLog("OK", label + " -> " + fftType(r) + " " + fftStr(r) + " (" + (fftNow() - t) + "ms)");
+        return r;
+    } catch (e) {
+        fftLog("ERROR", label + " threw " + fftErr(e) + " (" + (fftNow() - t) + "ms)");
+        return undefined;
+    }
+}
+
+// success/failure callback object for async console APIs
+function fftCb(label, onSuccess) {
+    var t = fftNow();
+    return {
+        success: function(r) {
+            fftLog("OK", label + " async success -> " + fftType(r) + " " + fftStr(r) + " (" + (fftNow() - t) + "ms)");
+            if (onSuccess) { onSuccess(r); }
+        },
+        failure: function(e) {
+            fftLog("ERROR", label + " async failure -> " + fftErr(e) + " (" + (fftNow() - t) + "ms)");
+        }
+    };
+}
+
+function fftConfirm(msg) {
+    var ok = window.confirm(msg);
+    if (!ok) { fftLog("INFO", "Cancelled by user: " + msg.split("\n")[0]); }
+    return ok;
+}
+
+function fftEval(rel) { return EvaluateRelevance(rel); }
+
+function fftTryEval(rel, fallback) {
+    try { return EvaluateRelevance(rel); } catch (e) { fftDebug("relevance failed: " + rel + " -> " + fftErr(e)); return fallback; }
+}
+
+function fftDashId() {
+    if (FFT.dashId) { return FFT.dashId; }
+    FFT.dashId = String(fftTryEval('(dashboard id of current wizard | (name of current wizard & ".ojo"))', FFT_PI_DASHID));
+    return FFT.dashId;
+}
+
+function fftVal(id) { var el = document.getElementById(id); return el ? el.value : ""; }
+function fftSet(id, v) { var el = document.getElementById(id); if (el) { el.value = v; } }
+function fftOut(id, text) { var el = document.getElementById(id); if (el) { el.innerText = text; } }
+
+function fftJoinPath(root, sub) {
+    if (!root) { return sub; }
+    var last = root.charAt(root.length - 1);
+    return (last === "\\" || last === "/") ? root + sub : root + "\\" + sub;
+}
+
+function fftIdList(text) {
+    var out = [];
+    var parts = String(text || "").split(/[\s,;]+/);
+    for (var i = 0; i < parts.length; i++) { if (parts[i] !== "" && !isNaN(parts[i])) { out.push(parseInt(parts[i], 10)); } }
+    return out;
+}
+
+function fftNavigate(url) {
+    fftLog("RUN", "navigate " + url);
+    try { window.location.href = url; } catch (e) { fftLog("ERROR", "navigate threw " + fftErr(e)); }
+}
+
+// ------------------------------------------------------------------
+// Test runner
+// ------------------------------------------------------------------
+// fn(t) must call exactly one of t.pass / t.fail / t.warn / t.skip / t.info; async tests call it later.
+function fftTest(group, id, desc, fn, timeoutMs) {
+    FFT.tests.push({ group: group, id: id, desc: desc, fn: fn, timeout: timeoutMs || 15000 });
+}
+
+function fftRunTests(list, label) {
+    if (FFT.running) { fftLog("WARN", "A test run is already in progress"); return; }
+    FFT.running = true;
+    // results of this run only; FFT.latest keeps the most recent result of every test across runs for the report
+    var runResults = [];
+    var started = fftNow();
+    var index = 0;
+    fftLog("INFO", "===== " + label + ": " + list.length + " tests =====");
+
+    function next() {
+        if (index >= list.length) { finish(); return; }
+        var test = list[index++];
+        var t0 = fftNow();
+        var done = false;
+        var timer = null;
+        fftStatus("Running " + index + "/" + list.length + ": " + test.id);
+        function record(status, msg) {
+            if (done) { fftDebug(test.id + " reported again after finishing: " + status + " " + msg); return; }
+            done = true;
+            if (timer) { clearTimeout(timer); }
+            var ms = fftNow() - t0;
+            var result = { group: test.group, id: test.id, desc: test.desc, status: status, msg: String(msg), ms: ms, at: fftTs() };
+            runResults.push(result);
+            FFT.latest[test.id] = result;
+            fftLog(status, test.id + " - " + msg + " (" + ms + "ms)");
+            // yield so async console callbacks and repaints can run between tests
+            setTimeout(next, 10);
+        }
+        var t = {
+            pass: function(m) { record("PASS", m || "ok"); },
+            fail: function(m) { record("FAIL", m || "failed"); },
+            warn: function(m) { record("WARN", m || "warning"); },
+            skip: function(m) { record("SKIP", m || "skipped"); },
+            info: function(m) { record("INFO", m || ""); },
+            log: function(m) { fftLog("DEBUG", test.id + ": " + m); },
+            isDone: function() { return done; }
+        };
+        timer = setTimeout(function() { record("FAIL", "timed out after " + test.timeout + "ms"); }, test.timeout);
+        try {
+            test.fn(t);
+        } catch (e) {
+            record("FAIL", "threw " + fftErr(e));
+        }
+    }
+
+    function finish() {
+        FFT.running = false;
+        var c = fftCounts(runResults);
+        var summary = "PASS " + c.PASS + ", FAIL " + c.FAIL + ", WARN " + c.WARN + ", SKIP " + c.SKIP + ", INFO " + c.INFO + " in " + (fftNow() - started) + "ms";
+        fftLog("INFO", "===== " + label + " finished: " + summary + " =====");
+        fftStatus(summary + " - click Copy report and paste it back for analysis");
+        fftRenderResults();
+    }
+    next();
+}
+
+// Latest result of every test that has run, in definition order
+function fftResults() {
+    var out = [];
+    for (var i = 0; i < FFT.tests.length; i++) {
+        var r = FFT.latest[FFT.tests[i].id];
+        if (r) { out.push(r); }
+    }
+    return out;
+}
+
+function fftCounts(list) {
+    list = list || fftResults();
+    var c = { PASS: 0, FAIL: 0, WARN: 0, SKIP: 0, INFO: 0 };
+    for (var i = 0; i < list.length; i++) { c[list[i].status]++; }
+    return c;
+}
+
+function fftRunAll() { fftRunTests(FFT.tests, "Run all safe tests"); }
+
+function fftRunGroup(group) {
+    var list = [];
+    for (var i = 0; i < FFT.tests.length; i++) { if (FFT.tests[i].group === group) { list.push(FFT.tests[i]); } }
+    fftRunTests(list, "Section " + group);
+}
+
+function fftStatus(s) { var el = document.getElementById("fftRunStatus"); if (el) { el.innerText = s; } }
+
+function fftEsc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+function fftRenderResults() {
+    var h = ['<table class="res"><tr><th>Status</th><th>Test</th><th>ms</th><th>At</th><th>Detail</th></tr>'];
+    var list = fftResults();
+    for (var i = 0; i < list.length; i++) {
+        var r = list[i];
+        h.push('<tr><td class="' + r.status + '">' + r.status + '</td><td title="' + fftEsc(r.desc) + '">' + fftEsc(r.id) + '</td><td>' + r.ms + '</td><td>' + r.at + '</td><td>' + fftEsc(r.msg) + '</td></tr>');
+    }
+    h.push("</table>");
+    document.getElementById("fftResults").innerHTML = h.join("");
+    document.getElementById("fftResultsWrap").style.display = "";
+}
+
+// ------------------------------------------------------------------
+// Report / clipboard
+// ------------------------------------------------------------------
+function fftInventory() {
+    var present = [], missing = [];
+    for (var i = 0; i < FFT_API_NAMES.length; i++) {
+        var w = fftWhere(FFT_API_NAMES[i]);
+        if (w) { present.push(FFT_API_NAMES[i] + "@" + w); } else { missing.push(FFT_API_NAMES[i]); }
+    }
+    var ids = [], noIds = [];
+    for (var j = 0; j < FFT_TAG_IDS.length; j++) {
+        if (document.getElementById(FFT_TAG_IDS[j])) { ids.push(FFT_TAG_IDS[j]); } else { noIds.push(FFT_TAG_IDS[j]); }
+    }
+    var undocumented = [];
+    for (var k = 0; k < FFT_UNDOCUMENTED_NAMES.length; k++) {
+        var u = fftWhere(FFT_UNDOCUMENTED_NAMES[k]);
+        if (u) { undocumented.push(FFT_UNDOCUMENTED_NAMES[k] + "@" + u); }
+    }
+    return { present: present, missing: missing, ids: ids, noIds: noIds, undocumented: undocumented };
+}
+
+// "name(a, b, c)" from a JS function's source; host methods have no source
+function fftSignature(name, fn) {
+    try {
+        var m = /function\s*[^(]*\(([^)]*)\)/.exec(String(fn));
+        return name + "(" + (m ? m[1].replace(/\s+/g, " ") : "?") + ")";
+    } catch (e) { return name + "(<no source: " + fftErr(e) + ">)"; }
+}
+
+// Log a wizards.js function's source, e.g. to see how MoveFile maps its arguments onto the predefined tag ids
+function fftLogSource(name, max) {
+    max = max || 4000;
+    var w = fftWhere(name);
+    if (w !== "window" || typeof window[name] !== "function") { fftLog("WARN", name + ": no JS source (" + (w ? "host method on " + w : "not defined") + ")"); return ""; }
+    var src = String(window[name]);
+    fftLog("INFO", "Source of " + name + " (" + src.length + " chars):\r\n" + (src.length > max ? src.substring(0, max) + "\r\n...(truncated)" : src));
+    return src;
+}
+
+// The 11.x ColorizeRelevance wrapper builds its stylesheet with style.styleSheet.addRule, which only exists in
+// legacy IE document modes, so it throws in IE11 mode. Creating the style element it looks for (same id) first,
+// filled with the CSS from external.ColorizeRelevance("", false, true), makes the wrapper skip that step.
+var FFT_COLOR_STYLE_ID = "anUnlikelyIDForColorizationStyles";
+
+function fftColorizeRelevance(relevance, indent) {
+    if (!document.getElementById(FFT_COLOR_STYLE_ID)) {
+        var css = String(window.external.ColorizeRelevance("", false, true));
+        var style = document.createElement("style");
+        style.type = "text/css";
+        style.id = FFT_COLOR_STYLE_ID;
+        style.appendChild(document.createTextNode(css));
+        document.getElementsByTagName("head")[0].appendChild(style);
+        fftDebug("ColorizeRelevance stylesheet added (" + css.length + " chars of css)");
+    }
+    return fftCall("ColorizeRelevance", [relevance, indent]);
+}
+
+function fftColorizeBox() {
+    var r = fftDo("fftColorizeRelevance", function() { return fftColorizeRelevance(fftVal("fftRelInput"), true); });
+    if (r !== undefined) { document.getElementById("fftColorOut").innerHTML = String(r); }
+}
+
+// Undocumented functions whose names say they only read state. Logs type and length, never contents.
+var FFT_GETTER_NAMES = ["GetSelectedUnmanagedAssets", "GetOfflineToleranceDiff", "SiteCertificateUpdateNeeded",
+    "GetExplorerRootCert", "GetExplorerCertificateAuthority", "GetWebUIRootCert", "GetWebUICertificateAuthority"];
+
+function fftProbeGetters() {
+    if (!fftConfirm("Call " + FFT_GETTER_NAMES.length + " undocumented getter functions?\nThey are named as read-only, but their behavior is not documented.\nOnly result types and lengths are logged.")) { return; }
+    for (var i = 0; i < FFT_GETTER_NAMES.length; i++) {
+        var n = FFT_GETTER_NAMES[i];
+        if (!fftWhere(n)) { fftLog("INFO", n + ": not available"); continue; }
+        try {
+            var r = fftCall(n, []);
+            var len = (r !== undefined && r !== null && r.length !== undefined) ? r.length : "n/a";
+            fftLog("OK", n + "() -> " + fftType(r) + ", length " + len + (typeof r === "boolean" || typeof r === "number" ? ", value " + r : ""));
+        } catch (e) {
+            fftLog("ERROR", n + "() threw " + fftErr(e));
+        }
+    }
+}
+
+function fftLogSignatures() {
+    var groups = [["documented", FFT_API_NAMES], ["undocumented", FFT_UNDOCUMENTED_NAMES]];
+    for (var g = 0; g < groups.length; g++) {
+        var sigs = [];
+        for (var i = 0; i < groups[g][1].length; i++) {
+            var n = groups[g][1][i];
+            var w = fftWhere(n);
+            if (w === "window" && typeof window[n] === "function") { sigs.push(fftSignature(n, window[n])); }
+            else if (w) { sigs.push(n + "@" + w + "(host method, no source)"); }
+        }
+        fftLog("INFO", "Signatures of " + groups[g][0] + " functions (" + sigs.length + "): " + sigs.join("; "));
+    }
+    if (typeof API !== "undefined") {
+        var api = [];
+        for (var k in API) { if (typeof API[k] === "function") { api.push(fftSignature("API." + k, API[k])); } }
+        fftLog("INFO", "Signatures of API members: " + api.join("; "));
+    }
+}
+
+function fftBuildReport() {
+    var inv = fftInventory();
+    var c = fftCounts();
+    var out = [];
+    out.push("===== BigFix Dashboard Feature Tester report =====");
+    out.push("Dashboard version: " + FFT.version);
+    out.push("Generated: " + new Date().toString());
+    out.push("documentMode: " + document.documentMode + "  userAgent: " + navigator.userAgent);
+    out.push("Master operator: " + fftTryEval("master flag of current console user", "?") + "  Web Reports context: " + fftTryEval("in web reports context", "?"));
+    out.push("Suppressed wizards.js 0:0 errors: " + window.FFT_SUPPRESSED);
+    var list = fftResults();
+    out.push("Summary (latest result of " + list.length + " of " + FFT.tests.length + " tests): PASS " + c.PASS + ", FAIL " + c.FAIL + ", WARN " + c.WARN + ", SKIP " + c.SKIP + ", INFO " + c.INFO);
+    out.push("");
+    out.push("----- Results -----");
+    for (var i = 0; i < list.length; i++) {
+        var r = list[i];
+        out.push("[" + r.status + "] " + r.id + " (" + r.ms + "ms @" + r.at + "): " + r.msg);
+    }
+    out.push("");
+    out.push("----- API inventory -----");
+    out.push("Present (" + inv.present.length + "): " + inv.present.join(", "));
+    out.push("Missing (" + inv.missing.length + "): " + inv.missing.join(", "));
+    out.push("Undocumented functions present (" + inv.undocumented.length + "): " + inv.undocumented.join(", "));
+    out.push("Predefined ids present: " + inv.ids.join(", "));
+    out.push("Predefined ids missing: " + inv.noIds.join(", "));
+    out.push("");
+    out.push("----- Full log (" + FFT.lines.length + " lines) -----");
+    out.push(FFT.lines.join("\r\n"));
+    out.push("===== end of report =====");
+    return fftRedact(out.join("\r\n"));
+}
+
+function fftCopyText(text, label) {
+    // IE / console host
+    try {
+        if (window.clipboardData && window.clipboardData.setData("Text", text)) {
+            fftLog("INFO", label + " copied to clipboard (" + text.length + " chars)");
+            return;
+        }
+    } catch (e) { fftDebug("clipboardData failed: " + fftErr(e)); }
+    // modern engines
+    try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text);
+            fftLog("INFO", label + " sent to navigator.clipboard (" + text.length + " chars)");
+            return;
+        }
+    } catch (e2) { fftDebug("navigator.clipboard failed: " + fftErr(e2)); }
+    // fallback: show it in the log box selected so the user can press Ctrl+C
+    var ta = document.getElementById("fftLog");
+    ta.value = text;
+    ta.focus();
+    ta.select();
+    window.alert("Clipboard is not available. The " + label + " is now selected in the log box: press Ctrl+C. (Clear restores the live log.)");
+}
+
+function fftCopyReport() { fftCopyText(fftBuildReport(), "report"); }
+function fftCopyLog() { fftCopyText(fftRedact(FFT.lines.join("\r\n")), "log"); }
+function fftSelectLog() { var ta = document.getElementById("fftLog"); ta.focus(); ta.select(); }
+function fftClearLog() { FFT.lines = []; document.getElementById("fftLog").value = ""; fftPersistLog(); fftLog("INFO", "Log cleared"); }
+
+function fftResizeLog() {
+    var p = document.getElementById("fftLogPanel");
+    var big = p.style.height === "70vh";
+    p.style.height = big ? "30vh" : "70vh";
+    document.getElementById("fftSpacer").style.height = big ? "34vh" : "74vh";
+}
+
+function fftSaveReportVar() {
+    var report = fftBuildReport();
+    fftDo("StorePrivateVariable LastReport (" + report.length + " chars)", function() {
+        return fftStoreVar(true, "FFT_LastReport", report);
+    });
+}
+
+function fftLoadReportVar() {
+    var v = fftDo("read private variable FFT_LastReport", function() {
+        return EvaluateRelevance('private variable "FFT_LastReport" of current wizard');
+    });
+    if (v !== undefined) { fftCopyText(String(v), "saved report"); }
+}
+
+// ------------------------------------------------------------------
+// UI helpers: collapsible sections + table of contents
+// (custom instead of ToggleSectionVisibility so it works without the console's section markup)
+// ------------------------------------------------------------------
+function fftBuildSections() {
+    var divs = document.getElementsByTagName("div");
+    var toc = [];
+    var n = 0;
+    for (var i = 0; i < divs.length; i++) {
+        var d = divs[i];
+        if (d.className !== "sec") { continue; }
+        n++;
+        var title = d.getAttribute("data-title");
+        var hdr = document.createElement("div");
+        hdr.className = "hdr";
+        hdr.innerHTML = n + ". " + title;
+        hdr.onclick = (function(sec) { return function() { fftToggle(sec); }; })(d);
+        d.insertBefore(hdr, d.firstChild);
+        toc.push('<a href="#" onclick="fftJump(\'' + d.id + '\'); return false;">' + n + ". " + title + "</a>");
+    }
+    document.getElementById("fftToc").innerHTML = toc.join(" ");
+}
+
+function fftBody(sec) {
+    for (var i = 0; i < sec.childNodes.length; i++) { if (sec.childNodes[i].className === "body") { return sec.childNodes[i]; } }
+    return null;
+}
+function fftToggle(sec, show) {
+    var b = fftBody(sec);
+    if (!b) { return; }
+    if (show === undefined) { show = b.style.display === "none"; }
+    b.style.display = show ? "" : "none";
+}
+function fftExpandAll(show) {
+    var divs = document.getElementsByTagName("div");
+    for (var i = 0; i < divs.length; i++) { if (divs[i].className === "sec") { fftToggle(divs[i], show); } }
+}
+function fftJump(id) {
+    var sec = document.getElementById(id);
+    fftToggle(sec, true);
+    sec.scrollIntoView(true);
+}
+
+function fftRenderInventory() {
+    var h = ['<table class="res"><tr><th>Function</th><th>Where</th><th>typeof</th></tr>'];
+    for (var i = 0; i < FFT_API_NAMES.length; i++) {
+        var n = FFT_API_NAMES[i];
+        var w = fftWhere(n);
+        var t = "";
+        try { t = w === "window" ? typeof window[n] : (w === "external" ? typeof window.external[n] : ""); } catch (e) { t = "error"; }
+        h.push('<tr><td>' + n + '</td><td class="' + (w ? "PASS" : "SKIP") + '">' + (w || "missing") + '</td><td>' + t + '</td></tr>');
+    }
+    h.push("</table>");
+    document.getElementById("fftInventory").innerHTML = h.join("");
+}
+
+// Same technique as JavascriptDebugging.ojo: list non-native global functions (wizards.js / common.js)
+function fftDumpGlobals() {
+    var names = [];
+    for (var k in window) {
+        try {
+            if (window[k] && typeof window[k] === "function" && window[k].toString().indexOf("[native code]") === -1 && k.indexOf("fft") !== 0) { names.push(k); }
+        } catch (e) { /* some host properties throw on access */ }
+    }
+    names.sort();
+    fftLog("INFO", "Non-native global functions (" + names.length + "): " + names.join(", "));
+}
+
+// ------------------------------------------------------------------
+// Refresh handler
+// ------------------------------------------------------------------
+function fftOnRefreshSignal() {
+    var el = document.getElementById("theRegisterRefreshSignalName");
+    var name = el ? el.innerText : "(theRegisterRefreshSignalName missing)";
+    FFT.signals[name] = (FFT.signals[name] || 0) + 1;
+    var parts = [];
+    for (var k in FFT.signals) { if (FFT.signals.hasOwnProperty(k)) { parts.push(k + ": " + FFT.signals[k]); } }
+    fftOut("fftSignals", "Signals seen: " + parts.join(", "));
+    var cb = document.getElementById("fftLogSignals");
+    // log the first of each signal, then every 10th, to keep the log readable
+    if (cb && cb.checked && (FFT.signals[name] === 1 || FFT.signals[name] % 10 === 0)) {
+        fftLog("SIGNAL", name + " (#" + FFT.signals[name] + ")");
+    }
+}
+
+// ------------------------------------------------------------------
+// Relevance evaluator box
+// ------------------------------------------------------------------
+function fftEvalBox(mode) {
+    var rel = fftVal("fftRelInput");
+    var t = fftNow();
+    fftOut("fftRelOut", "...");
+    if (mode === "async") {
+        fftLog("RUN", "Relevance async: " + rel);
+        try {
+            Relevance(rel, {
+                success: function(r) { var s = fftType(r) + " " + fftStr(r, 5000); fftOut("fftRelOut", s); fftLog("OK", "async -> " + fftStr(r) + " (" + (fftNow() - t) + "ms)"); },
+                failure: function(e) { fftOut("fftRelOut", "ERROR: " + fftErr(e)); fftLog("ERROR", "async -> " + fftErr(e)); }
+            });
+        } catch (e) { fftOut("fftRelOut", "ERROR: " + fftErr(e)); fftLog("ERROR", "Relevance async threw " + fftErr(e)); }
+        return;
+    }
+    fftLog("RUN", (mode === "er" ? "EvaluateRelevance: " : "Relevance: ") + rel);
+    try {
+        var r = mode === "er" ? EvaluateRelevance(rel) : Relevance(rel);
+        fftOut("fftRelOut", fftType(r) + " " + fftStr(r, 5000));
+        fftLog("OK", fftType(r) + " " + fftStr(r) + " (" + (fftNow() - t) + "ms)");
+    } catch (e) {
+        fftOut("fftRelOut", "ERROR: " + fftErr(e));
+        fftLog("ERROR", fftErr(e));
+    }
+}
+
+// ------------------------------------------------------------------
+// Dashboard variables
+// ------------------------------------------------------------------
+function fftStoreVar(isPrivate, name, value) {
+    var id = fftDashId();
+    var specific = isPrivate ? "StorePrivateVariable" : "StoreSharedVariable";
+    if (fftWhere(specific)) { return fftCall(specific, [id, name, value]); }
+    return fftCall("StoreVariable", [id, name, value, isPrivate]);
+}
+
+function fftDeleteVar(isPrivate, name) {
+    var id = fftDashId();
+    var specific = isPrivate ? "DeletePrivateVariable" : "DeleteSharedVariable";
+    if (fftWhere(specific)) { return fftCall(specific, [id, name]); }
+    return fftCall("DeleteVariable", [id, name, isPrivate]);
+}
+
+function fftVarRel(isPrivate, name) { return (isPrivate ? "private" : "shared") + ' variable "' + name.replace(/"/g, "%22") + '" of current wizard'; }
+
+function fftVarStore(isPrivate) {
+    if (!isPrivate && !fftConfirm("Store a SHARED variable? It is visible to every operator using this dashboard.")) { return; }
+    fftDo((isPrivate ? "store private " : "store shared ") + fftVal("fftVarName"), function() { return fftStoreVar(isPrivate, fftVal("fftVarName"), fftVal("fftVarValue")); });
+}
+function fftVarRead(isPrivate) {
+    var r = fftDo("read " + fftVarRel(isPrivate, fftVal("fftVarName")), function() { return EvaluateRelevance(fftVarRel(isPrivate, fftVal("fftVarName"))); });
+    fftOut("fftVarOut", fftStr(r, 5000));
+}
+function fftVarDelete(isPrivate) {
+    if (!isPrivate && !fftConfirm("Delete the SHARED variable for every operator?")) { return; }
+    fftDo((isPrivate ? "delete private " : "delete shared ") + fftVal("fftVarName"), function() { return fftDeleteVar(isPrivate, fftVal("fftVarName")); });
+}
+function fftVarList() {
+    var r = fftDo("variables of current wizard", function() {
+        return EvaluateRelevance('(name of it & " = " & (value of it | "?") & (if private flag of it then "  (private)" else "  (shared)")) of variables of current wizard');
+    });
+    fftOut("fftVarOut", r && r.length !== undefined && typeof r !== "string" ? fftJoin(r, "\n") : fftStr(r, 5000));
+}
+
+// ------------------------------------------------------------------
+// Scratch files
+// ------------------------------------------------------------------
+function fftScratch(sub) {
+    if (!FFT.state.scratchRoot) { FFT.state.scratchRoot = String(fftCall("GetScratchRootPath", [])); fftSensitive(FFT.state.scratchRoot); }
+    return fftJoinPath(FFT.state.scratchRoot, sub);
+}
+
+// Make sure fft\test.txt exists (manual buttons may run before or after "Run all" cleaned up)
+function fftEnsureScratchFile(logIt) {
+    fftCall("MakeFolder", ["fft"]);
+    var r = fftCall("WriteFile", ["Dashboard Feature Tester scratch file " + new Date().toString() + "\r\n", "fft\\test.txt", false]);
+    if (logIt) { fftLog("INFO", "WriteFile fft\\test.txt -> " + r + " at " + fftScratch("fft\\test.txt")); }
+    return fftScratch("fft\\test.txt");
+}
+
+// ------------------------------------------------------------------
+// Browse / local files
+// ------------------------------------------------------------------
+function fftBrowse(kind) {
+    var r = fftDo("browse " + kind, function() {
+        if (kind === "folder") { return fftCall("BrowseForFolder", []); }
+        if (kind === "file") { return fftCall("BrowseForFile", ["*.*", "All Files (*.*)|*.*||", ""]); }
+        return fftCall("DoBrowseDialogWithFlags", ["*.*", "All Files (*.*)|*.*||", false, "", true, true, false, true, false, false, false, false, true]);
+    });
+    if (r === "") { fftLog("INFO", "Browse returned empty string (Cancel)"); }
+    if (r) { fftSensitive(r); fftSet("fftPath", String(r)); }
+}
+
+function fftPathInfo() {
+    var p = fftVal("fftPath");
+    if (!p) { fftLog("WARN", "Path is empty"); return; }
+    fftDo("CalculateFileInfo(path)", function() { return fftCall("CalculateFileInfo", [p]); });
+    fftDo("GetFileSize(path)", function() { return fftCall("GetFileSize", [p]); });
+    fftDo("GetFileSHA1(path)", function() { return fftCall("GetFileSHA1", [p]); });
+}
+
+function fftCopyToScratch() {
+    var p = fftVal("fftPath");
+    if (!p) { fftLog("WARN", "Path is empty"); return; }
+    var name = p.replace(/^.*[\\\/]/, "");
+    fftDo("CopyFile(path, fft\\" + name + ")", function() { fftCall("MakeFolder", ["fft"]); return fftCall("CopyFile", [p, "fft\\" + name, true]); });
+}
+
+// ------------------------------------------------------------------
+// Download / upload
+// ------------------------------------------------------------------
+function fftDownload(mode) {
+    var url = fftVal("fftUrl");
+    fftCall("MakeFolder", ["fft"]);
+    if (mode === "sync") { fftDo("DownloadFile " + url, function() { return fftCall("DownloadFile", [url, "fft\\download.bin"]); }); }
+    else if (mode === "sha1") { fftDo("DownloadFileWithSHA1 " + url, function() { return fftCall("DownloadFileWithSHA1", [url, "fft\\download_sha1.bin"]); }); }
+    else if (mode === "ex") {
+        // undocumented: DownloadFileEx(url, filePath, hashAlgorithm); whether filePath is scratch-relative is unknown, so pass an absolute scratch path
+        var exPath = fftScratch("fft\\download_ex.bin");
+        fftDo("DownloadFileEx " + url + " (" + fftVal("fftHashAlg") + ")", function() { return fftCall("DownloadFileEx", [url, exPath, fftVal("fftHashAlg")]); });
+    }
+    else {
+        var abs = fftScratch("fft\\download_async.bin");
+        fftDo("DownloadFile async " + url, function() { return fftCall("DownloadFile", [url, abs, fftCb("DownloadFile async")]); });
+    }
+}
+
+function fftUpload(mode) {
+    var p = fftVal("fftPath") || fftEnsureScratchFile(false);
+    if (!fftConfirm("Upload this file to the BigFix root server?\n" + p)) { return; }
+    var name = p.replace(/^.*[\\\/]/, "");
+    var label = mode + " " + name;
+    var r = fftDo(label, function() {
+        switch (mode) {
+            case "sync": return fftCall("UploadFile", [p]);
+            case "async": return fftCall("UploadFile", [p, fftCb("UploadFile async", fftUploadResult)]);
+            case "archive": return fftCall("ArchiveAndUploadFile", [p, name, false]);
+            case "archive-async": return fftCall("ArchiveAndUploadFile", [p, name, false, fftCb("ArchiveAndUploadFile async", fftUploadResult)]);
+            // undocumented 11.x variants: argument meaning taken from wizards.js parameter names only
+            case "ex": return fftCall("UploadFileEx", [p, fftVal("fftHashAlg")]);
+            case "withname": return fftCall("UploadFileWithName", [p, "fft_" + name, fftCb("UploadFileWithName", fftUploadResult)]);
+            case "archive-ex": return fftCall("ArchiveAndUploadFileEx", [p, name, false, fftVal("fftHashAlg")]);
+            default: return fftCall("ArchiveAndUploadFile2", [p, name, false]);
+        }
+    });
+    if (typeof r === "string" && mode === "archive") {
+        // tab-delimited: url \t size \t sha1
+        var parts = r.split("\t");
+        fftLog("INFO", "ArchiveAndUploadFile parsed: url=" + parts[0] + " size=" + parts[1] + " sha1=" + parts[2]);
+    }
+    if (r) { fftUploadResult(r); }
+}
+
+function fftUploadResult(r) {
+    var url = (r && r.url) ? r.url : String(r).split("\t")[0];
+    if (/^https?:/i.test(url)) { fftSensitive(url.replace(/^(https?:\/\/[^\/]+).*$/i, "$1")); }
+    if (typeof r === "string" && r.indexOf("Error: ") === 0) { fftLog("ERROR", "Upload reported " + r); }
+}
+
+// ------------------------------------------------------------------
+// Content lifecycle
+// ------------------------------------------------------------------
+function fftTaskXml(titleSuffix) {
+    var today = new Date();
+    var date = today.getFullYear() + "-" + fftPad(today.getMonth() + 1, 2) + "-" + fftPad(today.getDate(), 2);
+    var cdataEnd = "]]" + ">";            // must not appear literally inside this CDATA section
+    var scriptEnd = "<" + "/script>";      // must not appear literally inside this script block
+    var description =
+        "<p>Created by the Custom - Dashboard Feature Tester dashboard. Safe to delete.</p>" +
+        "<p>Relevance is <b>false</b> and the action script only contains comments.</p>" +
+        "<p>Parameter for the ontakeaction demo: <input id='fftParam' value='hello from ontakeaction'></p>" +
+        "<script>" +
+        "document.body.ontakeaction = function (event) {" +
+        "  if (event.contentID != 'Action1') { return true; }" +
+        "  TakeFixletAction(Relevance('id of current fixlet'), Relevance('id of current bes site'), 'Action1', { fftParam: document.getElementById('fftParam').value });" +
+        "  return false;" +
+        "};" +
+        scriptEnd;
+    return '<' + '?xml version="1.0" encoding="UTF-8"?' + '>\n' +
+        '<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">\n' +
+        '<Task>\n' +
+        '<Title>Dashboard Feature Tester - test task' + (titleSuffix || "") + '</Title>\n' +
+        '<Description><![CDATA[' + description + cdataEnd + '</Description>\n' +
+        '<Relevance>false</Relevance>\n' +
+        '<Category>Test</Category>\n' +
+        '<Source>Internal</Source>\n' +
+        '<SourceID>Dashboard Feature Tester</SourceID>\n' +
+        '<SourceReleaseDate>' + date + '</SourceReleaseDate>\n' +
+        '<SourceSeverity></SourceSeverity>\n<CVENames></CVENames>\n<SANSID></SANSID>\n' +
+        '<Domain>BESC</Domain>\n' +
+        '<DefaultAction ID="Action1">\n' +
+        '<Description><PreLink>Click </PreLink><Link>here</Link><PostLink> to deploy this no-op test action.</PostLink></Description>\n' +
+        '<ActionScript MIMEType="application/x-Fixlet-Windows-Shell">// no-op test action from Dashboard Feature Tester\n' +
+        '// fftParam = {parameter "fftParam" of action}\n' +
+        '</ActionScript>\n' +
+        '<SuccessCriteria Option="RunToCompletion"></SuccessCriteria>\n' +
+        '</DefaultAction>\n' +
+        '</Task>\n</BES>';
+}
+
+function fftImportTask(mode) {
+    var site = fftVal("fftSite");
+    if (mode === "site" && !site) { fftLog("WARN", "ImportXMLToSite needs a custom site name"); return; }
+    if (!fftConfirm("Create a test Task (relevance false) " + (site ? "in custom site '" + site + "'" : "in your operator / master action site") + "?")) { return; }
+    var xml = fftTaskXml(" " + new Date().toString());
+    fftDebug("task xml: " + xml);
+    var ids = fftDo("Import task (" + mode + ")", function() {
+        if (mode === "site") { return fftCall("ImportXMLToSite", [xml, site, false]); }
+        if (mode === "open") { return fftCall("ImportXML", [xml, true]); }
+        if (mode === "computers") { return fftCall("ImportXML", [xml, false, site || undefined, fftIdList(fftVal("fftCids"))]); }
+        if (site) { return fftCall("ImportXML", [xml, false, site]); }
+        return fftCall("ImportXML", [xml, false]);
+    });
+    if (ids === undefined) { fftLog("INFO", "ImportXML returned undefined (cancelled or failed)"); return; }
+    var id = (ids && ids.length !== undefined && typeof ids !== "string") ? ids[0] : ids;
+    FFT.state.createdTaskIds.push(id);
+    fftSet("fftTaskId", String(id));
+    fftLog("INFO", "Imported task id " + id + "; created this session: " + FFT.state.createdTaskIds.join(","));
+    fftDetectSiteId();
+}
+
+// Custom and non-master operator sites have no id; pass the master action site id instead
+function fftDetectSiteId() {
+    var candidates = [
+        "id of action site of current console user",
+        "id of all bes sites whose (master site flag of it)"
+    ];
+    for (var i = 0; i < candidates.length; i++) {
+        var r = fftTryEval(candidates[i], undefined);
+        if (r !== undefined && typeof r === "string") {
+            fftSet("fftSiteId", r);
+            fftLog("INFO", "site id from '" + candidates[i] + "' = " + r);
+            return r;
+        }
+        fftLog("INFO", "site id candidate failed or was plural: " + candidates[i] + " -> " + fftStr(r));
+    }
+    return "";
+}
+
+function fftTaskIdOrWarn() {
+    var id = parseInt(fftVal("fftTaskId"), 10);
+    if (isNaN(id)) { fftLog("WARN", "Task id is empty: import a test task first or type an id"); return null; }
+    return id;
+}
+
+function fftOpenTask() {
+    var id = fftTaskIdOrWarn();
+    if (id === null) { return; }
+    var href = fftDo("link href of task " + id, function() { return EvaluateRelevance("link href of bes fixlets whose (id of it = " + id + ")"); });
+    if (href && typeof href !== "string" && href.length) { href = href[0]; }
+    if (href) { fftNavigate(String(href)); }
+}
+
+function fftEditTask() {
+    var id = fftTaskIdOrWarn();
+    if (id === null || !fftConfirm("EditFixlet task " + id + " (changes its title)?")) { return; }
+    fftDo("EditFixlet(" + id + ")", function() { return fftCall("EditFixlet", [id, fftTaskXml(" (edited " + new Date().toString() + ")")]); });
+}
+
+function fftTakeAction(mode) {
+    var id = fftTaskIdOrWarn();
+    if (id === null) { return; }
+    var siteId = fftVal("fftSiteId") || fftDetectSiteId();
+    var cids = fftIdList(fftVal("fftCids"));
+    if ((mode === "oncomputers" || mode === "secureoncomputers") && !cids.length) { fftLog("WARN", "Computer IDs field is empty"); return; }
+    if (!fftConfirm("Open the Take Action dialog for test task " + id + " (" + mode + ")?\nNothing is deployed unless you complete the dialog.")) { return; }
+    var cb = function(actionId) { fftLog("OK", "TakeFixletAction callback: created action id " + actionId); fftSet("fftActionId", String(actionId)); };
+    var params = { fftParam: "set from dashboard " + fftTs() };
+    var secure = { fftSecret: "not-a-real-secret" };
+    // siteID can exceed a signed int; try the plain value first, then the 0xffffffff mask older consoles needed
+    var attempts = [siteId, (0xffffffff & siteId)];
+    for (var i = 0; i < attempts.length; i++) {
+        var s = attempts[i];
+        try {
+            fftLog("RUN", mode + " task " + id + " siteID " + s);
+            switch (mode) {
+                case "plain": fftCall("TakeFixletAction", [id, s, "Action1"]); break;
+                case "params": fftCall("TakeFixletAction", [id, s, "Action1", params, cb]); break;
+                case "secure": fftCall("TakeSecureFixletAction", [id, s, "Action1", {}, secure, cb]); break;
+                case "oncomputers": fftCall("TakeFixletActionOnComputers", [id, s, "Action1", params, cids, cb]); break;
+                default: fftCall("TakeSecureFixletActionOnComputers", [id, s, "Action1", {}, secure, cids, cb]);
+            }
+            fftLog("OK", mode + " returned (dialog is non-modal)");
+            return;
+        } catch (e) {
+            fftLog("ERROR", mode + " with siteID " + s + " threw " + fftErr(e));
+        }
+    }
+}
+
+function fftDeleteTask(all) {
+    var ids = all ? FFT.state.createdTaskIds.slice(0) : [fftTaskIdOrWarn()];
+    if (!ids.length || ids[0] === null) { fftLog("WARN", "Nothing to delete"); return; }
+    if (!fftConfirm("Permanently delete task(s) " + ids.join(", ") + "?")) { return; }
+    var r = fftDo((all ? "DeleteFixlets" : "DeleteFixlet") + "(" + ids.join(",") + ")", function() {
+        return all ? fftCall("DeleteFixlets", [ids]) : fftCall("DeleteFixlet", [ids[0]]);
+    });
+    if (r !== undefined || all) {
+        var remaining = [];
+        for (var i = 0; i < FFT.state.createdTaskIds.length; i++) {
+            var keep = true;
+            for (var j = 0; j < ids.length; j++) { if (FFT.state.createdTaskIds[i] == ids[j]) { keep = false; } }
+            if (keep) { remaining.push(FFT.state.createdTaskIds[i]); }
+        }
+        FFT.state.createdTaskIds = remaining;
+    }
+}
+
+// The CopyFixletsToSite pattern gets fixlet XML through relevance; the exact cast is version dependent, so probe a few forms
+function fftExportTaskXml() {
+    var id = fftTaskIdOrWarn();
+    if (id === null) { return null; }
+    var site = fftVal("fftSite");
+    var exprs = [
+        "(it as xml) of bes fixlets whose (id of it = " + id + ")",
+        "(fixlet " + id + " of all bes sites whose (master site flag of it)) as xml"
+    ];
+    if (site) { exprs.push('(fixlet ' + id + ' of bes custom site "' + site + '") as xml'); }
+    for (var i = 0; i < exprs.length; i++) {
+        try {
+            var r = EvaluateRelevance(exprs[i]);
+            if (r && typeof r !== "string" && r.length) { r = r[0]; }
+            if (r) {
+                fftLog("OK", "export via '" + exprs[i] + "' -> " + String(r).length + " chars");
+                fftDebug(String(r));
+                return String(r);
+            }
+        } catch (e) {
+            fftLog("INFO", "export probe failed: " + exprs[i] + " -> " + fftErr(e));
+        }
+    }
+    fftLog("WARN", "No relevance form exported the task XML in this console version");
+    return null;
+}
+
+function fftCopyTaskToSite() {
+    var site = fftVal("fftSite");
+    if (!site) { fftLog("WARN", "Enter a destination custom site name"); return; }
+    var xml = fftExportTaskXml();
+    if (!xml) { return; }
+    if (!fftConfirm("Copy the task into custom site '" + site + "' with ImportXMLToSite?")) { return; }
+    var ids = fftDo("ImportXMLToSite(copy, " + site + ")", function() { return fftCall("ImportXMLToSite", [xml, site, false]); });
+    if (ids && ids.length) { FFT.state.createdTaskIds.push(ids[0]); }
+}
+
+// ------------------------------------------------------------------
+// Actions / analyses
+// ------------------------------------------------------------------
+function fftListMyOpenActions() {
+    var r = fftDo("my open actions", function() {
+        return EvaluateRelevance('(id of it as string & " - " & name of it) of bes actions whose (state of it = "Open" and name of issuer of it = name of current console user)');
+    });
+    if (r && typeof r !== "string") { fftLog("INFO", "Open actions:\n  " + fftJoin(r, "\n  ")); }
+}
+
+function fftStopActions() {
+    var ids = fftIdList(fftVal("fftActionId"));
+    if (!ids.length) { fftLog("WARN", "Enter one or more action ids"); return; }
+    if (!fftConfirm("STOP action(s) " + ids.join(", ") + "? This cannot be undone.")) { return; }
+    if (ids.length === 1) { fftDo("StopAction(" + ids[0] + ")", function() { return fftCall("StopAction", [ids[0]]); }); }
+    else { fftDo("StopActions(" + ids.join(",") + ")", function() { return fftCall("StopActions", [ids]); }); }
+}
+
+function fftListAnalyses() {
+    // custom / operator sites have no id, so use the master site id
+    var r = fftDo("list analyses", function() {
+        return EvaluateRelevance('(((if (exists id of site of it) then id of site of it as string else id of all bes sites whose (master site flag of it) as string) & ":" & id of it as string) & "|" & name of it & "|" & (if (exists best activation of it and active flag of best activation of it) then "active" else "inactive")) of bes fixlets whose (analysis flag of it)');
+    });
+    if (!r || typeof r === "string") { return; }
+    var sel = document.getElementById("fftAnalysisSel");
+    sel.options.length = 0;
+    for (var i = 0; i < r.length && i < 500; i++) {
+        var p = String(r[i]).split("|");
+        sel.options[sel.options.length] = new Option(p[0] + " " + p[1] + " (" + p[2] + ")", p[0]);
+    }
+    fftLog("INFO", "Loaded " + sel.options.length + " of " + r.length + " analyses");
+}
+
+function fftAnalysis(fn) {
+    var id = fftVal("fftAnalysisSel");
+    if (!id) { fftLog("WARN", "Select an analysis first"); return; }
+    if (!fftConfirm(fn + " " + id + "?\nThis changes the analysis activation for all operators.")) { return; }
+    fftDo(fn + "(" + id + ")", function() { return fftCall(fn, [/Analyses$/.test(fn) ? [id] : id]); });
+}
+
+// ------------------------------------------------------------------
+// Computers / filters
+// ------------------------------------------------------------------
+function fftFirstComputers() {
+    var r = fftDo("ids of bes computers (first 5)", function() { return EvaluateRelevance("ids of bes computers"); });
+    if (r === undefined) { return; }
+    if (typeof r === "string") { r = [r]; }
+    var ids = [];
+    for (var i = 0; i < r.length && i < 5; i++) { ids.push(r[i]); }
+    fftSet("fftCids", ids.join(","));
+}
+
+function fftOpenGroup() {
+    var ids = fftIdList(fftVal("fftCids"));
+    if (!ids.length) { fftLog("WARN", "Computer IDs field is empty"); return; }
+    fftDo("OpenComputerGroup(" + ids.join(",") + ")", function() { return fftCall("OpenComputerGroup", [ids, "Dashboard Feature Tester group"]); });
+}
+
+function fftWol() {
+    var ids = fftIdList(fftVal("fftCids"));
+    if (!ids.length) { fftLog("WARN", "Computer IDs field is empty"); return; }
+    fftDo("enabled of bes wakeonlan status", function() { return EvaluateRelevance("enabled of bes wakeonlan status"); });
+    if (!fftConfirm("Send Wake-on-LAN requests to " + ids.join(", ") + "?")) { return; }
+    fftDo("SendWakeOnLANRequest", function() { return fftCall("SendWakeOnLANRequest", [ids.length === 1 ? ids[0] : ids]); });
+}
+
+function fftEnableWol(on) {
+    if (!fftConfirm("EnableWakeOnLAN(" + on + ") is a GLOBAL setting that affects every console in the deployment. Continue?")) { return; }
+    fftDo("EnableWakeOnLAN(" + on + ")", function() { return fftCall("EnableWakeOnLAN", [on]); });
+    fftDo("enabled of bes wakeonlan status", function() { return EvaluateRelevance("enabled of bes wakeonlan status"); });
+}
+
+function fftListFilters() {
+    var r = fftDo("bes filters", function() { return EvaluateRelevance('(id of it as string & " | " & (name of it | "?")) of bes filters'); });
+    if (r && typeof r !== "string") { fftLog("INFO", "Filters:\n  " + fftJoin(r, "\n  ")); }
+}
+
+function fftOpenFind() {
+    var type = fftVal("fftFilterType");
+    var r = fftDo("OpenFindDialog(" + type + ")", function() { return fftCall("OpenFindDialog", [type, parseInt(fftVal("fftFilterId"), 10) || 0]); });
+    if (r !== undefined && r !== null) { fftSet("fftFilterId", String(r)); }
+}
+
+function fftFilter(fn) {
+    if (fn === "AddGlobalFilter") {
+        fftDo("AddGlobalFilter(" + fftVal("fftFilterId") + ")", function() { return fftCall(fn, [parseInt(fftVal("fftFilterId"), 10)]); });
+    } else if (fn === "ClearGlobalFilterOfType") {
+        fftDo("ClearGlobalFilterOfType(" + fftVal("fftFilterType") + ")", function() { return fftCall(fn, [fftVal("fftFilterType")]); });
+    } else {
+        fftDo("ClearAllGlobalFilters()", function() { return fftCall(fn, []); });
+    }
+}
+
+// ------------------------------------------------------------------
+// Admin / other dashboards
+// ------------------------------------------------------------------
+function fftCreateSite() {
+    var name = fftVal("fftAdminArg");
+    // custom site name rules: no quote or newline, no trailing space, at most 32 bytes
+    if (!name || /["\n]/.test(name) || / $/.test(name) || name.length > 32) { fftLog("WARN", "Invalid custom site name: " + name); return; }
+    if (!fftConfirm("Create custom site '" + name + "'? (master operators only)")) { return; }
+    fftDo("CreateCustomSite(" + name + ")", function() { return fftCall("CreateCustomSite", [name]); });
+}
+
+function fftDeleteProperty() {
+    var id = parseInt(fftVal("fftAdminArg"), 10);
+    if (isNaN(id)) { fftLog("WARN", "Enter a property id"); return; }
+    var name = fftTryEval("names of bes properties whose (id of it = " + id + ")", "?");
+    if (window.prompt("Type the property id again to permanently delete global property " + id + " (" + fftStr(name) + ")", "") !== String(id)) { fftLog("INFO", "DeleteProperty cancelled"); return; }
+    fftDo("DeleteProperty(" + id + ")", function() { return fftCall("DeleteProperty", [id]); });
+}
+
+function fftAddFileToSite() {
+    var site = fftVal("fftSite");
+    var p = fftEnsureScratchFile(false);
+    if (!fftConfirm("Add the scratch test file as a non-client file to " + (site ? "custom site '" + site + "'" : "your operator / master action site") + "?")) { return; }
+    fftDo("AddFileToSite", function() { return fftCall("AddFileToSite", [site, p, false]); });
+}
+
+function fftAddFileToMailbox() {
+    var ids = fftIdList(fftVal("fftCids"));
+    if (!ids.length) { fftLog("WARN", "Computer IDs field is empty"); return; }
+    var p = fftEnsureScratchFile(false);
+    if (!fftConfirm("Send the scratch test file to the mailbox of computer " + ids[0] + "?")) { return; }
+    fftDo("AddFileToMailbox(" + ids[0] + ")", function() { return fftCall("AddFileToMailbox", [ids[0], p, "fft_test.txt"]); });
+}
+
+function fftListWizards() {
+    // url of <wizard> is "siteid:<id>,<filename>" for site wizards or "file:///..." for Debug > Load Wizard
+    var r = fftDo("bes wizards", function() { return EvaluateRelevance('(name of it & "|" & (url of it | "")) of bes wizards'); });
+    if (!r || typeof r === "string") { return; }
+    var sel = document.getElementById("fftWizardSel");
+    sel.options.length = 0;
+    for (var i = 0; i < r.length; i++) {
+        var p = String(r[i]).split("|");
+        var m = /^siteid:(\d+),(.*)$/i.exec(p[1] || "");
+        if (m) { sel.options[sel.options.length] = new Option(p[0] + " (" + m[2] + ")", m[1] + "|" + m[2]); }
+    }
+    fftLog("INFO", "Loaded " + sel.options.length + " site wizards of " + r.length);
+}
+
+function fftOpenWizard() {
+    var v = fftVal("fftWizardSel");
+    if (!v) { fftLog("WARN", "List wizards and select one first"); return; }
+    var p = v.split("|");
+    var win = fftDo("external.OpenWizard(" + p[0] + ", " + p[1] + ")", function() { return fftCall("OpenWizard", [parseInt(p[0], 10), p[1]]); });
+    if (win) {
+        // hook the child window's unload event once it is ready
+        setTimeout(function() {
+            try { win.attachEvent("onunload", function() { fftLog("INFO", "Child wizard " + p[1] + " unloaded"); }); fftLog("OK", "attached onunload to child wizard"); }
+            catch (e) { fftLog("ERROR", "attachEvent on child wizard failed: " + fftErr(e)); }
+        }, 0);
+    }
+}
+
+// ------------------------------------------------------------------
+// REST
+// ------------------------------------------------------------------
+function fftRestGet(t) {
+    var path = fftVal("fftRestPath") || "serverinfo";
+    if (typeof API === "undefined" || !API.Get) {
+        var msg = "API.Get is not defined in this console";
+        if (t) { t.skip(msg); } else { fftLog("WARN", msg); }
+        return;
+    }
+    var t0 = fftNow();
+    fftLog("RUN", "API.Get " + path);
+    API.Get(path, function(error, status, body) {
+        var len = body ? String(body).length : 0;
+        fftOut("fftRestOut", "status " + status + (error ? " error " + fftErr(error) : "") + "\n" + (body ? String(body).substring(0, 3000) : ""));
+        var msg = "API.Get " + path + " status " + status + ", " + len + " chars (" + (fftNow() - t0) + "ms)" + (error ? ", error " + fftErr(error) : "");
+        fftDebug("body: " + (body ? String(body).substring(0, 1000) : ""));
+        if (t) { if (status == 200) { t.pass(msg); } else { t.warn(msg); } }
+        else { fftLog(status == 200 ? "OK" : "ERROR", msg); }
+    });
+}
+
+// ------------------------------------------------------------------
+// Safe tests (Run all)
+// ------------------------------------------------------------------
+fftTest("env", "env.documentMode", "IE document mode should be 11", function(t) {
+    var m = document.documentMode;
+    if (m === undefined) { t.info("documentMode undefined (not an IE engine)"); }
+    else if (m >= 11) { t.pass("documentMode " + m); }
+    else { t.warn("documentMode " + m + ", expected 11: check X-UA-Compatible"); }
+});
+
+fftTest("env", "env.jsFeatures", "ES5 features used by this dashboard", function(t) {
+    var missing = [];
+    if (typeof JSON === "undefined") { missing.push("JSON"); }
+    if (!Array.prototype.indexOf) { missing.push("Array.indexOf"); }
+    if (!Object.keys) { missing.push("Object.keys"); }
+    if (!document.addEventListener) { missing.push("addEventListener"); }
+    var extra = "Promise=" + (typeof Promise) + " fetch=" + (typeof window.fetch) + " classList=" + (typeof document.body.classList) +
+        " localStorage=" + (function() { try { return typeof window.localStorage; } catch (e) { return "throws"; } })() +
+        " ActiveXObject=" + (typeof window.ActiveXObject);
+    if (missing.length) { t.fail("missing " + missing.join(", ") + "; " + extra); } else { t.pass(extra); }
+});
+
+fftTest("env", "env.coreApi", "EvaluateRelevance and Relevance exist", function(t) {
+    var e = fftWhere("EvaluateRelevance"), r = fftWhere("Relevance");
+    if (e && r) { t.pass("EvaluateRelevance@" + e + ", Relevance@" + r); }
+    else if (e) { t.warn("Relevance() missing (pre-Evans console?)"); }
+    else { t.fail("EvaluateRelevance missing: not running in a console dashboard?"); }
+});
+
+fftTest("env", "env.inventory", "Documented console functions present", function(t) {
+    var inv = fftInventory();
+    fftRenderInventory();
+    t.info(inv.present.length + "/" + FFT_API_NAMES.length + " present; missing: " + (inv.missing.join(", ") || "none") +
+        "; undocumented present: " + inv.undocumented.length + "/" + FFT_UNDOCUMENTED_NAMES.length);
+});
+
+fftTest("env", "env.predefinedIds", "Predefined element ids injected by the console", function(t) {
+    var inv = fftInventory();
+    t.info("present: " + inv.ids.join(", ") + (inv.noIds.length ? "; missing: " + inv.noIds.join(", ") : ""));
+});
+
+fftTest("env", "env.utilityDiv", "InsertUtilityDiv() ran", function(t) {
+    if (document.getElementById("TheUtilityScripts") || document.getElementById("theRegisterRefreshSignalName")) { t.pass("utility elements found"); }
+    else { t.warn("utility elements not found; console functions that rely on them may fail"); }
+});
+
+fftTest("env", "env.earlyErrors", "Errors before the logger loaded", function(t) {
+    if (window.FFT_EARLY.length) { t.warn(window.FFT_EARLY.join(" || ")); }
+    else { t.pass("none; suppressed wizards.js 0:0 errors: " + window.FFT_SUPPRESSED); }
+});
+
+fftTest("env", "env.session", "Session / operator info", function(t) {
+    var user = fftTryEval("name of current console user", "?");
+    fftSensitive(user);
+    t.info("user=" + user + " master=" + fftTryEval("master flag of current console user", "?") +
+        " webReportsContext=" + fftTryEval("in web reports context", "?"));
+});
+
+fftTest("env", "env.wizard", "current wizard inspectors", function(t) {
+    var url = fftTryEval("url of current wizard", "?");
+    fftSensitive(url);
+    t.info("name=" + fftTryEval("name of current wizard", "?") + " dashboardId=" + fftDashId() +
+        " site=" + fftTryEval("name of site of current wizard", "?") + " url=" + url +
+        " documentFlag=" + fftTryEval("document flag of current wizard", "?"));
+});
+
+fftTest("env", "env.counts", "Data store counts", function(t) {
+    var exprs = ["number of bes computers", "number of bes sites", "number of bes fixlets whose (custom flag of it)", "number of bes actions",
+        "number of bes properties", "number of bes filters", "number of bes users", "number of bes wizards"];
+    var parts = [];
+    for (var i = 0; i < exprs.length; i++) { parts.push(exprs[i].replace("number of ", "") + "=" + fftStr(fftTryEval(exprs[i], "error"))); }
+    t.info(parts.join(", "));
+});
+
+fftTest("env", "env.connection", "GetCurrentDSN / GetCurrentUser", function(t) {
+    if (!fftWhere("GetCurrentDSN")) { t.skip("GetCurrentDSN not available"); return; }
+    var dsn = fftCall("GetCurrentDSN", []);
+    var user = fftWhere("GetCurrentUser") ? fftCall("GetCurrentUser", []) : "n/a";
+    fftSensitive(dsn); fftSensitive(user);
+    t.pass("dsn=" + dsn + " dbUser=" + user);
+});
+
+fftTest("env", "env.wakeOnLan", "enabled of bes wakeonlan status (probe)", function(t) {
+    try { t.info("enabled=" + EvaluateRelevance("enabled of bes wakeonlan status")); } catch (e) { t.info("not available: " + fftErr(e)); }
+});
+
+// How late do timers fire? A slow console makes async tests look like failures, so record it in every report.
+fftTest("env", "env.timerLag", "setTimeout lag (console responsiveness)", function(t) {
+    var lags = [];
+    var n = 0;
+    function sample() {
+        var scheduled = fftNow();
+        setTimeout(function() {
+            lags.push(fftNow() - scheduled - 100);
+            if (++n < 5) { sample(); return; }
+            var max = Math.max.apply(null, lags);
+            var msg = "5 x 100ms timers ran late by " + lags.join(", ") + "ms";
+            if (max > 1000) { t.warn(msg + ": console is busy, async timings in this run are unreliable"); } else { t.pass(msg); }
+        }, 100);
+    }
+    sample();
+}, 30000);
+
+fftTest("env", "env.idList","MakeIDListFromArray([1,2,3])", function(t) {
+    if (!fftWhere("MakeIDListFromArray")) { t.skip("not available"); return; }
+    var r = fftCall("MakeIDListFromArray", [[1, 2, 3]]);
+    if (String(r) === "1,2,3") { t.pass(fftStr(r)); } else { t.warn("returned " + fftStr(r)); }
+});
+
+fftTest("env", "env.ontakeaction", "Register document.body.ontakeaction", function(t) {
+    document.body.ontakeaction = function(event) {
+        fftLog("EVENT", "ontakeaction contentID=" + (event ? event.contentID : "?"));
+        return true;
+    };
+    t.pass("registered (fires only from take-action links inside fixlet descriptions; see the test task)");
+});
+
+// ---- processing instructions
+function fftText(id) { var el = document.getElementById(id); return el ? (el.innerText || el.textContent || "") : null; }
+
+// Text of the element with this id inside container only (ids can be duplicated by console utility elements)
+function fftChildText(container, id) {
+    var all = container.getElementsByTagName("*");
+    for (var i = 0; i < all.length; i++) {
+        if (all[i].id === id) { return all[i].innerText || all[i].textContent || ""; }
+    }
+    return null;
+}
+
+fftTest("pi", "pi.render","Relevance PI for now rendered", function(t) {
+    var s = fftText("piNow");
+    if (s && s.indexOf("<" + "?") === -1) { t.pass(s); } else { t.fail("not rendered: " + fftStr(s)); }
+});
+fftTest("pi", "pi.escapeString", "string results are html-escaped", function(t) {
+    var el = document.getElementById("piEscape");
+    if (el.getElementsByTagName("b").length === 0 && fftText("piEscape").indexOf("AT&T") !== -1) { t.pass(fftText("piEscape")); }
+    else { t.fail("innerHTML " + el.innerHTML); }
+});
+fftTest("pi", "pi.htmlCast", "html results are not escaped", function(t) {
+    if (document.getElementById("piHtml").getElementsByTagName("b").length === 1) { t.pass("bold element present"); } else { t.fail(document.getElementById("piHtml").innerHTML); }
+});
+fftTest("pi", "pi.htmlTag", "html tag with attr list", function(t) {
+    var spans = document.getElementById("piTag").getElementsByTagName("span");
+    if (spans.length && spans[0].className === "fft-demo" && spans[0].title === "AT&T") { t.pass("class and title set"); } else { t.fail(document.getElementById("piTag").innerHTML); }
+});
+fftTest("pi", "pi.lists", "unordered list / definition list", function(t) {
+    var li = document.getElementById("piList").getElementsByTagName("li").length;
+    var dd = document.getElementById("piDl").getElementsByTagName("dd").length;
+    if (li === 3 && dd === 1) { t.pass("3 li, 1 dd"); } else { t.fail(li + " li, " + dd + " dd"); }
+});
+fftTest("pi", "pi.format", "format inspector", function(t) {
+    var s = fftText("piFormat");
+    if (s && s.indexOf("computers are visible") !== -1) { t.pass(s); } else { t.fail(fftStr(s)); }
+});
+fftTest("pi", "pi.fallback", "| operator catches runtime errors", function(t) {
+    var s = fftText("piErr");
+    if (s && s.indexOf("fallback") !== -1) { t.pass(s); } else { t.fail(fftStr(s)); }
+});
+fftTest("pi", "pi.links", "link of current console user / current wizard", function(t) {
+    var u = document.getElementById("piLinkUser").getElementsByTagName("a");
+    var w = document.getElementById("piLinkWizard").getElementsByTagName("a");
+    var msg = "user link " + (u.length ? u[0].getAttribute("href") : "missing") + ", wizard link " + (w.length ? w[0].getAttribute("href") : "missing");
+    if (u.length && w.length) { t.pass(msg); } else { t.warn(msg); }
+});
+fftTest("pi", "pi.inJsString", "PI inside a JS string literal", function(t) {
+    if (FFT_PI_DASHID.indexOf("<" + "?") === -1) { t.pass("dashboard id " + FFT_PI_DASHID); } else { t.fail("not processed: " + FFT_PI_DASHID); }
+});
+fftTest("pi", "xlat.hxlat", "hxlat PI processed", function(t) {
+    var s = fftText("hxlatTest");
+    if (s === "Hello from hxlat") { t.pass(s); }
+    else if (!s) { t.warn("empty: the console did not process hxlat and the browser hid it as a comment"); }
+    else { t.info("rendered as " + fftStr(s)); }
+});
+fftTest("pi", "xlat.jxlat", "jxlat PI processed in JS string", function(t) {
+    if (FFT_JXLAT === "Hello from jxlat") { t.pass(FFT_JXLAT); }
+    else if (FFT_JXLAT.indexOf("<" + "?") === 0) { t.warn("not processed, left literal"); }
+    else { t.info("rendered as " + fftStr(FFT_JXLAT)); }
+});
+
+// ---- refresh
+fftTest("refresh", "refresh.handler", "RegisterRefreshHandler", function(t) {
+    if (!FFT.state.refreshRegistered) { t.fail("registration failed at load: " + FFT.state.refreshError); return; }
+    var parts = [];
+    for (var k in FFT.signals) { if (FFT.signals.hasOwnProperty(k)) { parts.push(k + "=" + FFT.signals[k]); } }
+    t.pass("registered; signals so far: " + (parts.join(", ") || "none yet (they arrive with console refresh cycles)"));
+});
+fftTest("refresh", "refresh.manual", "ManualRefresh re-evaluates a RefreshRelevance block", function(t) {
+    if (!fftWhere("ManualRefresh")) { t.skip("ManualRefresh not available"); return; }
+    var before = fftText("fftClockVal");
+    // "now" has 1-second resolution, so wait before refreshing
+    setTimeout(function() {
+        try { fftCall("ManualRefresh", ["fftClock"]); } catch (e) { t.fail("ManualRefresh threw " + fftErr(e)); return; }
+        setTimeout(function() {
+            var after = fftText("fftClockVal");
+            if (after && after !== before) { t.pass(before + " -> " + after); }
+            else { t.warn("unchanged after ManualRefresh: " + fftStr(before) + " (refresh may be applied at the end of the console refresh cycle)"); }
+        }, 1500);
+    }, 1100);
+}, 8000);
+
+// ---- EvaluateRelevance / Relevance
+fftTest("rel", "er.singular", "EvaluateRelevance singular returns string", function(t) {
+    var r = EvaluateRelevance("now");
+    if (typeof r === "string") { t.pass(r); } else { t.warn(fftType(r) + " " + fftStr(r)); }
+});
+fftTest("rel", "er.plural", "EvaluateRelevance plural returns array of strings", function(t) {
+    var r = EvaluateRelevance("(1;2;3)");
+    if (r && r.length === 3) { t.pass(fftType(r) + " " + fftStr(r) + " item type " + typeof r[0]); } else { t.fail(fftStr(r)); }
+});
+fftTest("rel", "er.htmlTag", "EvaluateRelevance html result", function(t) {
+    var r = EvaluateRelevance('html tag "b" of "x&y"');
+    if (r === "<b>x&amp;y</b>") { t.pass(r); } else { t.warn(fftStr(r)); }
+});
+fftTest("rel", "er.error", "EvaluateRelevance throws on invalid relevance", function(t) {
+    try { var r = EvaluateRelevance("this is not valid relevance"); t.fail("no exception, returned " + fftStr(r)); }
+    catch (e) { t.pass("threw " + fftErr(e)); }
+});
+fftTest("rel", "rel.syncTypes", "Relevance returns native types", function(t) {
+    if (!fftWhere("Relevance")) { t.skip("Relevance not available"); return; }
+    var n = Relevance("3"), b = Relevance("true"), s = Relevance('"abc"'), d = Relevance("now");
+    var msg = "integer:" + fftType(n) + " boolean:" + fftType(b) + " string:" + fftType(s) + " time:" + fftType(d) + "(" + fftStr(d) + ")";
+    if (n === 3 && b === true && s === "abc") { t.pass(msg); } else { t.warn(msg); }
+});
+fftTest("rel", "rel.tuple", "Relevance keeps tuple structure", function(t) {
+    if (!fftWhere("Relevance")) { t.skip("Relevance not available"); return; }
+    var r = Relevance('(1, "a", true)');
+    if (r && r.length === 3) { t.pass(fftType(r) + " " + fftStr(r)); } else { t.warn(fftType(r) + " " + fftStr(r)); }
+});
+fftTest("rel", "rel.plural", "Relevance plural special array (length, [i], toArray)", function(t) {
+    if (!fftWhere("Relevance")) { t.skip("Relevance not available"); return; }
+    var r = Relevance("(3;1;2)");
+    var arr = (r && r.toArray) ? r.toArray() : null;
+    var msg = "length=" + (r ? r.length : "?") + " r[0]=" + (r ? fftStr(r[0]) : "?") + " toArray=" + (r && r.toArray ? fftStr(arr) : "(not provided)") +
+        " sort=" + (r && r.sort ? "yes" : "no") + " instanceof Array=" + (r instanceof Array);
+    if (r && r.length === 3) { t.pass(msg); } else { t.fail(msg); }
+});
+fftTest("rel", "rel.async", "Relevance async success callback", function(t) {
+    if (!fftWhere("Relevance")) { t.skip("Relevance not available"); return; }
+    var returned = false;
+    Relevance("number of bes computers", {
+        success: function(r) { t.pass(fftType(r) + " " + fftStr(r) + (returned ? " (callback after return: async)" : " (callback before return: sync)")); },
+        failure: function(e) { t.fail(fftErr(e)); }
+    });
+    returned = true;
+});
+fftTest("rel", "rel.asyncPlural", "Relevance async plural result shape", function(t) {
+    if (!fftWhere("Relevance")) { t.skip("Relevance not available"); return; }
+    Relevance("(1;2;3)", {
+        success: function(r) { t.info(fftType(r) + " " + fftStr(r)); },
+        failure: function(e) { t.fail(fftErr(e)); }
+    });
+});
+fftTest("rel", "rel.asyncError", "Relevance async failure callback", function(t) {
+    if (!fftWhere("Relevance")) { t.skip("Relevance not available"); return; }
+    try {
+        Relevance("this is not valid relevance", {
+            success: function(r) { t.fail("success called with " + fftStr(r)); },
+            failure: function(e) { t.pass("failure called: " + fftErr(e)); }
+        });
+    } catch (e) { t.warn("threw synchronously instead of calling failure: " + fftErr(e)); }
+});
+fftTest("rel", "rel.format", "format inspector via Relevance", function(t) {
+    var r = fftTryEval('format "{0} + {1}" + "a" + "b"', undefined);
+    if (r === "a + b") { t.pass(r); } else { t.warn(fftStr(r)); }
+});
+
+// ---- variables
+fftTest("vars", "vars.private", "Store / read / delete a private variable", function(t) {
+    var value = "fft-" + fftNow();
+    var r = fftStoreVar(true, "FFT_Test", value);
+    t.log("store returned " + fftStr(r));
+    var read = EvaluateRelevance('private variable "FFT_Test" of current wizard');
+    if (read !== value) { t.fail("read back " + fftStr(read) + ", expected " + value); return; }
+    fftDeleteVar(true, "FFT_Test");
+    var exists = EvaluateRelevance('exists private variable "FFT_Test" of current wizard');
+    if (String(exists) === "False" || exists === false || String(exists) === "false") { t.pass("stored, read back and deleted (dashboard id " + fftDashId() + ")"); }
+    else { t.warn("still exists after delete: " + fftStr(exists)); }
+});
+fftTest("vars", "vars.registerRelevance", "RegisterRelevance fires on data store change", function(t) {
+    if (!fftWhere("RegisterRelevance")) { t.skip("RegisterRelevance not available"); return; }
+    try { fftDeleteVar(true, "FFT_RR"); } catch (e) { /* may not exist yet */ }
+    var started = fftNow();
+    var triggeredAt = 0;
+    var calls = [];
+    var cleanup = function() {
+        try { fftCall("RegisterRelevance", ["false", { success: function() {}, failure: function() {} }, "fftRR"]); } catch (e) { t.log("unregister threw " + fftErr(e)); }
+        try { fftDeleteVar(true, "FFT_RR"); } catch (e2) { t.log("delete threw " + fftErr(e2)); }
+    };
+    // On 11.x the callback fires right after registration with arg false, so only a call after the trigger counts
+    fftCall("RegisterRelevance", ['exists private variable "FFT_RR" of current wizard', {
+        success: function(r) {
+            var when = (fftNow() - started) + "ms" + (triggeredAt ? " (" + (fftNow() - triggeredAt) + "ms after trigger)" : " (before trigger)");
+            calls.push(fftStr(r) + "@" + when);
+            t.log("callback arg " + fftStr(r) + " at " + when);
+            if (triggeredAt && !t.isDone() && String(r).toLowerCase() === "true") { cleanup(); t.pass("fired with true after the variable was stored; calls: " + calls.join(", ")); }
+        },
+        failure: function(e) { if (!t.isDone()) { cleanup(); t.fail("failure callback: " + fftErr(e)); } }
+    }, "fftRR"]);
+    // A busy console can run timers many seconds late (12.8s once), so the give-up timer starts only after the trigger
+    var scheduled = fftNow();
+    setTimeout(function() {
+        triggeredAt = fftNow();
+        var late = triggeredAt - scheduled - 1000;
+        if (late > 500) { calls.push("(trigger timer ran " + late + "ms late)"); }
+        fftStoreVar(true, "FFT_RR", "trigger");
+        setTimeout(function() {
+            if (t.isDone()) { return; }
+            cleanup();
+            if (calls.length) { t.warn("callback never received true within 10s of the trigger; calls: " + calls.join(", ")); }
+            else { t.warn("callback never fired"); }
+        }, 10000);
+    }, 1000);
+}, 60000);
+
+// ---- scratch files (each step uses state from the previous one)
+fftTest("files", "file.root", "GetScratchRootPath", function(t) {
+    if (!fftWhere("GetScratchRootPath")) { t.skip("not available"); return; }
+    FFT.state.scratchRoot = null;
+    var p = fftScratch("");
+    if (p) { t.pass(p); } else { t.fail("empty"); }
+});
+function fftExpectSuccess(t, label, r) {
+    if (r === "Success") { t.pass(label + " -> Success"); }
+    else { t.warn(label + " -> " + fftStr(r) + " / theScratchFileResult=" + fftStr(fftText("theScratchFileResult"))); }
+}
+fftTest("files", "file.makeFolder", "MakeFolder fft", function(t) { fftExpectSuccess(t, "MakeFolder", fftCall("MakeFolder", ["fft"])); });
+fftTest("files", "file.write", "WriteFile create", function(t) {
+    FFT.state.fileText = "line 1 from Dashboard Feature Tester\r\n";
+    fftExpectSuccess(t, "WriteFile", fftCall("WriteFile", [FFT.state.fileText, "fft\\test.txt", false]));
+});
+fftTest("files", "file.append", "WriteFile append", function(t) {
+    var more = "line 2 appended\r\n";
+    FFT.state.fileText += more;
+    fftExpectSuccess(t, "WriteFile append", fftCall("WriteFile", [more, "fft\\test.txt", true]));
+});
+fftTest("files", "file.size", "GetFileSize matches written length", function(t) {
+    var size = fftCall("GetFileSize", [fftScratch("fft\\test.txt")]);
+    var expected = FFT.state.fileText.length;
+    // observed on 11.x consoles: WriteFile stores "\r\n" as "\n"
+    var lfOnly = FFT.state.fileText.replace(/\r\n/g, "\n").length;
+    if (size === -1) { t.fail("-1: " + fftText("theScratchFileResult")); }
+    else if (size == expected) { t.pass(size + " bytes (CRLF kept)"); }
+    else if (size == lfOnly) { t.pass(size + " bytes: WriteFile converted CRLF to LF (" + expected + " chars written)"); }
+    else { t.warn(size + " bytes, wrote " + expected + " chars (" + lfOnly + " with LF line endings): encoding or BOM?"); }
+});
+fftTest("files", "file.sha1", "GetFileSHA1", function(t) {
+    var h = String(fftCall("GetFileSHA1", [fftScratch("fft\\test.txt")]));
+    FFT.state.sha1 = h;
+    if (/^[0-9a-f]{40}$/i.test(h)) { t.pass(h); } else { t.fail(h); }
+});
+fftTest("files", "file.infoSync", "CalculateFileInfo (sync)", function(t) {
+    if (!fftWhere("CalculateFileInfo")) { t.skip("not available (pre-Grinnell)"); return; }
+    var r = fftCall("CalculateFileInfo", [fftScratch("fft\\test.txt")]);
+    if (r && r.sha256 && String(r.sha1).toLowerCase() === FFT.state.sha1.toLowerCase()) { t.pass("size " + r.size + " sha256 " + r.sha256); }
+    else { t.warn(fftStr(r)); }
+});
+fftTest("files", "file.infoAsync", "CalculateFileInfo (async)", function(t) {
+    if (!fftWhere("CalculateFileInfo")) { t.skip("not available (pre-Grinnell)"); return; }
+    fftCall("CalculateFileInfo", [fftScratch("fft\\test.txt"), {
+        success: function(r) { if (r && r.sha256) { t.pass("size " + r.size + " sha1 " + r.sha1); } else { t.warn(fftStr(r)); } },
+        failure: function(e) { t.fail(fftErr(e)); }
+    }]);
+});
+fftTest("files", "file.hashSet", "CompleteHashSet (server sha1 to sha256 lookup)", function(t) {
+    if (!fftWhere("CompleteHashSet")) { t.skip("not available"); return; }
+    fftCall("CompleteHashSet", ["sha1", FFT.state.sha1, {
+        success: function(r) { t.pass(fftStr(r)); },
+        failure: function(e) {
+            if (e && e.errorCode === 2) { t.pass("API works; server has no mapping for this new file (errorCode 2)"); }
+            else { t.warn(fftErr(e)); }
+        }
+    }]);
+});
+fftTest("files", "file.copy", "CopyFile full path into scratch", function(t) { fftExpectSuccess(t, "CopyFile", fftCall("CopyFile", [fftScratch("fft\\test.txt"), "fft\\copy.txt", true])); });
+// MoveFile is documented as MoveFile(scratchSrc, scratchDest, allowOverwrite). On an 11.x console every form failed:
+// sub-paths in a subfolder or the scratch root, forward slashes, existing or missing destination, either overwrite
+// flag -> "File does not exist" with the source untouched; a full source path -> "IllegalFileName".
+// The wizards.js wrapper only copies its arguments into the predefined tag ids, so the problem is native.
+// The probe keeps checking each form (so a fixed console shows up as PASS); fftMoveFile() below is the workaround.
+fftTest("files", "file.move", "MoveFile (which argument forms work)", function(t) {
+    var variants = [
+        // [label, src, dest, overwrite, precreate dest]
+        ["subfolder sub-paths", "fft\\mv1.txt", "fft\\mv1_dst.txt", false, false],
+        ["scratch root sub-paths", "fft_mv2.txt", "fft_mv2_dst.txt", false, false],
+        ["forward slashes", "fft/mv3.txt", "fft/mv3_dst.txt", false, false],
+        ["destination exists, overwrite true", "fft\\mv4.txt", "fft\\mv4_dst.txt", true, true],
+        ["destination exists, overwrite false", "fft\\mv5.txt", "fft\\mv5_dst.txt", false, true]
+    ];
+    var tried = [], working = [];
+    for (var i = 0; i < variants.length; i++) {
+        var v = variants[i];
+        var src = v[1].replace(/\//g, "\\"), dst = v[2].replace(/\//g, "\\");
+        fftCall("WriteFile", ["move source " + i, src, false]);
+        if (v[4]) { fftCall("WriteFile", ["old destination " + i, dst, false]); }
+        var r = fftCall("MoveFile", [v[1], v[2], v[3]]);
+        var srcGone = fftCall("GetFileSize", [fftScratch(src)]) === -1;
+        var dstSize = fftCall("GetFileSize", [fftScratch(dst)]);
+        // a real move removes the source and leaves the new content (longer than the "old destination" text) at dest
+        var moved = srcGone && dstSize > 0;
+        tried.push(v[0] + " -> " + r + " (source " + (srcGone ? "gone" : "still there") + ", dest " + dstSize + " bytes)");
+        if (moved && r === "Success") { working.push(v[0]); }
+        // root-level files are not removed by the DeleteTree("fft") cleanup
+        if (src.indexOf("\\") === -1) { fftCall("DeleteFile", [src]); fftCall("DeleteFile", [dst]); }
+    }
+    FFT.state.moveForms = working;
+    if (working.length) { t.pass("native MoveFile works for: " + working.join(", ") + " | " + tried.join("; ")); }
+    else { t.warn("native MoveFile did not move the file in any form (use fftMoveFile): " + tried.join("; ")); }
+});
+
+// Workaround for MoveFile: CopyFile takes a full source path and a scratch sub-path destination, then DeleteFile the source.
+// Returns "Success" or the first error string, like the native scratch functions.
+function fftMoveFile(scratchSrc, scratchDest, allowOverwrite) {
+    var r = fftCall("CopyFile", [fftScratch(scratchSrc), scratchDest, allowOverwrite]);
+    if (r !== "Success") { return r; }
+    return fftCall("DeleteFile", [scratchSrc]);
+}
+
+fftTest("files", "file.moveWorkaround", "fftMoveFile() (CopyFile + DeleteFile)", function(t) {
+    fftCall("WriteFile", ["move workaround source", "fft\\mvw.txt", false]);
+    var r = fftMoveFile("fft\\mvw.txt", "fft\\mvw_dst.txt", false);
+    var srcGone = fftCall("GetFileSize", [fftScratch("fft\\mvw.txt")]) === -1;
+    var dstSize = fftCall("GetFileSize", [fftScratch("fft\\mvw_dst.txt")]);
+    var msg = "returned " + fftStr(r) + ", source " + (srcGone ? "gone" : "still there") + ", dest " + dstSize + " bytes";
+    if (r === "Success" && srcGone && dstSize > 0) { t.pass(msg); } else { t.fail(msg); }
+});
+fftTest("files", "file.copyFolder", "MakeFolder + CopyFolder", function(t) {
+    fftCall("MakeFolder", ["fft2"]);
+    fftExpectSuccess(t, "CopyFolder", fftCall("CopyFolder", [fftScratch("fft"), "fft2", true]));
+});
+fftTest("files", "file.archive", "MakeArchive", function(t) {
+    var r = fftCall("MakeArchive", [fftScratch("fft2"), "fft\\test.bfarchive", true]);
+    var size = fftCall("GetFileSize", [fftScratch("fft\\test.bfarchive")]);
+    if (r === "Success" && size > 0) { t.pass("archive " + size + " bytes"); } else { t.warn(fftStr(r) + " size " + size); }
+});
+fftTest("files", "file.loadPresentation", "LoadPresentation evaluates PIs in a file", function(t) {
+    if (!fftWhere("LoadPresentation")) { t.skip("not available"); return; }
+    // split so the console does not evaluate this PI while loading the dashboard
+    // Each span is a different PI form so an empty result shows which forms LoadPresentation handles
+    var html = "<p>LoadPresentation:" +
+        " literal=[<span id='lp1'><" + "?Relevance \"literal\" ?" + "></span>]" +
+        " lowercase=[<span id='lp2'><" + "?relevance \"lowercase\" ?" + "></span>]" +
+        " now=[<span id='lp3'><" + "?Relevance now ?" + "></span>]" +
+        " session=[<span id='lp4'><" + "?Relevance number of bes computers as string ?" + "></span>]</p>";
+    fftCall("WriteFile", [html, "fft\\pres.html", false]);
+    var r = String(fftCall("LoadPresentation", [fftScratch("fft\\pres.html")]));
+    // The console keeps its own copy of the loaded file in the hidden thePresentationResult element, earlier in the page,
+    // so getElementById("lp1") would find that copy instead of ours: clear it and read spans only inside our div.
+    var hidden = document.getElementById("thePresentationResult");
+    if (hidden) { hidden.innerHTML = ""; }
+    var div = document.getElementById("fftLoadPresOut");
+    div.innerHTML = r;
+    var vals = [];
+    var empty = 0;
+    for (var i = 1; i <= 4; i++) {
+        var s = fftChildText(div, "lp" + i);
+        if (!s) { empty++; }
+        vals.push("lp" + i + "=" + fftStr(s));
+    }
+    var raw = " | raw: " + r.substring(0, 400);
+    // IE parses an unevaluated PI as a comment and serializes it back as an html comment, so check both forms
+    var unprocessed = r.indexOf("<" + "?") !== -1 || r.toLowerCase().indexOf(FFT_COMMENT_OPEN + "?relevance") !== -1;
+    if (unprocessed) {
+        // observed on an 11.x console: the file is loaded but no PI is evaluated; show the JS fallback instead
+        var fallback = fftRenderPIs(r);
+        div.innerHTML = fallback;
+        var fb = [];
+        var fbEmpty = 0;
+        for (var j = 1; j <= 4; j++) {
+            var v = fftChildText(div, "lp" + j);
+            if (!v) { fbEmpty++; }
+            fb.push("lp" + j + "=" + fftStr(v));
+        }
+        var msg = "native LoadPresentation returned the file without evaluating its relevance PIs; fftRenderPIs() fallback gives: " + fb.join(" ");
+        // WARN: a known console limitation with a working fallback; FAIL only if the fallback is broken too
+        if (fbEmpty) { t.fail(msg + " (" + fbEmpty + " empty: fallback problem)" + raw); } else { t.warn(msg); }
+    }
+    else if (empty === 0) { t.pass(vals.join(" ")); }
+    else { t.warn(empty + " of 4 PI forms empty: " + vals.join(" ") + raw); }
+});
+
+// Fallback for LoadPresentation: evaluate relevance PIs in an html string with EvaluateRelevance.
+// Handles raw PIs and the html-comment form IE produces after a round trip through innerHTML.
+// Results are always html-escaped (the console skips escaping for html-typed results; this cannot tell the type).
+// A literal html comment opener inside a script block can change where the browser thinks the script ends, so build it
+var FFT_COMMENT_OPEN = "<" + "!-" + "-";
+var FFT_PI_PATTERN = new RegExp("(?:<\\?|" + FFT_COMMENT_OPEN + "\\?)relevance\\s+([\\s\\S]*?)\\?(?:-" + "->|>)", "gi");
+
+function fftRenderPIs(html) {
+    return String(html).replace(FFT_PI_PATTERN, function(all, expr) {
+        try {
+            var r = EvaluateRelevance(expr);
+            return fftEsc(typeof r === "string" ? r : fftJoin(r, ""));
+        } catch (e) {
+            return fftEsc("[error: " + fftErr(e) + "]");
+        }
+    });
+}
+
+fftTest("files", "pi.jsFallback", "fftRenderPIs() evaluates PIs in a string", function(t) {
+    var src = "<span><" + "?Relevance \"a&b\" ?" + "></span><span>" + FFT_COMMENT_OPEN + "?relevance (1;2) ?-" + "-></span><span><" + "?relevance this is invalid ?" + "></span>";
+    var out = fftRenderPIs(src);
+    // expect: escaped string, joined plural, and an inline error instead of an exception
+    if (out.indexOf("<span>a&amp;b</span>") !== -1 && out.indexOf("<span>12</span>") !== -1 && out.indexOf("[error: ") !== -1) { t.pass(out); }
+    else { t.fail(out); }
+});
+fftTest("files", "file.cleanup", "DeleteFile / DeleteAllFiles / DeleteFolder / DeleteTree", function(t) {
+    // delete whichever file the MoveFile test left behind
+    var leftover = fftCall("GetFileSize", [fftScratch("fft\\moved.txt")]) > 0 ? "fft\\moved.txt" : "fft\\copy.txt";
+    var r = [
+        "DeleteFile(" + leftover + ")=" + fftCall("DeleteFile", [leftover]),
+        "DeleteAllFiles=" + fftCall("DeleteAllFiles", ["fft2", true]),
+        "DeleteFolder=" + fftCall("DeleteFolder", ["fft2"]),
+        "DeleteTree=" + fftCall("DeleteTree", ["fft"])
+    ];
+    var size = fftCall("GetFileSize", [fftScratch("fft\\test.txt")]);
+    var msg = r.join(" ") + " size-after-delete=" + size;
+    if (msg.split("=Success").length - 1 === 4 && size === -1) { t.pass(msg); } else { t.warn(msg); }
+});
+
+// ---- navigation / data store
+fftTest("nav", "nav.theDataStore", "TheDataStore element", function(t) {
+    var ds = document.getElementById("TheDataStore");
+    if (!ds) { t.fail("missing"); return; }
+    t.pass("present; " + (FFT.state.restoredLines ? FFT.state.restoredLines + " log lines were restored from it at load" : "nothing restored at load (visit page 2 and come back to test)"));
+});
+
+// ---- REST
+fftTest("rest", "rest.apiObject", "API object members", function(t) {
+    if (typeof API === "undefined") { t.skip("API object not defined"); return; }
+    var keys = [];
+    for (var k in API) { keys.push(typeof API[k] === "function" ? fftSignature(k, API[k]) : k + ":" + typeof API[k]); }
+    t.info(keys.join(", "));
+});
+fftTest("env", "env.signatures", "Log parameter lists of documented and undocumented functions", function(t) {
+    fftLogSignatures();
+    t.info("see the 'Signatures of ...' log lines");
+});
+fftTest("env", "env.sources", "Log wizards.js source of functions that misbehaved", function(t) {
+    // MoveFile and LoadPresentation sources were captured in an earlier run (thin wrappers), so only ColorizeRelevance now
+    var c = fftLogSource("ColorizeRelevance", 3000).length;
+    t.info("ColorizeRelevance " + c + " chars of source logged");
+});
+// Undocumented helpers that only format values or inspect the DOM (no console state changes).
+// Each runs in its own try/catch so one failure does not hide the others.
+fftTest("env", "undoc.pureHelpers", "ColorizeRelevance / BooleanToText / hasClass (undocumented)", function(t) {
+    var sec = document.getElementById("sec-env");
+    var probes = [
+        ["BooleanToText(true/false)", function() { return fftStr(fftCall("BooleanToText", [true])) + "/" + fftStr(fftCall("BooleanToText", [false])); }, "BooleanToText"],
+        ["hasClass(sec-env, sec/nope)", function() { return fftStr(fftCall("hasClass", [sec, "sec"])) + "/" + fftStr(fftCall("hasClass", [sec, "nope"])); }, "hasClass"],
+        ["ColorizeRelevance (via fftColorizeRelevance)", function() { var c = fftColorizeRelevance("names of bes computers whose (id of it = 1)", true); return fftType(c) + " " + String(c).length + " chars, starts " + fftStr(String(c).substring(0, 120)); }, "ColorizeRelevance"]
+    ];
+    var parts = [], failed = 0, ran = 0;
+    for (var i = 0; i < probes.length; i++) {
+        if (!fftWhere(probes[i][2])) { parts.push(probes[i][0] + ": not available"); continue; }
+        ran++;
+        try { parts.push(probes[i][0] + " -> " + probes[i][1]()); }
+        catch (e) { failed++; parts.push(probes[i][0] + " threw " + fftErr(e)); }
+    }
+    if (!ran) { t.skip("none available"); }
+    else if (failed === ran) { t.warn(parts.join("; ")); }
+    else { t.info(parts.join("; ")); }
+});
+fftTest("rest", "rest.get", "API.Get serverinfo", function(t) { fftSet("fftRestPath", "serverinfo"); fftRestGet(t); }, 30000);
+
+// ------------------------------------------------------------------
+// Page load
+// ------------------------------------------------------------------
+(function fftInit() {
+    // restore log lines carried over from SecondPage in TheDataStore
+    var ds = document.getElementById("TheDataStore");
+    var saved = ds ? (ds.innerText || "") : "";
+    if (saved) {
+        var prev = saved.split(/\r?\n/);
+        FFT.state.restoredLines = prev.length;
+        document.getElementById("fftLog").value = prev.join("\r\n") + "\r\n";
+        FFT.lines = prev;
+    }
+    fftBuildSections();
+    document.getElementById("fftDocMode").innerText = String(document.documentMode);
+    document.getElementById("fftDashIdOut").innerText = FFT_PI_DASHID;
+    document.getElementById("fftVersion").innerText = FFT.version;
+    fftLog("INFO", "Dashboard Feature Tester " + FFT.version + " loaded; documentMode " + document.documentMode + (saved ? "; restored " + FFT.state.restoredLines + " lines from TheDataStore" : ""));
+    for (var i = 0; i < window.FFT_EARLY.length; i++) { fftLog("JSERR", "(before logger) " + window.FFT_EARLY[i]); }
+    try {
+        fftCall("RegisterRefreshHandler", ["fftRefreshHandler", ""]);
+        FFT.state.refreshRegistered = true;
+        fftLog("INFO", "RegisterRefreshHandler registered for all signals");
+    } catch (e) {
+        FFT.state.refreshError = fftErr(e);
+        fftLog("ERROR", "RegisterRefreshHandler failed: " + FFT.state.refreshError);
+    }
+    fftRenderInventory();
+    fftLog("INFO", "Click 'Run all safe tests', then 'Copy report' and paste it back for analysis.");
+})();
+</script>
+        ]]></HTML>
+    </Page>
+    <Page Name="SecondPage" DocType="HTML5" >
+        <Title>Dashboard Feature Tester - Page 2</Title>
+        <Head><![CDATA[
+            <meta http-equiv="X-UA-Compatible" content="IE=11">
+            <script>window.onerror = function(event, source, lineno, colno, error){ if (source && -1 != source.toString().indexOf("/wizards.js") && 0 == lineno && 0 == colno) { return true; } };</script>
+        ]]></Head>
+        <HTML><![CDATA[
+<script language="javascript">InsertUtilityDiv();</script>
+<!-- Same id as on the first page: the console carries its contents across linkpage: navigation -->
+<div id="TheDataStore" style="display: none;"></div>
+
+<h2>Dashboard Feature Tester - Page 2</h2>
+<p>This page exists to test <code>linkpage:</code> navigation, the per-page <code>&lt;Title&gt;</code>, and <code>TheDataStore</code>.</p>
+<p>Lines carried over in TheDataStore: <b id="p2Count">?</b></p>
+<p><a href="linkpage:DefaultPage">Back to the main page (linkpage:DefaultPage)</a></p>
+<p>Page 2 relevance check: <?Relevance now ?></p>
+<pre id="p2Tail" style="background: #f6f6f6; border: 1px solid #ddd; padding: 4px; white-space: pre-wrap; font-size: 11px;"></pre>
+
+<script language="javascript">
+(function() {
+    var ds = document.getElementById("TheDataStore");
+    var text = ds ? (ds.innerText || "") : "";
+    var lines = text ? text.split(/\r?\n/) : [];
+    document.getElementById("p2Count").innerText = String(lines.length);
+    document.getElementById("p2Tail").innerText = lines.slice(-15).join("\n");
+    // append a line so the main page can verify the round trip
+    var d = new Date();
+    lines.push(d.toTimeString().substring(0, 8) + " [NAV] SecondPage loaded; received " + (lines.length) + " lines via TheDataStore");
+    if (ds) { ds.innerText = lines.slice(-500).join("\n"); }
+})();
+</script>
+        ]]></HTML>
+    </Page>
+  </Wizard>
+</BES>
