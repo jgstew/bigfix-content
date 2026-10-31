@@ -189,7 +189,7 @@ This is the complete list of 26 operations, taken from the server's own OpenAPI 
 | Get content from an external site | `GET /api/sdk/resources/{type}/external/{siteName}/{id}` | |
 | Edit content | `PUT /api/sdk/resources/{type}/{id}/edit` | BES XML (`application/xml`) |
 | Delete content | `POST /api/sdk/resources/{type}/delete` | `{"ids": [<int>, ...]}` |
-| Dashboard variables | `GET /api/sdk/dashboardvariables` (all), `GET /api/sdk/dashboardvariable/{dashboardId}`, and `GET/POST/PUT/DELETE /api/sdk/dashboardvariable/{dashboardId}/{name}` | POST/PUT body: `{"value": "...", "private": true}` |
+| Dashboard variables | `GET /api/sdk/dashboardvariables` (all), `GET /api/sdk/dashboardvariable/{dashboardId}`, and `GET/POST/PUT/DELETE /api/sdk/dashboardvariable/{dashboardId}/{name}` | POST/PUT body: `{"value": "...", "private": true}`. A missing `private` means private. **When a private and a shared variable have the same name:** `GET …/{name}` returns `500 ".response.value should be object"`, and one `DELETE …/{name}` **removes both** (confirmed on 11.0.7). See [web-reports-renderer](web-reports-renderer/README.md#dashboard-variable-sdk-api-quirks) for a workaround. |
 | Platform REST passthrough | `GET/POST/PUT/DELETE /api/sdk/passthrough/{uri}` | The `uri` **must include `api/`**, for example `passthrough/api/sites`. POST/PUT take `application/xml` or `text/plain`. Needs **Can use REST API**. |
 | Stop actions | `POST /api/sdk/actions/stop` | `{"ids": [<int>, ...]}` |
 | Activate / deactivate analyses | `POST /api/sdk/analyses/activate`, `.../deactivate` | `{"analyses": [{"siteID": "<digits>", "analysisID": <int>}]}` |

@@ -8,7 +8,7 @@
 // All relevance runs through the WebUI SDK: POST /api/sdk/sessionrelevance/evaluate.
 'use strict'
 ;(function () {
-  const VERSION = '1.0.1'
+  const VERSION = '1.0.3'
   const KEEPALIVE_MS = 30000
   const PI_CONCURRENCY = 4
   const MAX_LOG_LINES = 5000

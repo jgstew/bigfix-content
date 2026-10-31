@@ -1,12 +1,12 @@
 # Web Reports Renderer - BigFix WebUI extension
 
-Renders a BigFix **Web Reports custom report** inside WebUI, with all of its relevance evaluated through the WebUI SDK (`POST /api/sdk/sessionrelevance/evaluate`). It's plain HTML and JavaScript with no HCL code, packaged by `pack.py`. The current version is **1.0.1**.
+Renders a BigFix **Web Reports custom report** inside WebUI, with all of its relevance evaluated through the WebUI SDK (`POST /api/sdk/sessionrelevance/evaluate`). It's plain HTML and JavaScript with no HCL code, packaged by `pack.py`. The current version is **1.0.3**.
 
 1. **Choose or drop a report**, such as the ones in [`../../webreports`](../../webreports):
    - `.besrpt` / `.beswrpt` files containing report HTML
    - `.webreport` files, which are `<BESWebReport>` XML; only `<Type>CustomReport</Type>` is rendered
 2. **Every `<?Relevance ?>` is replaced** with its result, the way Web Reports does on the server.
-3. **The report renders in an iframe** inside `<div id="wr_datapage">`, like Web Reports, with [`shim.js`](src/static/js/shim.js) loaded first. Its JavaScript calls to `EvaluateRelevance()`, `Relevance()` and `AsyncEvaluateString()` are answered through the same SDK API.
+3. **The report renders in an iframe** inside `<div id="wr_datapage">`, like Web Reports, with [`shim.js`](src/static/js/shim.js) loaded first. Its JavaScript calls to `EvaluateRelevance()`, `Relevance()` and `AsyncEvaluateString()` are answered through the same SDK API. Its dashboard-variable calls (`StoreSharedVariable()`, `DeleteSharedVariable()`, and the console's `StoreVariable()` family) go to `/api/sdk/dashboardvariable/...`.
 4. **CDN `<script>`/`<link>` tags** are rewritten to local copies, because WebUI blocks every other host.
 5. **Console links** (`linkid:...`) open the matching WebUI page in a new tab.
 6. **Copy report:** a collapsed **Log** records every relevance evaluation, JavaScript relevance call, script error, and blocked file. **Copy report** gives it back as one block of text (the same pattern as [sdk-api-tester](../sdk-api-tester/)).
@@ -112,6 +112,34 @@ return null;
   - any other status: `'Error contacting server. Status code: N'`
 - **Missing element:** `WR.Notify.error('The object to contain the evaluation is not valid.')`.
 
+### Dashboard variables (`/JavaScript/DashboardAPI/DashboardVariables.js`, read from the live file)
+
+Web Reports gives custom reports **only two** dashboard-variable functions. Both are asynchronous, and both work on **shared** variables only:
+
+```js
+StoreSharedVariable = function (dashboardID, variableName, variableValue, callback, databaseID) {
+  if (!dashboardID || !variableName || !variableValue) {
+    WR.Notify.error('Attempt to set dashboard datastore value failed: missing required arguments.'); return; }
+  var paramMap = new WR.URL.ParamMap(); paramMap.add('Value', variableValue);
+  postDashboardVariableRequest('/post/store-shared-variable', dashboardID, variableName, paramMap, callback, databaseID);
+}
+DeleteSharedVariable = function (dashboardID, variableName, callback, databaseID) {
+  if (!dashboardID || !variableName) {
+    WR.Notify.error('Attempt to delete dashboard datastore value failed: missing required arguments.'); return; }
+  postDashboardVariableRequest('/post/delete-shared-variable', dashboardID, variableName, new WR.URL.ParamMap(), callback, databaseID);
+}
+// postDashboardVariableRequest adds DashboardID, Name, DatabaseID (if given) and DashboardVariableToken
+// (WR.dashboardVariableRequestToken, set in the report page), then YAHOO.util.Connect.asyncRequest('POST', url, ...):
+//   success: callback.success(o)       failure: callback.failure(o), or WR.Notify.error('HTTP POST Request "<url>" failed: ' + o.responseText)
+//   o is the YUI response object (o.status, o.statusText, o.responseText)
+```
+
+- **`variableValue` can't be empty:** an empty string is falsy, so it's rejected as a missing argument.
+- **`databaseID`** chooses one of the databases Web Reports aggregates. Without it, the value is written to every one.
+- **Only admins can write:** Web Reports only lets a report run by an admin user change shared dashboard data; others get an error.
+- **There is no read function.** Reports read variables with session relevance, such as `shared variable "X" of current wizard`, `private variable "X" of current wizard`, or `shared variables "X" of bes wizards`.
+- **The console's wizard API has more**, and reports that double as dashboards call it: `StoreVariable(dashboardID, name, value, isPrivate)` (`isPrivate` defaults to **false**, meaning shared), `StorePrivateVariable(...)`, `StoreSharedVariable(...)`, `DeleteVariable(dashboardID, name, isPrivate)`, `DeletePrivateVariable(...)` and `DeleteSharedVariable(...)`. Dashboards usually call them as `external.StoreVariable(...)`, synchronously.
+
 **Not defined in Web Reports:** `InsertUtilityDiv`, `OpenComputerGroup` and the other console dashboard functions. Reports that double as console dashboards guard them, or rely on `window.onerror`.
 
 ## How WebUI differs
@@ -142,6 +170,17 @@ These were all confirmed on WebUI with BigFix 11.0.7.61.
   - fixlet → no page found yet: `/framework/content` is `404 Page Not Found`, and the WebUI content list had no per-fixlet links with ids
 - **WebUI pages send `X-Frame-Options: DENY`,** so they can't open inside the report iframe.
 
+### Dashboard-variable SDK API quirks
+
+These were found with the shim on the real server, using a throwaway dashboard id:
+
+- **Store:** `POST /api/sdk/dashboardvariable/{id}/{name}` with `{"value": "...", "private": true|false}` works. **A missing `private` means private**, so the shim always sends it.
+- **Read:** `GET` of one variable returns `value: {Dashboard, Name, IsPrivate, Value}` (and `User` for a private one). A variable that doesn't exist returns `404 {"message": "Not Found"}`.
+- **A private and a shared variable can share a name.** While both exist:
+  - **`GET …/{name}` returns `500 ".response.value should be object"`**; WebUI's own response check fails.
+  - **One `DELETE …/{name}` removes both.** The SDK's `DELETE` has no private/shared flag.
+- **List:** `GET /api/sdk/dashboardvariable/{id}` lists the dashboard's variables, both kinds, each with `IsPrivate` (a private one also has `User`), and returns 404 when there are none.
+
 ### The extension's security policy applies to the report too
 
 - **Inherited policy:** extension pages get `default-src 'self'; img-src 'self' blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss:; sandbox …; frame-ancestors 'self'` plus `X-Content-Type-Options: nosniff`. A **`srcdoc` iframe inherits that policy** from its parent page.
@@ -158,6 +197,10 @@ These were all confirmed on WebUI with BigFix 11.0.7.61.
 | `Relevance(q)` | Synchronous. Tuples stay arrays, date strings become `Date` (Web Reports' regex), and arrays get Web Reports' `sort(i, fn)` and `toArray()`. |
 | `Relevance(q, {success, failure})` | Asynchronous (`fetch`). `failure` gets the server's message. |
 | `AsyncEvaluateString(q, id)` | Shows `loading...`, then the answers joined with `<br />`, not escaped. On error it shows `Error: <message>`, and a missing element is logged as WARN. **This differs on purpose** from Web Reports' buggy `[object XMLDocument]`. |
+| `StoreSharedVariable(id, name, value, callback, databaseID)` / `DeleteSharedVariable(id, name, callback, databaseID)` | Web Reports' behavior: asynchronous, the same missing-argument checks and messages, and `callback.success(o)` / `callback.failure(o)` with `o = {status, statusText, responseText}`. With no callback, a failure calls `WR.Notify.error('HTTP POST Request "/post/…" failed: …')`. Maps to `POST` (`private: false`) / `DELETE /api/sdk/dashboardvariable/{id}/{name}`. `databaseID` is ignored with an INFO line, because WebUI has a single database. |
+| `StoreVariable(id, name, value, isPrivate)`, `StorePrivateVariable`, `DeleteVariable(id, name, isPrivate)`, `DeletePrivateVariable` | The console's versions: synchronous, `isPrivate` defaulting to false (shared), throwing `Error(message)` on failure (for example `Not Found` when deleting something that doesn't exist). They're also attached to `window.external` where the browser allows it. |
+| Deleting one kind of variable | Before a delete, the shim reads the dashboard's variable list. After the delete, it writes back the same-named variable of the other kind (shared or private) and logs `WARN restored … variable`, because the SDK's `DELETE` removes both. |
+| `WR.Notify.error/warn/info` | A minimal `WR.Notify`, created only if `WR.Notify` doesn't already exist. It writes to the Log (`ERROR`/`WARN`/`INFO`) and the browser console; there's no Web Reports banner. `window.WR` is created as an empty object for it if needed. |
 | `InsertUtilityDiv()`, `RegisterRefreshHandler()`, `ClearAllGlobalFilters()`, `OpenComputerGroup()` | No-ops that log an INFO line, so reports that also work as console dashboards don't stop with an error. |
 | `linkid:opencomputer(id)` / `linkid:openaction(id)` links | One capturing click listener on the iframe document, so it also catches links added later, opens `/framework/devices/<id>` or `/framework/deployments/<id>` with `window.open(url, '_blank', 'noopener')`. Other `linkid:` links are logged as `no WebUI page for console link …`. |
 | CDN `<script>`/`<link>` | Rewritten to local copies; see [CDN libraries](#cdn-libraries). |
@@ -209,6 +252,8 @@ In total that's 33 files, about 3.5 MB on disk; the built `.webui` is about 1.27
 | Console-only calls such as `InsertUtilityDiv()` and `OpenComputerGroup()` threw errors | Reports built to work as both dashboards and reports | Logged no-ops |
 | `fetch_libs.py` asked cdnjs for `jqueryui/1.12.1/%22images%2Fui-icons_….png%22` and got 403 | `jquery-ui.min.css` contains a URL-encoded copy of its image paths in a ThemeRoller comment | Skip `url()` values that contain `%` |
 | A popup from the sandboxed iframe would itself be sandboxed | The sandbox flags carry over to popups by default | Added `allow-popups-to-escape-sandbox` |
+| Deleting a private variable also deleted the shared one with the same name, and the other way around | The SDK's `DELETE /api/sdk/dashboardvariable/{id}/{name}` has no private/shared flag and removes both | The shim reads the dashboard's variable list before a delete, and writes back the other kind afterwards, with a WARN in the Log |
+| Dashboard-variable functions were missing (the README listed them as not provided) | Web Reports loads `DashboardVariables.js` into the report iframe, and this app didn't have it | Shimmed `StoreSharedVariable` / `DeleteSharedVariable` with Web Reports' exact behavior, plus the console's `StoreVariable` family and a minimal `WR.Notify` |
 | `AsyncEvaluateString` in Web Reports shows `[object XMLDocument]` | A Web Reports 11.0.7 bug (`innerHTML = xmlDoc`) | The shim shows the answers instead (a deliberate difference) |
 | Font Awesome 5 icons didn't convert in an automated, hidden browser preview | `requestAnimationFrame` never fires in a hidden tab, and Font Awesome batches its DOM changes on it | Not a real problem: the icons render in a visible tab (79 icons on the real server). Remember this when testing in a headless or hidden browser. |
 | A local mock made some results look wrong (raw `<string>`, a 70 KB attribute) | The mock returned canned or unescaped answers | Not an app problem. Test relevance results on a real server; use mocks only for CSP, loading and the shim's mechanics. |
@@ -222,7 +267,12 @@ In total that's 33 files, about 3.5 MB on disk; the built `.webui` is about 1.27
 - **Fixlet links** (`linkid:openfixlet(site,id)`) open nothing; no WebUI page for them is known yet. Other `linkid:` forms aren't mapped either.
 - **No refresh:** `<?BeginRefreshRelevance?>` sections never refresh.
 - **No report files:** Web Reports serves a report's own files from `/ReportFiles/<reportId>/`, through the `<base href>`. Here there's no `<base>`, and an uploaded report has no stored files, so relative `src`/`href` values (images or scripts shipped with the report) don't load.
-- **Missing Web Reports functions:** `DashboardVariables.js` (dashboard variable functions), `WakeOnLan.js`, `WR.Notify`, YUI, and Web Reports' own `jQuery/jquery.js` aren't provided. A report that uses them without loading its own copy fails, and the error shows in the Log.
+- **Missing Web Reports functions:** `WakeOnLan.js`, the rest of the `WR` object (`WR.URL`, `WR.Filters`, `WR.makeRelevanceArray` as a public function, and so on), YUI, and Web Reports' own `jQuery/jquery.js` aren't provided. `WR.Notify` is only a minimal stand-in that writes to the Log. A report that uses the rest without loading its own copy fails, and the error shows in the Log.
+- **Dashboard variables:**
+  - **Permissions:** writes run with the WebUI operator's permissions. Web Reports' "admin users only" rule for shared variables isn't enforced here; the SDK applies its own rules.
+  - **Restore after delete:** the write-back is two extra calls, so it isn't atomic, and it assumes the private variable in the list is the caller's own. Whether the SDK's `DELETE` also removes **other** operators' private variables with that name wasn't tested; only one operator was used.
+  - **Reading:** reports still read with relevance (`shared variable "X" of current wizard`). `current wizard` has no meaning for an uploaded report, so reports should name the dashboard explicitly, for example `shared variables "X" of bes wizards whose (dashboard id of it = "…")`. That needs a dashboard with that id to exist. Reading a variable written by the shim through relevance wasn't tested.
+  - **`databaseID`** is ignored.
 - **External and template reports** aren't rendered. WebUI extensions can't frame or call other hosts, and template reports are saved Web Reports pages, not HTML.
 - **Libraries:** only the libraries in `LIBRARIES` are available. Everything else from another host is blocked.
 - **Parsing:** a `?>` inside a relevance string literal ends the processing instruction early. Web Reports has the same rule. Processing instructions are matched case-insensitively (`<?relevance`).
@@ -259,7 +309,7 @@ This writes `output/web-reports-renderer-<version>.webui`, about 1.27 MB with th
 | --- | --- |
 | `src/index.html` | Upload and drop area, status, the report iframe (its `sandbox` flags), and the Log |
 | `src/static/js/app.js` | Logger, redaction and report; `/me` and `/loggedin` shell; report parsing; `<?Relevance ?>` and refresh-tag substitution; library manifest loading and URL rewriting; building the iframe document |
-| `src/static/js/shim.js` | Runs first inside the iframe: `EvaluateRelevance`, `Relevance`, `AsyncEvaluateString`, the console no-ops, `linkid:` link handling, and `JSERR`/`BLOCKED` logging back to `parent.WRR.log` |
+| `src/static/js/shim.js` | Runs first inside the iframe: `EvaluateRelevance`, `Relevance`, `AsyncEvaluateString`; the dashboard-variable functions (Web Reports and console versions), with the restore after delete; `WR.Notify`; the console no-ops; `linkid:` link handling; and `JSERR`/`BLOCKED`/`DSVAR` logging back to `parent.WRR.log` |
 | `src/static/css/app.css` | Page styles |
 | `src/static/css/report.css` | Minimal base styles inside the iframe (Web Reports' `sourcewrapper.css` isn't copied) and the relevance-error style |
 | `fetch_libs.py`, `libs.lock.json` | Download and pin the CDN library copies (`libs.lock.json` is committed) |
@@ -290,6 +340,19 @@ This writes `output/web-reports-renderer-<version>.webui`, about 1.27 MB with th
 
 No relevance failed and nothing was blocked in any of them. In 1.0.1, clicking computer and action links opened `/framework/devices/<id>` and `/framework/deployments/<id>`, including a link added by `EvaluateRelevance()`. The fixlet case wasn't exercised.
 
+**Dashboard variables, real WebUI, 1.0.2 and 1.0.3.** Called from the rendered report's window, against a throwaway dashboard id that was empty again afterwards:
+
+| Call | Result |
+| --- | --- |
+| `StoreSharedVariable(id, 'wrr_shared', 'one', {success, failure})` | `success 200`; reads back as `one`, `IsPrivate=false` |
+| `StoreVariable(id, 'wrr_private', 'two', true)` | reads back as `two`, `IsPrivate=true` |
+| `StoreVariable(id, 'wrr_default', 'three')` | reads back as `three`, `IsPrivate=false` (shared by default) |
+| `StoreSharedVariable(id, 'wrr_shared', '')` | `WR.Notify.error: Attempt to set dashboard datastore value failed: missing required arguments.` |
+| `DeleteSharedVariable` / `DeletePrivateVariable` / `DeleteVariable` | Each deleted its variable; reading afterwards gave 404 |
+| Delete of a name that doesn't exist | The console functions throw `Not Found`; `DeleteSharedVariable` calls `failure` with status 404 |
+| A private and a shared `same`, then `DeletePrivateVariable` | 1.0.2: **both were gone** (the SDK quirk). 1.0.3: the shared `same=SHARED` remained, with a "restored shared variable" WARN. |
+| A private and a shared `same`, then `DeleteSharedVariable` | 1.0.3: `success 200`, and the private `same=PRIVATE2` remained, with a "restored private variable" WARN |
+
 ## How to investigate further
 
 **Reading Web Reports' real behavior:** open any custom report in Web Reports, then run this in the browser console:
@@ -317,7 +380,8 @@ input.dispatchEvent(new Event('change'))
 ## Ideas not done yet
 
 - **Exact plurality and types:** the platform REST `GET /api/query?relevance=…&output=json` (through the SDK passthrough `GET /api/sdk/passthrough/api/query?…`, which needs **Can use REST API**) may return plurality and type information. That could replace the one-value guess and the `as html` trick. It hasn't been tested: check whether the passthrough forwards query strings and what the JSON contains.
-- **More Web Reports functions:** add dashboard-variable functions on top of `/api/sdk/dashboardvariable/{dashboardId}/{name}`, and a `WR.Notify` stand-in.
+- **A visible `WR.Notify`:** a banner inside the report instead of only a Log line, plus `WR.URL.ParamMap` and other `WR` helpers that reports may use directly.
+- **A dashboard-id setting for uploaded reports**, so `current wizard`-style reads and writes have a stable namespace.
 - **Fixlet links:** find a WebUI page for a single fixlet or task and map `linkid:openfixlet(site,id)` to it.
 - **An option to treat `in web reports context` as `True`**, by rewriting it in expressions, so reports take their Web Reports branch.
 - **Reports already in Web Reports:** load a stored report by id, for example by reading the site files through the SDK, instead of uploading one.
