@@ -2,3 +2,5 @@
 fixlet/BIOS/Dell/CatalogPC.cab
 fixlet/BIOS/Dell/CatalogPC.xml
 _BESSupport
+# don't commit node_modules.zip
+node_modules.zip

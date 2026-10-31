@@ -19,7 +19,7 @@ A BigFix WebUI extension that runs **session relevance** and **client relevance*
 
 **BigFix Query targets** are filled in automatically when the page opens, with the 5 computers that reported most recently. Computers that are offline never answer a BigFix Query. You can type other computer IDs at any time. **Use the 5 most recently reporting computers** fills them in again.
 
-There's **no HCL code**: no `bfcore-react` and no Patronus. A small header replaces the WebUI nav bar, with **← BigFix WebUI**, the app title, the logged-in user name, and **Log out**.
+There's **no HCL code**: no `bfcore-react` and no Patronus. Since 2.0.4 the page has **WebUI's own navigation bar** (Devices, Apps, Deployments, Reports, Extensions, gear, log out), drawn by the shared [`../shared/webui-frame.js`](../shared/webui-frame.js) from the WebUI server's menu data (see [../README.md](../README.md#the-webui-frame-without-bfapp)). Before 2.0.4 a small header stood in for it, and it's still in the page, hidden, as a fallback.
 
 ## Files
 
@@ -87,7 +87,7 @@ Permissions: session relevance needs **Can use WebUI** and BigFix Web Reports. B
   - sends the `XSRF-TOKEN` cookie back as an `X-XSRF-TOKEN` header
   - redirects to `/timeout?nextpage=...` on a 401 or an `iem-login-required` response header
   - rejects with the server's `message` on errors
-- **Shell:** copies what WebUI's own page frame does:
+- **Shell:** WebUI's nav bar comes from `webui-frame.js`; `app.js` still does the rest of what WebUI's page frame does:
   - shows the user name from `GET /me`
   - pings `GET /loggedin` every 30 seconds to keep the session alive
   - links to `/logout`

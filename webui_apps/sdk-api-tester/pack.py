@@ -26,7 +26,7 @@ OUT_DIR = HERE / "output"
 
 # files shared by the apps in webui_apps/ (in ../shared), packaged as static/js/<name> next to the app's own scripts
 SHARED_DIR = HERE.parent / "shared"
-SHARED_FILES = ["webui-relevance.js"]
+SHARED_FILES = ["webui-relevance.js", "webui-frame.js"]
 
 # same rules the template's validatePackage.js enforces
 NAME_RE = re.compile(r"^[a-z0-9_-]+$")

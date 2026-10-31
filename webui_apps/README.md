@@ -127,7 +127,7 @@ if (res.status === 401 || res.headers.get('iem-login-required')) {
 
 **Troubleshooting API calls on a server:** install [sdk-api-tester](sdk-api-tester/), run **Run all safe tests** (read-only, apart from one private dashboard variable that it deletes again), then expand **Log** and click **Copy report**. The report includes every request's status, timing, and error body, plus which of the 26 operations passed. Redaction of the server address and user name is on by default.
 
-`BfApp` is the one piece that can't easily be replaced, because it provides the standard WebUI header and navigation. Since `bfcore-react` depends on Patronus, Patronus stays in the bundle even if your own code never imports it.
+`BfApp` provides the standard WebUI header and navigation. For the plain HTML/JS apps, [`shared/webui-frame.js`](shared/webui-frame.js) replaces it without HCL code (see [The WebUI frame without BfApp](#the-webui-frame-without-bfapp)). Since `bfcore-react` depends on Patronus, Patronus stays in any template-built bundle even if your own code never imports it.
 
 ### What `BfApp` contains
 
@@ -244,6 +244,8 @@ Permissions (from the HCL docs):
 - **Master Operators and Content Creators** (with read/write access to the target custom site) can install, update, repair, and remove extensions.
 - **Non-master operators** can launch extensions on custom sites they can see, from the **Extensions** menu. They can't manage them.
 
+**Installing the same version again** (**Confirm overwrite extension**) doesn't always replace the files WebUI serves: once, after overwriting SDK API Tester 1.0.5 with a changed build, the old `static/js` files were still served more than 50 seconds later, though earlier overwrites of the renderer did take effect. Bump `version` when the change matters.
+
 Install from a file:
 
 1. Open **Extensions Management** (`https://<webui-server>/ui_extensions/next`).
@@ -256,7 +258,7 @@ Update: bump `version`, rebuild, and run **Install extension from file** again w
 
 Repair: after a WebUI reinstall or a DR restore, **Repair an extension** reinstalls it from what is stored in the site.
 
-**Upgrading an extension installed from a site** (seen on 11.0.7.61): when the site gets a newer `.webui`, Extensions Management gives no sign of it. The row keeps the old version and **Installed**, and the Action menu's **Update** is greyed out. **Repair** is what upgrades it to the version now in the site. That was tested by hand with Relevance Query 2.0.0 → 2.0.1 from WebUI-JGStew, and again with 2.0.1 → 2.0.2. Before the repair, the row showed 2.0.1 with **Update** greyed out, and the served page was still 2.0.1. **Repair** then asked *"Repair the extension. This feature will reinstall the extension. Do you want to repair?"*, which doesn't mention upgrading. About 8 seconds after **OK**, the row showed 2.0.2, and the page served 2.0.2.
+**Upgrading an extension installed from a site** (seen on 11.0.7.61): when the site gets a newer `.webui`, Extensions Management gives no sign of it. The row keeps the old version and **Installed**, and the Action menu's **Update** is greyed out. (Extensions Management's own CSS has status classes for `update_available` and `to_repair`, so the UI was built to show that; the test server didn't.) **Repair** is what upgrades it to the version now in the site. That was tested by hand with Relevance Query 2.0.0 → 2.0.1 from WebUI-JGStew, and again with 2.0.1 → 2.0.2. Before the repair, the row showed 2.0.1 with **Update** greyed out, and the served page was still 2.0.1. **Repair** then asked *"Repair the extension. This feature will reinstall the extension. Do you want to repair?"*, which doesn't mention upgrading. About 8 seconds after **OK**, the row showed 2.0.2, and the page served 2.0.2.
 
 ## Delivery without uploading
 
@@ -286,6 +288,25 @@ Repair: after a WebUI reinstall or a DR restore, **Repair an extension** reinsta
 
   For master-action-site and custom-site content, the link's site id is always the **master action site id**, while WebUI needs the **custom site's own id**, which relevance can't return. WebUI's internal `/custom/api/tasks?search={"query":"…"}` returns it as `siteID`. See [web-reports-renderer](web-reports-renderer/README.md#how-webui-differs) for how the links are mapped.
 - **No wake-on-LAN:** Web Reports has `SendWakeOnLan()`, which calls `GET /json/wakeonlan?cid=…`. WebUI 11.0.7 has nothing like it: no SDK operation, no platform REST resource (`api/help` lists none), and no item in the Devices menus. See [web-reports-renderer](web-reports-renderer/README.md#no-wake-on-lan-in-webui).
+
+## The WebUI frame without BfApp
+
+WebUI has **no shared frame** to load: each WebUI app (Reports, Content, …) bundles its own copy of the nav bar (`BfNavBarLeft` and friends) inside its own `main.<hash>.js`, with no global or component to reuse. Copying HCL's bundle, or the server's `node_modules` (the WebUI Query app's `bfapp` is a server-side Express framework, not the `BfApp` React component), isn't an option either. **But the menus are plain JSON** from the WebUI server, so [`shared/webui-frame.js`](shared/webui-frame.js) draws the same bar with its own markup and CSS (seen on 11.0.7.61):
+
+| Part of the bar | From |
+| --- | --- |
+| Devices, Deployments, Reports | `GET /apps` → the tabs of the entry with `route: "/"` (`{label, route}`) |
+| **Apps ▾** | `GET /apps` → every other entry's `client.tabs`, without `appAdmin`, sorted by label. On the test server that's the same 11 items WebUI shows: CMEP, Content, Custom, IVR, MCM, Patch, Patch Policies, Profile, Query, SCM, Software. |
+| **Extensions ▾** | `GET /ui_extensions/get_extensions` → `displayName (siteDisplayName)` → `url`, installed ones, sorted by name; the current extension is bold |
+| **Gear ▾** | `GET /getGearApps` → `{showX: {appName, route, enabled?}}`, sorted by `appName`, without `enabled: false` or entries with no route; labels come from a small table (`appadmin` → Application Updates, `pps` → Permissions, `ivr` → Access IVR Data, …). WebUI's **Self-Service Application** has no route (WebUI opens it in script), so it isn't shown. |
+| Font | WebUI's own Roboto, from the server's unhashed `/fonts/fonts.css` |
+| Look | 50 px bar in WebUI blue `#0066b0`, white 14 px weight-500 items with 8 px × 16 px padding (from the live page's computed styles) |
+| Logo | The BigFix logo SVG as WebUI's bar shows it (`BfLogo`, 100 × 27.6 px, white on a transparent background). On the test server it sits at the same place as WebUI's (15, 11), and the menu items start within 1–4 px of WebUI's. |
+
+- **Behavior:** the bar is drawn at once with WebUI's usual items, so the page doesn't jump, and the menus fill in when the data arrives. A failed request leaves the usual items in place. Only one menu is open at a time; Esc or a click outside closes it.
+- **The page's own `.shell-header` is hidden, not removed,** so app code that writes into it keeps working.
+- **It isn't drawn inside frames,** such as the renderer's report iframe.
+- **Caveat:** these JSON endpoints and the bar's look aren't documented, so a later WebUI may differ. The apps still work then, with a wrong or empty menu at worst.
 
 ## Where WebUI's session relevance comes from (confirmed on 11.0.7.61)
 

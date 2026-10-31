@@ -3,7 +3,7 @@
 'use strict'
 window.SAT = window.SAT || {}
 ;(function (SAT) {
-  SAT.VERSION = '1.0.4'
+  SAT.VERSION = '1.0.8'
   SAT.lines = []
   SAT.sensitive = new Set() // strings replaced by <REDACTED_n> in copied output when "Redact" is checked
   SAT.state = {} // values shared between tests (ids found by lookups, the test dashboard variable, ...)

@@ -1,7 +1,7 @@
 {
   "name": "sdk-api-tester",
   "displayName": "SDK API Tester",
-  "version": "1.0.4",
+  "version": "1.0.8",
   "description": "Exercise and test every WebUI SDK REST API, with a copyable log",
   "homepage": "./HOMEPAGE",
   "private": true

@@ -2,6 +2,8 @@
 
 A plain HTML/JS WebUI extension that calls **every WebUI SDK REST API** (`/api/sdk/...`) with a minimal example, and doubles as a test suite. It's built the same way as [../session-relevance-query-html](../session-relevance-query-html/): no HCL code, no build step, packaged by `pack.py` (about 18 KB).
 
+Since 1.0.5 the page has **WebUI's own navigation bar**, drawn by the shared [`../shared/webui-frame.js`](../shared/webui-frame.js) from the WebUI server's menu data (see [../README.md](../README.md#the-webui-frame-without-bfapp)).
+
 Results go into a table. Every request is written to a **Log** that starts collapsed at the bottom of the page. Expand it and click **Copy report** to get the results, the API coverage, and the full log as one block of text you can paste somewhere for troubleshooting.
 
 ## Safe vs manual tests
@@ -85,6 +87,8 @@ Then in WebUI open **Extensions Management**, click **Install extension from fil
 ## Testing status
 
 - **Local mock WebUI:** every test passed. The mock copies the response shapes captured from a real server, rewrites `./HOMEPAGE/`, enforces a strict CSP, and requires XSRF. All 23 safe tests passed, and all 18 manual tests passed with `confirm()` auto-accepted. Report redaction and coverage were checked.
+- **Real WebUI, 1.0.8, the WebUI frame with the BigFix logo:** the logo was 100 × 27.6 px at (15, 11), the same as on WebUI's own pages, and the nav items started at x = 135, 217, 298, 414 and 496 px, against WebUI's 135, 219, 299, 416 and 500 px.
+- **Real WebUI, 1.0.6, the WebUI frame:** the bar showed Devices, Apps, Deployments, Reports and Extensions; Apps had the same 11 items as WebUI's own menu, in the same order; Extensions listed the three installed extensions by name with the current one in bold; the gear menu had 7 of WebUI's 8 entries (not Self-Service Application, which has no route); Roboto came from the server. 1.0.5 was installed first and then overwritten with a changed build of the same version, which WebUI didn't apply (see [../README.md](../README.md#installing-and-updating)), so 1.0.6 followed.
 - **Real WebUI, 1.0.4, while Web Reports was answering (BES Explorer stopped):** **Run all safe tests** gave **24 PASS and 1 INFO** of 25. `sr.percent`: *answered by Web Reports: "100%" (sent as written -> 500 A string constant had an improper %-sequence., so % is sent as %25)*. `sr.jsonliteral` was INFO, because bare `true` worked. After BES Explorer was started again: the helper reported BES Explorer for both APIs, `("100%25")` worked as written, bare `true` got 400 again, and requests took about 200 ms instead of 3.5 s.
 - **Real WebUI, 1.0.3:** **Run all safe tests** passed **24 of 24**, including `sr.jsonliteral`: `"true"` got 400 Bad Request and `"(true)"` gave `True`.
 - **Real WebUI (BigFix 11.0.7.61, master operator), 1.0.0:** installed with **Install extension from file**, and **Run all safe tests** passed **23 of 23** in about 6.5 seconds. Results included:
