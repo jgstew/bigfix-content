@@ -10,7 +10,7 @@
 // All relevance runs through the WebUI SDK: POST /api/sdk/sessionrelevance/evaluate.
 'use strict'
 ;(function () {
-  const VERSION = '1.5.1'
+  const VERSION = '1.5.2'
   const KEEPALIVE_MS = 30000
   const PI_CONCURRENCY = 4
   const MAX_LOG_LINES = 5000
@@ -423,6 +423,7 @@
     $('wrr-title').textContent = report.name
     clearAlerts()
     $('wrr-frame').hidden = true
+    $('wrr-fullscreen').hidden = true
     $('wrr-open-external').hidden = true
     stopRefresh()
 
@@ -485,6 +486,7 @@
     const frame = $('wrr-frame')
     frame.srcdoc = buildDocument(html, report.name)
     frame.hidden = false
+    $('wrr-fullscreen').hidden = false
     startRefresh(result.sections, frame)
     setStatus(
       'Rendered ' + result.count + ' relevance instruction' + (result.count === 1 ? '' : 's') + ' in ' + (ms / 1000).toFixed(1) + 's' +
@@ -515,7 +517,7 @@
     if (!file) return
     current = { name: file.name, from: 'uploaded file', getText: () => file.text(), source: null, site: null }
     $('wrr-site-report').value = ''
-    $('wrr-file-name').textContent = file.name + ' (' + file.size.toLocaleString() + ' bytes)'
+    $('wrr-file-name').textContent = 'from ' + file.name + ' (' + file.size.toLocaleString() + ' bytes)'
     $('wrr-rerender').disabled = false
     render()
   }
@@ -585,7 +587,7 @@
         site: site.name
       }
       $('wrr-file').value = ''
-      $('wrr-file-name').textContent = report.name + ' (' + site.name + ')'
+      $('wrr-file-name').textContent = 'from site ' + site.name
       $('wrr-rerender').disabled = false
       render()
       return
@@ -601,16 +603,53 @@
   $('wrr-site-report').addEventListener('change', (e) => chooseSiteReport(e.target.value))
   $('wrr-rescan').addEventListener('click', () => loadSites(true))
   $('opt-templates').addEventListener('change', () => showSiteReports(siteList, siteInfo))
-  const drop = $('wrr-drop')
+  // a report file can be dropped anywhere on the page (outside the report itself, which is its own document)
+  const drop = $('wrr-main')
   drop.addEventListener('dragover', (e) => {
+    if (!e.dataTransfer || !Array.from(e.dataTransfer.types || []).includes('Files')) return
     e.preventDefault()
     drop.classList.add('wrr-drop-over')
   })
-  drop.addEventListener('dragleave', () => drop.classList.remove('wrr-drop-over'))
+  drop.addEventListener('dragleave', (e) => {
+    if (!e.relatedTarget || !drop.contains(e.relatedTarget)) drop.classList.remove('wrr-drop-over')
+  })
   drop.addEventListener('drop', (e) => {
+    if (!e.dataTransfer || !e.dataTransfer.files.length) return
     e.preventDefault()
     drop.classList.remove('wrr-drop-over')
     chooseFile(e.dataTransfer.files[0])
+  })
+
+  // Full screen: the browser's Fullscreen API on the report's stage (Esc leaves). If the browser refuses, for example
+  // because WebUI's page does not allow fullscreen, the stage covers the window instead, until Exit or Esc.
+  const stage = $('wrr-stage')
+  const isFull = () => document.fullscreenElement === stage || stage.classList.contains('wrr-maximized')
+  async function enterFullScreen() {
+    try {
+      await stage.requestFullscreen()
+      log('INFO', 'report shown full screen (Esc leaves)')
+    } catch (err) {
+      stage.classList.add('wrr-maximized')
+      log('INFO', 'the browser refused full screen (' + err.message + '); the report covers the window instead (Exit or Esc leaves)')
+    }
+    $('wrr-exit-fullscreen').focus()
+  }
+  function exitFullScreen() {
+    if (document.fullscreenElement === stage) document.exitFullscreen().catch(() => {})
+    stage.classList.remove('wrr-maximized')
+  }
+  $('wrr-fullscreen').addEventListener('click', () => (isFull() ? exitFullScreen() : enterFullScreen()))
+  $('wrr-exit-fullscreen').addEventListener('click', exitFullScreen)
+  // Esc for the covering fallback; the real full screen handles Esc itself. Keys pressed inside the report go to its
+  // own document, so the frame's document is listened to as well, after each render.
+  const onKey = (e) => e.key === 'Escape' && stage.classList.contains('wrr-maximized') && exitFullScreen()
+  document.addEventListener('keydown', onKey)
+  $('wrr-frame').addEventListener('load', () => {
+    try {
+      $('wrr-frame').contentDocument.addEventListener('keydown', onKey)
+    } catch (e) {
+      // not reachable: the Exit button still works
+    }
   })
   $('btn-copy-report').addEventListener('click', () => copy(buildReport(), 'Report'))
   $('btn-copy-log').addEventListener('click', () => copy(redact(lines.join('\n')), 'Log'))

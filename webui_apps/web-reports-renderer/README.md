@@ -1,10 +1,10 @@
 # Web Reports Renderer - BigFix WebUI extension
 
-Renders a BigFix **Web Reports custom report** inside WebUI, with all of its relevance evaluated through WebUI. It uses the platform REST query (typed, through the SDK passthrough) when the operator has **Can use REST API**, and the SDK's `POST /api/sdk/sessionrelevance/evaluate` otherwise. It's plain HTML and JavaScript with no HCL code, packaged by `pack.py`. The current version is **1.5.1**.
+Renders a BigFix **Web Reports custom report** inside WebUI, with all of its relevance evaluated through WebUI. It uses the platform REST query (typed, through the SDK passthrough) when the operator has **Can use REST API**, and the SDK's `POST /api/sdk/sessionrelevance/evaluate` otherwise. It's plain HTML and JavaScript with no HCL code, packaged by `pack.py`. The current version is **1.5.2**.
 
 1. **Choose a report**:
    - **from a BigFix site** (since 1.3.0): the **Report from a site** drop-down lists the custom reports stored in sites, the way Web Reports lists them. Their scripts and stylesheets load from the same site. This needs **Can use REST API**. See [Reports from sites](#reports-from-sites-and-the-shared-cache).
-   - **or upload / drop one**, such as the ones in [`../../webreports`](../../webreports): `.besrpt` / `.beswrpt` files containing report HTML, or `.webreport` files, which are `<BESWebReport>` XML. Only `<Type>CustomReport</Type>` is rendered.
+   - **or choose / drop a file** (the small **Choose file…** button, or drop it anywhere on the page), such as the ones in [`../../webreports`](../../webreports): `.besrpt` / `.beswrpt` files containing report HTML, or `.webreport` files, which are `<BESWebReport>` XML. Only `<Type>CustomReport</Type>` is rendered.
 2. **Every `<?Relevance ?>` is replaced** with its result, the way Web Reports does on the server.
 3. **The report renders in an iframe** inside `<div id="wr_datapage">`, like Web Reports, with [`shim.js`](src/static/js/shim.js) loaded first. Its JavaScript calls to `EvaluateRelevance()`, `Relevance()` and `AsyncEvaluateString()` are answered through the same SDK API. Its dashboard-variable calls (`StoreSharedVariable()`, `DeleteSharedVariable()`, and the console's `StoreVariable()` family) go to `/api/sdk/dashboardvariable/...`.
 4. **CDN `<script>`/`<link>` tags** are rewritten to local copies, because WebUI blocks every other host.
@@ -321,6 +321,8 @@ What the renderer does about it:
 | `StoreVariable(id, name, value, isPrivate)`, `StorePrivateVariable`, `DeleteVariable(id, name, isPrivate)`, `DeletePrivateVariable` | The console's versions: synchronous, `isPrivate` defaulting to false (shared), throwing `Error(message)` on failure (for example `Not Found` when deleting something that doesn't exist). They're also attached to `window.external` where the browser allows it. |
 | Deleting one kind of variable | Before a delete, the shim reads the dashboard's variable list. After the delete, it writes back the same-named variable of the other kind (shared or private) and logs `WARN restored … variable`, because the SDK's `DELETE` removes both. |
 | `WR.Notify` | Web Reports' methods: `update`, `updateHTML`, `warning`, `warningHTML`, `error`, `errorHTML`, `clear`, `enableNotifications`. Messages show as a **banner at the top of the report** (`#wrr-notify`, styled in `report.css`). Errors stay until dismissed with ×; others clear after 8 seconds. Each one is also logged (`ERROR`/`WARN`/`INFO`), and errors go to the browser console. It's created only if `WR.Notify` doesn't already exist. |
+| Page layout (since 1.5.2) | One compact toolbar: **Report** (the site drop-down), **Show templates**, **Rescan sites**, **Render again**, **Choose file…**, and the site-list status. Under it is one line with the report's title, where it came from (`from site …`), the render status, and **Full screen**. The page is a full-height column, so the report fills everything between that line and the collapsed **Log** and **Config** at the bottom, with a minimum of 20rem. A file can be dropped anywhere on the page except on the report itself, which is its own document. |
+| **Full screen** (since 1.5.2) | Uses the browser's Fullscreen API on the report's container (`#wrr-stage`); **Esc** or the faint **Exit full screen** button top-right leaves it. WebUI's extension page allows it (seen on 11.0.7.61). If a browser refuses, the container covers the window instead (`.wrr-maximized`), and Exit or Esc leaves; Esc is also caught inside the report's own document. |
 | `alert(message)` (since 1.5.0) | No dialog. The message becomes an `ALERT` line in the Log and is listed in red under the report title (`#wrr-alerts`). A repeat of the last message adds a count (`(x2)`), the list keeps 20 messages, and it's cleared at the next render. `alert()` returns at once, so the report's code keeps running where a real dialog would have paused it. |
 | `InsertUtilityDiv()`, `RegisterRefreshHandler()`, `ClearAllGlobalFilters()`, `OpenComputerGroup()` | No-ops that log an INFO line, so reports that also work as console dashboards don't stop with an error. |
 | `SendWakeOnLan(cids, dbid)` | **A no-op** (see [No wake-on-LAN in WebUI](#no-wake-on-lan-in-webui)). It logs `WOL SendWakeOnLan(N computers) ignored: …` and shows the warning banner *Wake-on-LAN does not work here: WebUI has no wake-on-LAN API. Nothing was sent.* It then returns `false` instead of throwing, so the report keeps running. |
@@ -544,7 +546,7 @@ This writes `output/web-reports-renderer-<version>.webui`, about 1.27 MB with th
 
 | File | Purpose |
 | --- | --- |
-| `src/index.html` | The **Report from a site** drop-down, upload and drop area, status, the report iframe (its `sandbox` flags), and the Log |
+| `src/index.html` | The toolbar (site drop-down, Rescan, Render again, Choose file), the title line with **Full screen**, the report stage, status, the report iframe (its `sandbox` flags), and the Log |
 | `src/static/js/app.js` | Logger, redaction and report; `/me` and `/loggedin` shell; report parsing; `<?Relevance ?>` and refresh-tag substitution; library manifest loading and URL rewriting; building the iframe document |
 | `src/static/js/sites.js` | Reports from sites: the site query, file listings, report names and types, the shared cache and its lock |
 | `src/static/js/companions.js` | Resolves a report's relative scripts, stylesheets and images from a file source (inlining, `blob:` URLs), and the site file source |
@@ -675,6 +677,14 @@ No relevance failed and nothing was blocked in any of them. In 1.0.1, clicking c
 | --- | --- |
 | BES Explorer started again, page loaded | Log: `relevance through the SDK API is now answered by BES Explorer` (and REST). The site query worked again: 40 sites, 1 changed, cache saved. |
 | "Custom - Computer Summary" on BES Explorer | 6 of 7: `display names of subscribed sites of …` gives *This operation is not supported* (all 7 worked on Web Reports) |
+
+**1.5.2, page layout, real WebUI (a 1382×749 browser window):**
+
+| Check | Result |
+| --- | --- |
+| "Model Power Savings" rendered | Toolbar, title line, report, and the Log and Config summaries all on one screen; the report is 535 of 749 px high (71%) |
+| **Full screen** | `document.fullscreenElement` was `#wrr-stage`; the report filled the display; **Exit full screen** returned to the page |
+| Fallback, with `requestFullscreen` made to fail | The stage covered the window (0, 0, 1382×749) and the Log said why; a simulated Esc inside the report's document left it |
 
 ## How to investigate further
 

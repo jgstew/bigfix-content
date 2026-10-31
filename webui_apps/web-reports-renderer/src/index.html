@@ -24,44 +24,51 @@
       <a class="shell-logout" href="/logout">Log out</a>
     </header>
 
-    <main class="wrr">
-      <div class="wrr-row wrr-sites">
-        <label class="wrr-inline" for="wrr-site-report">Report from a site</label>
+    <main id="wrr-main" class="wrr">
+      <!-- one compact bar: a report from a site, or a file (chosen here or dropped anywhere on the page) -->
+      <div class="wrr-toolbar">
+        <label class="wrr-inline wrr-strong" for="wrr-site-report">Report</label>
         <select id="wrr-site-report" class="wrr-select" disabled>
           <option value="">Loading the site list...</option>
         </select>
-        <label class="wrr-inline" title="Template reports are saved Web Reports pages, not report HTML, so they cannot be rendered here.">
-          <input type="checkbox" id="opt-templates" /> Show template reports
+        <label class="wrr-inline wrr-small" title="Template reports are saved Web Reports pages, not report HTML, so they cannot be rendered here.">
+          <input type="checkbox" id="opt-templates" /> Show templates
         </label>
-        <button type="button" id="wrr-rescan" class="wrr-button" title="List every site's files again and update the shared cache">Rescan sites</button>
-        <span id="wrr-site-status" class="wrr-hint" role="status"></span>
-      </div>
-
-      <div id="wrr-drop" class="wrr-drop">
-        <label class="wrr-pick">
-          Choose a custom report
+        <button type="button" id="wrr-rescan" class="wrr-button wrr-button-small" title="List every site's files again and update the shared cache">Rescan sites</button>
+        <button type="button" id="wrr-rerender" class="wrr-button wrr-button-small" disabled title="Evaluate and render the current report again">Render again</button>
+        <label class="wrr-button wrr-button-small wrr-pick" title="Choose a .beswrpt / .besrpt report HTML file or a .webreport (&lt;BESWebReport&gt; XML), or drop one anywhere on this page">
+          Choose file&hellip;
           <input type="file" id="wrr-file" accept=".besrpt,.beswrpt,.webreport,.html,.htm,.xml,.txt" />
         </label>
-        <span class="wrr-hint">or drop one here: .beswrpt / .besrpt report HTML, or a .webreport (&lt;BESWebReport&gt; XML)</span>
-        <span id="wrr-file-name" class="wrr-file-name"></span>
-        <button type="button" id="wrr-rerender" class="wrr-button" disabled>Render again</button>
+        <span id="wrr-site-status" class="wrr-hint wrr-small" role="status"></span>
       </div>
 
-      <h2 id="wrr-title" class="wrr-title"></h2>
+      <div class="wrr-heading">
+        <h2 id="wrr-title" class="wrr-title"></h2>
+        <span id="wrr-file-name" class="wrr-hint wrr-small"></span>
+        <p id="wrr-status" class="wrr-status wrr-small" role="status">
+          Nothing rendered yet. Choose a report from a site, or a file. &lt;?Relevance ?&gt; instructions and the report's
+          EvaluateRelevance() / Relevance() / AsyncEvaluateString() calls are answered through WebUI.
+        </p>
+        <button type="button" id="wrr-fullscreen" class="wrr-button wrr-button-small wrr-fullscreen" hidden title="Show the report on the whole screen (Esc leaves)">
+          <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 5V1h4M9 1h4v4M13 9v4H9M5 13H1V9" /></svg>
+          Full screen
+        </button>
+      </div>
       <ul id="wrr-alerts" class="wrr-alerts" role="alert" hidden></ul>
-      <p id="wrr-status" class="wrr-status" role="status">
-        Nothing rendered yet. &lt;?Relevance ?&gt; instructions are evaluated through WebUI, and the report's
-        EvaluateRelevance() / Relevance() / AsyncEvaluateString() calls are answered the same way.
-      </p>
       <button type="button" id="wrr-open-external" class="wrr-button" hidden></button>
 
-      <iframe
-        id="wrr-frame"
-        class="wrr-frame"
-        title="Rendered report"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads"
-        hidden
-      ></iframe>
+      <!-- the report fills the rest of the window; this element is what goes full screen -->
+      <div id="wrr-stage" class="wrr-stage">
+        <iframe
+          id="wrr-frame"
+          class="wrr-frame"
+          title="Rendered report"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads"
+          hidden
+        ></iframe>
+        <button type="button" id="wrr-exit-fullscreen" class="wrr-button wrr-button-small wrr-exit-fullscreen" title="Leave full screen (Esc)">Exit full screen</button>
+      </div>
 
       <details id="log-details" class="wrr-log">
         <summary>Log (<span id="log-count">0</span> lines) - expand to view, copy, or clear</summary>

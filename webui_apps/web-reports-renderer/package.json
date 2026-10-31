@@ -1,7 +1,7 @@
 {
   "name": "web-reports-renderer",
   "displayName": "Web Reports Renderer",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Render a BigFix Web Reports custom report in WebUI, with its relevance evaluated through the WebUI SDK",
   "homepage": "./HOMEPAGE",
   "private": true
