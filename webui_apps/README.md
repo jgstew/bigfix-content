@@ -306,6 +306,7 @@ WebUI has **no shared frame** to load: each WebUI app (Reports, Content, …) bu
 - **Behavior:** the bar is drawn at once with WebUI's usual items, so the page doesn't jump, and the menus fill in when the data arrives. A failed request leaves the usual items in place. Only one menu is open at a time; Esc or a click outside closes it.
 - **The page's own `.shell-header` is hidden, not removed,** so app code that writes into it keeps working.
 - **It isn't drawn inside frames,** such as the renderer's report iframe.
+- **Extensions open in the same tab from this bar.** WebUI's own Extensions menu always opens them in a **new tab**: its nav code (bundled into each WebUI app) builds every extension entry as `{label: displayName + " (" + site + ")", route: url, disabled: status === "TO_REPAIR", target: "_blank"}`, with `target` hard-coded (seen in the 11.0.7.61 Reports bundle). Nothing in `/ui_extensions/get_extensions` or an extension's `package.json` changes that. It also shows that WebUI disables the menu entry of an extension whose status is `TO_REPAIR`.
 - **Caveat:** these JSON endpoints and the bar's look aren't documented, so a later WebUI may differ. The apps still work then, with a wrong or empty menu at worst.
 
 ## Where WebUI's session relevance comes from (confirmed on 11.0.7.61)
