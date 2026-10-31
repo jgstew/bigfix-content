@@ -1,0 +1,15 @@
+/* Base styles for the report iframe. Web Reports wraps custom report HTML in <div id="wr_datapage"> on a page
+   with its own stylesheet; this is a minimal stand-in so reports look reasonable. Reports' own <style> wins. */
+body {
+  margin: 0;
+  padding: 8px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  color: #000;
+  background: #fff;
+}
+
+.wrr-relevance-error {
+  color: #da1e28;
+  font-family: monospace;
+}

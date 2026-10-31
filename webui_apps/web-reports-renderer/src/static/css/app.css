@@ -1,0 +1,187 @@
+:root {
+  --wrr-accent: #0f62fe;
+  --wrr-border: #c6c6c6;
+  --wrr-muted: #6f6f6f;
+  --wrr-header-bg: #161616;
+  --wrr-header-fg: #f4f4f4;
+  --wrr-error: #da1e28;
+  --wrr-surface: #f4f4f4;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #fff;
+  color: #161616;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 0.875rem;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ---- shell header (same as the other examples) ---- */
+
+.shell-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0 1rem;
+  height: 3rem;
+  background: var(--wrr-header-bg);
+  color: var(--wrr-header-fg);
+}
+
+.shell-header a {
+  color: var(--wrr-header-fg);
+  text-decoration: none;
+}
+
+.shell-header a:hover,
+.shell-header a:focus-visible {
+  text-decoration: underline;
+}
+
+.shell-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.shell-user {
+  margin-left: auto;
+  opacity: 0.8;
+}
+
+/* ---- page ---- */
+
+.wrr {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.wrr-drop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.75rem 1rem;
+  border: 2px dashed var(--wrr-border);
+  border-radius: 2px;
+}
+
+.wrr-drop-over {
+  border-color: var(--wrr-accent);
+  background: rgba(15, 98, 254, 0.05);
+}
+
+.wrr-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.wrr-hint,
+.wrr-status {
+  color: var(--wrr-muted);
+}
+
+.wrr-file-name {
+  font-family: monospace;
+}
+
+.wrr-title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.wrr-title:empty {
+  display: none;
+}
+
+.wrr-status {
+  margin: 0;
+}
+
+.wrr-error-text {
+  color: var(--wrr-error);
+}
+
+.wrr-frame {
+  width: 100%;
+  height: 75vh;
+  border: 1px solid var(--wrr-border);
+  border-radius: 2px;
+  resize: vertical;
+  overflow: auto;
+}
+
+.wrr-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+.wrr-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.wrr-button {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--wrr-accent);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--wrr-accent);
+  font: inherit;
+  cursor: pointer;
+}
+
+.wrr-button-primary {
+  background: var(--wrr-accent);
+  color: #fff;
+}
+
+.wrr-button:disabled {
+  border-color: var(--wrr-border);
+  background: #e0e0e0;
+  color: #8d8d8d;
+  cursor: not-allowed;
+}
+
+/* ---- log ---- */
+
+.wrr-log {
+  border: 1px solid var(--wrr-border);
+  border-radius: 2px;
+  padding: 0.5rem 0.75rem;
+}
+
+.wrr-log summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.wrr-log[open] summary {
+  margin-bottom: 0.5rem;
+}
+
+.wrr-log-text {
+  width: 100%;
+  height: 35vh;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #8d8d8d;
+  font-family: monospace;
+  font-size: 0.75rem;
+  resize: vertical;
+}

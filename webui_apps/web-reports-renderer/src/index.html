@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!--
+      ./HOMEPAGE/ is rewritten by the WebUI server to /ui_extensions/<name>-<siteId>/ on install.
+      The report renders in a same-origin srcdoc iframe; shim.js gives it Web Reports' JavaScript relevance API.
+    -->
+    <base href="./HOMEPAGE/" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Web Reports Renderer</title>
+    <link rel="stylesheet" href="./HOMEPAGE/static/css/app.css" />
+    <script defer src="./HOMEPAGE/static/js/app.js"></script>
+  </head>
+  <body>
+    <header class="shell-header">
+      <a class="shell-back" href="/" title="Back to BigFix WebUI">&larr; BigFix WebUI</a>
+      <h1 class="shell-title">Web Reports Renderer</h1>
+      <span class="shell-user" id="shell-user"></span>
+      <a class="shell-logout" href="/logout">Log out</a>
+    </header>
+
+    <main class="wrr">
+      <div id="wrr-drop" class="wrr-drop">
+        <label class="wrr-pick">
+          Choose a custom report
+          <input type="file" id="wrr-file" accept=".besrpt,.beswrpt,.webreport,.html,.htm,.xml,.txt" />
+        </label>
+        <span class="wrr-hint">or drop one here: .beswrpt / .besrpt report HTML, or a .webreport (&lt;BESWebReport&gt; XML)</span>
+        <span id="wrr-file-name" class="wrr-file-name"></span>
+        <button type="button" id="wrr-rerender" class="wrr-button" disabled>Render again</button>
+      </div>
+
+      <h2 id="wrr-title" class="wrr-title"></h2>
+      <p id="wrr-status" class="wrr-status" role="status">
+        Nothing rendered yet. &lt;?Relevance ?&gt; instructions are evaluated through the WebUI SDK, and the report's
+        EvaluateRelevance() / Relevance() / AsyncEvaluateString() calls are answered the same way.
+      </p>
+
+      <iframe
+        id="wrr-frame"
+        class="wrr-frame"
+        title="Rendered report"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads"
+        hidden
+      ></iframe>
+
+      <details id="log-details" class="wrr-log">
+        <summary>Log (<span id="log-count">0</span> lines) - expand to view, copy, or clear</summary>
+        <div class="wrr-row">
+          <button type="button" id="btn-copy-report" class="wrr-button wrr-button-primary">Copy report</button>
+          <button type="button" id="btn-copy-log" class="wrr-button">Copy log</button>
+          <button type="button" id="btn-clear-log" class="wrr-button">Clear</button>
+          <label class="wrr-inline"><input type="checkbox" id="log-redact" checked /> Redact server address and user name when copying</label>
+        </div>
+        <textarea id="log-text" class="wrr-log-text" readonly spellcheck="false" wrap="off"></textarea>
+      </details>
+    </main>
+
+    <noscript>This app needs JavaScript.</noscript>
+  </body>
+</html>

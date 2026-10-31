@@ -1,0 +1,4 @@
+# built packages; rebuild with: python3 pack.py
+output/
+# CDN library copies; download with: python3 fetch_libs.py (libs.lock.json is committed)
+src/static/libs/

@@ -7,6 +7,7 @@ Examples in this folder. Each one builds into a `.webui` file:
 | Example | Stack | HCL code in the build | Build needs | `.webui` size |
 | --- | --- | --- | --- | --- |
 | [sdk-api-tester](sdk-api-tester/) | Plain HTML/JS. Calls all 26 SDK operations as examples and tests, with a copyable log and report. | none | Python 3 (`pack.py`) | about 18 KB |
+| [web-reports-renderer](web-reports-renderer/) | Plain HTML/JS "Web Reports Renderer". Upload a Web Reports custom report; its `<?Relevance ?>` and JavaScript `EvaluateRelevance` / `Relevance` / `AsyncEvaluateString` calls run through the SDK API, and its CDN libraries are served from local copies. | none | Python 3 (`fetch_libs.py`, `pack.py`) | about 1.3 MB (about 12 KB without the libraries) |
 | [session-relevance-query-html](session-relevance-query-html/) | Plain HTML/JS "Relevance Query", with [bigfix-relevance-analyzer](https://github.com/jgstew/bigfix-relevance-analyzer) running as WebAssembly. Auto mode runs client relevance as a BigFix Query and session relevance through the SDK API. | none | Python 3 (`fetch_analyzer.py`, `pack.py`) | about 8.5 MB (about 10 KB without the analyzer) |
 | [session-relevance-query](session-relevance-query/) | React on the WebUI SDK template, with `BfApp` providing the standard WebUI nav bar | `bfcore-react` and Patronus | Template, Node, HCL network | about 2.2 MB |
 
@@ -257,7 +258,8 @@ Repair: after a WebUI reinstall or a DR restore, **Repair an extension** reinsta
 
 ## Delivery without uploading
 
-- **External site** (documented): HCL can publish the `.webui` file in an external site. Operators then install it from Extensions Management without uploading anything, but they still have to click Install. External sites need an HCL-signed masthead.
+- **Repository site** (confirmed): a BigFix 11.0.7 repository site with the `.webui` in its `ServerFiles/` folder works with **Install extension from site**. [bigfix-site-webui-jgstew](https://github.com/jgstew/bigfix-site-webui-jgstew) delivered `relevance-query.webui`, a short name with no version. Extensions Management then lists it with site type **External** and the repository site's name, and the name and version come from the `package.json` inside.
+- **External site** (documented): HCL can publish the `.webui` file in an external site. Operators then install it from Extensions Management without uploading anything, but they still have to click Install.
 - **Custom site:** I found nothing documented for installing from a file that is already in the site. Choosing an already-added site file to update an app (based on the file's LastModified date) is planned but not confirmed in the shipped product.
 - **Automatic install** when a file shows up in a site: not documented anywhere I found.
 
@@ -266,10 +268,13 @@ Repair: after a WebUI reinstall or a DR restore, **Repair an extension** reinsta
 - What is the minimum BigFix platform version for WebUI extensions? The December 2022 WebUI release that introduced them came out the same day as 10.0.8, but neither announcement states a requirement.
 - Is there a newer `bfcore-react` than 6.0.65?
 - What do `done` and `id` in the session relevance response mean? Can `done` ever be `false`, meaning paged or partial results? It never was in testing.
-- Does **Install extension from site** need `<name>-<version>.webui` file names? Uploading a file works regardless, because the name and version come from the `package.json` inside. A short name like `relevance-query.webui` in a site hasn't been tried.
-- Can a BigFix 11.0.7 **repository site** (for example [bigfix-site-webui-jgstew](https://github.com/jgstew/bigfix-site-webui-jgstew), with the `.webui` in `ServerFiles/`) feed **Install extension from site**? Or does that need an HCL-signed external site?
 - What `siteID` do `POST /api/sdk/analyses/activate` and `.../deactivate` expect for an analysis in a custom site, which has no site id in session relevance? Neither call has been run on a real server yet.
 - What is the upload size limit for a `.webui` file? 8.3 MB worked.
+- Is there a WebUI page for a single fixlet or task that `linkid:openfixlet(<siteId>,<fixletId>)` could map to? `/framework/content` returned 404. Computers map to `/framework/devices/<id>` and actions to `/framework/deployments/<id>` (confirmed).
+
+## Session relevance through WebUI vs Web Reports (confirmed)
+
+Relevance evaluated through `/api/sdk/sessionrelevance/evaluate` is **not** in Web Reports context: `in web reports context` returns `False`, and `link of <bes computer>` / `<bes action>` / `<bes fixlet>` return console links (`linkid:opencomputer(<id>)`, `linkid:openaction(<id>)`, `linkid:openfixlet(<siteId>,<fixletId>)`). See [web-reports-renderer](web-reports-renderer/) for how it maps them to WebUI pages.
 
 ## History
 

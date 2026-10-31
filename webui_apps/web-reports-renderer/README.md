@@ -1,0 +1,324 @@
+# Web Reports Renderer - BigFix WebUI extension
+
+Renders a BigFix **Web Reports custom report** inside WebUI, with all of its relevance evaluated through the WebUI SDK (`POST /api/sdk/sessionrelevance/evaluate`). It's plain HTML and JavaScript with no HCL code, packaged by `pack.py`. The current version is **1.0.1**.
+
+1. **Choose or drop a report**, such as the ones in [`../../webreports`](../../webreports):
+   - `.besrpt` / `.beswrpt` files containing report HTML
+   - `.webreport` files, which are `<BESWebReport>` XML; only `<Type>CustomReport</Type>` is rendered
+2. **Every `<?Relevance ?>` is replaced** with its result, the way Web Reports does on the server.
+3. **The report renders in an iframe** inside `<div id="wr_datapage">`, like Web Reports, with [`shim.js`](src/static/js/shim.js) loaded first. Its JavaScript calls to `EvaluateRelevance()`, `Relevance()` and `AsyncEvaluateString()` are answered through the same SDK API.
+4. **CDN `<script>`/`<link>` tags** are rewritten to local copies, because WebUI blocks every other host.
+5. **Console links** (`linkid:...`) open the matching WebUI page in a new tab.
+6. **Copy report:** a collapsed **Log** records every relevance evaluation, JavaScript relevance call, script error, and blocked file. **Copy report** gives it back as one block of text (the same pattern as [sdk-api-tester](../sdk-api-tester/)).
+
+This README records everything found while building and testing it on a live BigFix 11.0.7.61 deployment (WebUI plus Web Reports), so it doesn't need to be investigated again.
+
+- [How Web Reports really does it](#how-web-reports-really-does-it)
+- [How WebUI differs](#how-webui-differs)
+- [What this app does](#what-this-app-does)
+- [Problems found and how they were solved](#problems-found-and-how-they-were-solved)
+- [Known limitations](#known-limitations)
+- [Security](#security)
+- [Build, install, files](#build)
+- [Testing status](#testing-status)
+- [How to investigate further](#how-to-investigate-further)
+- [Ideas not done yet](#ideas-not-done-yet)
+
+## How Web Reports really does it
+
+Everything in this section was **observed on a live Web Reports 11.0.7 server** by reading the functions and the raw HTML of a rendered custom report ("Computer Comments", `/webreports?page=CustomReport&ReportID=17`). Public docs ([developer.bigfix.com Web Reports API](https://developer.bigfix.com/other/web-reports-api/)) only describe this loosely.
+
+### Page structure
+
+- **The report renders in an iframe.** The top page, `/webreports?page=CustomReport&ReportID=<id>`, defines none of the relevance functions. The report is in `<iframe id="wr_reportSourceWrapper" src="/webreports?ShortenedParams=<hash>">`, and that iframe defines `EvaluateRelevance`, `Relevance`, `AsyncEvaluateString`, `JSONRelevanceQuery` and the `WR` object. (Two other iframes on the page, `_yuiResizeMonitor` and `yui-history-iframe`, are YUI helpers.)
+- **What the iframe document starts with:**
+  - `<meta http-equiv="X-UA-Compatible" content="IE=9">` and `content="chrome=1"`
+  - `<base target="_parent" href="http://<wr-host>:<port>/ReportFiles/<reportId>/">`, so relative URLs resolve to files stored with the report, and links open in the top page
+  - `<title><report name>&nbsp;- BigFix Web Reports</title>`
+  - a script that sets a dashboard-variable request token and `WR.Filters = {}`
+  - then **`<div id="wr_datapage">`**, which holds the report HTML
+- **Scripts Web Reports loads into the iframe before the report's own** (all under `/JavaScript/`):
+  - `WR.js`
+  - `DashboardAPI/RelevanceResult.js` and `DashboardAPI/DashboardVariables.js`
+  - `Util/HTML.js`, `Util/DOM.js`, `Util/Array.js`, `Util/URL.js` and `Util/Run.js`
+  - `Notification/Notification.js`
+  - `json2.js`
+  - `jQuery/jquery.js`, Web Reports' own copy, which is separate from any jQuery the report loads
+  - YUI (`yahoo-dom-event`, `Dom`, `Event`)
+  - `FilterCreation/GenerateFilterParameters.js`
+  - `CreateRequest.js`
+  - `EvaluateString.js`
+  - `WakeOnLan/WakeOnLan.js`
+- **CDN scripts:** the report's own CDN `<script>` tags are left as they are, because Web Reports has no restrictive CSP. The raw HTML of "Computer Comments" loaded jQuery 3.1.1, jQuery UI 1.12.1 and DataTables 1.10.13 straight from cdnjs.
+
+### `<?Relevance ?>` processing instructions
+
+- **Where it happens:** they're replaced **on the server**, before the page is sent.
+- **Escaping:** the result is coerced to the **`html` type**. String results are HTML-escaped, and `html` results (`html "..."`, `html tags`, `trs of ...` and so on) are inserted as they are.
+- **Plural results are joined with `<br />` between items, not after each one.** In the raw HTML, a two-row `trs of ...` result came out as `<tbody id="results"> <tr>…</tr><br /><tr>…</tr> </tbody>`: 2 rows and 1 `<br />`. That's why reports carry CSS such as `div#wr_datapage > br + br { display: none; }`.
+- **Tuples:** a tuple result prints as `a, b`, the way BigFix formats tuples.
+
+### The JavaScript relevance API (read from the live functions)
+
+**`EvaluateRelevance(query)`**, synchronous:
+
+```js
+var http_request = CreateRequest();
+http_request.open('POST', '/webreports', false);           // false = synchronous
+http_request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+http_request.send('page=EvaluateRelevanceOnly&' + GetQueryBody(query));
+if (readyState != 4 || status != 200) ThrowError('Error contacting server. Status code: ' + status);
+var xmlDoc = http_request.responseXML;
+// <error>  -> ThrowError(its text)
+// <answerlist> with <answer> elements and <plurality>
+//   plurality '0' -> return GetNodeValue(answers[0])   (a string)
+//   otherwise     -> return [GetNodeValue(answer), ...] (an array of strings)
+// no <answerlist> -> return []                          (an empty array)
+```
+
+- `GetQueryBody(query, coerce)` builds `coerce=string` (only if `coerce`), `currentSiteID=<WR.currentSiteID>` (if set), and `expr=<query>`, then adds `GetFilterParam()`, which carries Web Reports' active computer filter.
+- `ThrowError(message)` does `var e = new Error(); e.message = message; throw e;`.
+- `GetNodeValue(node)` concatenates the `nodeValue` of every child node.
+- Answers are **not** HTML-escaped.
+- [Web Reports vs Dashboard](https://developer.bigfix.com/other/web-reports-api/wr_vs_dashboard.html) says each call is an HTTP request that "might average up to one second".
+
+**`Relevance(query, callback)`**:
+
+```js
+if (!callback) return WR.makeRelevanceArray(JSONRelevanceQuery(query, ParseResult));   // synchronous
+YAHOO.util.Connect.asyncRequest('POST', '/json/relevance', {
+  success: function (o) { var result = ParseResult(o.responseText);
+    if (result.error) callback.failure(result.error);
+    else callback.success(result.plural ? WR.makeRelevanceArray(result.result) : result.result[0]); },
+  failure: function (o) { callback.failure((o.statusText ? o.statusText + ': ' : '') + (o.responseText || '')); }
+}, GetQueryBody(query));
+return null;
+```
+
+- `callback` is an **object**, `{ success: fn, failure: fn }`, not two functions.
+- `JSONRelevanceQuery(query, parser, coerce)` does a synchronous `POST /json/relevance`. A non-200 response throws `'Error contacting server. Status code: N Message: <text>'`, and `result.error` throws. It returns `result.plural ? result.result : result.result[0]`.
+- `ParseResult(text)` is `JSON.parse` with a reviver that turns any string matching `^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \d\d (Jan|…|Dec) \d\d\d\d \d\d:\d\d:\d\d (\+|-)\d\d\d\d$` into a `Date`.
+- `/json/relevance` keeps **tuples as arrays** and other **types as native JS values**. `EvaluateRelevance` flattens everything to strings.
+- `WR.makeRelevanceArray(array)` keeps the original `sort` as `parentSort` and adds two methods:
+  - `sort(i, fn)`: with a number `i`, sorts by tuple item `i`, using `fn(a[i], b[i])` or `<` / `>`. With a function, it sorts with that function. With nothing, it sorts the default way.
+  - `toArray()`: returns the array.
+
+**`AsyncEvaluateString(questionString, answerObjectID)`:**
+- **Request:** an asynchronous `POST /webreports` with the body `page=EvaluateRelevanceOnly&expr=<encodeURIComponent(q)>` plus `GetFilterParam()`.
+- **What `ReplaceString` does with the element's `innerHTML`:**
+  - readyState 1: `'loading...'`
+  - readyState 2: `'loaded.'`
+  - readyState 4, status 200: `innerHTML = xmlDoc`. **This is a bug:** it assigns the XML Document object, so the element shows `[object XMLDocument]`.
+  - any other status: `'Error contacting server. Status code: N'`
+- **Missing element:** `WR.Notify.error('The object to contain the evaluation is not valid.')`.
+
+**Not defined in Web Reports:** `InsertUtilityDiv`, `OpenComputerGroup` and the other console dashboard functions. Reports that double as console dashboards guard them, or rely on `window.onerror`.
+
+## How WebUI differs
+
+These were all confirmed on WebUI with BigFix 11.0.7.61.
+
+### What the SDK API returns
+
+- **Response:** `POST /api/sdk/sessionrelevance/evaluate` with `{"session_relevance": "..."}` returns `{"done": true, "id": {}, "value": [...]}`. Every value is a **string**, and tuples are arrays of strings.
+- **No plurality and no type:** the response gives neither. You can't tell a singular answer from a plural one with one value, or a string from `html`.
+- **Errors** return as `500 {"message": "..."}`, and a request without `X-XSRF-TOKEN` gets `403 invalid csrf token`.
+- **Synchronous calls work:** a synchronous `XMLHttpRequest` from the iframe to this API works (about 310 ms in testing). Chrome logs its usual deprecation warning for synchronous XHR on the main thread.
+
+### Relevance runs outside Web Reports
+
+- `in web reports context` returns **`False`**.
+- **The `link` inspectors return console links**, not Web Reports links:
+
+  | Inspector | Returns |
+  | --- | --- |
+  | `link of <bes computer>` | `<A href="linkid:opencomputer(<computerId>)">name</A>` |
+  | `link of <bes action>` | `<A href="linkid:openaction(<actionId>)">name</A>` |
+  | `link(s) of <bes fixlet>` | `<A href="linkid:openfixlet(<siteId>,<fixletId>)">name</A>` |
+
+- **The WebUI pages for those, checked against real objects:**
+  - computer → `/framework/devices/<computerId>`, which shows that computer (WebUI also redirects it to `/framework/next/devices/<id>`)
+  - action → `/framework/deployments/<actionId>`, which shows that action
+  - fixlet → no page found yet: `/framework/content` is `404 Page Not Found`, and the WebUI content list had no per-fixlet links with ids
+- **WebUI pages send `X-Frame-Options: DENY`,** so they can't open inside the report iframe.
+
+### The extension's security policy applies to the report too
+
+- **Inherited policy:** extension pages get `default-src 'self'; img-src 'self' blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss:; sandbox …; frame-ancestors 'self'` plus `X-Content-Type-Options: nosniff`. A **`srcdoc` iframe inherits that policy** from its parent page.
+- **Effect:** every `<script src>` and `<link href>` to another host in a report is blocked (reported as `script-src-elem` / `style-src-elem` violations), which leaves `$` undefined. Inline `<script>` and `<style>` still run, and so does `eval`.
+
+## What this app does
+
+| Web Reports feature | Here |
+| --- | --- |
+| `<?Relevance expr ?>` | Evaluates `(it as html) of (expr)`, so the **server** escapes strings and leaves `html` alone. If that cast fails, as it does for integers, booleans and tuples, it evaluates `expr` as written and escapes each value in the page (a tuple becomes `a, b`). Plural results are joined with `<br />`, and errors show inline as `<span class="wrr-relevance-error">[relevance error: …]</span>`. Repeated identical expressions are evaluated once, and up to 4 run at a time. |
+| `<?BeginRefreshRelevance id="x"?>` … `<?EndRefreshRelevance?>` | Become `<span id="x">` … `</span>`. The default id is `__DRRSN`, the console's default. Nothing is re-evaluated later. |
+| Page structure | `<!doctype html>`, then `shim.js` as the first, blocking `<script>`, then `report.css`, then `<body><div id="wr_datapage">REPORT</div>`. The `srcdoc` iframe is same-origin, with `sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads"`. |
+| `EvaluateRelevance(q)` | Synchronous `XMLHttpRequest` to the SDK API. One value returns a string; any other count returns an array of strings (tuples become `a, b`). Errors throw `Error(message)` with **both** `e.message` and `e.description` set; older console code reads `e.description`. |
+| `Relevance(q)` | Synchronous. Tuples stay arrays, date strings become `Date` (Web Reports' regex), and arrays get Web Reports' `sort(i, fn)` and `toArray()`. |
+| `Relevance(q, {success, failure})` | Asynchronous (`fetch`). `failure` gets the server's message. |
+| `AsyncEvaluateString(q, id)` | Shows `loading...`, then the answers joined with `<br />`, not escaped. On error it shows `Error: <message>`, and a missing element is logged as WARN. **This differs on purpose** from Web Reports' buggy `[object XMLDocument]`. |
+| `InsertUtilityDiv()`, `RegisterRefreshHandler()`, `ClearAllGlobalFilters()`, `OpenComputerGroup()` | No-ops that log an INFO line, so reports that also work as console dashboards don't stop with an error. |
+| `linkid:opencomputer(id)` / `linkid:openaction(id)` links | One capturing click listener on the iframe document, so it also catches links added later, opens `/framework/devices/<id>` or `/framework/deployments/<id>` with `window.open(url, '_blank', 'noopener')`. Other `linkid:` links are logged as `no WebUI page for console link …`. |
+| CDN `<script>`/`<link>` | Rewritten to local copies; see [CDN libraries](#cdn-libraries). |
+| Script errors and blocked files | `shim.js` sends `error`, `unhandledrejection` and `securitypolicyviolation` events to the Log, as `JSERR` and `BLOCKED` lines. |
+
+**Report file formats:**
+- **`<BESWebReport>` XML** is detected in the first 2000 characters and parsed with `DOMParser`, using the `Name`, `Type`, `Data` and `SourcePage` fields:
+  - `CustomReport`: renders `Data`, which is usually a CDATA block
+  - `ExternalReport`: shows its URL and explains that WebUI extensions can't frame other hosts
+  - anything else, such as `TemplateReport`: says it's a saved Web Reports page (`SourcePage`), not report HTML
+- **Anything else** is treated as raw report HTML, which is what `.besrpt` / `.beswrpt` exports and the files in `../../webreports` are.
+- **Fragments with `<Head>` and `<body>` tags** (dual-use dashboard files like `Computer_Filter_Search`) work, because the browser drops the extra tags and keeps the scripts.
+
+### CDN libraries
+
+`fetch_libs.py` downloads the libraries the example reports use into `src/static/libs/cdnjs/<cdnjs path>`, a git-ignored folder, and writes `src/static/libs/manifest.json` (`{format, base, files[], aliases{}}`). The renderer loads that manifest at startup and waits for it before rendering. Then:
+- **Rewrite:** it replaces `https://cdnjs.cloudflare.com/ajax/libs/<path>`, or a protocol-relative `//cdnjs.cloudflare.com/...`, with the absolute local URL whenever `<path>` is in the manifest, along with any alias URL. The match only applies after `"`, `'`, `(`, `=` or whitespace.
+- **The rewrite runs after relevance substitution,** because some reports build their `<script>` tags with relevance. `GenericDataTables` tries a "Shared Javascript Library" task's MIME field first, and falls back to a cdnjs `<script>`.
+- **`integrity="sha256-…"`** attributes are kept, and they pass, because the copies are byte-identical.
+- **Anything still pointing at another host** is listed in a WARN line, and the browser then reports each one as `BLOCKED`.
+
+| Library | Files |
+| --- | --- |
+| jQuery 3.1.1 | `jquery.min.js` |
+| jQuery UI 1.12.1 | `jquery-ui.min.js`, `jquery-ui.min.css`, and 6 `images/ui-icons_*.png` |
+| DataTables 1.10.13 and 1.10.19 | `js/jquery.dataTables.min.js`, `css/jquery.dataTables.min.css`, and 5 `images/sort_*.png` each |
+| d3 3.5.17 | `d3.js` |
+| nvd3 1.8.5 | `nv.d3.js`, `nv.d3.css` |
+| Font Awesome 4.7.0 | `css/font-awesome.min.css` and 5 `fonts/fontawesome-webfont.*` |
+| Font Awesome 5.3.1 | `js/all.js`. This is also the alias for `https://use.fontawesome.com/releases/v5.3.1/js/all.js`. |
+
+In total that's 33 files, about 3.5 MB on disk; the built `.webui` is about 1.27 MB.
+
+**How `fetch_libs.py` checks the files:**
+- **Start list:** `LIBRARIES`, a list of cdnjs paths. Each CSS file's relative `url(...)` references (fonts and images) are added to it automatically.
+- **SRI check:** every file is checked against the SRI hash cdnjs publishes for it (`https://api.cdnjs.com/libraries/<name>/<version>?fields=sri`, sha512).
+- **Lock file:** fonts and images have no published SRI. The first run records every file's sha256 in **`libs.lock.json`**, which is committed, and every later run must match it exactly. After changing `LIBRARIES` on purpose, run `python3 fetch_libs.py --update-lock`.
+- **Safe writes:** downloads go to a temp folder that replaces `src/static/libs/` only after everything succeeds. Requests retry with exponential backoff, and any file over 8 MB is refused.
+- **To support another library,** add its cdnjs path to `LIBRARIES`, plus an `ALIASES` entry if reports load it from another CDN.
+
+## Problems found and how they were solved
+
+| Problem | Cause | Solution |
+| --- | --- | --- |
+| Every CDN `<script>`/`<link>` in a report was blocked, then `$ is not defined` | The `srcdoc` iframe inherits the extension's `default-src 'self'` policy | Local copies from `fetch_libs.py`, with URLs rewritten after relevance substitution |
+| The SDK doesn't say whether a value is `html` or a string, so escaping can't be decided in the page | The SDK returns plain strings only | Evaluate `(it as html) of (expr)` so the server applies Web Reports' html coercion; fall back to escaping in the page when that cast fails |
+| The SDK doesn't report plurality | Same | Treat one value as singular (see [Known limitations](#known-limitations)) |
+| `link of …` links did nothing | Relevance through WebUI isn't in Web Reports context, so the links are `linkid:` console links | A click listener maps computers and actions to WebUI pages, in a new tab because of `X-Frame-Options: DENY` |
+| Console-only calls such as `InsertUtilityDiv()` and `OpenComputerGroup()` threw errors | Reports built to work as both dashboards and reports | Logged no-ops |
+| `fetch_libs.py` asked cdnjs for `jqueryui/1.12.1/%22images%2Fui-icons_….png%22` and got 403 | `jquery-ui.min.css` contains a URL-encoded copy of its image paths in a ThemeRoller comment | Skip `url()` values that contain `%` |
+| A popup from the sandboxed iframe would itself be sandboxed | The sandbox flags carry over to popups by default | Added `allow-popups-to-escape-sandbox` |
+| `AsyncEvaluateString` in Web Reports shows `[object XMLDocument]` | A Web Reports 11.0.7 bug (`innerHTML = xmlDoc`) | The shim shows the answers instead (a deliberate difference) |
+| Font Awesome 5 icons didn't convert in an automated, hidden browser preview | `requestAnimationFrame` never fires in a hidden tab, and Font Awesome batches its DOM changes on it | Not a real problem: the icons render in a visible tab (79 icons on the real server). Remember this when testing in a headless or hidden browser. |
+| A local mock made some results look wrong (raw `<string>`, a 70 KB attribute) | The mock returned canned or unescaped answers | Not an app problem. Test relevance results on a real server; use mocks only for CSP, loading and the shim's mechanics. |
+
+## Known limitations
+
+- **Singular or plural:** in `EvaluateRelevance` and `Relevance`, exactly one value counts as singular. A plural expression with a single result gives a string, not a one-element array, so code like `result.length` or `result[0]` behaves differently in that case. Empty results return `[]`, as in Web Reports, and an empty singular expression throws, because the server reports "Singular expression refers to nonexistent object". Plurality could be learned another way; see [Ideas](#ideas-not-done-yet).
+- **`EvaluateRelevance` and types:** answers are flattened to strings, as in Web Reports. With `Relevance`, values are the SDK's strings (Web Reports' `/json/relevance` returns native numbers and booleans). Only date strings become `Date`, so a numeric value is still a string like `"3"`.
+- **No Web Reports context:** `in web reports context` is `False`, so reports take their console branch. There are no Web Reports-only inspectors, and no multi-server Web Reports data.
+- **No Web Reports filters or site:** `GetFilterParam()` and `WR.currentSiteID` don't exist here, so a report always sees every computer the WebUI operator can see.
+- **Fixlet links** (`linkid:openfixlet(site,id)`) open nothing; no WebUI page for them is known yet. Other `linkid:` forms aren't mapped either.
+- **No refresh:** `<?BeginRefreshRelevance?>` sections never refresh.
+- **No report files:** Web Reports serves a report's own files from `/ReportFiles/<reportId>/`, through the `<base href>`. Here there's no `<base>`, and an uploaded report has no stored files, so relative `src`/`href` values (images or scripts shipped with the report) don't load.
+- **Missing Web Reports functions:** `DashboardVariables.js` (dashboard variable functions), `WakeOnLan.js`, `WR.Notify`, YUI, and Web Reports' own `jQuery/jquery.js` aren't provided. A report that uses them without loading its own copy fails, and the error shows in the Log.
+- **External and template reports** aren't rendered. WebUI extensions can't frame or call other hosts, and template reports are saved Web Reports pages, not HTML.
+- **Libraries:** only the libraries in `LIBRARIES` are available. Everything else from another host is blocked.
+- **Parsing:** a `?>` inside a relevance string literal ends the processing instruction early. Web Reports has the same rule. Processing instructions are matched case-insensitively (`<?relevance`).
+- **`AsyncEvaluateString`** differs from Web Reports on purpose (see above).
+- **Size:** results over the SDK's limits, and very large reports, are only as fast as the SDK API. Each relevance instruction needs one or two requests.
+
+## Security
+
+The report runs in a **same-origin** iframe with `allow-scripts allow-same-origin`. That's necessary so `shim.js` can call the SDK with the operator's WebUI session and XSRF token. It also means **a report's own JavaScript can call any WebUI or SDK API as the logged-in operator**, including the ones that change BigFix. Web Reports has the same trust model, since a report there runs with the Web Reports session. Only render reports you trust.
+
+The Log's **Redact** option, on by default, masks the WebUI host and the user name in copied text, plus any `https://host:port` URL. It doesn't scrub data in results.
+
+## Build
+
+```bash
+python3 fetch_libs.py
+```
+
+```bash
+python3 pack.py
+```
+
+This writes `output/web-reports-renderer-<version>.webui`, about 1.27 MB with the libraries. Without `src/static/libs/`, the package is about 12 KB and the Log warns that CDN libraries will be blocked. Bump `version` in both `package.json` and `VERSION` in `src/static/js/app.js`.
+
+## Install
+
+1. In WebUI, open **Extensions Management** (`https://<webui-server>/ui_extensions/next`). This needs `_WebUIAppEnv_ENABLE_EXTENSIONS_MANAGEMENT=1` and a WebUI restart.
+2. Click **Install extension from file**, pick a custom site, upload the `.webui` file, and click **Install**. To upgrade, do the same with a higher version and confirm **Confirm upgrade extension**. Re-select the site if the dropdown clears after the file is chosen.
+3. Open `/ui_extensions/web-reports-renderer-<siteId>`, or use **Launch**.
+
+## Files
+
+| File | Purpose |
+| --- | --- |
+| `src/index.html` | Upload and drop area, status, the report iframe (its `sandbox` flags), and the Log |
+| `src/static/js/app.js` | Logger, redaction and report; `/me` and `/loggedin` shell; report parsing; `<?Relevance ?>` and refresh-tag substitution; library manifest loading and URL rewriting; building the iframe document |
+| `src/static/js/shim.js` | Runs first inside the iframe: `EvaluateRelevance`, `Relevance`, `AsyncEvaluateString`, the console no-ops, `linkid:` link handling, and `JSERR`/`BLOCKED` logging back to `parent.WRR.log` |
+| `src/static/css/app.css` | Page styles |
+| `src/static/css/report.css` | Minimal base styles inside the iframe (Web Reports' `sourcewrapper.css` isn't copied) and the relevance-error style |
+| `fetch_libs.py`, `libs.lock.json` | Download and pin the CDN library copies (`libs.lock.json` is committed) |
+| `pack.py` | Builds the `.webui` file (same script as the other examples) |
+| `.gitignore` | Ignores `output/` and `src/static/libs/` |
+
+## Testing status
+
+**Local mock WebUI.** The mock sent the real extension CSP and `nosniff`, rewrote `./HOMEPAGE/`, required XSRF, and returned canned answers. It was used for mechanics only:
+- **Relevance cases:** string, html, number (the escaping fallback), plural (the `<br />` join), the error marker, the refresh span, and a relevance instruction inside an attribute.
+- **`EvaluateRelevance`:** the synchronous result and the thrown error with `message` and `description`.
+- **`Relevance`:** tuple `sort(1)` gave `alpha,mid,zeta`, `toArray` exists, `now` came back as a `Date`, and the async `success` callback ran.
+- **Other shim functions:** `AsyncEvaluateString` and the `InsertUtilityDiv` no-op.
+- **CDN libraries:** without local copies, all 4 of `HiddenContentChart`'s cdnjs files were blocked. With them, jQuery, d3 and nvd3 loaded and passed `integrity`, and an nvd3 pie drew 2 slices.
+
+**Real WebUI, BigFix 11.0.7.61, master operator.** Installed with **Install extension from file**, and WebUI accepted the 1.2 MB upload.
+
+| Report (from `../../webreports`) | Result |
+| --- | --- |
+| `PC_Models_By_Domain.besrpt` | 1 relevance instruction rendered |
+| `HiddenContentChart.besrpt` | The relevance inside `<script>` worked. jQuery, d3 and nvd3 loaded from local copies with their `integrity` hashes, and **the pie chart drew from live data**. |
+| `GenericDataTables.besrpt` | 3 relevance instructions built `<script>`/`<link>` tags (the cdnjs fallbacks), which were rewritten to local copies. The synchronous `EvaluateRelevance` returned the table in about 310 ms, and **DataTables formatted it**. |
+| `ComputerComments.beswrpt` | The comments table rendered with DataTables. Computer links are `linkid:opencomputer(...)`. |
+| `RelayCacheSizing.beswrpt` | 3 relevance instructions, including a tuple shown as `name, 48 GB` |
+| `Computer_Filter_Search.beswrpt` | 3 relevance instructions, DataTables with 27 rows, and **79 Font Awesome 5 icons**. `in web reports context` was `False`, so the console buttons showed. |
+| `external-google.webreport`, `EndOfLifeClients.webreport` | Not rendered, each with a clear message (external report, template report) |
+| `WordGame.besrpt` | Not tried (181 KB, with no relevance) |
+
+No relevance failed and nothing was blocked in any of them. In 1.0.1, clicking computer and action links opened `/framework/devices/<id>` and `/framework/deployments/<id>`, including a link added by `EvaluateRelevance()`. The fixlet case wasn't exercised.
+
+## How to investigate further
+
+**Reading Web Reports' real behavior:** open any custom report in Web Reports, then run this in the browser console:
+
+```js
+const w = document.getElementById('wr_reportSourceWrapper').contentWindow
+String(w.EvaluateRelevance)  // also Relevance, AsyncEvaluateString, JSONRelevanceQuery, ReplaceString, GetQueryBody, ParseResult
+String(w.WR.makeRelevanceArray)
+fetch(document.getElementById('wr_reportSourceWrapper').src).then((r) => r.text())  // raw HTML before scripts ran
+```
+
+**Testing a report in this app on a server:** open the app's page, then feed a report in from the console:
+
+```js
+const dt = new DataTransfer()
+dt.items.add(new File([reportText], 'Name.beswrpt', { type: 'text/plain' }))
+const input = document.getElementById('wrr-file')
+input.files = dt.files
+input.dispatchEvent(new Event('change'))
+// then read #wrr-status, the Log (#log-text), and document.getElementById('wrr-frame').contentDocument
+```
+
+**Finding WebUI pages for other link types:** look at the `href` values on WebUI's list pages, such as `/framework/devices` and `/framework/deployments`. Those gave `/framework/devices/<id>` and `/framework/deployments/<id>`.
+
+## Ideas not done yet
+
+- **Exact plurality and types:** the platform REST `GET /api/query?relevance=…&output=json` (through the SDK passthrough `GET /api/sdk/passthrough/api/query?…`, which needs **Can use REST API**) may return plurality and type information. That could replace the one-value guess and the `as html` trick. It hasn't been tested: check whether the passthrough forwards query strings and what the JSON contains.
+- **More Web Reports functions:** add dashboard-variable functions on top of `/api/sdk/dashboardvariable/{dashboardId}/{name}`, and a `WR.Notify` stand-in.
+- **Fixlet links:** find a WebUI page for a single fixlet or task and map `linkid:openfixlet(site,id)` to it.
+- **An option to treat `in web reports context` as `True`**, by rewriting it in expressions, so reports take their Web Reports branch.
+- **Reports already in Web Reports:** load a stored report by id, for example by reading the site files through the SDK, instead of uploading one.
+- **Refresh sections:** re-evaluate `<?BeginRefreshRelevance?>` sections on a timer.
