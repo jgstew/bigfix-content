@@ -1,7 +1,7 @@
 {
   "name": "session-relevance-query",
   "displayName": "Relevance Query",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Evaluate session relevance, or client relevance as a BigFix Query, with the relevance analyzer",
   "homepage": "./HOMEPAGE",
   "private": true

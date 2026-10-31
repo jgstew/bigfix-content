@@ -9,11 +9,13 @@ A BigFix WebUI extension that runs **session relevance** and **client relevance*
   | Dialect | How it runs |
   | --- | --- |
   | session | `POST /api/sdk/sessionrelevance/evaluate` |
-  | client | BigFix Query: `POST /api/sdk/clientquery`, then `GET /api/sdk/clientqueryresults/{id}` every 3 seconds for up to 60 seconds. Results show per computer as they arrive. |
+  | client | BigFix Query: `POST /api/sdk/clientquery`, then `GET /api/sdk/clientqueryresults/{id}` with exponential backoff: waits of 1, 2, 4, 8, 16 and 32 seconds, then **every 60 seconds** until **600 s** (checks at about 0, 1, 3, 7, 15, 31, 63, 123, 183 … 543 and 600 s; since 2.0.3, before which it checked every 3 s for up to 60 s). Results show per computer as they arrive. |
   | both | Both at once, in separate sections |
   | uncertain or undetermined, or the statement doesn't parse | Not run. Choose **Session** or **Client** under **Mode** to run it anyway. |
 
 **The analyzer loads in the background.** The page works the moment it opens, with a plain text box, and every query runs as session relevance until the analyzer is ready. Then the editor replaces the text box (keeping what you typed) and Auto mode starts. If the analyzer can't load, the page stays on session relevance and says why; **Mode** can still run a BigFix Query.
+
+**You don't have to wait for a BigFix Query to finish** (since 2.0.3). **Evaluate** stays enabled while computers are still answering, so you can change the relevance and run again at once. The page stops polling the earlier query and shows only the new run; the earlier query itself keeps running on the server. Before 2.0.3, Evaluate was disabled until every target answered or 60 seconds passed. A run now waits up to 600 seconds for answers, checking less often as time goes on.
 
 **BigFix Query targets** are filled in automatically when the page opens, with the 5 computers that reported most recently. Computers that are offline never answer a BigFix Query. You can type other computer IDs at any time. **Use the 5 most recently reporting computers** fills them in again.
 
@@ -99,6 +101,12 @@ Permissions: session relevance needs **Can use WebUI** and BigFix Web Reports. B
 - **Session relevance is sent as `(expr)`** (since 2.0.1). WebUI 11.0.7 answers `400 Bad Request` when the whole relevance text is also valid JSON (`true`, `false`, `"x"`, numbers). The parentheses evaluate the same and are never valid JSON. The analyzer still sees the text as typed, and BigFix Query text is sent unchanged: its `ApplicabilityRelevance` of `true` works there.
 
 ## Testing status
+
+- **2.0.3, local mock WebUI** (real extension CSP and `nosniff`, XSRF required, and a BigFix Query that never finishes: 1 of 3 computers answers):
+  - Evaluate stayed enabled while a BigFix Query polled. A session query run then showed its answer right away, the client section stayed hidden, and the mock logged **no further polls** of the first query (it had polled every 3 seconds).
+  - A second BigFix Query run during the first: the first query's polling stopped, the second kept polling, and the page showed the second's results.
+  - Backoff: the page asked for results at 0, 1, 3, 7 and 15 s after Evaluate (measured over the first 20 s). With the 60-second cap, a Node check of the loop gives the whole schedule: 0, 1, 3, 7, 15, 31, 63, 123, 183, 243, 303, 363, 423, 483, 543 and 600 s.
+  - Not yet installed on the test server: it reaches WebUI-JGStew through the site repo, and then needs **Repair**.
 
 - **2.0.0, local mock WebUI:** the mock uses the real server's CSP and `nosniff` header, and serves the v1.43.0 analyzer set. These passed:
   - The analyzer loaded and was verified. Its `version()` matched, and the editor mounted with the typed text and connected to the language server; completion showed.

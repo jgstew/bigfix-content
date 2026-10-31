@@ -10,8 +10,12 @@
   // rendering very large results freezes the browser; limit the relevance itself for big queries
   const MAX_ROWS_RENDERED = 1000
   const KEEPALIVE_MS = 30000
-  const CLIENT_POLL_MS = 3000
-  const CLIENT_POLL_LIMIT_MS = 60000
+  // BigFix Query results: poll with exponential backoff (1 s, 2 s, 4 s, 8 s, ...) up to one check a minute, then every
+  // minute until the limit. Answers from online computers usually arrive within seconds; slow ones still show up within
+  // a minute of arriving. The last wait is shortened so the final poll lands on the limit rather than after it.
+  const CLIENT_POLL_FIRST_MS = 1000
+  const CLIENT_POLL_MAX_MS = 60000
+  const CLIENT_POLL_LIMIT_MS = 600000
 
   // ---- WebUI request helpers ----------------------------------------------------------------
   // Same behavior as the template's BfHttpClient: session cookies, XSRF header, redirect when the session expires.
@@ -137,10 +141,13 @@
 
     let analyzer = null // set when analyzer.js finishes loading
     let editor = null // the analyzer's CodeMirror editor, mounted over the text box
-    let runToken = 0 // bumped on every run; older runs stop updating the page
+    // Bumped on every run. Evaluate stays enabled while a run is in progress, so a new run can start at any time
+    // (a BigFix Query can poll for up to CLIENT_POLL_LIMIT_MS): the older run's session request is aborted, its polling
+    // loop exits at its next check, and it stops updating the page. Its BigFix Query keeps running on the server;
+    // only this page stops asking for its results.
+    let runToken = 0
     let sessionAbort = null
     let copyRows = null // the most recent result rows, for Copy as TSV
-    let running = 0
 
     const getQuery = () => (editor ? editor.getText() : input.value)
     const setQuery = (text) => {
@@ -150,7 +157,7 @@
     }
 
     function updateButtons() {
-      evaluateButton.disabled = running > 0 || getQuery().trim() === ''
+      evaluateButton.disabled = getQuery().trim() === ''
       copyButton.disabled = !copyRows || copyRows.length === 0
     }
 
@@ -248,6 +255,7 @@
       const spinner = el('div', null, 'srq-spinner')
       box.appendChild(spinner)
       let results = null
+      let delay = CLIENT_POLL_FIRST_MS
       const started = Date.now()
       try {
         const submitted = await webuiFetch('/api/sdk/clientquery', {
@@ -275,12 +283,14 @@
           box.appendChild(results)
           copyRows = rows.map((r) => [r.computerName, r.computerID, r.result, r.isFailure])
           updateButtons()
-          if (answered >= ids.length || Date.now() - started > CLIENT_POLL_LIMIT_MS) break
-          await new Promise((resolve) => setTimeout(resolve, CLIENT_POLL_MS))
+          const remaining = CLIENT_POLL_LIMIT_MS - (Date.now() - started)
+          if (answered >= ids.length || remaining <= 0) break
+          await new Promise((resolve) => setTimeout(resolve, Math.min(delay, remaining)))
+          delay = Math.min(delay * 2, CLIENT_POLL_MAX_MS)
         }
         if (token !== runToken) return
         spinner.remove()
-        if (Date.now() - started > CLIENT_POLL_LIMIT_MS) note(box, 'Stopped waiting after ' + CLIENT_POLL_LIMIT_MS / 1000 + 's. Computers that are offline or slow to report do not answer BigFix Queries.')
+        if (Date.now() - started >= CLIENT_POLL_LIMIT_MS) note(box, 'Stopped waiting after ' + CLIENT_POLL_LIMIT_MS / 1000 + 's. Computers that are offline or slow to report do not answer BigFix Queries.')
       } catch (err) {
         if (token !== runToken) return
         spinner.remove()
@@ -323,14 +333,9 @@
         else say('Auto: the analyzer says this is ' + (dialect === 'both' ? 'valid as both client and session' : dialect) + ' relevance.')
       }
 
-      running++
       updateButtons()
-      try {
-        await Promise.all(routes.map((route) => (route === 'session' ? runSession(query, token) : runClient(query, token))))
-      } finally {
-        running--
-        updateButtons()
-      }
+      await Promise.all(routes.map((route) => (route === 'session' ? runSession(query, token) : runClient(query, token))))
+      updateButtons()
     }
 
     // ---- analyzer: load in the background, then swap in the editor ----
