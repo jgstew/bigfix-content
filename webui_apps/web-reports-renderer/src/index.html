@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Web Reports Renderer</title>
     <link rel="stylesheet" href="./HOMEPAGE/static/css/app.css" />
+    <script defer src="./HOMEPAGE/static/js/webui-relevance.js"></script>
     <script defer src="./HOMEPAGE/static/js/relevance.js"></script>
     <script defer src="./HOMEPAGE/static/js/companions.js"></script>
     <script defer src="./HOMEPAGE/static/js/sites.js"></script>
@@ -47,6 +48,7 @@
       </div>
 
       <h2 id="wrr-title" class="wrr-title"></h2>
+      <ul id="wrr-alerts" class="wrr-alerts" role="alert" hidden></ul>
       <p id="wrr-status" class="wrr-status" role="status">
         Nothing rendered yet. &lt;?Relevance ?&gt; instructions are evaluated through WebUI, and the report's
         EvaluateRelevance() / Relevance() / AsyncEvaluateString() calls are answered the same way.

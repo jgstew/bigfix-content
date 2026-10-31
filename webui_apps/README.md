@@ -285,11 +285,34 @@ Repair: after a WebUI reinstall or a DR restore, **Repair an extension** reinsta
   For master-action-site and custom-site content, the link's site id is always the **master action site id**, while WebUI needs the **custom site's own id**, which relevance can't return. WebUI's internal `/custom/api/tasks?search={"query":"…"}` returns it as `siteID`. See [web-reports-renderer](web-reports-renderer/README.md#how-webui-differs) for how the links are mapped.
 - **No wake-on-LAN:** Web Reports has `SendWakeOnLan()`, which calls `GET /json/wakeonlan?cid=…`. WebUI 11.0.7 has nothing like it: no SDK operation, no platform REST resource (`api/help` lists none), and no item in the Devices menus. See [web-reports-renderer](web-reports-renderer/README.md#no-wake-on-lan-in-webui).
 
+## Where WebUI's session relevance comes from (confirmed on 11.0.7.61)
+
+WebUI answers session relevance from **BES Explorer** when one is running, and **falls back to Web Reports** otherwise. That applies to both `/api/sdk/sessionrelevance/evaluate` and the REST query through the passthrough. It was seen switching both ways on the test server on 31 Oct 2026, when BES Explorer on the root server was found stopped and then started again. The two sources answer differently, so the same relevance can give a different result, or an error, depending on which one is up:
+
+| | BES Explorer | Web Reports (fallback) |
+| --- | --- | --- |
+| `in web reports context` | `False` | `True` |
+| Relevance that is valid JSON as a whole (`true`, `"x"`, `5`) | **`400 Bad Request`** | works |
+| `%xx` escapes | evaluated as sent | **decoded once more** before the parser: `("%2541")` gives `A`, and the valid `("100%25")` fails with *A string constant had an improper %-sequence* |
+| `site files of <bes site>` | available (4143 on the test server) | none |
+| Some inspectors | `display names of subscribed sites of …` fails with *This operation is not supported* | works |
+| Time for `number of bes computers` | about 200 to 300 ms | about 3.5 s (the REST answer says `evaltime_ms: 0`) |
+
+**[`shared/webui-relevance.js`](shared/webui-relevance.js)** is a dependency-free helper that the plain HTML/JS apps load first. Each app's `pack.py` copies it into the package as `static/js/webui-relevance.js`.
+- **`WebUIRelevance.prepare(api, expr)`** returns the text to send: `api` is `"sdk"` or `"rest"`, the expression is wrapped as `(expr)`, and `%` becomes `%25` when that API decodes once more.
+- **One probe request per API**, `(in web reports context, "%2541")`, tells both which source is answering and whether `%` needs escaping. It runs when the page loads, every 5 minutes, and on `recheck()`. A call made before any probe has answered probes synchronously.
+- **`sourceName(api)`** returns "BES Explorer", "Web Reports" or "unknown". **`onChange(fn)`** reports a switch, so the apps can show who answered.
+- A same-origin iframe reuses its parent's instance; the Web Reports Renderer's report frame does this.
+
+The React app ([session-relevance-query](session-relevance-query/)) can't load a plain script through the template build, so `sessionRelevanceApi.js` has a port of the same probe.
+
 ## WebUI relevance API quirks (confirmed on 11.0.7)
 
-- **Valid JSON is rejected:** relevance whose whole text is also valid JSON (`true`, `false`, `"x"`, `"a <b>"`, numbers) gets **`400 Bad Request`** from both `/api/sdk/sessionrelevance/evaluate` and the REST passthrough. `(true)`, `True` and `"a <b>" & ""` work. **Send `(expr)`**, which evaluates the same and is never valid JSON. All the apps in this folder do this, and [sdk-api-tester](sdk-api-tester/)'s `sr.jsonliteral` test checks for the quirk.
+- **Send `(expr)`:** relevance whose whole text is also valid JSON (`true`, `false`, `"x"`, `"a <b>"`, numbers) gets **`400 Bad Request`** when BES Explorer answers, on both APIs. `(true)`, `True` and `"a <b>" & ""` work. The parentheses evaluate the same and are never valid JSON, and they're harmless when Web Reports answers. [sdk-api-tester](sdk-api-tester/)'s `sr.jsonliteral` test checks for the quirk; it reports INFO when Web Reports is answering.
+- **Send `%` as `%25` only when Web Reports answers:** see the table above. `sr.percent` checks it.
 - **Typed results:** for plurality, types and native values, use the platform REST query through the passthrough: `POST /api/sdk/passthrough/api/query`, `Content-Type: text/plain`, body `relevance=<urlencoded>&output=json`. It returns `{"result":[...], "count", "plural", "type", "evaltime_ms"}`, or `{"result":[], "error":"..."}` with HTTP 200 for a relevance error, and needs **Can use REST API**. A query string on the passthrough URL is rejected with `400 Bad request parameters`.
 - **Site files through the passthrough:** `GET /api/sdk/passthrough/api/site/<type>/<name>/files` and `…/file/<id>` work, but the site name must be **encoded twice** (`BES%2520Support`); single encoding gets `500 Request path contains unescaped characters`. Files come back as `application/octet-stream` and are **decoded as UTF-8, which corrupts binary files** such as images. Session relevance can't list file names (`<bes site file>` has only `id`), and `version of <bes site>` fails for the master action site and custom sites; `…/version` through the passthrough has it. See [web-reports-renderer](web-reports-renderer/README.md#site-files-through-the-rest-passthrough-1107).
+- **Right after an upgrade,** an extension's page can return WebUI's *Page Not Found* for a few seconds.
 
 ## History
 

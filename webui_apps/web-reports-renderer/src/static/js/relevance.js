@@ -42,6 +42,10 @@
     return { ok: true, typed: { plural: !!body.plural, type: String(body.type || ''), result: Array.isArray(body.result) ? body.result : [] } }
   }
 
+  // WebUI decodes %xx once more when Web Reports answers instead of BES Explorer; the shared helper
+  // (webui-relevance.js, loaded first) probes for that and encodes the text to send. kind: "sdk" or "typed".
+  const forWebUI = (kind, relevance) => window.WebUIRelevance.encode(kind === 'typed' ? 'rest' : 'sdk', relevance)
+
   function evaluateTypedSync(relevance) {
     if (!state.typedAvailable) return { ok: false, unavailable: 'REST query disabled for this page (403)' }
     const xhr = new XMLHttpRequest()
@@ -50,7 +54,7 @@
     xhr.setRequestHeader('Accept', 'application/json')
     xhr.setRequestHeader('X-XSRF-TOKEN', xsrfToken())
     try {
-      xhr.send(restBody(relevance))
+      xhr.send(restBody(forWebUI('typed', relevance)))
     } catch (e) {
       return { ok: false, unavailable: String(e) }
     }
@@ -64,7 +68,7 @@
         method: 'POST',
         credentials: 'same-origin',
         headers: { 'Content-Type': 'text/plain', Accept: 'application/json', 'X-XSRF-TOKEN': xsrfToken() },
-        body: restBody(relevance)
+        body: restBody(forWebUI('typed', relevance))
       })
       return interpret(response.status, await response.text())
     } catch (e) {
@@ -121,5 +125,5 @@
     return '(' + r.trim() + ')'
   }
 
-  window.WRREL = { evaluateTyped, evaluateTypedSync, typedToHtml, typedToAnswers, tupleTypes, asText, escapeHtml, prepare, state }
+  window.WRREL = { evaluateTyped, evaluateTypedSync, typedToHtml, typedToAnswers, tupleTypes, asText, escapeHtml, prepare, state, forWebUI }
 })()

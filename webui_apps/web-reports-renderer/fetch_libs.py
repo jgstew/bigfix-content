@@ -45,11 +45,18 @@ LIBRARIES = [
     "nvd3/1.8.5/nv.d3.css",
     "font-awesome/4.7.0/css/font-awesome.min.css",
     "font-awesome/5.3.1/js/all.js",
+    # used by reports in BigFix sites (listed by the renderer on a test server)
+    "jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js",
+    "vue/3.3.8/vue.global.js",
+    "datatables-plugins/1.10.15/api/fnSortNeutral.js",
 ]
 
 # Other CDN URLs that are the same file as a cdnjs path above
 ALIASES = {
     "https://use.fontawesome.com/releases/v5.3.1/js/all.js": "font-awesome/5.3.1/js/all.js",
+    # DataTables' own CDN; not on cdnjs at 1.10.13, but byte-identical to cdnjs 1.10.15
+    # (sha256 d77ccac87b03ec130409a37c02c9670f3763adecba426a197d091c196d7e4166, checked 31 Oct 2026)
+    "https://cdn.datatables.net/plug-ins/1.10.13/api/fnSortNeutral.js": "datatables-plugins/1.10.15/api/fnSortNeutral.js",
 }
 
 CDN = "https://cdnjs.cloudflare.com/ajax/libs/"

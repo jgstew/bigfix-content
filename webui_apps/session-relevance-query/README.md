@@ -82,6 +82,7 @@ To push a rebuilt version over an existing install on a custom site, the templat
 
 ## Notes
 
+- `sessionRelevanceApi.js` probes who answers session relevance with `(in web reports context, "%2541")`, before the first query and again after 5 minutes. WebUI answers from BES Explorer when it's running and from Web Reports otherwise, and Web Reports decodes `%xx` once more, so `%` is then sent as `%25`. The result line ends with `answered by BES Explorer` or `answered by Web Reports`. This is a port of [`../shared/webui-relevance.js`](../shared/webui-relevance.js), which the template build can't load. **Edited but not built or tested here**, because building needs the SDK template.
 - `sessionRelevanceApi.js` sends the relevance as `(expr)`, because WebUI 11.0.7 answers `400 Bad Request` when the whole relevance text is also valid JSON (`true`, `false`, `"x"`, numbers).
 - On a real WebUI the response is `{"done": true, "value": [...], "id": {}}`, and every value is a string. The OpenAPI doc describes a bare array, so `normalizeRows` accepts either shape.
 - WebUI SDK API docs are served at `https://<webui-server>/api/api-docs` once the WebUI server setting `_WebUIAppEnv_ENABLE_API_DOC_SETTING=1` is set.

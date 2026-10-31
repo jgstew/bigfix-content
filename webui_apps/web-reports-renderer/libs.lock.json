@@ -1,5 +1,6 @@
 {
   "d3/3.5.17/d3.js": "81f43003a3e5919b0ba96bb86d4e215cfadb4eace2c66d01e4c76f04b23e39ab",
+  "datatables-plugins/1.10.15/api/fnSortNeutral.js": "d77ccac87b03ec130409a37c02c9670f3763adecba426a197d091c196d7e4166",
   "datatables/1.10.13/css/jquery.dataTables.min.css": "f99d6b61adf2b3939d64d51c9391bb941bdbf00d773ab630bdff9df0f7c46874",
   "datatables/1.10.13/images/sort_asc.png": "84968f6ccdeafdbd86d7cc1b9da72620c7b81e73f8e02cc680af41a55f6732eb",
   "datatables/1.10.13/images/sort_asc_disabled.png": "a65b8f4f84d6427a81c360282fc5394d51bf99dada5f159e6aa0fce3c396825c",
@@ -30,6 +31,8 @@
   "jqueryui/1.12.1/images/ui-icons_ffffff_256x240.png": "9124d4c9a85ed7412c368740249700e6403cac7198effc6695cebfab560d0af4",
   "jqueryui/1.12.1/jquery-ui.min.css": "ac1c8f94750b39b12327a5d0c56fdf946dabfb6d91e5d2a202879ff9a5d67e29",
   "jqueryui/1.12.1/jquery-ui.min.js": "28ce75d953678c4942df47a11707a15e3c756021cf89090e3e6aa7ad6b6971c3",
+  "jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js": "0f6f35da077032981f31443ccc687652f787208c7a23698dcffe7ea3e46c55eb",
   "nvd3/1.8.5/nv.d3.css": "4768ccb3d4c8494045a954ebdd37e1d8284eddb2bbe61b34141c2c865c6b514c",
-  "nvd3/1.8.5/nv.d3.js": "9586b5a28c37989bfc01c138e224393e8aa64cec0fd6653372ea26e5bb737ad8"
+  "nvd3/1.8.5/nv.d3.js": "9586b5a28c37989bfc01c138e224393e8aa64cec0fd6653372ea26e5bb737ad8",
+  "vue/3.3.8/vue.global.js": "5ede50fd83c79a2440a0d1e5a998531f851a6836955b1ec313e096a0471dfda4"
 }

@@ -59,10 +59,10 @@
     return body
   }
 
-  // Sent as "(relevance)": WebUI 11.0.7 answers 400 "Bad Request" when the whole relevance text is also valid
-  // JSON (true, false, "x", numbers). The parentheses evaluate the same and are never valid JSON.
+  // Sent as "(relevance)" (WebUI answers 400 "Bad Request" when the whole text is also valid JSON), with % as %25 when
+  // Web Reports is answering instead of BES Explorer (it decodes %xx once more). See ../../shared/webui-relevance.js.
   const evaluateSession = (relevance, signal) =>
-    webuiFetch('/api/sdk/sessionrelevance/evaluate', { method: 'POST', json: { session_relevance: '(' + relevance.trim() + ')' }, signal })
+    webuiFetch('/api/sdk/sessionrelevance/evaluate', { method: 'POST', json: { session_relevance: window.WebUIRelevance.prepare('sdk', relevance) }, signal })
 
   // ---- Shell: user name and session keep-alive (what BfApp does, minus the WebUI nav) --------
 
@@ -222,7 +222,8 @@
         spinner.remove()
         const columns = rows.reduce((max, row) => Math.max(max, row.length), 1)
         const shown = rows.slice(0, MAX_ROWS_RENDERED)
-        note(box, rows.length + ' result' + (rows.length === 1 ? '' : 's') + ' in ' + (Date.now() - started) + ' ms' + (rows.length > MAX_ROWS_RENDERED ? ' (showing first ' + MAX_ROWS_RENDERED + ')' : ''))
+        // BES Explorer answers when it is available, Web Reports otherwise, and their answers can differ
+        note(box, rows.length + ' result' + (rows.length === 1 ? '' : 's') + ' in ' + (Date.now() - started) + ' ms' + (rows.length > MAX_ROWS_RENDERED ? ' (showing first ' + MAX_ROWS_RENDERED + ')' : '') + ', answered by ' + window.WebUIRelevance.sourceName('sdk'))
         const headers = ['#'].concat(Array.from({ length: columns }, (_, i) => 'item ' + i))
         box.appendChild(table(headers, shown.map((row, i) => [i + 1].concat(Array.from({ length: columns }, (_, c) => (c < row.length ? row[c] : ''))))))
         copyRows = rows

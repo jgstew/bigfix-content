@@ -9,7 +9,7 @@ Facts about WebUI, the SDK APIs, packaging and each app live in [README.md](READ
 - **Plain HTML/JS apps** follow the same shape: `package.json`, `src/index.html` with `./HOMEPAGE/` paths, `src/static/{js,css}/`, a copied `pack.py`, `.gitignore`. Copy an existing app rather than inventing a new layout.
 - **Version bumps:** change `version` in `package.json` and any `VERSION` constant in JS together, or WebUI and the in-app log disagree.
 - **Mark what is confirmed.** Docs say whether a fact was seen on a live server, in code, or only assumed. Record new findings in the relevant README, with the BigFix version.
-- **Send session relevance as `(expr)`.** See the quirk in README.md; every app here does it.
+- **Send session relevance through `shared/webui-relevance.js`** (`WebUIRelevance.prepare('sdk' | 'rest', expr)`): it wraps as `(expr)` and escapes `%` when Web Reports is answering instead of BES Explorer. Plain HTML/JS apps load it first (their `pack.py` copies it in); see "Where WebUI's session relevance comes from" in README.md.
 
 ## Testing workflow
 

@@ -2,7 +2,7 @@
 // Uses only the SDK endpoint POST /api/sdk/sessionrelevance/evaluate (see sessionRelevanceApi.js),
 // which needs "Can use WebUI" (not "Can use REST API") and requires BigFix Web Reports.
 import React, { useState, useCallback, useEffect, useRef } from 'react'
-import { evaluateSessionRelevance } from './sessionRelevanceApi'
+import { evaluateSessionRelevance, relevanceSourceName } from './sessionRelevanceApi'
 import './SessionRelevanceQuery.css'
 
 // rendering very large results freezes the browser; limit the relevance itself for big queries
@@ -130,7 +130,7 @@ const SessionRelevanceQuery = ({ relevance = EXAMPLE_QUERIES[1] }) => {
       {!loading && rows && (
         <div className='bf-srq-result'>
           <div className='bf-srq-summary'>
-            {rows.length} result{rows.length === 1 ? '' : 's'} in {elapsedMs} ms
+            {rows.length} result{rows.length === 1 ? '' : 's'} in {elapsedMs} ms, answered by {relevanceSourceName()}
             {rows.length > MAX_ROWS_RENDERED && ` (showing first ${MAX_ROWS_RENDERED})`}
           </div>
           <div className='bf-srq-table-wrap'>

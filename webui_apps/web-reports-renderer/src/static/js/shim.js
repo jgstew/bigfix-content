@@ -50,7 +50,7 @@
     xhr.setRequestHeader('Content-Type', 'application/json')
     xhr.setRequestHeader('Accept', 'application/json')
     xhr.setRequestHeader('X-XSRF-TOKEN', xsrfToken())
-    xhr.send(JSON.stringify({ session_relevance: relevance }))
+    xhr.send(JSON.stringify({ session_relevance: window.WRREL.forWebUI('sdk', relevance) }))
     const ms = Math.round(performance.now() - started)
     if (xhr.status !== 200) {
       const err = errorFrom(xhr.status, xhr.responseText)
@@ -69,7 +69,7 @@
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-XSRF-TOKEN': xsrfToken() },
-      body: JSON.stringify({ session_relevance: relevance })
+      body: JSON.stringify({ session_relevance: window.WRREL.forWebUI('sdk', relevance) })
     })
     const text = await response.text()
     const ms = Math.round(performance.now() - started)
@@ -555,6 +555,14 @@
     log('WOL', 'SendWakeOnLan(' + count + ' computer' + (count === 1 ? '' : 's') + (dbid ? ', dbid ' + dbid : '') + ') ignored: wake-on-LAN is not available in WebUI')
     window.WR.Notify.warning('Wake-on-LAN does not work here: WebUI has no wake-on-LAN API. Nothing was sent. Use the BigFix console or Web Reports to wake computers.')
     return false
+  }
+
+  // alert() would stop the renderer page with a modal dialog, and reports use it for errors. Here the message goes to
+  // the renderer's Log and under the report title instead, and the report keeps running (alert() returns at once).
+  window.alert = function (message) {
+    const text = message === undefined ? '' : String(message)
+    if (host && host.alert) host.alert(text)
+    else console.warn('alert: ' + text)
   }
 
   // Console-dashboard functions that some reports call when they double as dashboards

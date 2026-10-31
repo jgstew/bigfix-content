@@ -3,7 +3,7 @@
 'use strict'
 window.SAT = window.SAT || {}
 ;(function (SAT) {
-  SAT.VERSION = '1.0.3'
+  SAT.VERSION = '1.0.4'
   SAT.lines = []
   SAT.sensitive = new Set() // strings replaced by <REDACTED_n> in copied output when "Redact" is checked
   SAT.state = {} // values shared between tests (ids found by lookups, the test dashboard variable, ...)
@@ -91,6 +91,8 @@ window.SAT = window.SAT || {}
     out.push('Page: ' + location.pathname)
     out.push('User agent: ' + navigator.userAgent)
     out.push('BigFix server: ' + (SAT.state.serverVersion || '?') + '  Master operator: ' + (SAT.state.isMaster === undefined ? '?' : SAT.state.isMaster))
+    const rel = window.WebUIRelevance
+    out.push('Session relevance answered by: ' + rel.sourceName('sdk') + ' (SDK), ' + rel.sourceName('rest') + ' (REST)' + (rel.state.sdk.decodes || rel.state.rest.decodes ? '; %xx decoded once more, % sent as %25' : ''))
     out.push('Summary (latest result of ' + results.length + ' of ' + SAT.tests.length + ' tests): ' + SAT.formatCounts(counts))
     out.push('')
     out.push('----- Results -----')
@@ -170,11 +172,12 @@ window.SAT = window.SAT || {}
   // Server error text for a result: JSON { message } when present, else the start of the body.
   SAT.message = (res) => (res.json && res.json.message) || SAT.snippet(res.text, 200) || 'HTTP ' + res.status
 
-  // Sent as "(relevance)" unless opts.raw: WebUI 11.0.7 answers 400 "Bad Request" when the whole relevance text
-  // is also valid JSON (true, false, "x", numbers). The parentheses evaluate the same and are never valid JSON.
-  // opts.raw sends the text unchanged (the sr.jsonliteral test uses it to show the quirk).
+  // Sent as "(relevance)" unless opts.raw: WebUI answers 400 "Bad Request" when the whole relevance text is also
+  // valid JSON (true, false, "x", numbers). And when Web Reports answers instead of BES Explorer, WebUI decodes %xx
+  // once more, so % is sent as %25 then (../../shared/webui-relevance.js). opts.raw sends the text unchanged (the
+  // sr.jsonliteral and sr.percent tests use it to show the quirks).
   SAT.evaluate = (relevance, opts = {}) =>
-    SAT.api('POST', '/api/sdk/sessionrelevance/evaluate', { json: { session_relevance: opts.raw ? relevance : '(' + String(relevance).trim() + ')' }, xsrf: opts.xsrf })
+    SAT.api('POST', '/api/sdk/sessionrelevance/evaluate', { json: { session_relevance: opts.raw ? relevance : window.WebUIRelevance.prepare('sdk', relevance) }, xsrf: opts.xsrf })
 
   // First value of a session relevance result, or undefined. Values come back as strings.
   SAT.evaluateFirst = async function (relevance) {

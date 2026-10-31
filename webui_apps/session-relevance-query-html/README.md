@@ -94,6 +94,7 @@ Permissions: session relevance needs **Can use WebUI** and BigFix Web Reports. B
   - **Session relevance:** `{"done": true, "value": [...], "id": {}}`. Every value comes back as a string, and tuple rows are arrays of strings.
   - **BigFix Query results:** `value` is `{reportingAgents, totalResults, results: [{computerID, computerName, subQueryID, isFailure, result, ResponseTime}]}`.
 
+- **Session relevance goes through the shared [`../shared/webui-relevance.js`](../shared/webui-relevance.js)** (since 2.0.2), which `pack.py` adds as `static/js/webui-relevance.js`. WebUI answers from BES Explorer when it's running and from Web Reports otherwise, and the two differ (see [../README.md](../README.md#where-webuis-session-relevance-comes-from-confirmed-on-110761)). The helper sends `%` as `%25` when Web Reports answers, and each result line ends with who answered, for example `3 results in 210 ms, answered by BES Explorer`. 2.0.2 is built but **not yet installed on the test server**: the WebUI-JGStew site has to pick up the new `relevance-query.webui` first.
 - **Session relevance is sent as `(expr)`** (since 2.0.1). WebUI 11.0.7 answers `400 Bad Request` when the whole relevance text is also valid JSON (`true`, `false`, `"x"`, numbers). The parentheses evaluate the same and are never valid JSON. The analyzer still sees the text as typed, and BigFix Query text is sent unchanged: its `ApplicabilityRelevance` of `true` works there.
 
 ## Testing status

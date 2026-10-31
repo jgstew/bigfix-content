@@ -10,7 +10,7 @@
 // All relevance runs through the WebUI SDK: POST /api/sdk/sessionrelevance/evaluate.
 'use strict'
 ;(function () {
-  const VERSION = '1.3.0'
+  const VERSION = '1.5.1'
   const KEEPALIVE_MS = 30000
   const PI_CONCURRENCY = 4
   const MAX_LOG_LINES = 5000
@@ -42,8 +42,34 @@
   const dashboardId = () => currentDashboardId
 
   // shim.js inside the iframe logs through this; relevance.js (here and in the iframe) reads the options
+  // The report's alert() calls (shim.js replaces alert in the iframe) land here instead of in a blocking dialog: a Log
+  // line, and a list under the report title. Repeats of the last message are counted rather than listed again.
+  const MAX_ALERTS = 20
+  function reportAlert(message) {
+    const text = String(message)
+    log('ALERT', text)
+    const list = $('wrr-alerts')
+    const last = list.lastElementChild
+    if (last && last.dataset.text === text) {
+      last.dataset.count = String(Number(last.dataset.count) + 1)
+      last.textContent = text + ' (x' + last.dataset.count + ')'
+    } else if (list.children.length < MAX_ALERTS) {
+      const item = document.createElement('li')
+      item.dataset.text = text
+      item.dataset.count = '1'
+      item.textContent = text
+      list.appendChild(item)
+    }
+    list.hidden = false
+  }
+  function clearAlerts() {
+    $('wrr-alerts').textContent = ''
+    $('wrr-alerts').hidden = true
+  }
+
   window.WRR = {
     log,
+    alert: reportAlert,
     get options() {
       return { webReportsContext: $('opt-wrcontext').checked, dashboardId: dashboardId() }
     }
@@ -95,7 +121,7 @@
         method: 'POST',
         credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-XSRF-TOKEN': xsrfToken() },
-        body: JSON.stringify({ session_relevance: relevance })
+        body: JSON.stringify({ session_relevance: window.WRREL.forWebUI('sdk', relevance) })
       })
       const text = await response.text()
       let body = null
@@ -349,6 +375,7 @@
   // ---- rendering ------------------------------------------------------------------------------
 
   function buildDocument(reportHtml, title) {
+    const helper = new URL('static/js/webui-relevance.js', document.baseURI).href
     const relevance = new URL('static/js/relevance.js', document.baseURI).href
     const shim = new URL('static/js/shim.js', document.baseURI).href
     const css = new URL('static/css/report.css', document.baseURI).href
@@ -357,6 +384,7 @@
     return [
       '<!doctype html><html><head><meta charset="utf-8">',
       '<title>' + escapeHtml(title) + '</title>',
+      '<script src="' + helper + '"></scr' + 'ipt>',
       '<script src="' + relevance + '"></scr' + 'ipt>',
       '<script src="' + shim + '"></scr' + 'ipt>',
       '<link rel="stylesheet" href="' + css + '">',
@@ -371,8 +399,8 @@
     $('wrr-status').className = 'wrr-status' + (isError ? ' wrr-error-text' : '')
   }
 
-  // The report being shown: { name (file name), from (where it came from, for the log), getText(), source }
-  // source is a companions.js file source (a site's files) or null for an uploaded report.
+  // The report being shown: { name (file name), from (where it came from, for the log), getText(), source, site }
+  // source is a companions.js file source (a site's files) or null for an uploaded report; site is its site name.
   let current = null
 
   async function render() {
@@ -391,8 +419,9 @@
     const report = parseReport(text, current.name)
     currentDashboardId = dashboardIdFor(report.name)
     log('INFO', '===== Rendering "' + report.name + '" from ' + current.name + ' (' + current.from + ', ' + report.format + ', ' + text.length + ' bytes) =====')
-    log('INFO', 'Options: in web reports context = ' + ($('opt-wrcontext').checked ? 'true (rewritten)' : 'as evaluated') + ', dashboard id for current wizard = ' + dashboardId() + ', refresh sections = ' + $('opt-refresh').checked)
+    log('INFO', 'Options: in web reports context = ' + ($('opt-wrcontext').checked ? 'true (rewritten)' : 'as evaluated') + ', dashboard id for current wizard = ' + dashboardId() + ', refresh sections = ' + $('opt-refresh').checked + '; relevance answered by ' + window.WebUIRelevance.sourceName('rest') + ' (REST), ' + window.WebUIRelevance.sourceName('sdk') + ' (SDK)')
     $('wrr-title').textContent = report.name
+    clearAlerts()
     $('wrr-frame').hidden = true
     $('wrr-open-external').hidden = true
     stopRefresh()
@@ -427,18 +456,31 @@
       .filter((url) => !url.startsWith(location.origin))
     if (cdn.length) log('WARN', cdn.length + ' file(s) from other hosts have no local copy and will be blocked by WebUI: ' + cdn.join(', '))
 
-    // relative scripts and stylesheets from the report's site, inlined (see companions.js)
+    // relative scripts, stylesheets, images and fonts: from the report's site, else the newest name match among the
+    // renderer's bundled libraries and the other report sites (see companions.js)
     let html = libraries.html
     let companionNote = ''
-    if (current.source) {
-      setStatus('Loading files from ' + current.source.label + '...')
-      const files = await window.WRRFILES.resolve(html, current.source)
-      html = files.html
-      if (files.inlined.length) log('FILES', 'inlined ' + files.inlined.length + ' file(s) from ' + current.source.label + ': ' + files.inlined.join(', '))
-      if (files.binary.length) log('FILES', files.binary.length + ' image(s) in ' + current.source.label + ' cannot load: the WebUI passthrough corrupts binary files: ' + files.binary.join(', '))
-      if (files.missing.length) log('FILES', files.missing.length + ' relative file(s) not found in ' + current.source.label + ' (Web Reports cannot load these either): ' + files.missing.join(', '))
-      companionNote = files.inlined.length ? ' ' + files.inlined.length + ' file(s) loaded from the site' + (files.binary.length + files.missing.length ? ', ' + (files.binary.length + files.missing.length) + ' not (see the log).' : '.') : ''
-    }
+    const label = current.source ? current.source.label : 'the uploaded report'
+    setStatus('Loading files for ' + label + '...')
+    const pool = window.WRRFILES.makePool({
+      libs: libs ? Array.from(libs.files).map((path) => ({ path, url: localLibrary(path) })) : [],
+      sites: siteList
+    })
+    const files = await window.WRRFILES.resolve(html, current.source, pool, current.site)
+    html = files.html
+    if (files.inlined.length) log('FILES', 'loaded ' + files.inlined.length + ' script/stylesheet file(s): ' + files.inlined.join(', '))
+    files.substituted
+      .filter((f) => f.exact)
+      .forEach((f) => log('FILES', f.ref + ' is not in ' + label + '; using the same file name from ' + f.from))
+    files.substituted
+      .filter((f) => !f.exact)
+      .forEach((f) => log('WARN', f.ref + ' is not usable from ' + label + '; using ' + f.name + ' from ' + f.from + ' instead (the newest name match, not the same file)'))
+    if (files.binary.length) log('FILES', files.binary.length + ' image(s) or font(s) in ' + label + ' cannot load (the WebUI passthrough corrupts binary files) and have no name match: ' + files.binary.join(', '))
+    if (files.missing.length) log('FILES', files.missing.length + ' relative file(s) not found anywhere: ' + files.missing.join(', '))
+    const loaded = files.inlined.length + files.images.length
+    const notLoaded = files.binary.length + files.missing.length
+    const similar = files.substituted.filter((f) => !f.exact).length
+    if (loaded || notLoaded) companionNote = ' ' + loaded + ' file(s) loaded' + (similar ? ' (' + similar + ' by a similar name)' : '') + (notLoaded ? ', ' + notLoaded + ' not' : '') + ' (see the log).'
 
     const frame = $('wrr-frame')
     frame.srcdoc = buildDocument(html, report.name)
@@ -471,7 +513,7 @@
 
   function chooseFile(file) {
     if (!file) return
-    current = { name: file.name, from: 'uploaded file', getText: () => file.text(), source: null }
+    current = { name: file.name, from: 'uploaded file', getText: () => file.text(), source: null, site: null }
     $('wrr-site-report').value = ''
     $('wrr-file-name').textContent = file.name + ' (' + file.size.toLocaleString() + ' bytes)'
     $('wrr-rerender').disabled = false
@@ -539,7 +581,8 @@
         name: report.file,
         from: 'site "' + site.name + '"',
         getText: () => window.WRRFILES.getSiteFile(site.path, report.id),
-        source: window.WRRFILES.fromSite(site)
+        source: window.WRRFILES.fromSite(site),
+        site: site.name
       }
       $('wrr-file').value = ''
       $('wrr-file-name').textContent = report.name + ' (' + site.name + ')'
@@ -605,6 +648,10 @@
   })
 
   log('INFO', 'Web Reports Renderer ' + VERSION + ' loaded')
+  // BES Explorer answers relevance when one is available, Web Reports otherwise, and results differ between them
+  window.WebUIRelevance.onChange((api, s) =>
+    log(s.webReports ? 'WARN' : 'INFO', 'relevance through the ' + (api === 'sdk' ? 'SDK' : 'REST') + ' API is now answered by ' + window.WebUIRelevance.sourceName(api) + (s.decodes ? '; it decodes %xx once more, so % is sent as %25' : '') + (s.webReports ? ' (no site files there, and slower)' : ''))
+  )
   startShell()
   librariesReady = loadLibraries()
   loadSites(false)

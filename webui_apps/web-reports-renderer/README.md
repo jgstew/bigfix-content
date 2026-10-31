@@ -1,6 +1,6 @@
 # Web Reports Renderer - BigFix WebUI extension
 
-Renders a BigFix **Web Reports custom report** inside WebUI, with all of its relevance evaluated through WebUI. It uses the platform REST query (typed, through the SDK passthrough) when the operator has **Can use REST API**, and the SDK's `POST /api/sdk/sessionrelevance/evaluate` otherwise. It's plain HTML and JavaScript with no HCL code, packaged by `pack.py`. The current version is **1.3.0**.
+Renders a BigFix **Web Reports custom report** inside WebUI, with all of its relevance evaluated through WebUI. It uses the platform REST query (typed, through the SDK passthrough) when the operator has **Can use REST API**, and the SDK's `POST /api/sdk/sessionrelevance/evaluate` otherwise. It's plain HTML and JavaScript with no HCL code, packaged by `pack.py`. The current version is **1.5.1**.
 
 1. **Choose a report**:
    - **from a BigFix site** (since 1.3.0): the **Report from a site** drop-down lists the custom reports stored in sites, the way Web Reports lists them. Their scripts and stylesheets load from the same site. This needs **Can use REST API**. See [Reports from sites](#reports-from-sites-and-the-shared-cache).
@@ -164,6 +164,7 @@ function SendWakeOnLan( cids, dbid )   // cids: array of computer ids; dbid: opt
 - **Listing:** Web Reports' report list includes report files from sites. It opens one as `?page=CustomReport&ReportID=<n>&ReportPath=<file>.beswrpt&ReportSiteID=<Site+Name>`.
 - **Companion files:** the report's iframe gets `<base href="/SiteData/<server>/Sites/<Site%20Name>/">`. So `src="jquery-3.7.1.min.js"` loads that site's file, from the folder Web Reports gathered. These are the same files the REST API lists for the site.
 - **References that aren't in the site** also fail in Web Reports: `JSResourceManager.js`, `DataService.js`, `json2.js` and `ComponentLibrary.js` from Power Management's reports all give 404 there. They look like console-only files.
+- **Images and fonts the custom reports ask for:** 66 distinct file names, which are **40 distinct assets** once colors, sizes and file types are merged (13 colors of the jQuery UI icon sheet count as one, and `sort-asc.gif` and `sort-asc.png` as one). **Only 15 of the 40 exist in any site**, so the other 25 (22 jQuery UI theme images, 6 grid images, 7 Google Fonts files, and some report images) are missing in Web Reports too. Of the 15 that do exist, 3 are library assets (jQuery UI icons and two sort arrows) and 12 are report-specific (print, save, refresh and arrow icons, a header background, and so on).
 - **What's in the sites of the test server:** 82 report files in 12 of the 40 sites with files: 27 `CustomReport`, 54 `TemplateReport` (saved Web Reports pages), and one `.btrpt` that's plain HTML. Most SCM Reporting and Power Management reports load 17 to 67 files by relative name, all from the site's top folder: jQuery, jQuery UI, SlickGrid, jqPlot, `ADFAPI_2.2.3.js`, CSS, and images.
 
 **Not defined in Web Reports:** `InsertUtilityDiv`, `OpenComputerGroup` and the other console dashboard functions. Reports that double as console dashboards guard them, or rely on `window.onerror`.
@@ -262,6 +263,23 @@ Checked on BigFix 11.0.7.61, so `SendWakeOnLan` has nothing to map to:
   - `fetch`/`XMLHttpRequest` to the Web Reports server are blocked by the extension's `connect-src 'self'`, and by mixed content when Web Reports is plain `http`.
   - **Tried in 1.2.0, then dropped:** opening `<webreports>/json/wakeonlan?cid=…` in a new tab from the report. The tab opened, but Web Reports answered `Invalid username or password.` The same URL typed into a tab returned `{"success":true}`. So the Web Reports session cookie wasn't sent on a navigation that started from the WebUI page, probably because of its SameSite setting. That's not confirmed: the cookie is HttpOnly, so its attributes couldn't be read.
 
+### BES Explorer or Web Reports answers (seen 31 Oct 2026, 11.0.7.61)
+
+WebUI answers session relevance from BES Explorer when one is running and falls back to Web Reports otherwise, on **both** relevance APIs (`/api/sdk/sessionrelevance/evaluate` and the typed REST passthrough to `/api/query`). On the test server the answers changed partway through the day because **BES Explorer on the root server had stopped**, and they changed back when it was started again. The full comparison is in [../README.md](../README.md#where-webuis-session-relevance-comes-from-confirmed-on-110761).
+
+| | Earlier | Later |
+| --- | --- | --- |
+| `in web reports context` | `False` | `True` (both APIs) |
+| `number of site files of all bes sites` | 4144 | `0` |
+| `number of bes computers` | about 300 ms | about 3,600 ms; the REST answer says `evaltime_ms: 0`, so the time goes somewhere else |
+| `("%2541")` | evaluated as sent | **`"A"`**: `%xx` is decoded once before the relevance parser, so `("100%25")` fails with *A string constant had an improper %-sequence* and `("x%2520y")` gives `x y` |
+| Reading a dashboard variable | about 170 ms | about 3,900 ms |
+
+What the renderer does about it:
+- **`%` probe** (1.4.1, and since 1.5.1 through the shared [`../shared/webui-relevance.js`](../shared/webui-relevance.js)): `(in web reports context, "%2541")` once per API at page load and every 5 minutes; the iframe uses the page's instance. When Web Reports answers, every `%` is sent as `%25`, which made `width='100%25'` and the site query work again. The Log says who answers (`relevance through the SDK API is now answered by BES Explorer`), and every render's `Options:` line repeats it.
+- **Results differ by source,** and WebUI gives no way to choose one. "Custom - Computer Summary" answered all 7 relevance instructions from Web Reports, but only 6 from BES Explorer: there, `display names of subscribed sites of …` fails with *This operation is not supported*.
+- **Empty site list:** a site query with **no** sites is treated as "can't tell", not "no sites". The cached list stays, unchanged and not pruned, with a WARN. In this mode the site list can't be refreshed through relevance, because `site files` is empty.
+
 ### Site files through the REST passthrough (11.0.7)
 
 - **Session relevance can't list files:** `<bes site file>` has only `id`; `name`, `size`, `sha1` and the rest aren't defined. `exists site files of <bes site>` and `version of <bes site>` work.
@@ -269,7 +287,12 @@ Checked on BigFix 11.0.7.61, so `SendWakeOnLan` has nothing to map to:
 - **Listing:** `GET /api/site/<type>/<name>/files` returns `<SiteFile Resource="…/file/<id>">` entries with `<Name>`, `<ID>`, `<LastModified>` and `<IsClientFile>`, with no size or hash. All 40 sites were listed in 1.7 s in parallel; BES Support has 799 files.
 - **Path encoding:** the site name in the path is %-encoded, so `BES%20Support` for the REST API itself. **Through the WebUI passthrough it has to be encoded twice** (`BES%2520Support`), because WebUI decodes the path once before forwarding it. A single-encoded path gets `500 {"message":"Request path contains unescaped characters"}`.
 - **Content:** `GET …/file/<id>` returns the raw file as `application/octet-stream; charset=utf-8`, with `X-Content-Type-Options: nosniff`. GETs work without the XSRF header.
-- **Binary files are corrupted by the passthrough.** It decodes the body as UTF-8, so every byte that isn't valid UTF-8 becomes U+FFFD. A PNG starts `ef bf bd 50 4e 47` instead of `89 50 4e 47`, and an `<img>` pointed at it fails. Text files in UTF-8 are fine. Images, fonts, and text in other encodings can't be used.
+- **Binary files are corrupted by the passthrough, and it can't be undone.** It decodes the body as UTF-8, so every invalid byte sequence becomes U+FFFD (`ef bf bd`). Measured on Power Management's `A.png`:
+  - **Web Reports' copy:** 3,246 bytes, starting `89 50 4e 47`, with 1,536 bytes of 0x80 or above covering all 128 such values
+  - **The passthrough's copy:** 5,727 bytes, starting `ef bf bd 50`
+
+  More than a thousand bytes became the same marker, so the originals can't be recovered. `Accept: application/octet-stream`, `image/png`, `*/*`, `Accept-Encoding: identity` and `Content-Type: application/octet-stream` all gave the same bytes, so it happens inside WebUI's passthrough. UTF-8 text survives, **including SVG**. Other images, fonts, and text in other encodings can't be used from sites.
+- **Other routes to the bytes are blocked too:** Web Reports' `/SiteData/…` and the root server's gather URLs are other hosts, and the extension's `img-src 'self' blob:` blocks even an `<img>` pointed at them.
 - **Scripts and styles can't be referenced directly** even though the URL is same-origin: `nosniff` blocks a script or stylesheet served as `application/octet-stream`.
 
 ### The extension's security policy applies to the report too
@@ -298,6 +321,7 @@ Checked on BigFix 11.0.7.61, so `SendWakeOnLan` has nothing to map to:
 | `StoreVariable(id, name, value, isPrivate)`, `StorePrivateVariable`, `DeleteVariable(id, name, isPrivate)`, `DeletePrivateVariable` | The console's versions: synchronous, `isPrivate` defaulting to false (shared), throwing `Error(message)` on failure (for example `Not Found` when deleting something that doesn't exist). They're also attached to `window.external` where the browser allows it. |
 | Deleting one kind of variable | Before a delete, the shim reads the dashboard's variable list. After the delete, it writes back the same-named variable of the other kind (shared or private) and logs `WARN restored … variable`, because the SDK's `DELETE` removes both. |
 | `WR.Notify` | Web Reports' methods: `update`, `updateHTML`, `warning`, `warningHTML`, `error`, `errorHTML`, `clear`, `enableNotifications`. Messages show as a **banner at the top of the report** (`#wrr-notify`, styled in `report.css`). Errors stay until dismissed with ×; others clear after 8 seconds. Each one is also logged (`ERROR`/`WARN`/`INFO`), and errors go to the browser console. It's created only if `WR.Notify` doesn't already exist. |
+| `alert(message)` (since 1.5.0) | No dialog. The message becomes an `ALERT` line in the Log and is listed in red under the report title (`#wrr-alerts`). A repeat of the last message adds a count (`(x2)`), the list keeps 20 messages, and it's cleared at the next render. `alert()` returns at once, so the report's code keeps running where a real dialog would have paused it. |
 | `InsertUtilityDiv()`, `RegisterRefreshHandler()`, `ClearAllGlobalFilters()`, `OpenComputerGroup()` | No-ops that log an INFO line, so reports that also work as console dashboards don't stop with an error. |
 | `SendWakeOnLan(cids, dbid)` | **A no-op** (see [No wake-on-LAN in WebUI](#no-wake-on-lan-in-webui)). It logs `WOL SendWakeOnLan(N computers) ignored: …` and shows the warning banner *Wake-on-LAN does not work here: WebUI has no wake-on-LAN API. Nothing was sent.* It then returns `false` instead of throwing, so the report keeps running. |
 | `ThrowError(message)` | Web Reports' version: throws an `Error` with that message. It's defined only if the report doesn't define its own. |
@@ -365,14 +389,26 @@ Checked on BigFix 11.0.7.61, so `SendWakeOnLan` has nothing to map to:
 - **Why this is enough:** the SDK has no compare-and-swap, so this is best effort. If two pages still race, both write a complete cache and the last write wins. The lock only saves duplicate work.
 - **No permission to write shared variables:** the page lists sites for itself and doesn't save.
 
-**Loading a chosen report:** `GET …/file/<id>` reads the report file. After relevance substitution and the CDN rewrite, [`companions.js`](src/static/js/companions.js) resolves its relative references against that site's file list (by last path segment, ignoring case and `?query`):
+**Loading a chosen report:** `GET …/file/<id>` reads the report file. After relevance substitution and the CDN rewrite, [`companions.js`](src/static/js/companions.js) resolves its relative references by last path segment, ignoring case and `?query`. It looks first in that site's file list, then by name in a **pool** (see the next list). Uploaded reports use the pool too.
 
 | Reference | Here |
 | --- | --- |
 | `<script src="x.js">` | **Inlined** as `<script data-wrr-file="x.js">…</script>`. `src`, `integrity`, `crossorigin`, `async` and `defer` are dropped, other attributes kept. A `</script` inside the file is escaped as `<\/script`. |
 | `<link rel="stylesheet" href="x.css">` | **Inlined** as `<style data-wrr-file="x.css">`, keeping `media`. Relative `url()` values inside it are resolved from the same source when it can provide bytes. |
-| `<img src>`, `<input src>`, `<source src>`, `style="…url()…"` | Become `blob:` URLs, but only from a source with real bytes. From a site they stay as they are, because binary files arrive corrupted (logged as `FILES … cannot load`). |
-| Not in the site | Left alone and logged as `FILES … not found` |
+| `<img src>`, `<input src>`, `<source src>`, `style="…url()…"`, and `url()` in inlined CSS | **SVG** from the site becomes a `blob:` URL of type `image/svg+xml`, because SVG is text and survives the passthrough. Other image types and fonts from a site are corrupted, so they come from the pool instead: a bundled copy by its package URL, or an SVG from another site as a `blob:`. |
+| Found in the pool | A **bundled** script or stylesheet gets its `src`/`href` pointed at the package copy (same-origin, correct type), without `integrity`/`crossorigin`. A file from **another site** is inlined. The Log says where it came from: an `INFO` for the same file name, a `WARN` for a different one. |
+| Not found anywhere | Left alone and logged as `FILES … not found anywhere` |
+
+**The pool** is built for each render, from:
+- **The renderer's bundled library copies** (`static/libs`, from `fetch_libs.py`): served by WebUI as real files, so images and fonts work, for example the six jQuery UI 1.12.1 icon sheets, DataTables' sort images, and Font Awesome 4.7 fonts.
+- **The text files of every listed report site** (`.js .css .json .html .htm .txt .xml .svg`). Their binary files are left out, because they'd arrive corrupted.
+
+**How a name is matched:**
+1. **The same file name.** When the name has a version in it (`jquery-1.12.4.min.js`), that's the same file, so it wins. A name without a version (`jquery.min.js`) says nothing about the version, so it only wins if nothing newer matches in step 2.
+2. **The same logical name, newest version first.** Version numbers, `.min`, jQuery UI colors (`_444444`) and sizes (`_256x240`) are removed, `-` and `_` are treated alike, and all image types count as one (`sort-asc.png` matches DataTables' `sort_asc.png`). Ties go to the report's own site, then to a bundled copy.
+
+   This isn't the file the report asked for, so the Log warns, for example `WARN images/ui-icons_2e83ff_256x240.png is not usable from site "SCM Reporting"; using ui-icons_444444_256x240.png from the renderer's bundled jqueryui 1.12.1 instead (the newest name match, not the same file)`. A different jQuery UI icon color, or a newer library version than a report was written for, can look or behave differently.
+3. **Fonts** only come from bundled copies; the policy blocks `blob:` and `data:` fonts.
 
 - **Script elements are set aside** behind placeholders while stylesheets and images are processed, then put back. `jquery.jqplot.js` has `<link rel="stylesheet" href="jquery.jqplot.css">` in a comment, which an earlier build replaced inside the JavaScript.
 - **File sources are pluggable:** a source is `{ label, has(name), getText(name), getBlob(name) }`. `WRRFILES.fromSite(site)` is the site source, with no `getBlob`. An upload source with real blobs would reuse `resolve()` unchanged. See [Ideas](#ideas-not-done-yet).
@@ -394,8 +430,13 @@ Checked on BigFix 11.0.7.61, so `SendWakeOnLan` has nothing to map to:
 | nvd3 1.8.5 | `nv.d3.js`, `nv.d3.css` |
 | Font Awesome 4.7.0 | `css/font-awesome.min.css` and 5 `fonts/fontawesome-webfont.*` |
 | Font Awesome 5.3.1 | `js/all.js`. This is also the alias for `https://use.fontawesome.com/releases/v5.3.1/js/all.js`. |
+| jsPDF-AutoTable 3.5.13 (since 1.5.0) | `jspdf.plugin.autotable.min.js` (Power Management "Model Power Savings") |
+| Vue 3.3.8 (since 1.5.0) | `vue.global.js` (SCM "ARF Report Generator") |
+| DataTables plug-ins 1.10.15 (since 1.5.0) | `api/fnSortNeutral.js`. This is also the alias for `https://cdn.datatables.net/plug-ins/1.10.13/api/fnSortNeutral.js`, which isn't on cdnjs at 1.10.13 but is **byte-identical** (sha256 `d77ccac8…`, checked 31 Oct 2026). |
 
-In total that's 33 files, about 3.5 MB on disk; the built `.webui` is about 1.27 MB.
+In total that's 36 files, about 4.1 MB on disk; the built `.webui` is about 1.4 MB.
+
+**Which libraries are bundled:** a run of the renderer on the test server listed every external `.js`/`.css` URL in the 28 site reports, and `grep` did the same for `../../webreports`. Everything pinnable is now bundled. Two URLs can't be, because they name no version: `https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js` and `https://unpkg.com/vue@next` (both in ARF). **The page itself can't fetch a missing library** at run time: the extension policy's `connect-src 'self'` blocks other hosts. So a new one is added at build time: take the URL from the Log's `WARN … no local copy` line, add its cdnjs path to `LIBRARIES`, and run `python3 fetch_libs.py --update-lock`.
 
 **How `fetch_libs.py` checks the files:**
 - **Start list:** `LIBRARIES`, a list of cdnjs paths. Each CSS file's relative `url(...)` references (fonts and images) are added to it automatically.
@@ -428,7 +469,10 @@ In total that's 33 files, about 3.5 MB on disk; the built `.webui` is about 1.27
 | The site query failed with "Singular expression refers to nonexistent object" | `version of <bes site>` doesn't exist for the master action site and custom sites | `(if exists version of it then version of it else 0)`, then the REST `…/version` for those sites |
 | Site file listing failed with `500 Request path contains unescaped characters` | WebUI decodes the passthrough path once | Encode every `%` again (`%2520`) |
 | An SCM report failed with `SyntaxError: Unexpected token '.'` after its files were inlined | `jquery.jqplot.js` has a `<link rel="stylesheet">` example in a comment, and the stylesheet pass replaced it inside the inlined script | Script elements are set aside before the stylesheet and image passes |
-| Images from sites don't load | The WebUI passthrough decodes binary files as UTF-8 | Not solvable here; logged per report |
+| Images from sites don't load | The WebUI passthrough decodes binary files as UTF-8; it can't be reversed, and no request header avoids it | SVG is served from the text. Other images and fonts come from bundled copies or name matches, with a `WARN` when the name differs. |
+| "Custom - Computer Summary" got worse later in the day: 6 of 7 relevance instructions failed with *improper %-sequence* | BES Explorer had stopped, so Web Reports answered, and it decodes `%xx` once more (see [BES Explorer or Web Reports answers](#bes-explorer-or-web-reports-answers-seen-31-oct-2026-110761)), so its valid `width='100%25'` reached the parser as `100%'` | A `("%2541")` probe per API at page load, and `%` sent as `%25` when the API decodes |
+| In that mode the site query returned no sites, which would have emptied the drop-down, and a master operator's page would have pruned the shared cache | Web Reports has no site files | An empty site list keeps the cached list unchanged |
+| `jquery.min.js` matched the bundled jQuery 3.1.1 although a site had jQuery 3.7.1 | An exact name match always won | An exact name only wins outright when it contains a version; otherwise the newest match wins |
 | Log4j, Windows 11 and CVE Search reports stopped with `Cannot read properties of null (reading 'style')` | They restyle Web Reports' page through `window.parent.document.getElementById('wr_header')`, and the renderer page had no such element | Hidden stand-ins with Web Reports' ids in `index.html`; `<html>`/`<body>` styles set by a report are undone |
 | `SendWakeOnLan` was undefined, so wake-on-LAN buttons threw `ReferenceError` | Web Reports loads `WakeOnLan.js`, and neither WebUI nor its APIs can send wake-on-LAN | A no-op that warns and returns `false`. Opening Web Reports' `/json/wakeonlan` in a tab was tried in 1.2.0 and dropped, because the Web Reports login didn't carry over. |
 | `AsyncEvaluateString` in Web Reports shows `[object XMLDocument]` | A Web Reports 11.0.7 bug (`innerHTML = xmlDoc`) | The shim shows the answers instead (a deliberate difference) |
@@ -448,10 +492,11 @@ In total that's 33 files, about 3.5 MB on disk; the built `.webui` is about 1.27
 - **No wake-on-LAN:** `SendWakeOnLan` does nothing except show a warning, because WebUI has no way to send it ([details](#no-wake-on-lan-in-webui)).
 - **Reports from sites:**
   - **Permission:** they need **Can use REST API**, both to list the files and to load them.
-  - **Images and fonts don't load.** Binary files are corrupted by the WebUI passthrough, and fonts would be blocked by the policy anyway.
+  - **A site's own images and fonts can't be used, except SVG.** The WebUI passthrough corrupts binary files irreversibly. A bundled copy or a name match stands in where there is one, sometimes in a different color or version, with a `WARN`. Report-specific images, such as print or save icons, have no stand-in.
   - **Run-time requests:** relative files that a report asks for at run time (`fetch('x.json')`, `$.getScript`, `new Image().src`) aren't served. Only `<script src>`, `<link rel="stylesheet">` and image attributes in the HTML are resolved.
   - **Only the last path segment counts:** `images/x.png` is looked up as `x.png`, the same flat layout as a site folder.
   - **Visibility:** the cache lists every report site its last writer could see. Anyone who can read shared dashboard variables can read those site and file names. Each reader only *shows* the sites it can see, and loads files with its own permissions.
+- **Web Workers from `blob:` URLs are blocked** (`worker-src`). SCM's "ARF Report Generator" starts one, so it can't fully work in WebUI even with Vue bundled; it now gets further and then stops with a `TypeError`.
 - **Refresh sections:** they refresh on a timer, not on BigFix data changes as the console does. A refreshed section's scripts don't run again. Web Reports doesn't refresh at all, so turn **Refresh sections** off to match it.
 - **No report files:** Web Reports serves a report's own files from `/ReportFiles/<reportId>/`, through the `<base href>`. Here there's no `<base>`, and an uploaded report has no stored files, so relative `src`/`href` values (images or scripts shipped with the report) don't load.
 - **Missing Web Reports functions:**
@@ -503,6 +548,7 @@ This writes `output/web-reports-renderer-<version>.webui`, about 1.27 MB with th
 | `src/static/js/app.js` | Logger, redaction and report; `/me` and `/loggedin` shell; report parsing; `<?Relevance ?>` and refresh-tag substitution; library manifest loading and URL rewriting; building the iframe document |
 | `src/static/js/sites.js` | Reports from sites: the site query, file listings, report names and types, the shared cache and its lock |
 | `src/static/js/companions.js` | Resolves a report's relative scripts, stylesheets and images from a file source (inlining, `blob:` URLs), and the site file source |
+| `../shared/webui-relevance.js` | Shared by the apps here; `pack.py` adds it as `static/js/webui-relevance.js`. Who answers relevance (BES Explorer or Web Reports), the `%` probe, and `(expr)` wrapping. |
 | `src/static/js/relevance.js` | Shared by the page and the iframe (loaded before `app.js` and before `shim.js`): typed REST evaluation (sync and async), typed-to-HTML and typed-to-answer conversion, and `prepare()` (the options plus the `( )` wrapping) |
 | `src/static/js/shim.js` | Runs inside the iframe right after `relevance.js`: `EvaluateRelevance`, `Relevance`, `AsyncEvaluateString` (typed first, SDK fallback); the dashboard-variable functions (Web Reports and console versions), with the restore after delete; `WR.Notify` (banner), `WR.URL.ParamMap` and `WR.makeRelevanceArray`; the console no-ops; the `SendWakeOnLan` no-op and `ThrowError`; `linkid:` link handling for computers, actions and fixlets; and `JSERR`/`BLOCKED`/`DSVAR` logging back to `parent.WRR.log` |
 | `src/static/css/app.css` | Page styles |
@@ -596,6 +642,40 @@ No relevance failed and nothing was blocked in any of them. In 1.0.1, clicking c
 | Default dashboard id | Log shows e.g. `dashboard id for current wizard = WebReportsRenderer-CVESearch.ojo` |
 | Installing the same version again | WebUI asked **Confirm overwrite extension** and replaced it |
 
+**1.4.0, name matching and SVG, all 28 site reports again:**
+
+| Check | Result |
+| --- | --- |
+| "Difference in the Calculation…" (Power Management) | `json2.js`, `JSResourceManager.js`, `DataService.js` and `swfobject.js`, which aren't in Power Management, were found under the same names in BES Support and BES Inventory and License |
+| Power Management reports using `jquery-ui.css` | All six `images/ui-icons_<color>_256x240.png` came from the bundled jQuery UI 1.12.1 under the same names. "Power Consumption Over Time" and "Weekly Idle Time Breakdown" no longer show a script error. |
+| SCM "Computer Compliance Detail" | 7 name matches with `WARN`s: the three site icon colors (`72a7cf`, `3f5b73`, `2e83ff`) became bundled `ui-icons_444444`, and `sort-asc.png`/`sort-desc.png` became DataTables' `sort_asc.png`/`sort_desc.png` (1.10.19, the newest bundled) |
+| Node unit test of the ranking | `jquery.min.js` → a site's `jquery-3.7.1.min.js`; `jquery-1.12.4.min.js` → the exact file; `jquery-1.7.2.min.js` (absent) → `jquery-3.7.1.min.js`; `fontawesome-webfont.woff` → the bundled `.woff2`; an unknown font → nothing; SVG from the site → `blob:` of type `image/svg+xml` |
+| Dashboards "Custom - Computer Summary" | `collapse.gif`, added by the report's script at run time and not in any site, stays broken (Web Reports can't load it either) |
+
+**1.4.1, with WebUI answering like Web Reports** (`in web reports context` true, about 3.5 s per request):
+
+| Check | Result |
+| --- | --- |
+| Probe at page load | `{"sdk": true, "typed": true}`: both APIs decode `%xx` once more |
+| Site list | Site query found no sites; the cached list (12 sites, 28 reports) stayed, with the WARN and *The site list could not be checked for changes right now* |
+| Dashboards "Custom - Computer Summary" | **7 of 7** relevance instructions worked (with 1.4.0 in this mode: 6 failed), 368 table rows, no script errors; 13.2 s because every request takes about 3.5 s |
+
+**1.5.0, real WebUI:**
+
+| Check | Result |
+| --- | --- |
+| An uploaded report calling `alert("Could not load the data: test")` twice and `alert("second message")` once | No dialog; three `ALERT` Log lines; under the title in red: `Could not load the data: test (x2)` and `second message`; the script after the alerts ran |
+| Power Management "Model Power Savings" | `Using local copies for 1 CDN file(s): jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js`; no blocked files and no script errors (before: 1 blocked) |
+| SCM "ARF Report Generator 1.0.0" | Local `vue/3.3.8/vue.global.js` used; the two unversioned Vue URLs are still blocked; `worker-src` blocked its `blob:` worker; one `TypeError` from code it builds at run time |
+| `fetch_libs.py --update-lock`, then a plain run | Only the three new files were added to `libs.lock.json`; every existing hash was unchanged; all three passed cdnjs SRI |
+
+**1.5.1, shared helper, while BES Explorer was stopped and after it was started again:**
+
+| Check | Result |
+| --- | --- |
+| BES Explorer started again, page loaded | Log: `relevance through the SDK API is now answered by BES Explorer` (and REST). The site query worked again: 40 sites, 1 changed, cache saved. |
+| "Custom - Computer Summary" on BES Explorer | 6 of 7: `display names of subscribed sites of …` gives *This operation is not supported* (all 7 worked on Web Reports) |
+
 ## How to investigate further
 
 **Reading Web Reports' real behavior:** open any custom report in Web Reports, then run this in the browser console:
@@ -628,6 +708,9 @@ input.dispatchEvent(new Event('change'))
 
 - **Wake-on-LAN, if a later BigFix adds an API for it:** check the SDK's `/api/openapi.json` and the passthrough's `GET api/help` for a wake-on-LAN resource, then map `SendWakeOnLan(cids, dbid)` to it in `shim.js`. Only `cids` matters, because WebUI has one database. Test on a single computer.
 - **Companion files for uploaded reports:** add an upload source to `companions.js` (`{label, has, getText, getBlob}` over several picked files, or a zip). `resolve()` already inlines scripts and CSS and turns images into `blob:` URLs for a source that has bytes.
+- **Get the passthrough fixed:** WebUI's `/api/sdk/passthrough/...` should forward response bodies as raw bytes. That would make every site image and font usable. The measurements in [Site files through the REST passthrough](#site-files-through-the-rest-passthrough-1107) are a ready reproduction.
+- **Base64 copies for sites you control:** a convention such as `logo.png.b64` next to `logo.png`, which the site source would decode into a real image.
+- **More bundled assets:** add jQuery UI theme images (the `ui-bg_*` files) and other common library images to `fetch_libs.py`, so more name matches are exact.
 - **Run-time file requests:** intercept `fetch` / `XMLHttpRequest` for relative URLs inside the iframe and answer them from the report's file source.
 - **Reports saved in Web Reports itself** (not in sites) aren't reachable from WebUI; only site reports are listed.
 - **Refresh on data change** rather than a timer, for example by polling a cheap change marker.

@@ -216,3 +216,12 @@ body {
   min-width: 18rem;
   max-width: 100%;
 }
+
+/* ---- alert() messages from the report ---- */
+.wrr-alerts {
+  margin: 0.25rem 0 0.5rem;
+  padding-left: 1.25rem;
+  color: var(--wrr-error);
+  font-size: 0.875rem;
+  white-space: pre-wrap;
+}

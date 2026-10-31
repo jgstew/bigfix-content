@@ -255,6 +255,25 @@
   })
 
   SAT.test({
+    id: 'sr.percent',
+    group: 'Session relevance',
+    title: 'A %25 escape survives, whichever source answers (BES Explorer or Web Reports)',
+    api: 'POST /api/sdk/sessionrelevance/evaluate',
+    safe: true,
+    async run(t) {
+      // Web Reports (the fallback when BES Explorer is unavailable) decodes %xx once more: ("100%25") fails there
+      await window.WebUIRelevance.probe()
+      const source = window.WebUIRelevance.sourceName('sdk')
+      const raw = await SAT.evaluate('("100%25")', { raw: true })
+      const fixed = await SAT.evaluate('"100%25"')
+      const value = fixed.ok && fixed.json && Array.isArray(fixed.json.value) ? fixed.json.value[0] : null
+      if (value !== '100%') return t.fail('answered by ' + source + ': ("100%25") through SAT.evaluate gave ' + fixed.status + ' ' + (value === null ? SAT.message(fixed) : JSON.stringify(value)))
+      const how = raw.ok ? 'sent as written also works' : 'sent as written -> ' + raw.status + ' ' + SAT.message(raw) + ', so % is sent as %25'
+      t.pass('answered by ' + source + ': "100%" (' + how + ')')
+    }
+  })
+
+  SAT.test({
     id: 'sr.noxsrf',
     group: 'Session relevance',
     title: 'Request without X-XSRF-TOKEN is rejected',

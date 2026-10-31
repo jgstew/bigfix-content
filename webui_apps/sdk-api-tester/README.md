@@ -8,7 +8,7 @@ Results go into a table. Every request is written to a **Log** that starts colla
 
 | Kind | How it runs | What it does |
 | --- | --- | --- |
-| **Safe** (24 tests) | **Run all safe tests**, or each row's **Run** button | Read-only calls. The one exception is a private dashboard variable under `SdkApiTester.ojo`, which is created, read, updated, listed, and then deleted. |
+| **Safe** (25 tests) | **Run all safe tests**, or each row's **Run** button | Read-only calls. The one exception is a private dashboard variable under `SdkApiTester.ojo`, which is created, read, updated, listed, and then deleted. |
 | **Manual** (18 tests) | Only from the button on its card; asks for confirmation first | Anything that changes BigFix: stopping actions, activating analyses, creating a site, importing, editing and deleting content, uploading files, sending a BigFix Query, and passthrough POST/PUT/DELETE |
 
 The manual tests clean up after themselves where the API allows it:
@@ -23,7 +23,7 @@ These are all 26 operations listed in the server's `/api/openapi.json` ("WebUI S
 
 | Operation | Tests | Kind |
 | --- | --- | --- |
-| `POST /api/sdk/sessionrelevance/evaluate` | `sr.singular`, `sr.tuple`, `sr.error`, `sr.jsonliteral`, `sr.noxsrf` | safe |
+| `POST /api/sdk/sessionrelevance/evaluate` | `sr.singular`, `sr.tuple`, `sr.error`, `sr.jsonliteral`, `sr.percent`, `sr.noxsrf` | safe |
 | `GET /api/sdk/resources/{type}/{id}` | `res.get.{fixlet,task,analysis,baseline,computergroup}`, `res.get.badtype`, `res.get.missing`, `content.get` | safe / manual |
 | `GET /api/sdk/resources/{type}/external/{site}/{id}` | `res.get.external` (BES Support) | safe |
 | `PUT /api/sdk/resources/{type}/{id}/edit` | `content.edit` | manual |
@@ -43,7 +43,9 @@ The `TakeFixletAction` family is not covered. It comes from the client-side `use
 
 ## Facts confirmed on a live WebUI while writing this
 
-- **Relevance that is also valid JSON is rejected:** `true`, `false`, `"x"`, `"a <b>"` and numbers get `400 Bad Request`. `SAT.evaluate()` therefore sends every expression as `(expr)`. `sr.jsonliteral` sends `true` raw, expecting 400, and wrapped, expecting `True`; it reports INFO if a later WebUI accepts the raw form.
+- **Who answers matters:** WebUI answers session relevance from BES Explorer when it's running and from Web Reports otherwise, and the two differ (see [../README.md](../README.md#where-webuis-session-relevance-comes-from-confirmed-on-110761)). Since 1.0.4, `SAT.evaluate()` goes through the shared [`../shared/webui-relevance.js`](../shared/webui-relevance.js), and **Copy report** has a line such as `Session relevance answered by: BES Explorer (SDK), BES Explorer (REST)`.
+- **Relevance that is also valid JSON is rejected** when BES Explorer answers: `true`, `false`, `"x"`, `"a <b>"` and numbers get `400 Bad Request`, so every expression is sent as `(expr)`. `sr.jsonliteral` sends `true` raw, expecting 400, and wrapped, expecting `True`. It reports INFO when the raw form works, which it does when **Web Reports** answers (seen on 1.0.4).
+- **`%` escapes are decoded once more when Web Reports answers:** the valid `("100%25")` then fails with *improper %-sequence*, so `%` is sent as `%25` in that case. `sr.percent` (1.0.4) checks that `"100%25"` gives `100%` and says who answered.
 - **`/api/openapi.json`** serves the SDK's OpenAPI 3.0 spec even when `/api/api-docs` (Swagger UI) is not turned on.
 - **Responses:** every SDK response is an `objectResponse`: `{"done": true, "id": ..., "value": ...}`.
 - **Resources:** `resources/{type}/{id}` returns BES XML. A bad `resourceType` gets a 400 that lists the allowed values: `fixlet`, `task`, `analysis`, `baseline`, `computergroup`.
@@ -83,6 +85,7 @@ Then in WebUI open **Extensions Management**, click **Install extension from fil
 ## Testing status
 
 - **Local mock WebUI:** every test passed. The mock copies the response shapes captured from a real server, rewrites `./HOMEPAGE/`, enforces a strict CSP, and requires XSRF. All 23 safe tests passed, and all 18 manual tests passed with `confirm()` auto-accepted. Report redaction and coverage were checked.
+- **Real WebUI, 1.0.4, while Web Reports was answering (BES Explorer stopped):** **Run all safe tests** gave **24 PASS and 1 INFO** of 25. `sr.percent`: *answered by Web Reports: "100%" (sent as written -> 500 A string constant had an improper %-sequence., so % is sent as %25)*. `sr.jsonliteral` was INFO, because bare `true` worked. After BES Explorer was started again: the helper reported BES Explorer for both APIs, `("100%25")` worked as written, bare `true` got 400 again, and requests took about 200 ms instead of 3.5 s.
 - **Real WebUI, 1.0.3:** **Run all safe tests** passed **24 of 24**, including `sr.jsonliteral`: `"true"` got 400 Bad Request and `"(true)"` gave `True`.
 - **Real WebUI (BigFix 11.0.7.61, master operator), 1.0.0:** installed with **Install extension from file**, and **Run all safe tests** passed **23 of 23** in about 6.5 seconds. Results included:
   - every resource type was returned as BES XML of the right type, including a BES Support fixlet

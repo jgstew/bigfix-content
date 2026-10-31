@@ -98,7 +98,7 @@
 
   // -> [{ name, version, path }]
   async function listSites() {
-    const r = await request('POST', '/api/sdk/sessionrelevance/evaluate', { session_relevance: '(' + SITES_QUERY + ')' })
+    const r = await request('POST', '/api/sdk/sessionrelevance/evaluate', { session_relevance: window.WRREL.forWebUI('sdk', '(' + SITES_QUERY + ')') })
     if (!r.ok) throw new Error(r.message)
     const rows = (r.json && r.json.value) || []
     const sites = (Array.isArray(rows) ? rows : [rows]).map((row) => ({ name: row[0], version: Number(row[1]), path: row[2] }))
@@ -238,6 +238,13 @@
     } catch (err) {
       log('WARN', 'site query failed: ' + err.message)
       publish(fromCache ? 'cache' : 'none', { message: 'The site list could not be read: ' + err.message })
+      return
+    }
+    // No site with files at all is what relevance answers when Web Reports evaluates it (it has no site files; seen on
+    // 11.0.7.61). Taking that at face value would empty the drop-down and, for a master operator, the shared cache.
+    if (!live.length) {
+      log('WARN', 'the site query found no sites with files. That happens when WebUI\'s relevance is answered by Web Reports (in web reports context is true there, and it has no site files); keeping the cached list, unchanged')
+      publish(fromCache ? 'cache' : 'none', { message: fromCache ? 'The site list could not be checked for changes right now; this is the cached one.' : 'No sites with files were found. If this server normally has some, try again later.' })
       return
     }
     visible = new Set(live.map((s) => s.name))
