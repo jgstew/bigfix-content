@@ -461,7 +461,7 @@
   //   external sites:  /content/tasks/<siteId>/<fixletId>   ("tasks" for fixlets too; /content/fixlets/... is 404)
   //   master action site and custom sites:  /custom/tasks/<webuiSiteId>/<fixletId>
   // For the master action site and every custom site the link carries the MASTER action site id, but WebUI needs
-  // the custom site's own id (e.g. 8589938636), which session relevance cannot return (id of a custom site fails).
+  // the custom site's own id (a different 10-digit number), which session relevance cannot return (id of a custom site fails).
   // WebUI's internal list API /custom/api/tasks?search={"query":"<text>"} returns siteID per item, so the link
   // text (the fixlet name) is searched there and the row with the same contentID is used. If nothing matches,
   // the custom content list opens with that search. WebUI has no detail page for analyses or baselines: those

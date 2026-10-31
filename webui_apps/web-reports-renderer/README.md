@@ -187,16 +187,16 @@ These were all confirmed on WebUI with BigFix 11.0.7.61.
   - **computer** → `/framework/devices/<computerId>`, which shows that computer (WebUI also redirects it to `/framework/next/devices/<id>`)
   - **action** → `/framework/deployments/<actionId>`, which shows that action
   - **fixlet or task in an external site** → `/content/tasks/<siteId>/<fixletId>`, for example `/content/tasks/1/6120`. The segment is **`tasks` even for a fixlet**: `/content/fixlets/1/6120` is `Page Not Found`.
-  - **fixlet or task in the master action site or a custom site** → `/custom/tasks/<webuiSiteId>/<fixletId>`. Master-action-site content uses the master site id (`/custom/tasks/2299662135/49`, which is what WebUI's own list links to). **Custom-site content needs the custom site's own id** (for example `/custom/tasks/8589938636/3571` for the ClientSettings site). With the master id, the page loads only an empty "Custom Document".
+  - **fixlet or task in the master action site or a custom site** → `/custom/tasks/<webuiSiteId>/<fixletId>`. Master-action-site content uses the master site id (`/custom/tasks/<masterSiteId>/<id>`, which is what WebUI's own list links to). **Custom-site content needs the custom site's own id** (`/custom/tasks/<customSiteId>/<id>`, where `<customSiteId>` is a 10-digit number such as `85899xxxxx`). With the master id, the page loads only an empty "Custom Document".
   - **analysis or baseline** → **no WebUI detail page**. `/content/tasks/<site>/<id>` falls back to the content list, and `/content/baselines/...` is `Page Not Found`.
 - **The site id inside `linkid:openfixlet(site, id)`:**
   - external sites: the site's id (`1` for BES Support, `8102` for Power Management)
-  - **the master action site and every custom site: the master action site id** (for example `2299662135`)
+  - **the master action site and every custom site: the master action site id** (a 10-digit number, `<masterSiteId>`)
 
   Session relevance can't return a custom site's own id: `id of <custom site>` fails, `id of it | 0` gives `0`, and the REST site XML (`GET api/site/custom/<name>`) has no id either.
 - **WebUI's internal custom-content API**, which WebUI's Custom Content page uses and which isn't in the SDK spec:
   - `GET /custom/api/tasks?filter={}&pagination={"page":{"itemsPerPage":N,"offset":0}}&search={"query":"<text>"}&sort={"method":"name","order":"asc"}`, with each value URL-encoded JSON
-  - It returns `{count, data: [...], lastUpdated}`. Each row has `contentID`, `siteID` (WebUI's id, for example `8589938636`), `siteName`, `siteType`, `name`, `type`, and about 25 other fields.
+  - It returns `{count, data: [...], lastUpdated}`. Each row has `contentID`, `siteID` (WebUI's id, `<customSiteId>` for custom sites), `siteName`, `siteType`, `name`, `type`, and about 25 other fields.
   - `search` must be `{"query": "..."}`; other shapes such as `{text}`, `{name}` and `{value}` return 500.
   - `GET /custom/api/tasks/sites` lists `{siteName, Type, OpSiteName, siteCount}` with **no** ids. The test server had 2,880 custom items.
 - **WebUI pages send `X-Frame-Options: DENY`,** so they can't open inside the report iframe.
@@ -210,9 +210,9 @@ POST /api/sdk/passthrough/api/query        Content-Type: text/plain
 relevance=<urlencoded relevance>&output=json
 
 -> {"result":[142],"count":1,"plural":false,"type":"integer","evaltime_ms":0.06}
--> {"result":["BIGFIX"],"count":1,"plural":true,"type":"string",...}            plural even with one result
+-> {"result":["<computer name>"],"count":1,"plural":true,"type":"string",...}            plural even with one result
 -> {"result":["<b>x</b>"],"plural":false,"type":"html",...}
--> {"result":[["BIGFIX",11333902,"Sat, 31 Oct 2026 06:46:45 -0400"]],"plural":true,"type":"( string, integer, time )"}
+-> {"result":[["<computer name>",<computerId>,"Sat, 31 Oct 2026 06:46:45 -0400"]],"plural":true,"type":"( string, integer, time )"}
 -> {"result":[true],"type":"boolean"}      {"result":[],"count":0,"plural":true}   (empty plural)
 -> 200 {"result":[],"error":"The operator \"error\" is not defined."}             relevance errors are HTTP 200
 -> 200 {"result":[],"error":"Singular expression refers to nonexistent object."}
@@ -473,8 +473,8 @@ No relevance failed and nothing was blocked in any of them. In 1.0.1, clicking c
 | `WR.Notify.warning(...)`, `WR.Notify.errorHTML(...)` | warning and error banners in the report |
 | `<?BeginRefreshRelevance id="clock" ManualRefresh="00:00:10"?>` with `<?Relevance now ?>` | refreshed every 10 s; the time changed |
 | Click `linkid:openfixlet(1,6120)` | `/content/tasks/1/6120` |
-| Click `linkid:openfixlet(2299662135,3571)` (task in custom site ClientSettings) | `/custom/tasks/8589938636/3571`, matching WebUI's own URL |
-| Click `linkid:openfixlet(2299662135,49)` (task in the master action site) | `/custom/tasks/2299662135/49` |
+| Click `linkid:openfixlet(<masterSiteId>,<id>)` (task in a custom site) | `/custom/tasks/<customSiteId>/<id>`, matching WebUI's own URL |
+| Click `linkid:openfixlet(<masterSiteId>,<id>)` (task in the master action site) | `/custom/tasks/<masterSiteId>/<id>` |
 | Option: dashboard id = an existing `.ojo` dashboard | `name of current wizard` gave that dashboard's name; without the option, `current wizard` gave nothing |
 | Option: `in web reports context` as true | 1.1.0: `[relevance error: Bad Request]` (the bare-`true` JSON quirk). **1.1.1: `True`**, and `False` with the option off |
 | `<?Relevance "a <b>" ?>`, `<?Relevance 5 ?>`, `<?Relevance false ?>`, `EvaluateRelevance("\"x\"")` | 1.1.1: all work (before the `( )` wrapping, all got 400) |
