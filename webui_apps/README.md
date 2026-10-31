@@ -256,9 +256,11 @@ Update: bump `version`, rebuild, and run **Install extension from file** again w
 
 Repair: after a WebUI reinstall or a DR restore, **Repair an extension** reinstalls it from what is stored in the site.
 
+**Upgrading an extension installed from a site** (seen on 11.0.7.61): when the site gets a newer `.webui`, Extensions Management gives no sign of it. The row keeps the old version and **Installed**, and the Action menu's **Update** is greyed out. **Repair** is what upgrades it to the version now in the site. That was tested by hand with Relevance Query 2.0.0 → 2.0.1 from WebUI-JGStew, and again with 2.0.1 → 2.0.2. Before the repair, the row showed 2.0.1 with **Update** greyed out, and the served page was still 2.0.1. **Repair** then asked *"Repair the extension. This feature will reinstall the extension. Do you want to repair?"*, which doesn't mention upgrading. About 8 seconds after **OK**, the row showed 2.0.2, and the page served 2.0.2.
+
 ## Delivery without uploading
 
-- **Repository site** (confirmed): a BigFix 11.0.7 repository site with the `.webui` in its `ServerFiles/` folder works with **Install extension from site**. [bigfix-site-webui-jgstew](https://github.com/jgstew/bigfix-site-webui-jgstew) delivered `relevance-query.webui`, a short name with no version. Extensions Management then lists it with site type **External** and the repository site's name, and the name and version come from the `package.json` inside.
+- **Repository site** (confirmed): a BigFix 11.0.7 repository site with the `.webui` in its `ServerFiles/` folder works with **Install extension from site**. [bigfix-site-webui-jgstew](https://github.com/jgstew/bigfix-site-webui-jgstew) delivered `relevance-query.webui`, a short name with no version. Extensions Management then lists it with site type **External** and the repository site's name, and the name and version come from the `package.json` inside. `web-reports-renderer.webui` installed the same way (1.5.2). To upgrade one, use **Repair** (see above).
 - **External site** (documented): HCL can publish the `.webui` file in an external site. Operators then install it from Extensions Management without uploading anything, but they still have to click Install.
 - **Custom site:** I found nothing documented for installing from a file that is already in the site. Choosing an already-added site file to update an app (based on the file's LastModified date) is planned but not confirmed in the shipped product.
 - **Automatic install** when a file shows up in a site: not documented anywhere I found.

@@ -61,6 +61,7 @@ The `name` is still `session-relevance-query`, so installing 2.0.0 into the same
 
 1. In WebUI, open **Extensions Management** (`https://<webui-server>/ui_extensions/next`). This needs the server setting `_WebUIAppEnv_ENABLE_EXTENSIONS_MANAGEMENT=1` and a WebUI restart.
 2. Click **Install extension from file**, pick a custom site, upload the `.webui` file, and click **Install**.
+   - **Installed from a site** (WebUI-JGStew): when the site has a newer `relevance-query.webui`, use **Repair** in the row's Action menu. **Update** stays greyed out, and nothing shows that a newer version is there.
    - **To upgrade**, use this same button with the same site. WebUI sees the same `name` with a newer `version` and asks to replace it (**Confirm upgrade extension**). The **Update** item in the row's Action menu crashed with a blank page on the test server: a `ReferenceError` in WebUI's own Extensions Management code.
 3. Click **Launch**. The app is served at `/ui_extensions/<name>-<siteId>`.
 
@@ -94,7 +95,7 @@ Permissions: session relevance needs **Can use WebUI** and BigFix Web Reports. B
   - **Session relevance:** `{"done": true, "value": [...], "id": {}}`. Every value comes back as a string, and tuple rows are arrays of strings.
   - **BigFix Query results:** `value` is `{reportingAgents, totalResults, results: [{computerID, computerName, subQueryID, isFailure, result, ResponseTime}]}`.
 
-- **Session relevance goes through the shared [`../shared/webui-relevance.js`](../shared/webui-relevance.js)** (since 2.0.2), which `pack.py` adds as `static/js/webui-relevance.js`. WebUI answers from BES Explorer when it's running and from Web Reports otherwise, and the two differ (see [../README.md](../README.md#where-webuis-session-relevance-comes-from-confirmed-on-110761)). The helper sends `%` as `%25` when Web Reports answers, and each result line ends with who answered, for example `3 results in 210 ms, answered by BES Explorer`. 2.0.2 is built but **not yet installed on the test server**: the WebUI-JGStew site has to pick up the new `relevance-query.webui` first.
+- **Session relevance goes through the shared [`../shared/webui-relevance.js`](../shared/webui-relevance.js)** (since 2.0.2), which `pack.py` adds as `static/js/webui-relevance.js`. WebUI answers from BES Explorer when it's running and from Web Reports otherwise, and the two differ (see [../README.md](../README.md#where-webuis-session-relevance-comes-from-confirmed-on-110761)). The helper sends `%` as `%25` when Web Reports answers, and each result line ends with who answered, for example `3 results in 210 ms, answered by BES Explorer`. **2.0.2 on the test server:** upgraded from 2.0.1 with **Repair**, after WebUI-JGStew had the new `relevance-query.webui`. In Session mode, `("100%25", number of bes computers)` gave `100%` and `142`, with the result line *1 result in 292 ms, answered by BES Explorer*.
 - **Session relevance is sent as `(expr)`** (since 2.0.1). WebUI 11.0.7 answers `400 Bad Request` when the whole relevance text is also valid JSON (`true`, `false`, `"x"`, numbers). The parentheses evaluate the same and are never valid JSON. The analyzer still sees the text as typed, and BigFix Query text is sent unchanged: its `ApplicabilityRelevance` of `true` works there.
 
 ## Testing status
