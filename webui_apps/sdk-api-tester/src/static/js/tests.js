@@ -238,6 +238,23 @@
   })
 
   SAT.test({
+    id: 'sr.jsonliteral',
+    group: 'Session relevance',
+    title: 'Relevance that is also valid JSON (true) needs parentheses',
+    api: 'POST /api/sdk/sessionrelevance/evaluate',
+    safe: true,
+    async run(t) {
+      // WebUI 11.0.7 rejects relevance whose whole text is valid JSON; SAT.evaluate wraps everything in ( )
+      const raw = await SAT.evaluate('true', { raw: true })
+      const wrapped = await SAT.evaluate('true')
+      const value = wrapped.ok && wrapped.json && Array.isArray(wrapped.json.value) ? wrapped.json.value[0] : null
+      if (!wrapped.ok || value !== 'True') return t.fail('"(true)" should give True, got ' + wrapped.status + ' ' + SAT.message(wrapped))
+      if (raw.status === 400) return t.pass('"true" -> 400 ' + SAT.message(raw) + '; "(true)" -> True. Wrapping relevance in ( ) is needed.')
+      raw.ok ? t.info('"true" now works unwrapped (' + raw.status + '): this WebUI no longer has the JSON-literal quirk') : t.warn('"true" -> ' + raw.status + ' ' + SAT.message(raw))
+    }
+  })
+
+  SAT.test({
     id: 'sr.noxsrf',
     group: 'Session relevance',
     title: 'Request without X-XSRF-TOKEN is rejected',

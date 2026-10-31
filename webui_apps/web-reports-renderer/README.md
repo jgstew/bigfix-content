@@ -1,6 +1,6 @@
 # Web Reports Renderer - BigFix WebUI extension
 
-Renders a BigFix **Web Reports custom report** inside WebUI, with all of its relevance evaluated through the WebUI SDK (`POST /api/sdk/sessionrelevance/evaluate`). It's plain HTML and JavaScript with no HCL code, packaged by `pack.py`. The current version is **1.0.3**.
+Renders a BigFix **Web Reports custom report** inside WebUI, with all of its relevance evaluated through WebUI. It uses the platform REST query (typed, through the SDK passthrough) when the operator has **Can use REST API**, and the SDK's `POST /api/sdk/sessionrelevance/evaluate` otherwise. It's plain HTML and JavaScript with no HCL code, packaged by `pack.py`. The current version is **1.1.1**.
 
 1. **Choose or drop a report**, such as the ones in [`../../webreports`](../../webreports):
    - `.besrpt` / `.beswrpt` files containing report HTML
@@ -8,8 +8,11 @@ Renders a BigFix **Web Reports custom report** inside WebUI, with all of its rel
 2. **Every `<?Relevance ?>` is replaced** with its result, the way Web Reports does on the server.
 3. **The report renders in an iframe** inside `<div id="wr_datapage">`, like Web Reports, with [`shim.js`](src/static/js/shim.js) loaded first. Its JavaScript calls to `EvaluateRelevance()`, `Relevance()` and `AsyncEvaluateString()` are answered through the same SDK API. Its dashboard-variable calls (`StoreSharedVariable()`, `DeleteSharedVariable()`, and the console's `StoreVariable()` family) go to `/api/sdk/dashboardvariable/...`.
 4. **CDN `<script>`/`<link>` tags** are rewritten to local copies, because WebUI blocks every other host.
-5. **Console links** (`linkid:...`) open the matching WebUI page in a new tab.
-6. **Copy report:** a collapsed **Log** records every relevance evaluation, JavaScript relevance call, script error, and blocked file. **Copy report** gives it back as one block of text (the same pattern as [sdk-api-tester](../sdk-api-tester/)).
+5. **Console links** (`linkid:...`) for computers, actions, fixlets and tasks open the matching WebUI page in a new tab.
+6. **Refresh:** `<?BeginRefreshRelevance?>` sections re-evaluate on a timer.
+7. **Options:** treat `in web reports context` as true, and choose the dashboard id that `current wizard` refers to.
+8. **External reports** offer a button to open their URL in a new tab.
+9. **Copy report:** a collapsed **Log** records every relevance evaluation, JavaScript relevance call, script error, and blocked file. **Copy report** gives it back as one block of text (the same pattern as [sdk-api-tester](../sdk-api-tester/)).
 
 This README records everything found while building and testing it on a live BigFix 11.0.7.61 deployment (WebUI plus Web Reports), so it doesn't need to be investigated again.
 
@@ -165,10 +168,54 @@ These were all confirmed on WebUI with BigFix 11.0.7.61.
   | `link(s) of <bes fixlet>` | `<A href="linkid:openfixlet(<siteId>,<fixletId>)">name</A>` |
 
 - **The WebUI pages for those, checked against real objects:**
-  - computer → `/framework/devices/<computerId>`, which shows that computer (WebUI also redirects it to `/framework/next/devices/<id>`)
-  - action → `/framework/deployments/<actionId>`, which shows that action
-  - fixlet → no page found yet: `/framework/content` is `404 Page Not Found`, and the WebUI content list had no per-fixlet links with ids
+  - **computer** → `/framework/devices/<computerId>`, which shows that computer (WebUI also redirects it to `/framework/next/devices/<id>`)
+  - **action** → `/framework/deployments/<actionId>`, which shows that action
+  - **fixlet or task in an external site** → `/content/tasks/<siteId>/<fixletId>`, for example `/content/tasks/1/6120`. The segment is **`tasks` even for a fixlet**: `/content/fixlets/1/6120` is `Page Not Found`.
+  - **fixlet or task in the master action site or a custom site** → `/custom/tasks/<webuiSiteId>/<fixletId>`. Master-action-site content uses the master site id (`/custom/tasks/2299662135/49`, which is what WebUI's own list links to). **Custom-site content needs the custom site's own id** (for example `/custom/tasks/8589938636/3571` for the ClientSettings site). With the master id, the page loads only an empty "Custom Document".
+  - **analysis or baseline** → **no WebUI detail page**. `/content/tasks/<site>/<id>` falls back to the content list, and `/content/baselines/...` is `Page Not Found`.
+- **The site id inside `linkid:openfixlet(site, id)`:**
+  - external sites: the site's id (`1` for BES Support, `8102` for Power Management)
+  - **the master action site and every custom site: the master action site id** (for example `2299662135`)
+
+  Session relevance can't return a custom site's own id: `id of <custom site>` fails, `id of it | 0` gives `0`, and the REST site XML (`GET api/site/custom/<name>`) has no id either.
+- **WebUI's internal custom-content API**, which WebUI's Custom Content page uses and which isn't in the SDK spec:
+  - `GET /custom/api/tasks?filter={}&pagination={"page":{"itemsPerPage":N,"offset":0}}&search={"query":"<text>"}&sort={"method":"name","order":"asc"}`, with each value URL-encoded JSON
+  - It returns `{count, data: [...], lastUpdated}`. Each row has `contentID`, `siteID` (WebUI's id, for example `8589938636`), `siteName`, `siteType`, `name`, `type`, and about 25 other fields.
+  - `search` must be `{"query": "..."}`; other shapes such as `{text}`, `{name}` and `{value}` return 500.
+  - `GET /custom/api/tasks/sites` lists `{siteName, Type, OpSiteName, siteCount}` with **no** ids. The test server had 2,880 custom items.
 - **WebUI pages send `X-Frame-Options: DENY`,** so they can't open inside the report iframe.
+
+### Typed relevance through the REST passthrough
+
+The platform REST query API, reached through the SDK passthrough, returns what the SDK evaluate API leaves out:
+
+```
+POST /api/sdk/passthrough/api/query        Content-Type: text/plain
+relevance=<urlencoded relevance>&output=json
+
+-> {"result":[142],"count":1,"plural":false,"type":"integer","evaltime_ms":0.06}
+-> {"result":["BIGFIX"],"count":1,"plural":true,"type":"string",...}            plural even with one result
+-> {"result":["<b>x</b>"],"plural":false,"type":"html",...}
+-> {"result":[["BIGFIX",11333902,"Sat, 31 Oct 2026 06:46:45 -0400"]],"plural":true,"type":"( string, integer, time )"}
+-> {"result":[true],"type":"boolean"}      {"result":[],"count":0,"plural":true}   (empty plural)
+-> 200 {"result":[],"error":"The operator \"error\" is not defined."}             relevance errors are HTTP 200
+-> 200 {"result":[],"error":"Singular expression refers to nonexistent object."}
+```
+
+- **What it gives:** exact **plurality**, the exact **type** (including the type of each tuple item), and **native JSON values**: numbers, booleans, and tuples as arrays.
+- **Permission:** it needs **Can use REST API**.
+- **No query string:** `GET /api/sdk/passthrough/api/query?relevance=…` is rejected with `400 {"message":"Bad request parameters"}`, because the SDK's request validator only allows the `{uri}` path parameter. Encoding the whole query into the path (`/api/sdk/passthrough/api%2Fquery%3Foutput%3Djson%26relevance%3D…`) also works.
+- **Same answers as the SDK:** on every expression compared (`names of sites of …`, `task flags …`, `link of …`, `in web reports context`), REST and the SDK gave the same values, with REST adding types.
+
+### Relevance that is valid JSON is rejected
+
+WebUI 11.0.7 answers **`400 {"message":"Bad Request"}`** on **both** `/api/sdk/sessionrelevance/evaluate` and the REST passthrough when the entire relevance text is also a valid JSON value:
+
+| Rejected with 400 | Works |
+| --- | --- |
+| `true`, `false`, `"x"`, `"a <b>"`, `"<script>"` (and numbers) | `True`, `(true)`, `1 = 1`, `exists true`, `"a <b>" & ""`, `if (true) then "yes" else "no"` |
+
+WebUI apparently JSON-parses the value somewhere. **Workaround:** send `(expr)` instead, which evaluates the same and is never valid JSON. This renderer does that for every relevance it sends, and so do [session-relevance-query-html](../session-relevance-query-html/) (2.0.1), [sdk-api-tester](../sdk-api-tester/) (1.0.3, which has a test for the quirk, `sr.jsonliteral`) and the React [session-relevance-query](../session-relevance-query/) source.
 
 ### Dashboard-variable SDK API quirks
 
@@ -190,19 +237,28 @@ These were found with the shim on the real server, using a throwaway dashboard i
 
 | Web Reports feature | Here |
 | --- | --- |
-| `<?Relevance expr ?>` | Evaluates `(it as html) of (expr)`, so the **server** escapes strings and leaves `html` alone. If that cast fails, as it does for integers, booleans and tuples, it evaluates `expr` as written and escapes each value in the page (a tuple becomes `a, b`). Plural results are joined with `<br />`, and errors show inline as `<span class="wrr-relevance-error">[relevance error: …]</span>`. Repeated identical expressions are evaluated once, and up to 4 run at a time. |
-| `<?BeginRefreshRelevance id="x"?>` … `<?EndRefreshRelevance?>` | Become `<span id="x">` … `</span>`. The default id is `__DRRSN`, the console's default. Nothing is re-evaluated later. |
+| All relevance | Goes through `WRREL.prepare()` in [`relevance.js`](src/static/js/relevance.js), which applies the two options below and wraps the expression in `( )`, the JSON-literal workaround. Then it's evaluated **typed** (REST passthrough) when available. Otherwise it uses the SDK API: after the first 403, the typed path is off for the rest of the page, and any other HTTP failure falls back to the SDK for that call. |
+| `<?Relevance expr ?>` | **Typed:** values whose type is `html`, including `html` items of a tuple, are inserted as they are; everything else is HTML-escaped, with booleans written `True`/`False`. **SDK fallback:** evaluates `(it as html) of (expr)` so the server escapes strings and leaves `html` alone; if that cast fails, as it does for integers, booleans and tuples, it evaluates `expr` and escapes the values in the page. Either way, tuples become `a, b`, plural results are joined with `<br />`, and errors show inline as `<span class="wrr-relevance-error">[relevance error: …]</span>`. Repeated identical expressions are evaluated once, and up to 4 run at a time. The Log shows how each was done (`typed integer`, `typed ( string, html )`, `SDK as html`, `SDK escaped`). |
+| `<?BeginRefreshRelevance id="x" …?>` … `<?EndRefreshRelevance?>` | Become `<span id="x" data-wrr-refresh="n">` … `</span>`; the default id is `__DRRSN`, the console's. With **Refresh sections** on (the default), each section's source is re-evaluated on a timer and the span's `innerHTML` replaced, without running its scripts again. The interval is the shortest `hh:mm:ss` attribute (`ManualRefresh`, `ActionResults`, and so on), with a floor of 10 seconds, or 60 seconds when there are no attributes. Web Reports itself never refreshes; this is the console's behavior. |
+| Option: **Treat `in web reports context` as true** | Off by default. Rewrites the text `in web reports context` to `true` before evaluating, so reports take their Web Reports branch. This is plain text replacement, so it also changes string literals that contain the phrase. |
+| Option: **Dashboard id for `current wizard`** | Empty by default. Rewrites `current wizard` to `(bes wizard whose (dashboard id of it = "<id>"))`, so reads like `shared variable "x" of current wizard` refer to a real dashboard. Without it, `current wizard` refers to nothing. A `"` in the id becomes `%22`. |
+| Options storage | Remembered per browser in `localStorage`; if storage is blocked, the defaults are used. They apply at the next render. |
 | Page structure | `<!doctype html>`, then `shim.js` as the first, blocking `<script>`, then `report.css`, then `<body><div id="wr_datapage">REPORT</div>`. The `srcdoc` iframe is same-origin, with `sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads"`. |
-| `EvaluateRelevance(q)` | Synchronous `XMLHttpRequest` to the SDK API. One value returns a string; any other count returns an array of strings (tuples become `a, b`). Errors throw `Error(message)` with **both** `e.message` and `e.description` set; older console code reads `e.description`. |
-| `Relevance(q)` | Synchronous. Tuples stay arrays, date strings become `Date` (Web Reports' regex), and arrays get Web Reports' `sort(i, fn)` and `toArray()`. |
-| `Relevance(q, {success, failure})` | Asynchronous (`fetch`). `failure` gets the server's message. |
+| `EvaluateRelevance(q)` | Synchronous `XMLHttpRequest`. **Typed:** plural returns an array of answer strings (possibly empty), and singular returns the answer string, **exactly like Web Reports**. Answers are strings: booleans become `True`/`False`, numbers become strings, and tuples become `a, b`. **SDK fallback:** one value counts as singular. Errors throw `Error(message)` with **both** `e.message` and `e.description` set; older console code reads `e.description`. |
+| `Relevance(q)` | Synchronous. **Typed:** native values like Web Reports' `/json/relevance`: numbers, booleans, tuples as arrays, and date strings as `Date`. Plural returns `WR.makeRelevanceArray(values)` (`sort(i, fn)`, `toArray()`), singular returns the value. **SDK fallback:** strings, one value counts as singular, and dates still become `Date`. |
+| `Relevance(q, {success, failure})` | The same, asynchronously (`fetch`). `failure` gets the server's message. |
 | `AsyncEvaluateString(q, id)` | Shows `loading...`, then the answers joined with `<br />`, not escaped. On error it shows `Error: <message>`, and a missing element is logged as WARN. **This differs on purpose** from Web Reports' buggy `[object XMLDocument]`. |
+| `WR.makeRelevanceArray`, `WR.URL.ParamMap` | `WR.makeRelevanceArray(array)` is Web Reports' function. `new WR.URL.ParamMap(params)` has `add`, `set`, `remove`, `addAll`, `empty`, `finish` and `equals`; `finish()` gives `a=1%202&a=3&b=x%26y`, which was checked against Web Reports' own output for the same calls. Neither replaces an existing `WR.*` definition. |
 | `StoreSharedVariable(id, name, value, callback, databaseID)` / `DeleteSharedVariable(id, name, callback, databaseID)` | Web Reports' behavior: asynchronous, the same missing-argument checks and messages, and `callback.success(o)` / `callback.failure(o)` with `o = {status, statusText, responseText}`. With no callback, a failure calls `WR.Notify.error('HTTP POST Request "/post/…" failed: …')`. Maps to `POST` (`private: false`) / `DELETE /api/sdk/dashboardvariable/{id}/{name}`. `databaseID` is ignored with an INFO line, because WebUI has a single database. |
 | `StoreVariable(id, name, value, isPrivate)`, `StorePrivateVariable`, `DeleteVariable(id, name, isPrivate)`, `DeletePrivateVariable` | The console's versions: synchronous, `isPrivate` defaulting to false (shared), throwing `Error(message)` on failure (for example `Not Found` when deleting something that doesn't exist). They're also attached to `window.external` where the browser allows it. |
 | Deleting one kind of variable | Before a delete, the shim reads the dashboard's variable list. After the delete, it writes back the same-named variable of the other kind (shared or private) and logs `WARN restored … variable`, because the SDK's `DELETE` removes both. |
-| `WR.Notify.error/warn/info` | A minimal `WR.Notify`, created only if `WR.Notify` doesn't already exist. It writes to the Log (`ERROR`/`WARN`/`INFO`) and the browser console; there's no Web Reports banner. `window.WR` is created as an empty object for it if needed. |
+| `WR.Notify` | Web Reports' methods: `update`, `updateHTML`, `warning`, `warningHTML`, `error`, `errorHTML`, `clear`, `enableNotifications`. Messages show as a **banner at the top of the report** (`#wrr-notify`, styled in `report.css`). Errors stay until dismissed with ×; others clear after 8 seconds. Each one is also logged (`ERROR`/`WARN`/`INFO`), and errors go to the browser console. It's created only if `WR.Notify` doesn't already exist. |
 | `InsertUtilityDiv()`, `RegisterRefreshHandler()`, `ClearAllGlobalFilters()`, `OpenComputerGroup()` | No-ops that log an INFO line, so reports that also work as console dashboards don't stop with an error. |
-| `linkid:opencomputer(id)` / `linkid:openaction(id)` links | One capturing click listener on the iframe document, so it also catches links added later, opens `/framework/devices/<id>` or `/framework/deployments/<id>` with `window.open(url, '_blank', 'noopener')`. Other `linkid:` links are logged as `no WebUI page for console link …`. |
+| `linkid:` links | One capturing click listener on the iframe document, so it also catches links added later, opens a new tab. Other `linkid:` forms are logged as `no WebUI page for console link …`. |
+| … `opencomputer(id)` / `openaction(id)` | `/framework/devices/<id>` / `/framework/deployments/<id>` (`window.open(url, '_blank', 'noopener')`) |
+| … `openfixlet(site, id)`, external site | `/content/tasks/<site>/<id>` |
+| … `openfixlet(site, id)`, master action site or custom site | A site id equal to the master action site id (looked up once with `ids of bes sites whose (master site flag of it)`, or, until that answers, any id above 2147483647) means the item's real site isn't known. The tab opens immediately, **inside the click**, so the popup blocker allows it. Then `/custom/api/tasks?search={"query":"<link text>"}` is called, the row with the same `contentID` is picked (preferring one whose `siteID` equals the link's), and the tab goes to `/custom/tasks/<siteID>/<id>`. If there are several matches, the first is used, with a WARN. If there's no match, the tab shows WebUI's custom content list searched for that name. |
+| External reports | The status explains that WebUI can't frame other hosts, and a button offers **Open `<url>` in a new tab**. Only `http(s)://` URLs are offered; a `javascript:`, `data:` or other URL is not. |
 | CDN `<script>`/`<link>` | Rewritten to local copies; see [CDN libraries](#cdn-libraries). |
 | Script errors and blocked files | `shim.js` sends `error`, `unhandledrejection` and `securitypolicyviolation` events to the Log, as `JSERR` and `BLOCKED` lines. |
 
@@ -254,26 +310,43 @@ In total that's 33 files, about 3.5 MB on disk; the built `.webui` is about 1.27
 | A popup from the sandboxed iframe would itself be sandboxed | The sandbox flags carry over to popups by default | Added `allow-popups-to-escape-sandbox` |
 | Deleting a private variable also deleted the shared one with the same name, and the other way around | The SDK's `DELETE /api/sdk/dashboardvariable/{id}/{name}` has no private/shared flag and removes both | The shim reads the dashboard's variable list before a delete, and writes back the other kind afterwards, with a WARN in the Log |
 | Dashboard-variable functions were missing (the README listed them as not provided) | Web Reports loads `DashboardVariables.js` into the report iframe, and this app didn't have it | Shimmed `StoreSharedVariable` / `DeleteSharedVariable` with Web Reports' exact behavior, plus the console's `StoreVariable` family and a minimal `WR.Notify` |
+| A plural expression with one result looked singular, and `Relevance` returned strings | The SDK evaluate API gives neither plurality nor types | The typed REST passthrough query (`plural`, `type`, native values), with the SDK as fallback |
+| `true`, `false`, `"x"`, `"a <b>"` and numbers as whole expressions got `400 Bad Request` | WebUI rejects relevance text that's also valid JSON, on both APIs | Every expression is sent as `(expr)` |
+| The first passthrough attempt with `?relevance=…` got `400 Bad request parameters` | The SDK validator only allows the `{uri}` path parameter | Use `POST` with a `text/plain` body `relevance=…&output=json` |
+| Fixlet and task links opened nothing | `linkid:openfixlet(site,id)` had no known WebUI page | `/content/tasks/<site>/<id>` for external sites |
+| Custom-site fixlet links opened an empty "Custom Document" | The link carries the master action site id, while WebUI needs the custom site's own id, which relevance can't return | Look the item up by name in WebUI's `/custom/api/tasks?search={"query":…}` and use its `siteID` |
+| Opening a tab after an `await` would be blocked as a popup | Browsers only allow `window.open` during the click | Open a blank tab inside the click, then set its `location` once the lookup finishes |
+| `in web reports context` → `true` failed with Bad Request | The rewritten expression was the bare JSON literal `true` | The `( )` wrapping fixed it |
+| Refresh sections never refreshed | Not implemented | Timer-based re-evaluation of each section's source |
 | `AsyncEvaluateString` in Web Reports shows `[object XMLDocument]` | A Web Reports 11.0.7 bug (`innerHTML = xmlDoc`) | The shim shows the answers instead (a deliberate difference) |
 | Font Awesome 5 icons didn't convert in an automated, hidden browser preview | `requestAnimationFrame` never fires in a hidden tab, and Font Awesome batches its DOM changes on it | Not a real problem: the icons render in a visible tab (79 icons on the real server). Remember this when testing in a headless or hidden browser. |
 | A local mock made some results look wrong (raw `<string>`, a 70 KB attribute) | The mock returned canned or unescaped answers | Not an app problem. Test relevance results on a real server; use mocks only for CSP, loading and the shim's mechanics. |
 
 ## Known limitations
 
-- **Singular or plural:** in `EvaluateRelevance` and `Relevance`, exactly one value counts as singular. A plural expression with a single result gives a string, not a one-element array, so code like `result.length` or `result[0]` behaves differently in that case. Empty results return `[]`, as in Web Reports, and an empty singular expression throws, because the server reports "Singular expression refers to nonexistent object". Plurality could be learned another way; see [Ideas](#ideas-not-done-yet).
-- **`EvaluateRelevance` and types:** answers are flattened to strings, as in Web Reports. With `Relevance`, values are the SDK's strings (Web Reports' `/json/relevance` returns native numbers and booleans). Only date strings become `Date`, so a numeric value is still a string like `"3"`.
-- **No Web Reports context:** `in web reports context` is `False`, so reports take their console branch. There are no Web Reports-only inspectors, and no multi-server Web Reports data.
+- **Without "Can use REST API":** the SDK fallback can't know plurality or types. There, one value counts as singular, so a plural expression with one result gives a string instead of a one-element array. `Relevance` returns strings, apart from dates, and `<?Relevance ?>` escaping relies on the `(it as html)` method. With REST permission, all of this matches Web Reports.
+- **Some bodies are rejected:** WebUI may refuse other relevance text with `400 Bad Request`. The `( )` wrapping only covers the JSON-literal case. A typed request that gets HTTP 400 falls back to the SDK, which may refuse the same text.
+- **No Web Reports context:** `in web reports context` is `False` unless the option is on, so reports take their console branch. The option is plain text replacement. There are no Web Reports-only inspectors, and no multi-server Web Reports data.
 - **No Web Reports filters or site:** `GetFilterParam()` and `WR.currentSiteID` don't exist here, so a report always sees every computer the WebUI operator can see.
-- **Fixlet links** (`linkid:openfixlet(site,id)`) open nothing; no WebUI page for them is known yet. Other `linkid:` forms aren't mapped either.
-- **No refresh:** `<?BeginRefreshRelevance?>` sections never refresh.
+- **Fixlet links:**
+  - **Analyses and baselines** have no WebUI detail page, so their links land on WebUI's content list.
+  - **Custom and master-site lookups** depend on WebUI's **undocumented** `/custom/api/tasks` API, and on the link text being the item's name. If the API changes, or the name isn't found, the link opens a search of the custom content list instead. When several custom sites have an item with the same id and name, the first match is used.
+  - **Other `linkid:` forms** aren't mapped.
+- **Refresh sections:** they refresh on a timer, not on BigFix data changes as the console does. A refreshed section's scripts don't run again. Web Reports doesn't refresh at all, so turn **Refresh sections** off to match it.
 - **No report files:** Web Reports serves a report's own files from `/ReportFiles/<reportId>/`, through the `<base href>`. Here there's no `<base>`, and an uploaded report has no stored files, so relative `src`/`href` values (images or scripts shipped with the report) don't load.
-- **Missing Web Reports functions:** `WakeOnLan.js`, the rest of the `WR` object (`WR.URL`, `WR.Filters`, `WR.makeRelevanceArray` as a public function, and so on), YUI, and Web Reports' own `jQuery/jquery.js` aren't provided. `WR.Notify` is only a minimal stand-in that writes to the Log. A report that uses the rest without loading its own copy fails, and the error shows in the Log.
+- **Missing Web Reports functions:**
+  - `WakeOnLan.js` (deferred; see [Ideas](#ideas-not-done-yet))
+  - the rest of the `WR` object (`WR.HTML`, `WR.DOM`, `WR.Array`, `WR.run`, `WR.Filters`, `WR.currentSiteID`)
+  - YUI, and Web Reports' own `jQuery/jquery.js`
+
+  A report that uses them without loading its own copy fails, and the error shows in the Log. `WR.Notify`, `WR.URL.ParamMap` and `WR.makeRelevanceArray` **are** provided.
 - **Dashboard variables:**
   - **Permissions:** writes run with the WebUI operator's permissions. Web Reports' "admin users only" rule for shared variables isn't enforced here; the SDK applies its own rules.
   - **Restore after delete:** the write-back is two extra calls, so it isn't atomic, and it assumes the private variable in the list is the caller's own. Whether the SDK's `DELETE` also removes **other** operators' private variables with that name wasn't tested; only one operator was used.
   - **Reading:** reports still read with relevance (`shared variable "X" of current wizard`). `current wizard` has no meaning for an uploaded report, so reports should name the dashboard explicitly, for example `shared variables "X" of bes wizards whose (dashboard id of it = "…")`. That needs a dashboard with that id to exist. Reading a variable written by the shim through relevance wasn't tested.
   - **`databaseID`** is ignored.
-- **External and template reports** aren't rendered. WebUI extensions can't frame or call other hosts, and template reports are saved Web Reports pages, not HTML.
+- **External and template reports** aren't rendered. An external report only gets an **Open in a new tab** button, because WebUI extensions can't frame or call other hosts. Template reports are saved Web Reports pages, not HTML.
+- **Report companion files**, which Web Reports serves from `/ReportFiles/<id>/`, aren't supported (see [Ideas](#ideas-not-done-yet)).
 - **Libraries:** only the libraries in `LIBRARIES` are available. Everything else from another host is blocked.
 - **Parsing:** a `?>` inside a relevance string literal ends the processing instruction early. Web Reports has the same rule. Processing instructions are matched case-insensitively (`<?relevance`).
 - **`AsyncEvaluateString`** differs from Web Reports on purpose (see above).
@@ -309,7 +382,8 @@ This writes `output/web-reports-renderer-<version>.webui`, about 1.27 MB with th
 | --- | --- |
 | `src/index.html` | Upload and drop area, status, the report iframe (its `sandbox` flags), and the Log |
 | `src/static/js/app.js` | Logger, redaction and report; `/me` and `/loggedin` shell; report parsing; `<?Relevance ?>` and refresh-tag substitution; library manifest loading and URL rewriting; building the iframe document |
-| `src/static/js/shim.js` | Runs first inside the iframe: `EvaluateRelevance`, `Relevance`, `AsyncEvaluateString`; the dashboard-variable functions (Web Reports and console versions), with the restore after delete; `WR.Notify`; the console no-ops; `linkid:` link handling; and `JSERR`/`BLOCKED`/`DSVAR` logging back to `parent.WRR.log` |
+| `src/static/js/relevance.js` | Shared by the page and the iframe (loaded before `app.js` and before `shim.js`): typed REST evaluation (sync and async), typed-to-HTML and typed-to-answer conversion, and `prepare()` (the options plus the `( )` wrapping) |
+| `src/static/js/shim.js` | Runs inside the iframe right after `relevance.js`: `EvaluateRelevance`, `Relevance`, `AsyncEvaluateString` (typed first, SDK fallback); the dashboard-variable functions (Web Reports and console versions), with the restore after delete; `WR.Notify` (banner), `WR.URL.ParamMap` and `WR.makeRelevanceArray`; the console no-ops; `linkid:` link handling for computers, actions and fixlets; and `JSERR`/`BLOCKED`/`DSVAR` logging back to `parent.WRR.log` |
 | `src/static/css/app.css` | Page styles |
 | `src/static/css/report.css` | Minimal base styles inside the iframe (Web Reports' `sourcewrapper.css` isn't copied) and the relevance-error style |
 | `fetch_libs.py`, `libs.lock.json` | Download and pin the CDN library copies (`libs.lock.json` is committed) |
@@ -353,6 +427,29 @@ No relevance failed and nothing was blocked in any of them. In 1.0.1, clicking c
 | A private and a shared `same`, then `DeletePrivateVariable` | 1.0.2: **both were gone** (the SDK quirk). 1.0.3: the shared `same=SHARED` remained, with a "restored shared variable" WARN. |
 | A private and a shared `same`, then `DeleteSharedVariable` | 1.0.3: `success 200`, and the private `same=PRIVATE2` remained, with a "restored private variable" WARN |
 
+**1.1.0 and 1.1.1, real WebUI, operator with Can use REST API:**
+
+| Check | Result |
+| --- | --- |
+| `<?Relevance "a <b>" & "" ?>` | typed `string`, escaped: `a &lt;b&gt;` |
+| `<?Relevance html "<b>bold</b>" ?>` | typed `html`, left as HTML |
+| `number of bes computers`, `exists bes computers` | `142`, `True` (typed `integer`, `boolean`) |
+| `(name of it, html "<i>x</i>") of …` | `BIGFIX, <i>x</i>`: typed `( string, html )`, so only the html item is left unescaped |
+| `EvaluateRelevance("names of … whose (id of it = …)")`, one match | **array of length 1** (exact plurality) |
+| `Relevance("(name, id, last report time) of …")` | array of tuples with a native `number` and a `Date` |
+| `Relevance("number of bes computers")` / `Relevance("exists bes computers")` | `number` / `boolean` |
+| `EvaluateRelevance("names of error")` | threw `The operator "error" is not defined.` |
+| `new WR.URL.ParamMap()`, then `finish()` | `a=1%202&a=3&b=x%26y`, the same as Web Reports |
+| `WR.Notify.warning(...)`, `WR.Notify.errorHTML(...)` | warning and error banners in the report |
+| `<?BeginRefreshRelevance id="clock" ManualRefresh="00:00:10"?>` with `<?Relevance now ?>` | refreshed every 10 s; the time changed |
+| Click `linkid:openfixlet(1,6120)` | `/content/tasks/1/6120` |
+| Click `linkid:openfixlet(2299662135,3571)` (task in custom site ClientSettings) | `/custom/tasks/8589938636/3571`, matching WebUI's own URL |
+| Click `linkid:openfixlet(2299662135,49)` (task in the master action site) | `/custom/tasks/2299662135/49` |
+| Option: dashboard id = an existing `.ojo` dashboard | `name of current wizard` gave that dashboard's name; without the option, `current wizard` gave nothing |
+| Option: `in web reports context` as true | 1.1.0: `[relevance error: Bad Request]` (the bare-`true` JSON quirk). **1.1.1: `True`**, and `False` with the option off |
+| `<?Relevance "a <b>" ?>`, `<?Relevance 5 ?>`, `<?Relevance false ?>`, `EvaluateRelevance("\"x\"")` | 1.1.1: all work (before the `( )` wrapping, all got 400) |
+| External report (`external-google.webreport`) | the status message plus an **Open https://www.google.com/ in a new tab** button |
+
 ## How to investigate further
 
 **Reading Web Reports' real behavior:** open any custom report in Web Reports, then run this in the browser console:
@@ -375,14 +472,16 @@ input.dispatchEvent(new Event('change'))
 // then read #wrr-status, the Log (#log-text), and document.getElementById('wrr-frame').contentDocument
 ```
 
-**Finding WebUI pages for other link types:** look at the `href` values on WebUI's list pages, such as `/framework/devices` and `/framework/deployments`. Those gave `/framework/devices/<id>` and `/framework/deployments/<id>`.
+**Finding WebUI pages for other link types:**
+- **List pages:** look at the `href` values on WebUI's list pages. `/framework/devices` and `/framework/deployments` gave `/framework/devices/<id>` and `/framework/deployments/<id>`. WebUI's Custom Content list (`/custom/tasks`) links `/custom/tasks/<siteID>/<id>`.
+- **API calls behind a page:** `performance.getEntriesByType('resource')` on a WebUI page lists the calls it made. That's how `/custom/api/tasks` and its `search={"query":...}` format were found, by typing into the page's search box.
+
+**Checking typed evaluation:** `fetch('/api/sdk/passthrough/api/query', {method: 'POST', headers: {'Content-Type': 'text/plain', 'X-XSRF-TOKEN': <cookie>}, body: 'relevance=' + encodeURIComponent('(' + expr + ')') + '&output=json'})`.
 
 ## Ideas not done yet
 
-- **Exact plurality and types:** the platform REST `GET /api/query?relevance=…&output=json` (through the SDK passthrough `GET /api/sdk/passthrough/api/query?…`, which needs **Can use REST API**) may return plurality and type information. That could replace the one-value guess and the `as html` trick. It hasn't been tested: check whether the passthrough forwards query strings and what the JSON contains.
-- **A visible `WR.Notify`:** a banner inside the report instead of only a Log line, plus `WR.URL.ParamMap` and other `WR` helpers that reports may use directly.
-- **A dashboard-id setting for uploaded reports**, so `current wizard`-style reads and writes have a stable namespace.
-- **Fixlet links:** find a WebUI page for a single fixlet or task and map `linkid:openfixlet(site,id)` to it.
-- **An option to treat `in web reports context` as `True`**, by rewriting it in expressions, so reports take their Web Reports branch.
+- **WakeOnLan.js (deferred):** Web Reports loads it into report iframes. First read its functions from `/JavaScript/WakeOnLan/WakeOnLan.js` on a Web Reports server, then map them to the platform REST wake-on-LAN API through the passthrough (which needs Can use REST API). Test with care, because it sends real wake-on-LAN packets.
+- **Report companion files (not done, by choice):** accept a zip of the report plus its images, and serve them as `blob:` URLs. WebUI's CSP allows `blob:` for images only, not scripts.
 - **Reports already in Web Reports:** load a stored report by id, for example by reading the site files through the SDK, instead of uploading one.
-- **Refresh sections:** re-evaluate `<?BeginRefreshRelevance?>` sections on a timer.
+- **Refresh on data change** rather than a timer, for example by polling a cheap change marker.
+- **Analysis and baseline links:** if a later WebUI adds detail pages for them, map them in `shim.js`.

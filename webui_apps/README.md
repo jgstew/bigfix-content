@@ -270,11 +270,24 @@ Repair: after a WebUI reinstall or a DR restore, **Repair an extension** reinsta
 - What do `done` and `id` in the session relevance response mean? Can `done` ever be `false`, meaning paged or partial results? It never was in testing.
 - What `siteID` do `POST /api/sdk/analyses/activate` and `.../deactivate` expect for an analysis in a custom site, which has no site id in session relevance? Neither call has been run on a real server yet.
 - What is the upload size limit for a `.webui` file? 8.3 MB worked.
-- Is there a WebUI page for a single fixlet or task that `linkid:openfixlet(<siteId>,<fixletId>)` could map to? `/framework/content` returned 404. Computers map to `/framework/devices/<id>` and actions to `/framework/deployments/<id>` (confirmed).
+- Do analyses and baselines have a WebUI detail page? On 11.0.7, `/content/tasks/<site>/<id>` falls back to the content list for them, and `/content/baselines/...` is 404.
 
 ## Session relevance through WebUI vs Web Reports (confirmed)
 
-Relevance evaluated through `/api/sdk/sessionrelevance/evaluate` is **not** in Web Reports context: `in web reports context` returns `False`, and `link of <bes computer>` / `<bes action>` / `<bes fixlet>` return console links (`linkid:opencomputer(<id>)`, `linkid:openaction(<id>)`, `linkid:openfixlet(<siteId>,<fixletId>)`). See [web-reports-renderer](web-reports-renderer/) for how it maps them to WebUI pages.
+- **No Web Reports context:** relevance evaluated through `/api/sdk/sessionrelevance/evaluate` (or the REST query) is **not** in Web Reports context. `in web reports context` returns `False`.
+- **Console links:** `link of <bes computer>` / `<bes action>` / `<bes fixlet>` return console links: `linkid:opencomputer(<id>)`, `linkid:openaction(<id>)` and `linkid:openfixlet(<siteId>,<fixletId>)`.
+- **WebUI pages for them:**
+  - computers: `/framework/devices/<id>`
+  - actions: `/framework/deployments/<id>`
+  - external-site fixlets and tasks: `/content/tasks/<siteId>/<id>`, with `tasks` even for fixlets
+  - master-action-site and custom-site content: `/custom/tasks/<webuiSiteId>/<id>`
+
+  For master-action-site and custom-site content, the link's site id is always the **master action site id**, while WebUI needs the **custom site's own id**, which relevance can't return. WebUI's internal `/custom/api/tasks?search={"query":"…"}` returns it as `siteID`. See [web-reports-renderer](web-reports-renderer/README.md#how-webui-differs) for how the links are mapped.
+
+## WebUI relevance API quirks (confirmed on 11.0.7)
+
+- **Valid JSON is rejected:** relevance whose whole text is also valid JSON (`true`, `false`, `"x"`, `"a <b>"`, numbers) gets **`400 Bad Request`** from both `/api/sdk/sessionrelevance/evaluate` and the REST passthrough. `(true)`, `True` and `"a <b>" & ""` work. **Send `(expr)`**, which evaluates the same and is never valid JSON. All the apps in this folder do this, and [sdk-api-tester](sdk-api-tester/)'s `sr.jsonliteral` test checks for the quirk.
+- **Typed results:** for plurality, types and native values, use the platform REST query through the passthrough: `POST /api/sdk/passthrough/api/query`, `Content-Type: text/plain`, body `relevance=<urlencoded>&output=json`. It returns `{"result":[...], "count", "plural", "type", "evaltime_ms"}`, or `{"result":[], "error":"..."}` with HTTP 200 for a relevance error, and needs **Can use REST API**. A query string on the passthrough URL is rejected with `400 Bad request parameters`.
 
 ## History
 

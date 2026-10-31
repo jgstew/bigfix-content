@@ -59,8 +59,10 @@
     return body
   }
 
+  // Sent as "(relevance)": WebUI 11.0.7 answers 400 "Bad Request" when the whole relevance text is also valid
+  // JSON (true, false, "x", numbers). The parentheses evaluate the same and are never valid JSON.
   const evaluateSession = (relevance, signal) =>
-    webuiFetch('/api/sdk/sessionrelevance/evaluate', { method: 'POST', json: { session_relevance: relevance }, signal })
+    webuiFetch('/api/sdk/sessionrelevance/evaluate', { method: 'POST', json: { session_relevance: '(' + relevance.trim() + ')' }, signal })
 
   // ---- Shell: user name and session keep-alive (what BfApp does, minus the WebUI nav) --------
 

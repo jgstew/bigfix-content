@@ -3,7 +3,7 @@
 'use strict'
 window.SAT = window.SAT || {}
 ;(function (SAT) {
-  SAT.VERSION = '1.0.2'
+  SAT.VERSION = '1.0.3'
   SAT.lines = []
   SAT.sensitive = new Set() // strings replaced by <REDACTED_n> in copied output when "Redact" is checked
   SAT.state = {} // values shared between tests (ids found by lookups, the test dashboard variable, ...)
@@ -170,7 +170,11 @@ window.SAT = window.SAT || {}
   // Server error text for a result: JSON { message } when present, else the start of the body.
   SAT.message = (res) => (res.json && res.json.message) || SAT.snippet(res.text, 200) || 'HTTP ' + res.status
 
-  SAT.evaluate = (relevance, opts = {}) => SAT.api('POST', '/api/sdk/sessionrelevance/evaluate', { json: { session_relevance: relevance }, xsrf: opts.xsrf })
+  // Sent as "(relevance)" unless opts.raw: WebUI 11.0.7 answers 400 "Bad Request" when the whole relevance text
+  // is also valid JSON (true, false, "x", numbers). The parentheses evaluate the same and are never valid JSON.
+  // opts.raw sends the text unchanged (the sr.jsonliteral test uses it to show the quirk).
+  SAT.evaluate = (relevance, opts = {}) =>
+    SAT.api('POST', '/api/sdk/sessionrelevance/evaluate', { json: { session_relevance: opts.raw ? relevance : '(' + String(relevance).trim() + ')' }, xsrf: opts.xsrf })
 
   // First value of a session relevance result, or undefined. Values come back as strings.
   SAT.evaluateFirst = async function (relevance) {

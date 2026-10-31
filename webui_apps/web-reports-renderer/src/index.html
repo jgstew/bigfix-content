@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Web Reports Renderer</title>
     <link rel="stylesheet" href="./HOMEPAGE/static/css/app.css" />
+    <script defer src="./HOMEPAGE/static/js/relevance.js"></script>
     <script defer src="./HOMEPAGE/static/js/app.js"></script>
   </head>
   <body>
@@ -31,11 +32,26 @@
         <button type="button" id="wrr-rerender" class="wrr-button" disabled>Render again</button>
       </div>
 
+      <div class="wrr-row wrr-options">
+        <label class="wrr-inline" title="Relevance through WebUI is not in Web Reports context, so reports take their console branch. This rewrites the inspector to true before evaluating.">
+          <input type="checkbox" id="opt-wrcontext" /> Treat <code>in web reports context</code> as true
+        </label>
+        <label class="wrr-inline" title="Rewrites 'current wizard' to the dashboard with this id, so dashboard-variable reads have a namespace. Leave empty to evaluate 'current wizard' as written.">
+          Dashboard id for <code>current wizard</code>
+          <input id="opt-dashboard" class="wrr-text" placeholder="e.g. MyReport.ojo" />
+        </label>
+        <label class="wrr-inline" title="Re-evaluate &lt;?BeginRefreshRelevance?&gt; sections on a timer, like the console. Web Reports itself does not refresh them.">
+          <input type="checkbox" id="opt-refresh" checked /> Refresh &lt;?BeginRefreshRelevance?&gt; sections
+        </label>
+        <span class="wrr-hint">Options apply the next time you render.</span>
+      </div>
+
       <h2 id="wrr-title" class="wrr-title"></h2>
       <p id="wrr-status" class="wrr-status" role="status">
-        Nothing rendered yet. &lt;?Relevance ?&gt; instructions are evaluated through the WebUI SDK, and the report's
+        Nothing rendered yet. &lt;?Relevance ?&gt; instructions are evaluated through WebUI, and the report's
         EvaluateRelevance() / Relevance() / AsyncEvaluateString() calls are answered the same way.
       </p>
+      <button type="button" id="wrr-open-external" class="wrr-button" hidden></button>
 
       <iframe
         id="wrr-frame"

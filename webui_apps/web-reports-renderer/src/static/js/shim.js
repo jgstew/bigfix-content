@@ -86,7 +86,53 @@
 
   // EvaluateRelevance answers are strings; a tuple comes back as "a, b" like the console prints it
   const asAnswer = (row) => (Array.isArray(row) ? row.join(', ') : String(row))
-  const singularOrArray = (answers) => (answers.length === 1 ? answers[0] : answers)
+
+  // relevance.js (loaded before this file) does the typed REST evaluation and the relevance options
+  const R = window.WRREL
+
+  function relevanceError(message) {
+    const err = new Error(message)
+    err.description = message
+    return err
+  }
+
+  // Evaluates for the JavaScript API. Returns { plural, result, typed } where result holds native values (typed)
+  // or strings (SDK fallback). Typed results know plurality exactly; the fallback guesses one value = singular.
+  function evaluateForJsSync(query) {
+    const relevance = R.prepare(query)
+    const started = performance.now()
+    const typed = R.evaluateTypedSync(relevance)
+    const ms = Math.round(performance.now() - started)
+    if (typed.ok) {
+      log('JSREL', 'sync typed (' + ms + 'ms, ' + typed.typed.result.length + ' ' + (typed.typed.plural ? 'plural' : 'singular') + ' ' + typed.typed.type + ') ' + short(relevance))
+      return Object.assign({ typed: true }, typed.typed)
+    }
+    if (typed.relevanceError) {
+      log('JSREL', 'sync typed (' + ms + 'ms) ' + short(relevance) + ' -> ' + typed.relevanceError)
+      throw relevanceError(typed.relevanceError)
+    }
+    const rows = evaluateSync(relevance)
+    return { typed: false, plural: rows.length !== 1, result: rows }
+  }
+
+  async function evaluateForJs(query) {
+    const relevance = R.prepare(query)
+    const started = performance.now()
+    const typed = await R.evaluateTyped(relevance)
+    const ms = Math.round(performance.now() - started)
+    if (typed.ok) {
+      log('JSREL', 'async typed (' + ms + 'ms, ' + typed.typed.result.length + ' ' + (typed.typed.plural ? 'plural' : 'singular') + ' ' + typed.typed.type + ') ' + short(relevance))
+      return Object.assign({ typed: true }, typed.typed)
+    }
+    if (typed.relevanceError) {
+      log('JSREL', 'async typed (' + ms + 'ms) ' + short(relevance) + ' -> ' + typed.relevanceError)
+      throw relevanceError(typed.relevanceError)
+    }
+    const rows = await evaluateAsync(relevance)
+    return { typed: false, plural: rows.length !== 1, result: rows }
+  }
+
+  const answersOf = (r) => (r.typed ? R.typedToAnswers(r) : r.result.map(asAnswer))
 
   // Relevance() values: tuples stay arrays, and date strings become Date objects (Web Reports' ParseResult)
   function asValue(row) {
@@ -118,19 +164,23 @@
     return array
   }
 
-  const relevanceResult = (rows) => {
-    const values = rows.map(asValue)
-    return values.length === 1 ? values[0] : makeRelevanceArray(values)
+  // Web Reports: plural -> WR.makeRelevanceArray(result), singular -> result[0]
+  const relevanceResult = (r) => {
+    const values = r.result.map(asValue)
+    return r.plural ? makeRelevanceArray(values) : values[0]
   }
 
+  // Web Reports: plural -> array of answer strings (possibly empty), singular -> the answer string
   window.EvaluateRelevance = function (query) {
-    return singularOrArray(evaluateSync(String(query)).map(asAnswer))
+    const r = evaluateForJsSync(String(query))
+    const answers = answersOf(r)
+    return r.plural ? answers : answers[0]
   }
 
   window.Relevance = function (query, callback) {
-    if (!callback) return relevanceResult(evaluateSync(String(query)))
-    evaluateAsync(String(query)).then(
-      (rows) => callback.success && callback.success(relevanceResult(rows)),
+    if (!callback) return relevanceResult(evaluateForJsSync(String(query)))
+    evaluateForJs(String(query)).then(
+      (r) => callback.success && callback.success(relevanceResult(r)),
       (err) => callback.failure && callback.failure(err.message)
     )
     return null
@@ -145,8 +195,8 @@
       return
     }
     target.innerHTML = 'loading...'
-    evaluateAsync(String(query)).then(
-      (rows) => (target.innerHTML = rows.map(asAnswer).join('<br />')),
+    evaluateForJs(String(query)).then(
+      (r) => (target.innerHTML = answersOf(r).join('<br />')),
       (err) => (target.textContent = 'Error: ' + err.message)
     )
   }
@@ -164,16 +214,100 @@
   // { value, private }. The SDK treats a missing "private" as true, so it is always sent explicitly.
   // Reading a variable stays session relevance, as in Web Reports: shared variable "x" of current wizard, etc.
 
-  // Web Reports' WR.Notify.error shows a banner; here it goes to the renderer's log and the browser console
+  // ---- the WR object: the parts reports use directly ----
+  // Web Reports 11.0.7's WR has makeRelevanceArray, HTML, DOM, Notify, Array, URL, run, currentSiteID, Filters.
+  // Provided here: makeRelevanceArray, Notify (update/warning/error, their *HTML forms, clear, enableNotifications)
+  // as a banner at the top of the report, and URL.ParamMap (add/set/remove/addAll/empty/finish/equals; finish()
+  // gives "a=1%202&a=3&b=x%26y": values URL-encoded, repeated keys grouped in first-seen order).
   window.WR = window.WR || {}
-  window.WR.Notify = window.WR.Notify || {
-    error: (m) => {
-      log('ERROR', 'WR.Notify.error: ' + m)
-      console.error(m)
-    },
-    warn: (m) => log('WARN', 'WR.Notify.warn: ' + m),
-    info: (m) => log('INFO', 'WR.Notify.info: ' + m)
+  window.WR.makeRelevanceArray = window.WR.makeRelevanceArray || makeRelevanceArray
+
+  function notifyBanner() {
+    let box = document.getElementById('wrr-notify')
+    if (!box) {
+      box = document.createElement('div')
+      box.id = 'wrr-notify'
+      box.setAttribute('role', 'status')
+      ;(document.body || document.documentElement).appendChild(box)
+    }
+    return box
   }
+
+  function notify(kind, content, isHtml) {
+    log(kind === 'error' ? 'ERROR' : kind === 'warning' ? 'WARN' : 'INFO', 'WR.Notify.' + kind + ': ' + (isHtml ? String(content).replace(/<[^>]+>/g, '') : content))
+    if (kind === 'error') console.error(content)
+    const show = () => {
+      const item = document.createElement('div')
+      item.className = 'wrr-notify-' + kind
+      if (isHtml) item.innerHTML = String(content)
+      else item.textContent = String(content)
+      const close = document.createElement('button')
+      close.type = 'button'
+      close.textContent = '×'
+      close.title = 'Dismiss'
+      close.addEventListener('click', () => item.remove())
+      item.appendChild(close)
+      notifyBanner().appendChild(item)
+      // errors stay until dismissed; other messages clear themselves
+      if (kind !== 'error') setTimeout(() => item.remove(), 8000)
+    }
+    if (document.body) show()
+    else document.addEventListener('DOMContentLoaded', show)
+  }
+
+  window.WR.Notify = window.WR.Notify || {
+    update: (m) => notify('update', m, false),
+    updateHTML: (m) => notify('update', m, true),
+    warning: (m) => notify('warning', m, false),
+    warningHTML: (m) => notify('warning', m, true),
+    error: (m) => notify('error', m, false),
+    errorHTML: (m) => notify('error', m, true),
+    clear: () => {
+      const box = document.getElementById('wrr-notify')
+      if (box) box.replaceChildren()
+    },
+    enableNotifications: () => {}
+  }
+
+  function ParamMap(parameters) {
+    this.params = {}
+    this.order = []
+    this.addAll(parameters)
+  }
+  ParamMap.prototype.add = function (key, value) {
+    if (!(key in this.params)) {
+      this.params[key] = []
+      this.order.push(key)
+    }
+    this.params[key].push(value)
+    return this
+  }
+  ParamMap.prototype.set = function (key, value) {
+    this.remove(key)
+    return this.add(key, value)
+  }
+  ParamMap.prototype.remove = function (key) {
+    delete this.params[key]
+    this.order = this.order.filter((k) => k !== key)
+    return this
+  }
+  ParamMap.prototype.addAll = function (parameters) {
+    if (!parameters) return this
+    if (parameters instanceof ParamMap) parameters.order.forEach((k) => parameters.params[k].forEach((v) => this.add(k, v)))
+    else Object.keys(parameters).forEach((k) => [].concat(parameters[k]).forEach((v) => this.add(k, v)))
+    return this
+  }
+  ParamMap.prototype.empty = function () {
+    return this.order.length === 0
+  }
+  ParamMap.prototype.finish = function () {
+    return this.order.map((k) => this.params[k].map((v) => encodeURIComponent(k) + '=' + encodeURIComponent(v)).join('&')).join('&')
+  }
+  ParamMap.prototype.equals = function (other) {
+    return other instanceof ParamMap && other.finish() === this.finish()
+  }
+  window.WR.URL = window.WR.URL || {}
+  window.WR.URL.ParamMap = window.WR.URL.ParamMap || ParamMap
 
   const variableUrl = (dashboardID, name) => '/api/sdk/dashboardvariable/' + encodeURIComponent(dashboardID) + '/' + encodeURIComponent(name)
   const describe = (method, dashboardID, name, isPrivate) => method + ' ' + (isPrivate ? 'private' : 'shared') + ' variable "' + name + '" of "' + dashboardID + '"'
@@ -322,6 +456,45 @@
     [/^linkid:opencomputer\((\d+)\)$/i, (m) => '/framework/devices/' + m[1]],
     [/^linkid:openaction\((\d+)\)$/i, (m) => '/framework/deployments/' + m[1]]
   ]
+
+  // Fixlets, tasks, analyses and baselines: linkid:openfixlet(<siteId>,<fixletId>). WebUI's pages (11.0.7):
+  //   external sites:  /content/tasks/<siteId>/<fixletId>   ("tasks" for fixlets too; /content/fixlets/... is 404)
+  //   master action site and custom sites:  /custom/tasks/<webuiSiteId>/<fixletId>
+  // For the master action site and every custom site the link carries the MASTER action site id, but WebUI needs
+  // the custom site's own id (e.g. 8589938636), which session relevance cannot return (id of a custom site fails).
+  // WebUI's internal list API /custom/api/tasks?search={"query":"<text>"} returns siteID per item, so the link
+  // text (the fixlet name) is searched there and the row with the same contentID is used. If nothing matches,
+  // the custom content list opens with that search. WebUI has no detail page for analyses or baselines: those
+  // URLs fall back to WebUI's content list.
+  let masterSiteId = null
+  ;(async () => {
+    const typed = await R.evaluateTyped('ids of bes sites whose (master site flag of it)')
+    if (typed.ok && typed.typed.result.length) masterSiteId = String(typed.typed.result[0])
+  })()
+
+  async function customContentUrl(siteId, fixletId, name) {
+    const params = [
+      'filter=' + encodeURIComponent('{}'),
+      'pagination=' + encodeURIComponent(JSON.stringify({ page: { itemsPerPage: 50, offset: 0 } })),
+      'search=' + encodeURIComponent(JSON.stringify({ query: name })),
+      'sort=' + encodeURIComponent(JSON.stringify({ method: 'name', order: 'asc' }))
+    ].join('&')
+    try {
+      const response = await fetch('/custom/api/tasks?' + params, { credentials: 'same-origin', headers: { Accept: 'application/json' } })
+      const rows = response.ok ? (await response.json()).data || [] : []
+      const matches = rows.filter((r) => String(r.contentID) === String(fixletId))
+      const pick = matches.find((r) => String(r.siteID) === String(siteId)) || matches[0]
+      if (pick) {
+        if (matches.length > 1) log('WARN', matches.length + ' custom items have id ' + fixletId + ' and this name; opened the one in "' + pick.siteName + '"')
+        return '/custom/tasks/' + pick.siteID + '/' + fixletId
+      }
+      log('WARN', 'no custom content with id ' + fixletId + ' found by name search' + (response.ok ? '' : ' (HTTP ' + response.status + ')') + '; opening the search instead')
+    } catch (err) {
+      log('WARN', 'custom content lookup failed (' + err + '); opening the search instead')
+    }
+    return '/custom/tasks?search=' + encodeURIComponent(JSON.stringify({ query: name }))
+  }
+
   document.addEventListener(
     'click',
     (e) => {
@@ -336,6 +509,29 @@
           log('INFO', 'opened ' + href + ' as ' + toUrl(m))
           return
         }
+      }
+      const fixlet = /^linkid:openfixlet\((\d+),\s*(\d+)\)$/i.exec(href)
+      if (fixlet) {
+        const [, siteId, fixletId] = fixlet
+        const name = a.textContent.trim()
+        // master action site id: known from relevance, or by its size (external site ids are small numbers)
+        const isMasterOrCustom = masterSiteId ? siteId === masterSiteId : Number(siteId) > 2147483647
+        if (!isMasterOrCustom) {
+          const url = '/content/tasks/' + siteId + '/' + fixletId
+          window.open(url, '_blank', 'noopener')
+          log('INFO', 'opened ' + href + ' as ' + url)
+          return
+        }
+        // open the tab now, inside the click, so the popup blocker allows it; navigate it once the lookup is done
+        const win = window.open('', '_blank')
+        customContentUrl(siteId, fixletId, name).then((url) => {
+          if (win) {
+            win.opener = null
+            win.location.href = url
+          } else window.open(url, '_blank', 'noopener')
+          log('INFO', 'opened ' + href + ' as ' + url)
+        })
+        return
       }
       log('WARN', 'no WebUI page for console link ' + href)
     },

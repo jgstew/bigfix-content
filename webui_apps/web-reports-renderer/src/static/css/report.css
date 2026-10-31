@@ -13,3 +13,52 @@ body {
   color: #da1e28;
   font-family: monospace;
 }
+
+/* WR.Notify stand-in (shim.js): messages at the top of the report */
+#wrr-notify {
+  position: fixed;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2147483647;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 90%;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+}
+
+#wrr-notify > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid;
+  border-radius: 3px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+#wrr-notify button {
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.wrr-notify-update {
+  background: #edf5ff;
+  border-color: #0f62fe;
+}
+
+.wrr-notify-warning {
+  background: #fcf4d6;
+  border-color: #b28600;
+}
+
+.wrr-notify-error {
+  background: #fff1f1;
+  border-color: #da1e28;
+}

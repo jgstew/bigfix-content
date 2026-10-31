@@ -82,6 +82,7 @@ To push a rebuilt version over an existing install on a custom site, the templat
 
 ## Notes
 
+- `sessionRelevanceApi.js` sends the relevance as `(expr)`, because WebUI 11.0.7 answers `400 Bad Request` when the whole relevance text is also valid JSON (`true`, `false`, `"x"`, numbers).
 - On a real WebUI the response is `{"done": true, "value": [...], "id": {}}`, and every value is a string. The OpenAPI doc describes a bare array, so `normalizeRows` accepts either shape.
 - WebUI SDK API docs are served at `https://<webui-server>/api/api-docs` once the WebUI server setting `_WebUIAppEnv_ENABLE_API_DOC_SETTING=1` is set.
 - Session relevance reference: https://developer.bigfix.com/relevance/guide/session/

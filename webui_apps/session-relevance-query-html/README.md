@@ -94,6 +94,8 @@ Permissions: session relevance needs **Can use WebUI** and BigFix Web Reports. B
   - **Session relevance:** `{"done": true, "value": [...], "id": {}}`. Every value comes back as a string, and tuple rows are arrays of strings.
   - **BigFix Query results:** `value` is `{reportingAgents, totalResults, results: [{computerID, computerName, subQueryID, isFailure, result, ResponseTime}]}`.
 
+- **Session relevance is sent as `(expr)`** (since 2.0.1). WebUI 11.0.7 answers `400 Bad Request` when the whole relevance text is also valid JSON (`true`, `false`, `"x"`, numbers). The parentheses evaluate the same and are never valid JSON. The analyzer still sees the text as typed, and BigFix Query text is sent unchanged: its `ApplicabilityRelevance` of `true` works there.
+
 ## Testing status
 
 - **2.0.0, local mock WebUI:** the mock uses the real server's CSP and `nosniff` header, and serves the v1.43.0 analyzer set. These passed:

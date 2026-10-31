@@ -185,3 +185,19 @@ body {
   font-size: 0.75rem;
   resize: vertical;
 }
+
+.wrr-options {
+  font-size: 0.8125rem;
+}
+
+.wrr-options code {
+  font-family: monospace;
+}
+
+.wrr-text {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #8d8d8d;
+  border-radius: 2px;
+  font: inherit;
+  width: 12rem;
+}

@@ -22,7 +22,9 @@ export const evaluateSessionRelevance = async (sessionRelevance, signal) => {
     method: 'POST',
     credentials: 'same-origin',
     headers,
-    body: JSON.stringify({ session_relevance: sessionRelevance }),
+    // "(relevance)": WebUI 11.0.7 answers 400 "Bad Request" when the whole relevance text is also valid JSON
+    // (true, false, "x", numbers). The parentheses evaluate the same and are never valid JSON.
+    body: JSON.stringify({ session_relevance: '(' + sessionRelevance.trim() + ')' }),
     signal
   })
 
