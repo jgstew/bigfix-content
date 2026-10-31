@@ -1,5 +1,7 @@
 // Web Reports Renderer: renders a BigFix Web Reports custom report inside WebUI.
-//   1. read an uploaded report: raw report HTML (.besrpt / .beswrpt) or <BESWebReport> XML (.webreport)
+//   1. read a report: uploaded, or chosen from a BigFix site (sites.js); raw report HTML (.besrpt / .beswrpt) or
+//      <BESWebReport> XML (.webreport). A site report's relative scripts and stylesheets come from the same site
+//      (companions.js), the way Web Reports' <base href> to the site's folder loads them.
 //   2. replace every <?Relevance ?> with its session relevance result, the way Web Reports does on the server:
 //      the result is coerced to html (strings HTML-escaped, html values not) and plural results are joined
 //      with "<br />" (both confirmed against Web Reports 11.0.7)
@@ -8,7 +10,7 @@
 // All relevance runs through the WebUI SDK: POST /api/sdk/sessionrelevance/evaluate.
 'use strict'
 ;(function () {
-  const VERSION = '1.2.1'
+  const VERSION = '1.3.0'
   const KEEPALIVE_MS = 30000
   const PI_CONCURRENCY = 4
   const MAX_LOG_LINES = 5000
@@ -30,11 +32,20 @@
     area.scrollTop = area.scrollHeight
     $('log-count').textContent = String(lines.length)
   }
+  // "current wizard" is rewritten to a dashboard id, so its dashboard variables have a namespace. Each report gets
+  // its own: WebReportsRenderer-<report name without spaces>.ojo, which never touches the variables the console or
+  // Web Reports keep for the same report. DASHBOARD_IDS maps a report name to another id, for a report known to be
+  // safe and worth sharing variables with (for example its console dashboard); it is empty until one is.
+  const DASHBOARD_IDS = {}
+  const dashboardIdFor = (reportName) => DASHBOARD_IDS[reportName] || 'WebReportsRenderer-' + String(reportName).replace(/\s+/g, '') + '.ojo'
+  let currentDashboardId = ''
+  const dashboardId = () => currentDashboardId
+
   // shim.js inside the iframe logs through this; relevance.js (here and in the iframe) reads the options
   window.WRR = {
     log,
     get options() {
-      return { webReportsContext: $('opt-wrcontext').checked, dashboardId: $('opt-dashboard').value.trim() }
+      return { webReportsContext: $('opt-wrcontext').checked, dashboardId: dashboardId() }
     }
   }
 
@@ -360,16 +371,27 @@
     $('wrr-status').className = 'wrr-status' + (isError ? ' wrr-error-text' : '')
   }
 
-  let currentFile = null
+  // The report being shown: { name (file name), from (where it came from, for the log), getText(), source }
+  // source is a companions.js file source (a site's files) or null for an uploaded report.
+  let current = null
 
   async function render() {
-    if (!currentFile) return
+    if (!current) return
     await librariesReady
     const started = performance.now()
-    const text = await currentFile.text()
-    const report = parseReport(text, currentFile.name)
-    log('INFO', '===== Rendering "' + report.name + '" from ' + currentFile.name + ' (' + report.format + ', ' + text.length + ' bytes) =====')
-    log('INFO', 'Options: in web reports context = ' + ($('opt-wrcontext').checked ? 'true (rewritten)' : 'as evaluated') + ', dashboard id = ' + ($('opt-dashboard').value.trim() || '(none)') + ', refresh sections = ' + $('opt-refresh').checked)
+    let text
+    try {
+      setStatus('Loading ' + current.name + '...')
+      text = await current.getText()
+    } catch (err) {
+      setStatus('Could not load ' + current.name + ' from ' + current.from + ': ' + err.message, true)
+      log('WARN', 'could not load ' + current.name + ' from ' + current.from + ': ' + err.message)
+      return
+    }
+    const report = parseReport(text, current.name)
+    currentDashboardId = dashboardIdFor(report.name)
+    log('INFO', '===== Rendering "' + report.name + '" from ' + current.name + ' (' + current.from + ', ' + report.format + ', ' + text.length + ' bytes) =====')
+    log('INFO', 'Options: in web reports context = ' + ($('opt-wrcontext').checked ? 'true (rewritten)' : 'as evaluated') + ', dashboard id for current wizard = ' + dashboardId() + ', refresh sections = ' + $('opt-refresh').checked)
     $('wrr-title').textContent = report.name
     $('wrr-frame').hidden = true
     $('wrr-open-external').hidden = true
@@ -405,30 +427,137 @@
       .filter((url) => !url.startsWith(location.origin))
     if (cdn.length) log('WARN', cdn.length + ' file(s) from other hosts have no local copy and will be blocked by WebUI: ' + cdn.join(', '))
 
+    // relative scripts and stylesheets from the report's site, inlined (see companions.js)
+    let html = libraries.html
+    let companionNote = ''
+    if (current.source) {
+      setStatus('Loading files from ' + current.source.label + '...')
+      const files = await window.WRRFILES.resolve(html, current.source)
+      html = files.html
+      if (files.inlined.length) log('FILES', 'inlined ' + files.inlined.length + ' file(s) from ' + current.source.label + ': ' + files.inlined.join(', '))
+      if (files.binary.length) log('FILES', files.binary.length + ' image(s) in ' + current.source.label + ' cannot load: the WebUI passthrough corrupts binary files: ' + files.binary.join(', '))
+      if (files.missing.length) log('FILES', files.missing.length + ' relative file(s) not found in ' + current.source.label + ' (Web Reports cannot load these either): ' + files.missing.join(', '))
+      companionNote = files.inlined.length ? ' ' + files.inlined.length + ' file(s) loaded from the site' + (files.binary.length + files.missing.length ? ', ' + (files.binary.length + files.missing.length) + ' not (see the log).' : '.') : ''
+    }
+
     const frame = $('wrr-frame')
-    frame.srcdoc = buildDocument(libraries.html, report.name)
+    frame.srcdoc = buildDocument(html, report.name)
     frame.hidden = false
     startRefresh(result.sections, frame)
     setStatus(
       'Rendered ' + result.count + ' relevance instruction' + (result.count === 1 ? '' : 's') + ' in ' + (ms / 1000).toFixed(1) + 's' +
         (result.errors ? ', ' + result.errors + ' failed (see the log)' : '') +
-        (cdn.length ? '. ' + cdn.length + ' external file(s) blocked (see the log).' : '.'),
+        (cdn.length ? '. ' + cdn.length + ' external file(s) blocked (see the log).' : '.') +
+        companionNote,
       result.errors > 0
     )
   }
 
+  // Some reports restyle the page around them through window.parent, the way they would Web Reports' page:
+  // index.html has hidden stand-ins for Web Reports' element ids (wr_header, wr_mainpage, ...), and a style set on
+  // this page's <html> or <body> (for example overflow: hidden, which stops it scrolling) is undone.
+  function keepStyle(el) {
+    const original = el.getAttribute('style')
+    new MutationObserver(() => {
+      const now = el.getAttribute('style')
+      if (now === original) return
+      log('INFO', 'the report set style="' + (now || '').slice(0, 120) + '" on this page\'s <' + el.tagName.toLowerCase() + '>; undone')
+      if (original === null) el.removeAttribute('style')
+      else el.setAttribute('style', original)
+    }).observe(el, { attributes: true, attributeFilter: ['style'] })
+  }
+  keepStyle(document.documentElement)
+  keepStyle(document.body)
+
   function chooseFile(file) {
     if (!file) return
-    currentFile = file
+    current = { name: file.name, from: 'uploaded file', getText: () => file.text(), source: null }
+    $('wrr-site-report').value = ''
     $('wrr-file-name').textContent = file.name + ' (' + file.size.toLocaleString() + ' bytes)'
     $('wrr-rerender').disabled = false
     render()
   }
 
+  // ---- reports from sites ---------------------------------------------------------------------
+
+  let siteList = [] // what sites.js last reported
+  let siteInfo = { busy: true }
+  const reportKey = (site, report) => site.name + '\n' + report.id
+
+  // Fills the drop-down, keeping the selection when the list is replaced (cache first, then fresher data).
+  function showSiteReports(sites, info) {
+    siteList = sites
+    siteInfo = info
+    const select = $('wrr-site-report')
+    const selected = select.value
+    const templates = $('opt-templates').checked
+    let shown = 0
+    let hidden = 0
+    select.textContent = ''
+    const first = document.createElement('option')
+    first.value = ''
+    select.appendChild(first)
+    sites.forEach((site) => {
+      const reports = site.reports.filter((r) => {
+        const show = templates || r.type === 'CustomReport'
+        if (!show) hidden++
+        return show
+      })
+      if (!reports.length) return
+      const group = document.createElement('optgroup')
+      group.label = site.name
+      reports
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .forEach((r) => {
+          const option = document.createElement('option')
+          option.value = reportKey(site, r)
+          option.textContent = r.name + (r.type === 'CustomReport' ? '' : ' (' + r.type + ')')
+          option.title = r.file
+          group.appendChild(option)
+          shown++
+        })
+      select.appendChild(group)
+    })
+    first.textContent = shown ? 'Choose one of ' + shown + ' report' + (shown === 1 ? '' : 's') + '...' : info.busy ? 'Loading the site list...' : 'No reports found in sites'
+    if (selected && Array.from(select.options).some((o) => o.value === selected)) select.value = selected
+    select.disabled = !shown
+    const parts = []
+    if (info.message) parts.push(info.message)
+    else if (info.writtenAt) parts.push('Site list from ' + new Date(info.writtenAt).toLocaleString() + '.')
+    if (hidden) parts.push(hidden + ' template report' + (hidden === 1 ? '' : 's') + ' hidden.')
+    $('wrr-site-status').textContent = parts.join(' ')
+    $('wrr-rescan').disabled = !!info.busy
+  }
+
+  function chooseSiteReport(key) {
+    if (!key) return
+    for (const site of siteList) {
+      const report = site.reports.find((r) => reportKey(site, r) === key)
+      if (!report) continue
+      current = {
+        name: report.file,
+        from: 'site "' + site.name + '"',
+        getText: () => window.WRRFILES.getSiteFile(site.path, report.id),
+        source: window.WRRFILES.fromSite(site)
+      }
+      $('wrr-file').value = ''
+      $('wrr-file-name').textContent = report.name + ' (' + site.name + ')'
+      $('wrr-rerender').disabled = false
+      render()
+      return
+    }
+  }
+
+  const loadSites = (force) => window.WRRSITES.start({ version: VERSION, log, onList: showSiteReports, force }).catch((err) => log('WARN', 'site list failed: ' + err.message))
+
   // ---- wiring ---------------------------------------------------------------------------------
 
   $('wrr-file').addEventListener('change', (e) => chooseFile(e.target.files[0]))
   $('wrr-rerender').addEventListener('click', () => render())
+  $('wrr-site-report').addEventListener('change', (e) => chooseSiteReport(e.target.value))
+  $('wrr-rescan').addEventListener('click', () => loadSites(true))
+  $('opt-templates').addEventListener('change', () => showSiteReports(siteList, siteInfo))
   const drop = $('wrr-drop')
   drop.addEventListener('dragover', (e) => {
     e.preventDefault()
@@ -449,24 +578,25 @@
   })
   window.addEventListener('error', (e) => log('JSERR', 'renderer: ' + e.message))
 
-  // options are a per-viewer convenience: remembered in localStorage when it is available
-  const OPTIONS_KEY = 'web-reports-renderer-options'
+  // options are a per-viewer convenience: remembered in localStorage when it is available. The key changed in 1.3.0,
+  // when "in web reports context" became on by default, so values saved by older versions don't keep it off.
+  const OPTIONS_KEY = 'web-reports-renderer-options-v2'
   try {
     const saved = JSON.parse(localStorage.getItem(OPTIONS_KEY) || '{}')
     if (typeof saved.webReportsContext === 'boolean') $('opt-wrcontext').checked = saved.webReportsContext
     if (typeof saved.refresh === 'boolean') $('opt-refresh').checked = saved.refresh
-    if (typeof saved.dashboardId === 'string') $('opt-dashboard').value = saved.dashboardId
+    if (typeof saved.templates === 'boolean') $('opt-templates').checked = saved.templates
   } catch (e) {
     // storage blocked or unreadable: defaults stay
   }
   const saveOptions = () => {
     try {
-      localStorage.setItem(OPTIONS_KEY, JSON.stringify({ webReportsContext: $('opt-wrcontext').checked, refresh: $('opt-refresh').checked, dashboardId: $('opt-dashboard').value.trim() }))
+      localStorage.setItem(OPTIONS_KEY, JSON.stringify({ webReportsContext: $('opt-wrcontext').checked, refresh: $('opt-refresh').checked, templates: $('opt-templates').checked }))
     } catch (e) {
       // not saved; nothing else depends on it
     }
   }
-  ;['opt-wrcontext', 'opt-refresh', 'opt-dashboard'].forEach((id) => $(id).addEventListener('change', saveOptions))
+  ;['opt-wrcontext', 'opt-refresh', 'opt-templates'].forEach((id) => $(id).addEventListener('change', saveOptions))
   $('opt-refresh').addEventListener('change', () => {
     if (!$('opt-refresh').checked) {
       stopRefresh()
@@ -477,4 +607,5 @@
   log('INFO', 'Web Reports Renderer ' + VERSION + ' loaded')
   startShell()
   librariesReady = loadLibraries()
+  loadSites(false)
 })()

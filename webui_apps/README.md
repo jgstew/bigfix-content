@@ -7,7 +7,7 @@ Examples in this folder. Each one builds into a `.webui` file:
 | Example | Stack | HCL code in the build | Build needs | `.webui` size |
 | --- | --- | --- | --- | --- |
 | [sdk-api-tester](sdk-api-tester/) | Plain HTML/JS. Calls all 26 SDK operations as examples and tests, with a copyable log and report. | none | Python 3 (`pack.py`) | about 18 KB |
-| [web-reports-renderer](web-reports-renderer/) | Plain HTML/JS "Web Reports Renderer". Upload a Web Reports custom report; its `<?Relevance ?>` and JavaScript `EvaluateRelevance` / `Relevance` / `AsyncEvaluateString` calls run through the SDK API, and its CDN libraries are served from local copies. | none | Python 3 (`fetch_libs.py`, `pack.py`) | about 1.3 MB (about 12 KB without the libraries) |
+| [web-reports-renderer](web-reports-renderer/) | Plain HTML/JS "Web Reports Renderer". Pick a custom report stored in a BigFix site (scripts and CSS load from the same site; the list is cached in a shared dashboard variable), or upload one; its `<?Relevance ?>` and JavaScript `EvaluateRelevance` / `Relevance` / `AsyncEvaluateString` calls run through the SDK API, and its CDN libraries are served from local copies. | none | Python 3 (`fetch_libs.py`, `pack.py`) | about 1.3 MB (about 12 KB without the libraries) |
 | [session-relevance-query-html](session-relevance-query-html/) | Plain HTML/JS "Relevance Query", with [bigfix-relevance-analyzer](https://github.com/jgstew/bigfix-relevance-analyzer) running as WebAssembly. Auto mode runs client relevance as a BigFix Query and session relevance through the SDK API. | none | Python 3 (`fetch_analyzer.py`, `pack.py`) | about 8.5 MB (about 10 KB without the analyzer) |
 | [session-relevance-query](session-relevance-query/) | React on the WebUI SDK template, with `BfApp` providing the standard WebUI nav bar | `bfcore-react` and Patronus | Template, Node, HCL network | about 2.2 MB |
 
@@ -247,7 +247,7 @@ Permissions (from the HCL docs):
 Install from a file:
 
 1. Open **Extensions Management** (`https://<webui-server>/ui_extensions/next`).
-2. Click **Install extension from file**, pick a custom site, upload the `.webui` file, and click **Install**.
+2. Click **Install extension from file**, pick a custom site, upload the `.webui` file, and click **Install**. A higher `version` of an installed extension asks **Confirm upgrade extension**; the same version asks **Confirm overwrite extension** and replaces it (both seen on 11.0.7).
 3. Click **Launch** on the installed row.
 
 Size: WebUI accepted an **8.3 MB** `.webui` upload (session-relevance-query-html with the analyzer). I don't know the actual limit.
@@ -289,6 +289,7 @@ Repair: after a WebUI reinstall or a DR restore, **Repair an extension** reinsta
 
 - **Valid JSON is rejected:** relevance whose whole text is also valid JSON (`true`, `false`, `"x"`, `"a <b>"`, numbers) gets **`400 Bad Request`** from both `/api/sdk/sessionrelevance/evaluate` and the REST passthrough. `(true)`, `True` and `"a <b>" & ""` work. **Send `(expr)`**, which evaluates the same and is never valid JSON. All the apps in this folder do this, and [sdk-api-tester](sdk-api-tester/)'s `sr.jsonliteral` test checks for the quirk.
 - **Typed results:** for plurality, types and native values, use the platform REST query through the passthrough: `POST /api/sdk/passthrough/api/query`, `Content-Type: text/plain`, body `relevance=<urlencoded>&output=json`. It returns `{"result":[...], "count", "plural", "type", "evaltime_ms"}`, or `{"result":[], "error":"..."}` with HTTP 200 for a relevance error, and needs **Can use REST API**. A query string on the passthrough URL is rejected with `400 Bad request parameters`.
+- **Site files through the passthrough:** `GET /api/sdk/passthrough/api/site/<type>/<name>/files` and `…/file/<id>` work, but the site name must be **encoded twice** (`BES%2520Support`); single encoding gets `500 Request path contains unescaped characters`. Files come back as `application/octet-stream` and are **decoded as UTF-8, which corrupts binary files** such as images. Session relevance can't list file names (`<bes site file>` has only `id`), and `version of <bes site>` fails for the master action site and custom sites; `…/version` through the passthrough has it. See [web-reports-renderer](web-reports-renderer/README.md#site-files-through-the-rest-passthrough-1107).
 
 ## History
 

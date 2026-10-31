@@ -201,3 +201,18 @@ body {
   font: inherit;
   width: 12rem;
 }
+
+/* ---- reports from sites ---- */
+.wrr-sites {
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.wrr-select {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #8d8d8d;
+  border-radius: 2px;
+  font: inherit;
+  min-width: 18rem;
+  max-width: 100%;
+}

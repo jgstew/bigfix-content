@@ -11,6 +11,8 @@
     <title>Web Reports Renderer</title>
     <link rel="stylesheet" href="./HOMEPAGE/static/css/app.css" />
     <script defer src="./HOMEPAGE/static/js/relevance.js"></script>
+    <script defer src="./HOMEPAGE/static/js/companions.js"></script>
+    <script defer src="./HOMEPAGE/static/js/sites.js"></script>
     <script defer src="./HOMEPAGE/static/js/app.js"></script>
   </head>
   <body>
@@ -22,6 +24,18 @@
     </header>
 
     <main class="wrr">
+      <div class="wrr-row wrr-sites">
+        <label class="wrr-inline" for="wrr-site-report">Report from a site</label>
+        <select id="wrr-site-report" class="wrr-select" disabled>
+          <option value="">Loading the site list...</option>
+        </select>
+        <label class="wrr-inline" title="Template reports are saved Web Reports pages, not report HTML, so they cannot be rendered here.">
+          <input type="checkbox" id="opt-templates" /> Show template reports
+        </label>
+        <button type="button" id="wrr-rescan" class="wrr-button" title="List every site's files again and update the shared cache">Rescan sites</button>
+        <span id="wrr-site-status" class="wrr-hint" role="status"></span>
+      </div>
+
       <div id="wrr-drop" class="wrr-drop">
         <label class="wrr-pick">
           Choose a custom report
@@ -30,20 +44,6 @@
         <span class="wrr-hint">or drop one here: .beswrpt / .besrpt report HTML, or a .webreport (&lt;BESWebReport&gt; XML)</span>
         <span id="wrr-file-name" class="wrr-file-name"></span>
         <button type="button" id="wrr-rerender" class="wrr-button" disabled>Render again</button>
-      </div>
-
-      <div class="wrr-row wrr-options">
-        <label class="wrr-inline" title="Relevance through WebUI is not in Web Reports context, so reports take their console branch. This rewrites the inspector to true before evaluating.">
-          <input type="checkbox" id="opt-wrcontext" /> Treat <code>in web reports context</code> as true
-        </label>
-        <label class="wrr-inline" title="Rewrites 'current wizard' to the dashboard with this id, so dashboard-variable reads have a namespace. Leave empty to evaluate 'current wizard' as written.">
-          Dashboard id for <code>current wizard</code>
-          <input id="opt-dashboard" class="wrr-text" placeholder="e.g. MyReport.ojo" />
-        </label>
-        <label class="wrr-inline" title="Re-evaluate &lt;?BeginRefreshRelevance?&gt; sections on a timer, like the console. Web Reports itself does not refresh them.">
-          <input type="checkbox" id="opt-refresh" checked /> Refresh &lt;?BeginRefreshRelevance?&gt; sections
-        </label>
-        <span class="wrr-hint">Options apply the next time you render.</span>
       </div>
 
       <h2 id="wrr-title" class="wrr-title"></h2>
@@ -71,7 +71,29 @@
         </div>
         <textarea id="log-text" class="wrr-log-text" readonly spellcheck="false" wrap="off"></textarea>
       </details>
+
+      <details id="config-details" class="wrr-log">
+        <summary>Config - expand to change how reports are rendered</summary>
+        <div class="wrr-row wrr-options">
+          <label class="wrr-inline" title="Relevance through WebUI is not in Web Reports context, so reports would take their console branch. On by default: the inspector is rewritten to true before evaluating, so reports take their Web Reports branch.">
+            <input type="checkbox" id="opt-wrcontext" checked /> Treat <code>in web reports context</code> as true
+          </label>
+          <label class="wrr-inline" title="Re-evaluate &lt;?BeginRefreshRelevance?&gt; sections on a timer, like the console. Web Reports itself does not refresh them.">
+            <input type="checkbox" id="opt-refresh" checked /> Refresh &lt;?BeginRefreshRelevance?&gt; sections
+          </label>
+          <span class="wrr-hint">Options apply the next time you render.</span>
+        </div>
+      </details>
     </main>
+
+    <!--
+      Stand-ins for Web Reports' page elements. Some reports restyle the page around them through window.parent
+      (window.parent.document.getElementById('wr_header').style.margin = 0, ...); without these they stop with a
+      TypeError. Hidden, so the changes have no effect here.
+    -->
+    <div id="wr-standins" hidden>
+      <div id="wr_mainpage"><div id="wr_header"><div id="wr_headertop"></div><div id="wr_logo"></div><div id="wr_versionHeader"></div></div><div id="wr_subnavigation"></div><div id="saveReport"></div><div id="filterSection"></div><div id="editSourceLink"></div><div id="wr_datapage"><div id="wr_reportSourceWrapper"></div></div></div>
+    </div>
 
     <noscript>This app needs JavaScript.</noscript>
   </body>

@@ -1,16 +1,16 @@
 # Web Reports Renderer - BigFix WebUI extension
 
-Renders a BigFix **Web Reports custom report** inside WebUI, with all of its relevance evaluated through WebUI. It uses the platform REST query (typed, through the SDK passthrough) when the operator has **Can use REST API**, and the SDK's `POST /api/sdk/sessionrelevance/evaluate` otherwise. It's plain HTML and JavaScript with no HCL code, packaged by `pack.py`. The current version is **1.2.1**.
+Renders a BigFix **Web Reports custom report** inside WebUI, with all of its relevance evaluated through WebUI. It uses the platform REST query (typed, through the SDK passthrough) when the operator has **Can use REST API**, and the SDK's `POST /api/sdk/sessionrelevance/evaluate` otherwise. It's plain HTML and JavaScript with no HCL code, packaged by `pack.py`. The current version is **1.3.0**.
 
-1. **Choose or drop a report**, such as the ones in [`../../webreports`](../../webreports):
-   - `.besrpt` / `.beswrpt` files containing report HTML
-   - `.webreport` files, which are `<BESWebReport>` XML; only `<Type>CustomReport</Type>` is rendered
+1. **Choose a report**:
+   - **from a BigFix site** (since 1.3.0): the **Report from a site** drop-down lists the custom reports stored in sites, the way Web Reports lists them. Their scripts and stylesheets load from the same site. This needs **Can use REST API**. See [Reports from sites](#reports-from-sites-and-the-shared-cache).
+   - **or upload / drop one**, such as the ones in [`../../webreports`](../../webreports): `.besrpt` / `.beswrpt` files containing report HTML, or `.webreport` files, which are `<BESWebReport>` XML. Only `<Type>CustomReport</Type>` is rendered.
 2. **Every `<?Relevance ?>` is replaced** with its result, the way Web Reports does on the server.
 3. **The report renders in an iframe** inside `<div id="wr_datapage">`, like Web Reports, with [`shim.js`](src/static/js/shim.js) loaded first. Its JavaScript calls to `EvaluateRelevance()`, `Relevance()` and `AsyncEvaluateString()` are answered through the same SDK API. Its dashboard-variable calls (`StoreSharedVariable()`, `DeleteSharedVariable()`, and the console's `StoreVariable()` family) go to `/api/sdk/dashboardvariable/...`.
 4. **CDN `<script>`/`<link>` tags** are rewritten to local copies, because WebUI blocks every other host.
 5. **Console links** (`linkid:...`) for computers, actions, fixlets and tasks open the matching WebUI page in a new tab.
 6. **Refresh:** `<?BeginRefreshRelevance?>` sections re-evaluate on a timer.
-7. **Options:** treat `in web reports context` as true, and choose the dashboard id that `current wizard` refers to.
+7. **Config** (collapsed, under the Log): treat `in web reports context` as true (on by default since 1.3.0), and refresh sections. **Show template reports** is next to the site drop-down. `current wizard` always refers to the report's own dashboard id, `WebReportsRenderer-<ReportNameNoSpaces>.ojo`.
 8. **External reports** offer a button to open their URL in a new tab.
 9. **Copy report:** a collapsed **Log** records every relevance evaluation, JavaScript relevance call, script error, and blocked file. **Copy report** gives it back as one block of text (the same pattern as [sdk-api-tester](../sdk-api-tester/)).
 
@@ -159,6 +159,13 @@ function SendWakeOnLan( cids, dbid )   // cids: array of computer ids; dbid: opt
 - **The reply is `{"success":true}`** once Web Reports has accepted the request. It isn't a delivery report: computer ID `1`, which doesn't exist, got the same reply. Seen on a live server, with a real request for one offline computer.
 - **It needs the Web Reports session.** A request without the session cookie gets `Invalid username or password.`
 
+### Reports in sites (seen on 11.0.7)
+
+- **Listing:** Web Reports' report list includes report files from sites. It opens one as `?page=CustomReport&ReportID=<n>&ReportPath=<file>.beswrpt&ReportSiteID=<Site+Name>`.
+- **Companion files:** the report's iframe gets `<base href="/SiteData/<server>/Sites/<Site%20Name>/">`. So `src="jquery-3.7.1.min.js"` loads that site's file, from the folder Web Reports gathered. These are the same files the REST API lists for the site.
+- **References that aren't in the site** also fail in Web Reports: `JSResourceManager.js`, `DataService.js`, `json2.js` and `ComponentLibrary.js` from Power Management's reports all give 404 there. They look like console-only files.
+- **What's in the sites of the test server:** 82 report files in 12 of the 40 sites with files: 27 `CustomReport`, 54 `TemplateReport` (saved Web Reports pages), and one `.btrpt` that's plain HTML. Most SCM Reporting and Power Management reports load 17 to 67 files by relative name, all from the site's top folder: jQuery, jQuery UI, SlickGrid, jqPlot, `ADFAPI_2.2.3.js`, CSS, and images.
+
 **Not defined in Web Reports:** `InsertUtilityDiv`, `OpenComputerGroup` and the other console dashboard functions. Reports that double as console dashboards guard them, or rely on `window.onerror`.
 
 ## How WebUI differs
@@ -255,6 +262,16 @@ Checked on BigFix 11.0.7.61, so `SendWakeOnLan` has nothing to map to:
   - `fetch`/`XMLHttpRequest` to the Web Reports server are blocked by the extension's `connect-src 'self'`, and by mixed content when Web Reports is plain `http`.
   - **Tried in 1.2.0, then dropped:** opening `<webreports>/json/wakeonlan?cid=…` in a new tab from the report. The tab opened, but Web Reports answered `Invalid username or password.` The same URL typed into a tab returned `{"success":true}`. So the Web Reports session cookie wasn't sent on a navigation that started from the WebUI page, probably because of its SameSite setting. That's not confirmed: the cookie is HttpOnly, so its attributes couldn't be read.
 
+### Site files through the REST passthrough (11.0.7)
+
+- **Session relevance can't list files:** `<bes site file>` has only `id`; `name`, `size`, `sha1` and the rest aren't defined. `exists site files of <bes site>` and `version of <bes site>` work.
+- **No version for some sites:** `version of <bes site>` fails with "Singular expression refers to nonexistent object" for the master action site and custom sites. The REST API's `GET /api/site/<type>/<name>/version` has it, as `<SiteVersion LastModified="…">2132</SiteVersion>`.
+- **Listing:** `GET /api/site/<type>/<name>/files` returns `<SiteFile Resource="…/file/<id>">` entries with `<Name>`, `<ID>`, `<LastModified>` and `<IsClientFile>`, with no size or hash. All 40 sites were listed in 1.7 s in parallel; BES Support has 799 files.
+- **Path encoding:** the site name in the path is %-encoded, so `BES%20Support` for the REST API itself. **Through the WebUI passthrough it has to be encoded twice** (`BES%2520Support`), because WebUI decodes the path once before forwarding it. A single-encoded path gets `500 {"message":"Request path contains unescaped characters"}`.
+- **Content:** `GET …/file/<id>` returns the raw file as `application/octet-stream; charset=utf-8`, with `X-Content-Type-Options: nosniff`. GETs work without the XSRF header.
+- **Binary files are corrupted by the passthrough.** It decodes the body as UTF-8, so every byte that isn't valid UTF-8 becomes U+FFFD. A PNG starts `ef bf bd 50 4e 47` instead of `89 50 4e 47`, and an `<img>` pointed at it fails. Text files in UTF-8 are fine. Images, fonts, and text in other encodings can't be used.
+- **Scripts and styles can't be referenced directly** even though the URL is same-origin: `nosniff` blocks a script or stylesheet served as `application/octet-stream`.
+
 ### The extension's security policy applies to the report too
 
 - **Inherited policy:** extension pages get `default-src 'self'; img-src 'self' blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss:; sandbox …; frame-ancestors 'self'` plus `X-Content-Type-Options: nosniff`. A **`srcdoc` iframe inherits that policy** from its parent page.
@@ -267,9 +284,10 @@ Checked on BigFix 11.0.7.61, so `SendWakeOnLan` has nothing to map to:
 | All relevance | Goes through `WRREL.prepare()` in [`relevance.js`](src/static/js/relevance.js), which applies the two options below and wraps the expression in `( )`, the JSON-literal workaround. Then it's evaluated **typed** (REST passthrough) when available. Otherwise it uses the SDK API: after the first 403, the typed path is off for the rest of the page, and any other HTTP failure falls back to the SDK for that call. |
 | `<?Relevance expr ?>` | **Typed:** values whose type is `html`, including `html` items of a tuple, are inserted as they are; everything else is HTML-escaped, with booleans written `True`/`False`. **SDK fallback:** evaluates `(it as html) of (expr)` so the server escapes strings and leaves `html` alone; if that cast fails, as it does for integers, booleans and tuples, it evaluates `expr` and escapes the values in the page. Either way, tuples become `a, b`, plural results are joined with `<br />`, and errors show inline as `<span class="wrr-relevance-error">[relevance error: …]</span>`. Repeated identical expressions are evaluated once, and up to 4 run at a time. The Log shows how each was done (`typed integer`, `typed ( string, html )`, `SDK as html`, `SDK escaped`). |
 | `<?BeginRefreshRelevance id="x" …?>` … `<?EndRefreshRelevance?>` | Become `<span id="x" data-wrr-refresh="n">` … `</span>`; the default id is `__DRRSN`, the console's. With **Refresh sections** on (the default), each section's source is re-evaluated on a timer and the span's `innerHTML` replaced, without running its scripts again. The interval is the shortest `hh:mm:ss` attribute (`ManualRefresh`, `ActionResults`, and so on), with a floor of 10 seconds, or 60 seconds when there are no attributes. Web Reports itself never refreshes; this is the console's behavior. |
-| Option: **Treat `in web reports context` as true** | Off by default. Rewrites the text `in web reports context` to `true` before evaluating, so reports take their Web Reports branch. This is plain text replacement, so it also changes string literals that contain the phrase. |
-| Option: **Dashboard id for `current wizard`** | Empty by default. Rewrites `current wizard` to `(bes wizard whose (dashboard id of it = "<id>"))`, so reads like `shared variable "x" of current wizard` refer to a real dashboard. Without it, `current wizard` refers to nothing. A `"` in the id becomes `%22`. |
-| Options storage | Remembered per browser in `localStorage`; if storage is blocked, the defaults are used. They apply at the next render. |
+| Config: **Treat `in web reports context` as true** | **On by default since 1.3.0** (off before), because the reports are written for Web Reports. In the collapsed **Config** section under the Log. Rewrites the text `in web reports context` to `true` before evaluating, so reports take their Web Reports branch. This is plain text replacement, so it also changes string literals that contain the phrase. |
+| `current wizard` (since 1.3.0, no longer an option) | Always rewritten to `(bes wizard whose (dashboard id of it = "<id>"))`, with `<id>` = `WebReportsRenderer-<report name with all whitespace removed>.ojo`, for example `WebReportsRenderer-CVESearch.ojo`. So each report gets its own namespace, and never shares dashboard variables with the console or Web Reports. A `"` in the id becomes `%22`. `DASHBOARD_IDS` in `app.js` can map a report name to a different id, for a report known to be safe and worth sharing variables with; it's empty. 1.0.x to 1.2.x had a text box for this instead, empty by default, which left `current wizard` meaning nothing. |
+| Web Reports' page around the report | Some reports restyle Web Reports' page through `window.parent`: `getElementById('wr_header').style.margin = 0`, and `style` on `<html>`/`<body>`. `index.html` has **hidden stand-ins** with Web Reports' ids (`wr_mainpage`, `wr_header`, `wr_headertop`, `wr_logo`, `wr_versionHeader`, `wr_subnavigation`, `saveReport`, `filterSection`, `editSourceLink`, `wr_datapage`, `wr_reportSourceWrapper`), and a `style` a report sets on the renderer's `<html>` or `<body>` is **undone** with an INFO line, because `overflow: hidden` stops the page scrolling. |
+| Options storage | Remembered per browser in `localStorage` under `web-reports-renderer-options-v2` (`in web reports context`, refresh sections, show template reports); if storage is blocked, the defaults are used. They apply at the next render. The key is new in 1.3.0, so values saved by older versions are ignored. |
 | Page structure | `<!doctype html>`, then `shim.js` as the first, blocking `<script>`, then `report.css`, then `<body><div id="wr_datapage">REPORT</div>`. The `srcdoc` iframe is same-origin, with `sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads"`. |
 | `EvaluateRelevance(q)` | Synchronous `XMLHttpRequest`. **Typed:** plural returns an array of answer strings (possibly empty), and singular returns the answer string, **exactly like Web Reports**. Answers are strings: booleans become `True`/`False`, numbers become strings, and tuples become `a, b`. **SDK fallback:** one value counts as singular. Errors throw `Error(message)` with **both** `e.message` and `e.description` set; older console code reads `e.description`. |
 | `Relevance(q)` | Synchronous. **Typed:** native values like Web Reports' `/json/relevance`: numbers, booleans, tuples as arrays, and date strings as `Date`. Plural returns `WR.makeRelevanceArray(values)` (`sort(i, fn)`, `toArray()`), singular returns the value. **SDK fallback:** strings, one value counts as singular, and dates still become `Date`. |
@@ -298,6 +316,66 @@ Checked on BigFix 11.0.7.61, so `SendWakeOnLan` has nothing to map to:
   - anything else, such as `TemplateReport`: says it's a saved Web Reports page (`SourcePage`), not report HTML
 - **Anything else** is treated as raw report HTML, which is what `.besrpt` / `.beswrpt` exports and the files in `../../webreports` are.
 - **Fragments with `<Head>` and `<body>` tags** (dual-use dashboard files like `Computer_Filter_Search`) work, because the browser drops the extra tags and keeps the scripts.
+
+### Reports from sites and the shared cache
+
+[`sites.js`](src/static/js/sites.js) builds the **Report from a site** list. [`companions.js`](src/static/js/companions.js) loads a chosen report's files.
+
+**Building the list:**
+1. **Sites:** one session relevance query lists every site with site files: name, version, and REST path.
+   - The path is built in relevance, with each special character escaped once (`%20`, `%2F`, `%23`, `%3F`, `%26`, `%25`).
+   - For sites without a version (the master action site and custom sites), the version comes from `GET …/version` instead.
+2. **Files:** each new or changed site is listed with `GET …/files`, 4 at a time. **Only sites with at least one report file** (`.beswrpt`, `.besrpt`, `.btrpt`, `.webreport`, and not a client file) keep their file list.
+3. **Kept files:** the reports, plus every non-client file a report could load (`.js .json .css .html .htm .txt .xml .svg` and the image types).
+4. **Report names and types:** each report file is downloaded **once**, to read `<Name>` and `<Type>` from `<BESWebReport>` XML. Raw HTML counts as a `CustomReport` named after the file. A report whose file id and `LastModified` haven't changed reuses the cached name and type.
+
+**The drop-down:**
+- It groups reports by site and sorts them by name. Only `CustomReport`s show unless **Show template reports** is checked; the status says how many are hidden.
+- **The cached list shows first**, as soon as the shared variable has been read (174 ms after page load on the test server). That happens before the site query answers. Each changed site then replaces its entry as soon as it's listed, and the current selection is kept.
+- **Rescan sites** lists every site again.
+
+**The cache** is the shared dashboard variable `WebReportsRenderer-SiteFileListingCache`, under dashboard id `WebReportsRenderer.ojo`:
+
+```json
+{
+  "schema": 1,
+  "writtenAt": "2026-10-31T14:16:58.583Z",
+  "writtenBy": { "app": "web-reports-renderer", "version": "1.3.0" },
+  "sites": [
+    {
+      "name": "<site name>", "path": "/api/site/external/<encoded name>/files", "version": 85,
+      "reports": [{ "id": 123, "file": "X.beswrpt", "name": "<Name from the file>", "type": "CustomReport", "modified": "<LastModified>" }],
+      "files": { "jquery-3.7.1.min.js": 456 }
+    }
+  ],
+  "checked": { "<site with no reports>": 12 }
+}
+```
+
+- **`checked`** keeps just the name and version of each site that has files but no reports, so those sites aren't listed again on every load.
+- **When it's used:** a cache with another `schema`, or written by another **major** version of the renderer, is ignored and rebuilt.
+- **Size:** about 65 KB for the test server (12 report sites, 28 kept versions in `checked`).
+- **Updates:** a page that changed anything writes the cache back. A page that found nothing changed writes nothing.
+- **Deleted sites:** only a **master operator** removes sites that are missing from its own site list. Other operators may not see every site, so they keep entries they can't see. Each reader shows only the sites its own site query returned.
+
+**The lock** is the shared variable `WebReportsRenderer-SiteFileListingCache-Lock`: `{owner, user, app, version, started, expires}`.
+- **To get it:** a page that needs to update reads the lock. If it's free or expired (after 2 minutes), the page writes its own random `owner`, waits 1.5 s, and reads it back. Only a page that still sees its own `owner` updates.
+- **Release:** the lock is deleted afterwards, but only if it's still this page's.
+- **While another page holds it,** this page shows the cached list and says so.
+- **Why this is enough:** the SDK has no compare-and-swap, so this is best effort. If two pages still race, both write a complete cache and the last write wins. The lock only saves duplicate work.
+- **No permission to write shared variables:** the page lists sites for itself and doesn't save.
+
+**Loading a chosen report:** `GET …/file/<id>` reads the report file. After relevance substitution and the CDN rewrite, [`companions.js`](src/static/js/companions.js) resolves its relative references against that site's file list (by last path segment, ignoring case and `?query`):
+
+| Reference | Here |
+| --- | --- |
+| `<script src="x.js">` | **Inlined** as `<script data-wrr-file="x.js">…</script>`. `src`, `integrity`, `crossorigin`, `async` and `defer` are dropped, other attributes kept. A `</script` inside the file is escaped as `<\/script`. |
+| `<link rel="stylesheet" href="x.css">` | **Inlined** as `<style data-wrr-file="x.css">`, keeping `media`. Relative `url()` values inside it are resolved from the same source when it can provide bytes. |
+| `<img src>`, `<input src>`, `<source src>`, `style="…url()…"` | Become `blob:` URLs, but only from a source with real bytes. From a site they stay as they are, because binary files arrive corrupted (logged as `FILES … cannot load`). |
+| Not in the site | Left alone and logged as `FILES … not found` |
+
+- **Script elements are set aside** behind placeholders while stylesheets and images are processed, then put back. `jquery.jqplot.js` has `<link rel="stylesheet" href="jquery.jqplot.css">` in a comment, which an earlier build replaced inside the JavaScript.
+- **File sources are pluggable:** a source is `{ label, has(name), getText(name), getBlob(name) }`. `WRRFILES.fromSite(site)` is the site source, with no `getBlob`. An upload source with real blobs would reuse `resolve()` unchanged. See [Ideas](#ideas-not-done-yet).
 
 ### CDN libraries
 
@@ -347,6 +425,11 @@ In total that's 33 files, about 3.5 MB on disk; the built `.webui` is about 1.27
 | Opening a tab after an `await` would be blocked as a popup | Browsers only allow `window.open` during the click | Open a blank tab inside the click, then set its `location` once the lookup finishes |
 | `in web reports context` → `true` failed with Bad Request | The rewritten expression was the bare JSON literal `true` | The `( )` wrapping fixed it |
 | Refresh sections never refreshed | Not implemented | Timer-based re-evaluation of each section's source |
+| The site query failed with "Singular expression refers to nonexistent object" | `version of <bes site>` doesn't exist for the master action site and custom sites | `(if exists version of it then version of it else 0)`, then the REST `…/version` for those sites |
+| Site file listing failed with `500 Request path contains unescaped characters` | WebUI decodes the passthrough path once | Encode every `%` again (`%2520`) |
+| An SCM report failed with `SyntaxError: Unexpected token '.'` after its files were inlined | `jquery.jqplot.js` has a `<link rel="stylesheet">` example in a comment, and the stylesheet pass replaced it inside the inlined script | Script elements are set aside before the stylesheet and image passes |
+| Images from sites don't load | The WebUI passthrough decodes binary files as UTF-8 | Not solvable here; logged per report |
+| Log4j, Windows 11 and CVE Search reports stopped with `Cannot read properties of null (reading 'style')` | They restyle Web Reports' page through `window.parent.document.getElementById('wr_header')`, and the renderer page had no such element | Hidden stand-ins with Web Reports' ids in `index.html`; `<html>`/`<body>` styles set by a report are undone |
 | `SendWakeOnLan` was undefined, so wake-on-LAN buttons threw `ReferenceError` | Web Reports loads `WakeOnLan.js`, and neither WebUI nor its APIs can send wake-on-LAN | A no-op that warns and returns `false`. Opening Web Reports' `/json/wakeonlan` in a tab was tried in 1.2.0 and dropped, because the Web Reports login didn't carry over. |
 | `AsyncEvaluateString` in Web Reports shows `[object XMLDocument]` | A Web Reports 11.0.7 bug (`innerHTML = xmlDoc`) | The shim shows the answers instead (a deliberate difference) |
 | Font Awesome 5 icons didn't convert in an automated, hidden browser preview | `requestAnimationFrame` never fires in a hidden tab, and Font Awesome batches its DOM changes on it | Not a real problem: the icons render in a visible tab (79 icons on the real server). Remember this when testing in a headless or hidden browser. |
@@ -356,13 +439,19 @@ In total that's 33 files, about 3.5 MB on disk; the built `.webui` is about 1.27
 
 - **Without "Can use REST API":** the SDK fallback can't know plurality or types. There, one value counts as singular, so a plural expression with one result gives a string instead of a one-element array. `Relevance` returns strings, apart from dates, and `<?Relevance ?>` escaping relies on the `(it as html)` method. With REST permission, all of this matches Web Reports.
 - **Some bodies are rejected:** WebUI may refuse other relevance text with `400 Bad Request`. The `( )` wrapping only covers the JSON-literal case. A typed request that gets HTTP 400 falls back to the SDK, which may refuse the same text.
-- **No Web Reports context:** `in web reports context` is `False` unless the option is on, so reports take their console branch. The option is plain text replacement. There are no Web Reports-only inspectors, and no multi-server Web Reports data.
+- **No Web Reports context:** WebUI evaluates `in web reports context` as `False`. The Config option, on by default, makes it `true` by plain text replacement, so it also changes string literals that contain the phrase. Turn it off to see a report's console branch. There are no Web Reports-only inspectors, and no multi-server Web Reports data.
 - **No Web Reports filters or site:** `GetFilterParam()` and `WR.currentSiteID` don't exist here, so a report always sees every computer the WebUI operator can see.
 - **Fixlet links:**
   - **Analyses and baselines** have no WebUI detail page, so their links land on WebUI's content list.
   - **Custom and master-site lookups** depend on WebUI's **undocumented** `/custom/api/tasks` API, and on the link text being the item's name. If the API changes, or the name isn't found, the link opens a search of the custom content list instead. When several custom sites have an item with the same id and name, the first match is used.
   - **Other `linkid:` forms** aren't mapped.
 - **No wake-on-LAN:** `SendWakeOnLan` does nothing except show a warning, because WebUI has no way to send it ([details](#no-wake-on-lan-in-webui)).
+- **Reports from sites:**
+  - **Permission:** they need **Can use REST API**, both to list the files and to load them.
+  - **Images and fonts don't load.** Binary files are corrupted by the WebUI passthrough, and fonts would be blocked by the policy anyway.
+  - **Run-time requests:** relative files that a report asks for at run time (`fetch('x.json')`, `$.getScript`, `new Image().src`) aren't served. Only `<script src>`, `<link rel="stylesheet">` and image attributes in the HTML are resolved.
+  - **Only the last path segment counts:** `images/x.png` is looked up as `x.png`, the same flat layout as a site folder.
+  - **Visibility:** the cache lists every report site its last writer could see. Anyone who can read shared dashboard variables can read those site and file names. Each reader only *shows* the sites it can see, and loads files with its own permissions.
 - **Refresh sections:** they refresh on a timer, not on BigFix data changes as the console does. A refreshed section's scripts don't run again. Web Reports doesn't refresh at all, so turn **Refresh sections** off to match it.
 - **No report files:** Web Reports serves a report's own files from `/ReportFiles/<reportId>/`, through the `<base href>`. Here there's no `<base>`, and an uploaded report has no stored files, so relative `src`/`href` values (images or scripts shipped with the report) don't load.
 - **Missing Web Reports functions:**
@@ -373,7 +462,7 @@ In total that's 33 files, about 3.5 MB on disk; the built `.webui` is about 1.27
 - **Dashboard variables:**
   - **Permissions:** writes run with the WebUI operator's permissions. Web Reports' "admin users only" rule for shared variables isn't enforced here; the SDK applies its own rules.
   - **Restore after delete:** the write-back is two extra calls, so it isn't atomic, and it assumes the private variable in the list is the caller's own. Whether the SDK's `DELETE` also removes **other** operators' private variables with that name wasn't tested; only one operator was used.
-  - **Reading:** reports still read with relevance (`shared variable "X" of current wizard`). `current wizard` has no meaning for an uploaded report, so reports should name the dashboard explicitly, for example `shared variables "X" of bes wizards whose (dashboard id of it = "…")`. That needs a dashboard with that id to exist. Reading a variable written by the shim through relevance wasn't tested.
+  - **Reading:** reports still read with relevance (`shared variable "X" of current wizard`). Since 1.3.0, `current wizard` is the report's own `WebReportsRenderer-<ReportNameNoSpaces>.ojo`, which exists only once a variable has been stored there. To read another dashboard's variables, a report has to name it explicitly, for example `shared variables "X" of bes wizards whose (dashboard id of it = "…")`. That needs a dashboard with that id to exist. Reading a variable written by the shim through relevance wasn't tested.
   - **`databaseID`** is ignored.
 - **External and template reports** aren't rendered. An external report only gets an **Open in a new tab** button, because WebUI extensions can't frame or call other hosts. Template reports are saved Web Reports pages, not HTML.
 - **Report companion files**, which Web Reports serves from `/ReportFiles/<id>/`, aren't supported (see [Ideas](#ideas-not-done-yet)).
@@ -403,15 +492,17 @@ This writes `output/web-reports-renderer-<version>.webui`, about 1.27 MB with th
 ## Install
 
 1. In WebUI, open **Extensions Management** (`https://<webui-server>/ui_extensions/next`). This needs `_WebUIAppEnv_ENABLE_EXTENSIONS_MANAGEMENT=1` and a WebUI restart.
-2. Click **Install extension from file**, pick a custom site, upload the `.webui` file, and click **Install**. To upgrade, do the same with a higher version and confirm **Confirm upgrade extension**. Re-select the site if the dropdown clears after the file is chosen.
+2. Click **Install extension from file**, pick a custom site, upload the `.webui` file, and click **Install**. To upgrade, do the same with a higher version and confirm **Confirm upgrade extension**. Installing the **same** version again asks **Confirm overwrite extension** instead, and replaces it. Re-select the site if the dropdown clears after the file is chosen.
 3. Open `/ui_extensions/web-reports-renderer-<siteId>`, or use **Launch**.
 
 ## Files
 
 | File | Purpose |
 | --- | --- |
-| `src/index.html` | Upload and drop area, status, the report iframe (its `sandbox` flags), and the Log |
+| `src/index.html` | The **Report from a site** drop-down, upload and drop area, status, the report iframe (its `sandbox` flags), and the Log |
 | `src/static/js/app.js` | Logger, redaction and report; `/me` and `/loggedin` shell; report parsing; `<?Relevance ?>` and refresh-tag substitution; library manifest loading and URL rewriting; building the iframe document |
+| `src/static/js/sites.js` | Reports from sites: the site query, file listings, report names and types, the shared cache and its lock |
+| `src/static/js/companions.js` | Resolves a report's relative scripts, stylesheets and images from a file source (inlining, `blob:` URLs), and the site file source |
 | `src/static/js/relevance.js` | Shared by the page and the iframe (loaded before `app.js` and before `shim.js`): typed REST evaluation (sync and async), typed-to-HTML and typed-to-answer conversion, and `prepare()` (the options plus the `( )` wrapping) |
 | `src/static/js/shim.js` | Runs inside the iframe right after `relevance.js`: `EvaluateRelevance`, `Relevance`, `AsyncEvaluateString` (typed first, SDK fallback); the dashboard-variable functions (Web Reports and console versions), with the restore after delete; `WR.Notify` (banner), `WR.URL.ParamMap` and `WR.makeRelevanceArray`; the console no-ops; the `SendWakeOnLan` no-op and `ThrowError`; `linkid:` link handling for computers, actions and fixlets; and `JSERR`/`BLOCKED`/`DSVAR` logging back to `parent.WRR.log` |
 | `src/static/css/app.css` | Page styles |
@@ -489,6 +580,22 @@ No relevance failed and nothing was blocked in any of them. In 1.0.1, clicking c
 | 1.2.1: a report button calling `SendWakeOnLan([1, 2], 'db1')` | Returned `false`, showed the warning banner, logged `WOL SendWakeOnLan(2 computers, dbid db1) ignored: …`, and opened no window |
 | 1.2.1: `ThrowError('boom')` | threw `Error` with message `boom` |
 
+**1.3.0, real WebUI, reports from sites** (40 sites with files, 12 with reports):
+
+| Check | Result |
+| --- | --- |
+| First load, no cache | 40 sites listed and 82 report files read in **9.0 s**. 28 reports in 10 sites shown, 54 templates hidden. Cache saved: **65,519 characters**. |
+| Second load | Cached list in the drop-down **174 ms** after the page loaded. 1 site had changed and was listed again (2.6 s), then the cache was saved. |
+| Third load, nothing changed | Cached list in 174 ms; `0 new or changed`; one dashboard-variable request (the read) and no write |
+| **Rescan sites** | Lock present during the rescan, gone afterwards; 40 sites in 5.7 s with **0 report files downloaded again** (same id and `LastModified`); cache saved |
+| A lock held by another page (a test lock expiring in 60 s), then **Rescan sites** | Kept the cached list, status *Another page is updating the site list…*, log names the holder. The test lock was then deleted. |
+| SCM Reporting "Computer Compliance Detail" | 28 files inlined (jQuery, jQuery UI, SlickGrid, jqPlot, `ADFAPI_2.2.3.js`, CSS); 6 images can't load (binary) and 10 CSS images aren't in the site; **no script errors**. The first build hit `SyntaxError` from the jqPlot comment (fixed). |
+| All 28 site reports | Rendered. No script errors in the BigFix Labs, SCM Reporting, Tivoli Remote Control, Reporting and Dashboards reports, or in "Model Power Savings". Log4j, Windows 11 and CVE Search are clean since the stand-ins. |
+| Script errors still seen, all from the reports' own code | Six Power Management reports: `Unexpected end of JSON input` from jQuery, after `(if exists current wizard then dashboard id of current wizard else "false")`. **Web Reports doesn't list these reports either**; they look like console dashboards. "Wake on Web": `ActiveXObject is not defined` (console-only code). "Difference in the Calculation…": `init is not defined`, because its scripts are the files that also 404 in Web Reports. CyberFOCUS Analytics: `Cannot read properties of undefined (reading 'length')`. |
+| CVE Search, compared with Web Reports | Same 220 characters of page text in both, and no console error in Web Reports |
+| Default dashboard id | Log shows e.g. `dashboard id for current wizard = WebReportsRenderer-CVESearch.ojo` |
+| Installing the same version again | WebUI asked **Confirm overwrite extension** and replaced it |
+
 ## How to investigate further
 
 **Reading Web Reports' real behavior:** open any custom report in Web Reports, then run this in the browser console:
@@ -520,7 +627,8 @@ input.dispatchEvent(new Event('change'))
 ## Ideas not done yet
 
 - **Wake-on-LAN, if a later BigFix adds an API for it:** check the SDK's `/api/openapi.json` and the passthrough's `GET api/help` for a wake-on-LAN resource, then map `SendWakeOnLan(cids, dbid)` to it in `shim.js`. Only `cids` matters, because WebUI has one database. Test on a single computer.
-- **Report companion files (not done, by choice):** accept a zip of the report plus its images, and serve them as `blob:` URLs. WebUI's CSP allows `blob:` for images only, not scripts.
-- **Reports already in Web Reports:** load a stored report by id, for example by reading the site files through the SDK, instead of uploading one.
+- **Companion files for uploaded reports:** add an upload source to `companions.js` (`{label, has, getText, getBlob}` over several picked files, or a zip). `resolve()` already inlines scripts and CSS and turns images into `blob:` URLs for a source that has bytes.
+- **Run-time file requests:** intercept `fetch` / `XMLHttpRequest` for relative URLs inside the iframe and answer them from the report's file source.
+- **Reports saved in Web Reports itself** (not in sites) aren't reachable from WebUI; only site reports are listed.
 - **Refresh on data change** rather than a timer, for example by polling a cheap change marker.
 - **Analysis and baseline links:** if a later WebUI adds detail pages for them, map them in `shim.js`.
