@@ -17,6 +17,7 @@
 1. Configured Settings of Global Protect VPN - MacOS `keys of dictionaries "Settings" of dictionaries "GlobalProtect" of dictionaries "Palo Alto Networks" of dictionaries of files "/Library/Preferences/com.paloaltonetworks.GlobalProtect.settings.plist"`
 1. Cred Failure? Windows ` /* Is there a Cred Validation Failure? */ (not exists audit successes whose(it) of system policies of subcategories whose(name of it = "Credential Validation") of account logon categories of audit policies)`
 1. subjects of SystemCertificates `subjects of base64 der encoded certificates string of (base64 encodes it) of (hexadecimal strings it) of following texts of firsts 8 of following texts of firsts "2000000001000000" of (it as string) of values "blob" of keys of keys "Certificates" of keys of keys "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\SystemCertificates" of native registry`
+1. WebUI app sites with `bfapp` version 9.0.7 - Windows `pathnames of folders whose(exists values whose(it as string as version = "9.0.7") of keys "version" of jsons of files "package.json" of folders "bfapp" of folders "node_modules" of it) of folders of folders "C:\Program Files (x86)\BigFix Enterprise\BES WebUI\WebUI\sites"`
 
 ### Session Relevance:
 
