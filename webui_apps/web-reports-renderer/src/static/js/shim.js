@@ -538,6 +538,25 @@
     true
   )
 
+  // Web Reports' ThrowError (Util): throws an Error with the message. WakeOnLan.js and some reports call it.
+  if (typeof window.ThrowError !== 'function') {
+    window.ThrowError = function (message) {
+      const e = new Error()
+      e.message = message
+      throw e
+    }
+  }
+
+  // Web Reports' WakeOnLan.js defines SendWakeOnLan(cids, dbid): a synchronous GET /json/wakeonlan on the Web Reports
+  // server. WebUI 11.0.7 has nothing to map it to (no SDK API, no REST API resource, no WebUI menu item), so here it
+  // is a no-op: it logs, shows a warning, and returns false (not sent) instead of throwing.
+  window.SendWakeOnLan = function (cids, dbid) {
+    const count = Array.isArray(cids) ? cids.length : cids === undefined || cids === null ? 0 : 1
+    log('WOL', 'SendWakeOnLan(' + count + ' computer' + (count === 1 ? '' : 's') + (dbid ? ', dbid ' + dbid : '') + ') ignored: wake-on-LAN is not available in WebUI')
+    window.WR.Notify.warning('Wake-on-LAN does not work here: WebUI has no wake-on-LAN API. Nothing was sent. Use the BigFix console or Web Reports to wake computers.')
+    return false
+  }
+
   // Console-dashboard functions that some reports call when they double as dashboards
   ;['InsertUtilityDiv', 'RegisterRefreshHandler', 'ClearAllGlobalFilters', 'OpenComputerGroup'].forEach((name) => {
     if (typeof window[name] !== 'function') {

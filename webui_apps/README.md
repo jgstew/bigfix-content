@@ -283,6 +283,7 @@ Repair: after a WebUI reinstall or a DR restore, **Repair an extension** reinsta
   - master-action-site and custom-site content: `/custom/tasks/<webuiSiteId>/<id>`
 
   For master-action-site and custom-site content, the link's site id is always the **master action site id**, while WebUI needs the **custom site's own id**, which relevance can't return. WebUI's internal `/custom/api/tasks?search={"query":"…"}` returns it as `siteID`. See [web-reports-renderer](web-reports-renderer/README.md#how-webui-differs) for how the links are mapped.
+- **No wake-on-LAN:** Web Reports has `SendWakeOnLan()`, which calls `GET /json/wakeonlan?cid=…`. WebUI 11.0.7 has nothing like it: no SDK operation, no platform REST resource (`api/help` lists none), and no item in the Devices menus. See [web-reports-renderer](web-reports-renderer/README.md#no-wake-on-lan-in-webui).
 
 ## WebUI relevance API quirks (confirmed on 11.0.7)
 

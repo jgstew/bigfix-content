@@ -1,6 +1,6 @@
 # Web Reports Renderer - BigFix WebUI extension
 
-Renders a BigFix **Web Reports custom report** inside WebUI, with all of its relevance evaluated through WebUI. It uses the platform REST query (typed, through the SDK passthrough) when the operator has **Can use REST API**, and the SDK's `POST /api/sdk/sessionrelevance/evaluate` otherwise. It's plain HTML and JavaScript with no HCL code, packaged by `pack.py`. The current version is **1.1.1**.
+Renders a BigFix **Web Reports custom report** inside WebUI, with all of its relevance evaluated through WebUI. It uses the platform REST query (typed, through the SDK passthrough) when the operator has **Can use REST API**, and the SDK's `POST /api/sdk/sessionrelevance/evaluate` otherwise. It's plain HTML and JavaScript with no HCL code, packaged by `pack.py`. The current version is **1.2.1**.
 
 1. **Choose or drop a report**, such as the ones in [`../../webreports`](../../webreports):
    - `.besrpt` / `.beswrpt` files containing report HTML
@@ -143,6 +143,22 @@ DeleteSharedVariable = function (dashboardID, variableName, callback, databaseID
 - **There is no read function.** Reports read variables with session relevance, such as `shared variable "X" of current wizard`, `private variable "X" of current wizard`, or `shared variables "X" of bes wizards`.
 - **The console's wizard API has more**, and reports that double as dashboards call it: `StoreVariable(dashboardID, name, value, isPrivate)` (`isPrivate` defaults to **false**, meaning shared), `StorePrivateVariable(...)`, `StoreSharedVariable(...)`, `DeleteVariable(dashboardID, name, isPrivate)`, `DeletePrivateVariable(...)` and `DeleteSharedVariable(...)`. Dashboards usually call them as `external.StoreVariable(...)`, synchronously.
 
+### Wake-on-LAN (`/JavaScript/WakeOnLan/WakeOnLan.js`, read from the live file, 11.0.7)
+
+The whole file is one function, plus `// <?import ...?>` lines for `Notification.js`, `json2.js`, `Util/URL.js`, `ConnectionManager.js` and `CreateRequest.js`:
+
+```js
+function SendWakeOnLan( cids, dbid )   // cids: array of computer ids; dbid: optional database id
+//   GET /json/wakeonlan?cid=<id>&cid=<id>[&dbid=<dbid>]   (WR.URL.ParamMap, synchronous XMLHttpRequest)
+//   HTTP status other than 200 -> ThrowError('Error contacting server. Status code: ... Message: ...')
+//   JSON result.error          -> ThrowError(result.error)
+//   returns result.success
+```
+
+- **`ThrowError(message)`** is a Web Reports global: it creates an `Error`, sets `message`, and throws it.
+- **The reply is `{"success":true}`** once Web Reports has accepted the request. It isn't a delivery report: computer ID `1`, which doesn't exist, got the same reply. Seen on a live server, with a real request for one offline computer.
+- **It needs the Web Reports session.** A request without the session cookie gets `Invalid username or password.`
+
 **Not defined in Web Reports:** `InsertUtilityDiv`, `OpenComputerGroup` and the other console dashboard functions. Reports that double as console dashboards guard them, or rely on `window.onerror`.
 
 ## How WebUI differs
@@ -228,6 +244,17 @@ These were found with the shim on the real server, using a throwaway dashboard i
   - **One `DELETE …/{name}` removes both.** The SDK's `DELETE` has no private/shared flag.
 - **List:** `GET /api/sdk/dashboardvariable/{id}` lists the dashboard's variables, both kinds, each with `IsPrivate` (a private one also has `User`), and returns 404 when there are none.
 
+### No wake-on-LAN in WebUI
+
+Checked on BigFix 11.0.7.61, so `SendWakeOnLan` has nothing to map to:
+
+- **SDK:** none of the 26 operations in `/api/openapi.json` sends wake-on-LAN.
+- **Platform REST API:** `GET api/help` (through the passthrough) lists no wake-on-LAN resource, and `api/help/wakeonlan` is 404. The REST API docs have no wake-on-LAN page either.
+- **WebUI pages:** the Devices list's bulk menus (Deploy, Administration, Configuration) have no wake-on-LAN item, and WebUI's loaded JavaScript doesn't contain the word "wake".
+- **Calling Web Reports from WebUI doesn't work:**
+  - `fetch`/`XMLHttpRequest` to the Web Reports server are blocked by the extension's `connect-src 'self'`, and by mixed content when Web Reports is plain `http`.
+  - **Tried in 1.2.0, then dropped:** opening `<webreports>/json/wakeonlan?cid=…` in a new tab from the report. The tab opened, but Web Reports answered `Invalid username or password.` The same URL typed into a tab returned `{"success":true}`. So the Web Reports session cookie wasn't sent on a navigation that started from the WebUI page, probably because of its SameSite setting. That's not confirmed: the cookie is HttpOnly, so its attributes couldn't be read.
+
 ### The extension's security policy applies to the report too
 
 - **Inherited policy:** extension pages get `default-src 'self'; img-src 'self' blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss:; sandbox …; frame-ancestors 'self'` plus `X-Content-Type-Options: nosniff`. A **`srcdoc` iframe inherits that policy** from its parent page.
@@ -254,6 +281,8 @@ These were found with the shim on the real server, using a throwaway dashboard i
 | Deleting one kind of variable | Before a delete, the shim reads the dashboard's variable list. After the delete, it writes back the same-named variable of the other kind (shared or private) and logs `WARN restored … variable`, because the SDK's `DELETE` removes both. |
 | `WR.Notify` | Web Reports' methods: `update`, `updateHTML`, `warning`, `warningHTML`, `error`, `errorHTML`, `clear`, `enableNotifications`. Messages show as a **banner at the top of the report** (`#wrr-notify`, styled in `report.css`). Errors stay until dismissed with ×; others clear after 8 seconds. Each one is also logged (`ERROR`/`WARN`/`INFO`), and errors go to the browser console. It's created only if `WR.Notify` doesn't already exist. |
 | `InsertUtilityDiv()`, `RegisterRefreshHandler()`, `ClearAllGlobalFilters()`, `OpenComputerGroup()` | No-ops that log an INFO line, so reports that also work as console dashboards don't stop with an error. |
+| `SendWakeOnLan(cids, dbid)` | **A no-op** (see [No wake-on-LAN in WebUI](#no-wake-on-lan-in-webui)). It logs `WOL SendWakeOnLan(N computers) ignored: …` and shows the warning banner *Wake-on-LAN does not work here: WebUI has no wake-on-LAN API. Nothing was sent.* It then returns `false` instead of throwing, so the report keeps running. |
+| `ThrowError(message)` | Web Reports' version: throws an `Error` with that message. It's defined only if the report doesn't define its own. |
 | `linkid:` links | One capturing click listener on the iframe document, so it also catches links added later, opens a new tab. Other `linkid:` forms are logged as `no WebUI page for console link …`. |
 | … `opencomputer(id)` / `openaction(id)` | `/framework/devices/<id>` / `/framework/deployments/<id>` (`window.open(url, '_blank', 'noopener')`) |
 | … `openfixlet(site, id)`, external site | `/content/tasks/<site>/<id>` |
@@ -318,6 +347,7 @@ In total that's 33 files, about 3.5 MB on disk; the built `.webui` is about 1.27
 | Opening a tab after an `await` would be blocked as a popup | Browsers only allow `window.open` during the click | Open a blank tab inside the click, then set its `location` once the lookup finishes |
 | `in web reports context` → `true` failed with Bad Request | The rewritten expression was the bare JSON literal `true` | The `( )` wrapping fixed it |
 | Refresh sections never refreshed | Not implemented | Timer-based re-evaluation of each section's source |
+| `SendWakeOnLan` was undefined, so wake-on-LAN buttons threw `ReferenceError` | Web Reports loads `WakeOnLan.js`, and neither WebUI nor its APIs can send wake-on-LAN | A no-op that warns and returns `false`. Opening Web Reports' `/json/wakeonlan` in a tab was tried in 1.2.0 and dropped, because the Web Reports login didn't carry over. |
 | `AsyncEvaluateString` in Web Reports shows `[object XMLDocument]` | A Web Reports 11.0.7 bug (`innerHTML = xmlDoc`) | The shim shows the answers instead (a deliberate difference) |
 | Font Awesome 5 icons didn't convert in an automated, hidden browser preview | `requestAnimationFrame` never fires in a hidden tab, and Font Awesome batches its DOM changes on it | Not a real problem: the icons render in a visible tab (79 icons on the real server). Remember this when testing in a headless or hidden browser. |
 | A local mock made some results look wrong (raw `<string>`, a 70 KB attribute) | The mock returned canned or unescaped answers | Not an app problem. Test relevance results on a real server; use mocks only for CSP, loading and the shim's mechanics. |
@@ -332,10 +362,10 @@ In total that's 33 files, about 3.5 MB on disk; the built `.webui` is about 1.27
   - **Analyses and baselines** have no WebUI detail page, so their links land on WebUI's content list.
   - **Custom and master-site lookups** depend on WebUI's **undocumented** `/custom/api/tasks` API, and on the link text being the item's name. If the API changes, or the name isn't found, the link opens a search of the custom content list instead. When several custom sites have an item with the same id and name, the first match is used.
   - **Other `linkid:` forms** aren't mapped.
+- **No wake-on-LAN:** `SendWakeOnLan` does nothing except show a warning, because WebUI has no way to send it ([details](#no-wake-on-lan-in-webui)).
 - **Refresh sections:** they refresh on a timer, not on BigFix data changes as the console does. A refreshed section's scripts don't run again. Web Reports doesn't refresh at all, so turn **Refresh sections** off to match it.
 - **No report files:** Web Reports serves a report's own files from `/ReportFiles/<reportId>/`, through the `<base href>`. Here there's no `<base>`, and an uploaded report has no stored files, so relative `src`/`href` values (images or scripts shipped with the report) don't load.
 - **Missing Web Reports functions:**
-  - `WakeOnLan.js` (deferred; see [Ideas](#ideas-not-done-yet))
   - the rest of the `WR` object (`WR.HTML`, `WR.DOM`, `WR.Array`, `WR.run`, `WR.Filters`, `WR.currentSiteID`)
   - YUI, and Web Reports' own `jQuery/jquery.js`
 
@@ -383,7 +413,7 @@ This writes `output/web-reports-renderer-<version>.webui`, about 1.27 MB with th
 | `src/index.html` | Upload and drop area, status, the report iframe (its `sandbox` flags), and the Log |
 | `src/static/js/app.js` | Logger, redaction and report; `/me` and `/loggedin` shell; report parsing; `<?Relevance ?>` and refresh-tag substitution; library manifest loading and URL rewriting; building the iframe document |
 | `src/static/js/relevance.js` | Shared by the page and the iframe (loaded before `app.js` and before `shim.js`): typed REST evaluation (sync and async), typed-to-HTML and typed-to-answer conversion, and `prepare()` (the options plus the `( )` wrapping) |
-| `src/static/js/shim.js` | Runs inside the iframe right after `relevance.js`: `EvaluateRelevance`, `Relevance`, `AsyncEvaluateString` (typed first, SDK fallback); the dashboard-variable functions (Web Reports and console versions), with the restore after delete; `WR.Notify` (banner), `WR.URL.ParamMap` and `WR.makeRelevanceArray`; the console no-ops; `linkid:` link handling for computers, actions and fixlets; and `JSERR`/`BLOCKED`/`DSVAR` logging back to `parent.WRR.log` |
+| `src/static/js/shim.js` | Runs inside the iframe right after `relevance.js`: `EvaluateRelevance`, `Relevance`, `AsyncEvaluateString` (typed first, SDK fallback); the dashboard-variable functions (Web Reports and console versions), with the restore after delete; `WR.Notify` (banner), `WR.URL.ParamMap` and `WR.makeRelevanceArray`; the console no-ops; the `SendWakeOnLan` no-op and `ThrowError`; `linkid:` link handling for computers, actions and fixlets; and `JSERR`/`BLOCKED`/`DSVAR` logging back to `parent.WRR.log` |
 | `src/static/css/app.css` | Page styles |
 | `src/static/css/report.css` | Minimal base styles inside the iframe (Web Reports' `sourcewrapper.css` isn't copied) and the relevance-error style |
 | `fetch_libs.py`, `libs.lock.json` | Download and pin the CDN library copies (`libs.lock.json` is committed) |
@@ -450,6 +480,15 @@ No relevance failed and nothing was blocked in any of them. In 1.0.1, clicking c
 | `<?Relevance "a <b>" ?>`, `<?Relevance 5 ?>`, `<?Relevance false ?>`, `EvaluateRelevance("\"x\"")` | 1.1.1: all work (before the `( )` wrapping, all got 400) |
 | External report (`external-google.webreport`) | the status message plus an **Open https://www.google.com/ in a new tab** button |
 
+**1.2.0 and 1.2.1, real WebUI, wake-on-LAN:**
+
+| Check | Result |
+| --- | --- |
+| Web Reports' own `GET /json/wakeonlan?cid=<offline computer>`, from a Web Reports page | `{"success":true}`. Computer ID `1`, which doesn't exist, got the same. |
+| 1.2.0: a report button calling `SendWakeOnLan([id])`, which opened `/json/wakeonlan` in a new tab | The tab opened, but Web Reports answered `Invalid username or password.` The same URL typed into a tab gave `{"success":true}`. The approach was dropped. |
+| 1.2.1: a report button calling `SendWakeOnLan([1, 2], 'db1')` | Returned `false`, showed the warning banner, logged `WOL SendWakeOnLan(2 computers, dbid db1) ignored: …`, and opened no window |
+| 1.2.1: `ThrowError('boom')` | threw `Error` with message `boom` |
+
 ## How to investigate further
 
 **Reading Web Reports' real behavior:** open any custom report in Web Reports, then run this in the browser console:
@@ -480,7 +519,7 @@ input.dispatchEvent(new Event('change'))
 
 ## Ideas not done yet
 
-- **WakeOnLan.js (deferred):** Web Reports loads it into report iframes. First read its functions from `/JavaScript/WakeOnLan/WakeOnLan.js` on a Web Reports server, then map them to the platform REST wake-on-LAN API through the passthrough (which needs Can use REST API). Test with care, because it sends real wake-on-LAN packets.
+- **Wake-on-LAN, if a later BigFix adds an API for it:** check the SDK's `/api/openapi.json` and the passthrough's `GET api/help` for a wake-on-LAN resource, then map `SendWakeOnLan(cids, dbid)` to it in `shim.js`. Only `cids` matters, because WebUI has one database. Test on a single computer.
 - **Report companion files (not done, by choice):** accept a zip of the report plus its images, and serve them as `blob:` URLs. WebUI's CSP allows `blob:` for images only, not scripts.
 - **Reports already in Web Reports:** load a stored report by id, for example by reading the site files through the SDK, instead of uploading one.
 - **Refresh on data change** rather than a timer, for example by polling a cheap change marker.
