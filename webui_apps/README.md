@@ -8,6 +8,7 @@ Examples in this folder. Each one builds into a `.webui` file:
 | --- | --- | --- | --- | --- |
 | [sdk-api-tester](sdk-api-tester/) | Plain HTML/JS. Calls all 26 SDK operations as examples and tests, with a copyable log and report. | none | Python 3 (`pack.py`) | about 18 KB |
 | [web-reports-renderer](web-reports-renderer/) | Plain HTML/JS "Web Reports Renderer". Pick a custom report stored in a BigFix site (scripts and CSS load from the same site; the list is cached in a shared dashboard variable), or upload one; its `<?Relevance ?>` and JavaScript `EvaluateRelevance` / `Relevance` / `AsyncEvaluateString` calls run through the SDK API, and its CDN libraries are served from local copies. | none | Python 3 (`fetch_libs.py`, `pack.py`) | about 1.3 MB (about 12 KB without the libraries) |
+| [console-dashboards](console-dashboards/) | Plain HTML/JS "Console Dashboards". Runs BigFix console dashboards (`.ojo` wizards) from sites (`bes wizards`) or a file, with the renderer's Web Reports layer plus the console's dashboard API (`ImportXML`, `EditFixlet`, `TakeFixletAction` with its own Take Action dialog, `StopAction`, the `API` REST object, the scratch folder, `linkpage:` and `TheDataStore`, …) mapped to the SDK and the REST passthrough. | none | Python 3 (`fetch_libs.py`, `pack.py`) | about 1.8 MB |
 | [session-relevance-query-html](session-relevance-query-html/) | Plain HTML/JS "Relevance Query", with [bigfix-relevance-analyzer](https://github.com/jgstew/bigfix-relevance-analyzer) running as WebAssembly. Auto mode runs client relevance as a BigFix Query and session relevance through the SDK API. | none | Python 3 (`fetch_analyzer.py`, `pack.py`) | about 8.5 MB (about 10 KB without the analyzer) |
 | [session-relevance-query](session-relevance-query/) | React on the WebUI SDK template, with `BfApp` providing the standard WebUI nav bar | `bfcore-react` and Patronus | Template, Node, HCL network | about 2.2 MB |
 
@@ -219,6 +220,10 @@ This is the complete list of 26 operations, taken from the server's own OpenAPI 
 
 **BigFix Query targets:** computers that are online answered in **3 to 5 seconds**. **Offline computers never answer**, and the results simply stay at `reportingAgents: 0`. Session relevance can't sort, so to target the computers that reported most recently, fetch `(id of it, (now - last report time of it) / second) of bes computers whose (now - last report time of it < 1 * hour)`, which returns (computer id, integer seconds), then sort in the page. [session-relevance-query-html](session-relevance-query-html/) picks the 5 freshest this way.
 
+**More passthrough facts (11.0.7.61, see [console-dashboards](console-dashboards/README.md#facts-found-on-a-live-webui-bigfix-110761-31-oct-2026)):** a `SourcedFixletAction` posted to `passthrough/api/actions` creates the action (parameters included), and `DELETE passthrough/api/action/{id}` removes it. The SDK's import answers JSON (`value.BESAPI.<Type>.ID`), not BESAPI XML. **The passthrough can't forward a file body**: `api/upload` answers `400 Files were not supplied` for a text body and `500 The "string" argument must be of type string…` for multipart, and the raw-body form from the REST docs (`application/octet-stream` + `Content-Disposition`) gets the same 500. WebUI's spec lists only `application/xml` and `text/plain` bodies for the passthrough, so nothing can reach the server's Uploads folder. `GET passthrough/api/help` lists the REST resources.
+
+**Dashboards:** session relevance's `bes wizards` lists every dashboard in a site (164 in 24 sites on the test server, with both BES Explorer and Web Reports answering); `dashboard id of it` is the `.ojo` file name. A dashboard id that only has variables is **not** a `bes wizard` when BES Explorer answers, so its variables can't be read with relevance; the SDK's `GET /api/sdk/dashboardvariable/{id}` still reads them.
+
 **Site ids:** custom sites (and operator sites) have no `id` in session relevance; `id of site of <fixlet>` fails with "Singular expression refers to nonexistent object". So for an analysis in a custom site, it isn't clear what `siteID` the analyses activate and deactivate APIs expect. The console's wizard API used the master action site id.
 
 Not a REST API: the Take Action dialog helpers (`TakeFixletAction`, `TakeSecureFixletAction`, `TakeFixletActionOnComputers` and `TakeSecureFixletActionOnComputers`) come from `useBfTakeFixletAction()` in `bfcore-react`.
@@ -329,6 +334,8 @@ WebUI answers session relevance from **BES Explorer** when one is running, and *
 - A same-origin iframe reuses its parent's instance; the Web Reports Renderer's report frame does this.
 
 The React app ([session-relevance-query](session-relevance-query/)) can't load a plain script through the template build, so `sessionRelevanceApi.js` has a port of the same probe.
+
+**[`shared/wr/`](shared/wr/)** holds the Web Reports layer that [web-reports-renderer](web-reports-renderer/) and [console-dashboards](console-dashboards/) both load into their iframes: `relevance.js` (typed REST evaluation, `prepare()`), `shim.js` (Web Reports' JavaScript API) and `companions.js` (a site's relative files). Each app's `pack.py` copies them in as `static/js/<name>`. `prepare()` calls the host page's `options.rewrite(expr)` first when it has one; Console Dashboards uses that for `… of current wizard`.
 
 ## WebUI relevance API quirks (confirmed on 11.0.7)
 

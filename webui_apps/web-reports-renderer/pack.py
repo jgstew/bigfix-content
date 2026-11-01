@@ -24,9 +24,10 @@ HERE = Path(__file__).resolve().parent
 SRC_DIR = HERE / "src"
 OUT_DIR = HERE / "output"
 
-# files shared by the apps in webui_apps/ (in ../shared), packaged as static/js/<name> next to the app's own scripts
+# files shared by the apps in webui_apps/ (in ../shared), packaged as static/js/<file name> next to the app's own
+# scripts; wr/ holds the Web Reports layer that this app and console-dashboards both use
 SHARED_DIR = HERE.parent / "shared"
-SHARED_FILES = ["webui-relevance.js", "webui-frame.js"]
+SHARED_FILES = ["webui-relevance.js", "webui-frame.js", "wr/relevance.js", "wr/shim.js", "wr/companions.js"]
 
 # same rules the template's validatePackage.js enforces
 NAME_RE = re.compile(r"^[a-z0-9_-]+$")
@@ -65,7 +66,7 @@ def source_files():
         path = SHARED_DIR / name
         if not path.is_file():
             sys.exit(f"ERROR: shared file {path} not found")
-        files.append((path, f"static/js/{name}"))
+        files.append((path, f"static/js/{Path(name).name}"))
     return files
 
 

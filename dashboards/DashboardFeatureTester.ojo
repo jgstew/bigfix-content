@@ -118,6 +118,8 @@ var x = "&lt;?Relevance dashboard id of current wizard ?&gt;"; (PI inside a JS s
         <tr><td>link of current console user</td><td id="piLinkUser"><?Relevance (link of current console user | html "n/a") ?></td></tr>
         <tr><td>link of current wizard</td><td id="piLinkWizard"><?Relevance (link of current wizard | html "n/a") ?></td></tr>
         <tr><td>hxlat PI</td><td><span id="hxlatTest"><?hxlat Hello from hxlat?></span></td></tr>
+        <tr><td>plural strings (separator)</td><td id="piPlural"><?Relevance ("fftA"; "fftB"; "fftC") ?></td></tr>
+        <tr><td>plural html (separator)</td><td id="piPluralHtml"><?Relevance (html "<i>fftA</i>"; html "<i>fftB</i>") ?></td></tr>
     </table>
     <button onclick="fftRunGroup('pi');">Run section tests</button>
 </div></div>
@@ -406,7 +408,7 @@ textarea#fftRelInput { width: 98%; font-family: Consolas, monospace; }
 // State
 // ------------------------------------------------------------------
 var FFT = {
-    version: "2026-10-30.6",
+    version: "2026-11-01.1",
     lines: [],
     latest: {},
     tests: [],
@@ -1743,6 +1745,21 @@ fftTest("pi", "pi.lists", "unordered list / definition list", function(t) {
     var li = document.getElementById("piList").getElementsByTagName("li").length;
     var dd = document.getElementById("piDl").getElementsByTagName("dd").length;
     if (li === 3 && dd === 1) { t.pass("3 li, 1 dd"); } else { t.fail(li + " li, " + dd + " dd"); }
+});
+// Reports exactly what the host puts between the results of a plural Relevance PI (it varies by host)
+function fftSeparator(id, first, second) {
+    var h = document.getElementById(id).innerHTML;
+    var a = h.indexOf(first), b = h.indexOf(second);
+    if (a === -1 || b === -1 || b < a) { return null; }
+    var sep = h.substring(a + first.length, b), codes = [];
+    for (var i = 0; i < sep.length; i++) { codes.push("U+" + ("000" + sep.charCodeAt(i).toString(16).toUpperCase()).slice(-4)); }
+    return "separator " + fftStr(sep) + " [" + (codes.length ? codes.join(" ") : "empty") + "]";
+}
+fftTest("pi", "pi.pluralJoin", "separator between plural results", function(t) {
+    var s = fftSeparator("piPlural", "fftA", "fftB"), h = fftSeparator("piPluralHtml", "fftA</i>", "<i>fftB");
+    var msg = "strings: " + (s || "not found in " + document.getElementById("piPlural").innerHTML) +
+        "; html: " + (h || "not found in " + document.getElementById("piPluralHtml").innerHTML);
+    if (s && h) { t.pass(msg); } else { t.warn(msg); }
 });
 fftTest("pi", "pi.format", "format inspector", function(t) {
     var s = fftText("piFormat");

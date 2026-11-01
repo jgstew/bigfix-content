@@ -1,0 +1,8 @@
+{
+  "name": "console-dashboards",
+  "displayName": "Console Dashboards",
+  "version": "1.0.4",
+  "description": "Run BigFix console dashboards (.ojo wizards) in WebUI, with the console's dashboard JavaScript API mapped to the WebUI SDK",
+  "homepage": "./HOMEPAGE",
+  "private": true
+}

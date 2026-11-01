@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!--
+      ./HOMEPAGE/ is rewritten by the WebUI server to /ui_extensions/<name>-<siteId>/ on install.
+      A dashboard page renders in a same-origin srcdoc iframe with the shared Web Reports layer (relevance.js, shim.js)
+      and console-shim.js loaded first, which give it the BigFix console's dashboard JavaScript API.
+    -->
+    <base href="./HOMEPAGE/" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Console Dashboards</title>
+    <link rel="stylesheet" href="./HOMEPAGE/static/css/app.css" />
+    <script defer src="./HOMEPAGE/static/js/webui-frame.js"></script>
+    <script defer src="./HOMEPAGE/static/js/webui-relevance.js"></script>
+    <script defer src="./HOMEPAGE/static/js/relevance.js"></script>
+    <script defer src="./HOMEPAGE/static/js/companions.js"></script>
+    <script defer src="./HOMEPAGE/static/js/dashboards.js"></script>
+    <script defer src="./HOMEPAGE/static/js/app.js"></script>
+  </head>
+  <body>
+    <header class="shell-header">
+      <a class="shell-back" href="/" title="Back to BigFix WebUI">&larr; BigFix WebUI</a>
+      <h1 class="shell-title">Console Dashboards</h1>
+      <span class="shell-user" id="shell-user"></span>
+      <a class="shell-logout" href="/logout">Log out</a>
+    </header>
+
+    <main id="wrr-main" class="wrr">
+      <!-- one compact bar: a dashboard from a site, or a file (chosen here or dropped anywhere on the page) -->
+      <div class="wrr-toolbar">
+        <label class="wrr-inline wrr-strong" for="cd-dashboard">Dashboard</label>
+        <select id="cd-dashboard" class="wrr-select" disabled>
+          <option value="">Loading the dashboard list...</option>
+        </select>
+        <label class="wrr-inline wrr-small" title="Also list the dashboards of external sites (BES Support and others), most of which need console features WebUI does not have">
+          <input type="checkbox" id="opt-external" /> External sites
+        </label>
+        <button type="button" id="cd-reload" class="wrr-button wrr-button-small" title="Read the dashboard list again">Reload list</button>
+        <button type="button" id="wrr-rerender" class="wrr-button wrr-button-small" disabled title="Evaluate and render the current page again">Render again</button>
+        <label class="wrr-button wrr-button-small wrr-pick" title="Choose a .ojo dashboard file, or drop one anywhere on this page">
+          Choose file&hellip;
+          <input type="file" id="wrr-file" accept=".ojo,.xml,.html,.htm,.txt" />
+        </label>
+        <span id="wrr-site-status" class="wrr-hint wrr-small" role="status"></span>
+      </div>
+
+      <div class="wrr-heading">
+        <h2 id="wrr-title" class="wrr-title"></h2>
+        <span id="wrr-file-name" class="wrr-hint wrr-small"></span>
+        <label class="wrr-inline wrr-small" id="cd-page-label" hidden>Page <select id="cd-page" class="wrr-select wrr-select-small"></select></label>
+        <p id="wrr-status" class="wrr-status wrr-small" role="status">
+          Nothing rendered yet. Choose a dashboard from a site, or a .ojo file. Its &lt;?Relevance ?&gt; instructions and its
+          console JavaScript API calls (EvaluateRelevance, ImportXML, TakeFixletAction, StopAction, dashboard variables, ...)
+          are answered through WebUI.
+        </p>
+        <button type="button" id="wrr-fullscreen" class="wrr-button wrr-button-small wrr-fullscreen" hidden title="Show the dashboard on the whole screen (Esc leaves)">
+          <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 5V1h4M9 1h4v4M13 9v4H9M5 13H1V9" /></svg>
+          Full screen
+        </button>
+      </div>
+      <ul id="wrr-alerts" class="wrr-alerts" role="alert" hidden></ul>
+
+      <!-- the dashboard fills the rest of the window; this element is what goes full screen -->
+      <div id="wrr-stage" class="wrr-stage">
+        <iframe
+          id="wrr-frame"
+          class="wrr-frame"
+          title="Dashboard"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads"
+          hidden
+        ></iframe>
+        <button type="button" id="wrr-exit-fullscreen" class="wrr-button wrr-button-small wrr-exit-fullscreen" title="Leave full screen (Esc)">Exit full screen</button>
+      </div>
+
+      <details id="log-details" class="wrr-log">
+        <summary>Log (<span id="log-count">0</span> lines) - expand to view, copy, or clear</summary>
+        <div class="wrr-row">
+          <button type="button" id="btn-copy-report" class="wrr-button wrr-button-primary">Copy report</button>
+          <button type="button" id="btn-copy-log" class="wrr-button">Copy log</button>
+          <button type="button" id="btn-clear-log" class="wrr-button">Clear</button>
+          <label class="wrr-inline"><input type="checkbox" id="log-redact" checked /> Redact server address and user name when copying</label>
+        </div>
+        <textarea id="log-text" class="wrr-log-text" readonly spellcheck="false" wrap="off"></textarea>
+      </details>
+
+      <details id="scratch-details" class="wrr-log">
+        <summary>Scratch files (<span id="scratch-count">0</span>) - the dashboard's temporary folder, and local files it can pick</summary>
+        <div class="wrr-row">
+          <label class="wrr-button wrr-button-small wrr-pick" title="Files added here stand in for local disk files: BrowseForFile lists them, and CopyFile / CalculateFileInfo / AddFileToSite can read them">
+            Add local files&hellip;
+            <input type="file" id="scratch-add" multiple />
+          </label>
+          <button type="button" id="scratch-clear" class="wrr-button wrr-button-small">Clear the scratch folder</button>
+          <span class="wrr-hint wrr-small">Kept in this page's memory, shared by the dashboard's pages, and gone when the page closes, like the console's temporary folder.</span>
+        </div>
+        <table class="cd-table" id="scratch-table"><thead><tr><th>Path</th><th>Bytes</th><th></th></tr></thead><tbody></tbody></table>
+      </details>
+
+      <details id="config-details" class="wrr-log">
+        <summary>Config - expand to change how dashboards run</summary>
+        <div class="wrr-row wrr-options">
+          <label class="wrr-inline" title="Before anything that changes BigFix (imports, edits, deletes, stopping actions, analyses, sites, files, REST writes) the dashboard has to be allowed in a dialog. It stands in for the console's password prompt.">
+            <input type="checkbox" id="opt-ask" checked /> Ask before changes
+          </label>
+          <label class="wrr-inline" title="Off by default: these are console dashboards, and relevance through WebUI is not in Web Reports context when BES Explorer answers. On rewrites the inspector to true, for dashboards that are also Web Reports reports.">
+            <input type="checkbox" id="opt-wrcontext" /> Treat <code>in web reports context</code> as true
+          </label>
+          <label class="wrr-inline" title="Re-evaluate &lt;?BeginRefreshRelevance?&gt; sections on a timer, like the console does on data changes">
+            <input type="checkbox" id="opt-refresh" checked /> Refresh &lt;?BeginRefreshRelevance?&gt; sections
+          </label>
+          <label class="wrr-inline" title="How often RegisterRefreshHandler elements get a RefreshCycle signal (the console sends one each refresh cycle). 0 turns it off.">
+            RefreshCycle every <input type="number" id="opt-cycle" class="cd-number" min="0" step="5" value="60" /> s
+          </label>
+          <label class="wrr-inline" title="How the results of a plural &lt;?Relevance ?&gt; are joined. The console puts nothing between them (seen in its Presentation Debugger); Web Reports puts &lt;br /&gt;.">
+            Join plural results with
+            <select id="opt-join" class="wrr-select wrr-select-small"><option value="none">nothing</option><option value="br">&lt;br /&gt;</option><option value="newline">newline</option></select>
+          </label>
+          <span class="wrr-hint">Options apply the next time you render.</span>
+        </div>
+      </details>
+    </main>
+
+    <!-- Take Action and computer group dialogs (the console's own windows) -->
+    <div id="cd-overlay" class="cd-overlay" hidden>
+      <div class="cd-dialog" role="dialog" aria-modal="true" aria-labelledby="cd-dialog-title">
+        <h2 id="cd-dialog-title" class="cd-dialog-title"></h2>
+        <div id="cd-dialog-body" class="cd-dialog-body"></div>
+        <p id="cd-dialog-error" class="wrr-error-text" hidden></p>
+        <div class="cd-dialog-buttons" id="cd-dialog-buttons"></div>
+      </div>
+    </div>
+
+    <!-- Web Reports' page element ids, for dashboards that double as reports (see the Web Reports Renderer) -->
+    <div id="wr-standins" hidden>
+      <div id="wr_mainpage"><div id="wr_header"><div id="wr_headertop"></div><div id="wr_logo"></div><div id="wr_versionHeader"></div></div><div id="wr_subnavigation"></div><div id="saveReport"></div><div id="filterSection"></div><div id="editSourceLink"></div><div id="wr_datapage"><div id="wr_reportSourceWrapper"></div></div></div>
+    </div>
+
+    <noscript>This app needs JavaScript.</noscript>
+  </body>
+</html>

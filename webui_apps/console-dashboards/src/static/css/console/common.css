@@ -1,0 +1,11 @@
+/* Console Dashboards: a stand-in for the BigFix console's own common.css, which only exists inside the console and
+   which dashboards link by relative name. Written for this app (not a copy of the console's file): just enough for
+   the console's documented dashboard markup to look reasonable. */
+body { font-family: Tahoma, "Segoe UI", Arial, sans-serif; font-size: 12px; }
+.section { margin: 0 0 8px 0; }
+.sectionHeader { font-size: 14px; margin: 0; padding: 4px 6px; background: #e8eef5; border-bottom: 1px solid #b8c7d9; cursor: default; }
+.sectionHeader img.collapse, .sectionHeader img.expand { cursor: pointer; margin-right: 6px; vertical-align: middle; }
+.sectionBody { padding: 4px 8px; }
+table.properties { border-collapse: collapse; width: 100%; }
+table.properties td { border-bottom: 1px solid #eee; padding: 2px 6px; vertical-align: top; }
+table.properties td.name { color: #444; font-weight: bold; }

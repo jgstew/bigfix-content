@@ -120,6 +120,8 @@
   function prepare(relevance) {
     const o = options()
     let r = String(relevance)
+    // an app-specific rewrite first (Console Dashboards answers "... of current wizard" forms itself)
+    if (typeof o.rewrite === 'function') r = o.rewrite(r)
     if (o.webReportsContext) r = r.replace(/\bin\s+web\s+reports\s+context\b/gi, 'true')
     if (o.dashboardId) r = r.replace(/\bcurrent\s+wizard\b/gi, '(bes wizard whose (dashboard id of it = "' + o.dashboardId.replace(/"/g, '%22') + '"))')
     return '(' + r.trim() + ')'
