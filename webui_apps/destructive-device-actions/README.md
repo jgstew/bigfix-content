@@ -26,7 +26,7 @@ The template is [`actions/Wipe_MDM_device_from_WebUI.bes.mustache`](../../action
 
 **Escaping:** the title, the relevance and the reason's MIME value are CDATA sections in the template, so values go in as written; `build()` splits any `]]>` in a value across two CDATA sections, and XML-escapes a placeholder that isn't inside CDATA. The name is used inside a relevance string, so `%` and `"` are sent as `%25` and `%22`. A name with `%` or `"` therefore shows encoded in the title too.
 
-**Which devices it applies to:** the template has commands for Windows, ChromeOS, Android, iOS/iPadOS and macOS, and they only work on devices managed through BigFix MDM. The app treats a device as MDM-managed when its `agent type` contains "MDM". **That value isn't confirmed yet**; the log lists the agent types it found on each load, so the first run on a server shows the real ones. Devices with no computer name don't qualify either, because the action's name check could never match. The check is `notApplicable()` in [`actions.js`](src/static/js/actions.js).
+**Which devices it applies to:** the template has commands for Windows, ChromeOS, Android, iOS/iPadOS and macOS, and they only work on devices managed through BigFix MDM. The app treats a device as MDM-managed when its `agent type` is anything but `Native` (compared without case; an empty agent type counts as unknown and doesn't qualify). Any other agent type qualifies too, and so would a proxy agent's, if one reports an OS the template covers; the log lists the agent types it found on each load. Devices with no computer name don't qualify either, because the action's name check could never match. The check is `notApplicable()` in [`actions.js`](src/static/js/actions.js).
 
 ## Adding an action
 
@@ -63,7 +63,7 @@ Then **Install extension from file** in Extensions Management with `output/destr
   - the action ID, its link, and the status read
   - the copied report
 - **Real server:** not tested. Still to confirm there:
-  - the `agent type` of MDM devices
+  - the `agent type` values on the server, so that only MDM devices are something other than `Native`
   - whether `computer name` evaluates on MDM devices
   - the `POST api/actions` response's `<ID>`
   - the status XML shape

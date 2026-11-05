@@ -9,10 +9,10 @@ window.DDA = window.DDA || {}
 ;(function (DDA) {
   const api = window.WebUIApi
 
-  // MDM wipe commands only run on devices managed through BigFix MDM. Which "agent type of <bes computer>" values
-  // those devices have is NOT confirmed yet; until it is, a device counts as MDM-managed when its agent type contains
-  // "MDM". The app logs the agent types it sees, so the first run on a server shows the real values.
-  const isMdm = (device) => /mdm/i.test(device.agentType)
+  // MDM wipe commands only run on devices managed through BigFix MDM, so a device qualifies when its
+  // "agent type of <bes computer>" is anything but "Native" (the BigFix agent). An empty agent type (the property
+  // didn't evaluate) is unknown, so it doesn't qualify. The app logs the agent types it sees on each load.
+  const isMdm = (device) => !!device.agentType.trim() && device.agentType.trim().toLowerCase() !== 'native'
 
   // The operating systems the wipe template has a branch for (its if-blocks); on anything else it would do nothing.
   const WIPE_OS = [/^win/i, /^chromeos/i, /^android/i, /^ios/i, /^ipados/i, /^mac/i]
