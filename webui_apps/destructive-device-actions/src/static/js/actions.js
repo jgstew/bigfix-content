@@ -24,6 +24,8 @@ window.DDA = window.DDA || {}
       warning: 'This erases the device and returns it to factory settings. It cannot be undone.',
       // '' when the action applies to the device, else why not
       notApplicable(device) {
+        // the action's relevance checks the computer name, so with no name it could never run
+        if (!device.name.trim()) return 'no computer name, so the action could never pass its name check'
         if (!isMdm(device)) return 'not managed through MDM (agent type: ' + (device.agentType || 'unknown') + ')'
         if (!WIPE_OS.some((re) => re.test(device.os))) return 'no wipe command for this OS (' + (device.os || 'unknown') + ')'
         return ''
@@ -76,10 +78,14 @@ window.DDA = window.DDA || {}
     })
     const doc = new DOMParser().parseFromString(xml, 'application/xml')
     if (doc.getElementsByTagName('parsererror').length) throw new Error('The action XML does not parse')
-    const ids = Array.from(doc.getElementsByTagName('ComputerID')).map((el) => el.textContent.trim())
-    if (ids.length !== 1 || ids[0] !== device.id) throw new Error('The action XML must target exactly computer ' + device.id + ', it targets: ' + (ids.join(', ') || 'nothing'))
-    if (doc.querySelector('Target > CustomRelevance, Target > AllComputers, Target > ComputerName, Target > ComputerGroup')) {
-      throw new Error('The action XML has a target besides the computer ID')
+    // exactly one SingleAction with one Target, whose only child is <ComputerID> with this device's ID
+    const actions = doc.getElementsByTagName('SingleAction')
+    const targets = doc.getElementsByTagName('Target')
+    const children = targets.length === 1 ? Array.from(targets[0].children) : []
+    const ok = actions.length === 1 && doc.documentElement.children.length === 1 && targets.length === 1 && children.length === 1 && children[0].tagName === 'ComputerID' && children[0].textContent.trim() === device.id
+    if (!ok) {
+      const ids = Array.from(doc.getElementsByTagName('ComputerID')).map((el) => el.textContent.trim())
+      throw new Error('The action XML must be one action with one target, computer ' + device.id + ' alone; it has ' + actions.length + ' action(s), ' + targets.length + ' target(s), computer IDs: ' + (ids.join(', ') || 'none'))
     }
     return xml
   }

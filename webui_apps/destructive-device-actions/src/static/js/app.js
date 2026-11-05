@@ -25,6 +25,7 @@
   let loadedAt = null
   let sent = [] // { actionId, device, action } for the report
   let confirming = null // { action, device }
+  let sending = false // while the POST is in flight: the dialog can't send again, be edited, or close
 
   const log = window.WebUILog.create({
     title: 'BigFix Destructive Device Actions',
@@ -173,7 +174,7 @@
     if (!confirming) return
     const reason = $('confirm-reason').value
     const ok = DDA.reasonOk(reason)
-    $('confirm-send').disabled = !ok
+    if (!sending) $('confirm-send').disabled = !ok
     $('confirm-reason-hint').classList.toggle('dda-error-text', !ok && reason.length > 0)
     const token = ++previewToken
     if (!ok) {
@@ -189,12 +190,11 @@
   }
 
   async function send() {
-    if (!confirming || !DDA.reasonOk($('confirm-reason').value)) return
+    if (sending || !confirming || !DDA.reasonOk($('confirm-reason').value)) return
     const { action, device } = confirming
     const reason = DDA.cleanReason($('confirm-reason').value)
-    const button = $('confirm-send')
-    button.disabled = true
-    button.textContent = 'Sending...'
+    setSending(true)
+    $('confirm-send').textContent = 'Sending...'
     $('confirm-error').hidden = true
 
     let xml
@@ -203,6 +203,7 @@
     } catch (err) {
       return confirmFailed(err.message)
     }
+    log.addSensitive(reason) // a reason can name a person: Redact covers it in copied reports
     log.log('INFO', 'Sending ' + action.id + ' to computer ' + device.id + ', reason: ' + reason)
     const res = await api.passthrough('POST', 'api/actions', { body: xml, contentType: 'application/xml' })
     const actionId = res.ok ? api.xmlField(res.text, 'ID') : ''
@@ -212,6 +213,7 @@
       log.log('WARN', 'Action posted, but the response has no action ID: ' + api.snippet(res.text, 300))
     }
 
+    setSending(false)
     confirming = null
     $('confirm').close()
     sent.push({ actionId: actionId || '?', device, action })
@@ -219,7 +221,15 @@
     showSent(action, device, actionId)
   }
 
+  function setSending(on) {
+    sending = on
+    $('confirm-send').disabled = on
+    $('confirm-cancel').disabled = on
+    $('confirm-reason').readOnly = on
+  }
+
   function confirmFailed(message) {
+    setSending(false)
     log.log('ERROR', message)
     $('confirm-error').textContent = message + (/[.!?]$/.test(message) ? ' ' : '. ') + 'Check Deployments in WebUI before you retry.'
     $('confirm-error').hidden = false
@@ -286,6 +296,8 @@
     })
     $('confirm-send').addEventListener('click', send)
     $('confirm').addEventListener('close', () => (confirming = null))
+    // Esc while sending: the action is created anyway, so keep the dialog open until the answer arrives
+    $('confirm').addEventListener('cancel', (e) => sending && e.preventDefault())
     $('btn-copy-report').addEventListener('click', log.copyReport)
     $('btn-copy-log').addEventListener('click', log.copyLog)
     $('btn-clear-log').addEventListener('click', log.clear)

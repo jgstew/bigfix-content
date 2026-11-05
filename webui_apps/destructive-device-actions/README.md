@@ -13,7 +13,7 @@ Tracked in [jgstew/bigfix-content#56](https://github.com/jgstew/bigfix-content/i
    Search matches the name or the ID. Devices the chosen action doesn't apply to are hidden; **Show devices it doesn't apply to** shows them greyed out, with the reason. A name that more than one device has is flagged, and a device that hasn't reported for over 7 days is highlighted. At most 200 rows are drawn; search narrows the list.
 2. **Confirmation:** a device's **Wipe...** button reloads the list first. If the device is gone, has a different name, or the action no longer applies, nothing is sent. Otherwise a dialog shows the action, the device's details, and cautions for duplicate names, stale devices and devices that never reported. **Cancel** has the focus, and Enter in the reason box does nothing.
 3. **Ticket number or reason:** it's required, one line, at least 4 characters that aren't whitespace, and at most 200. The send button stays disabled until it's valid, and **Action XML** shows the exact action that will be sent.
-4. **Send:** the action is built from its template (`{{ComputerID}}`, `{{Hostname}}`, `{{Reason}}`) and checked before sending: it must parse and target exactly that computer ID, with no other target. It's posted with the REST passthrough, `POST /api/sdk/passthrough/api/actions` as `application/xml`, which needs **Can use REST API**. The result shows the action ID, a link to `/framework/deployments/<id>`, and **Check status** (`GET api/action/<id>/status`).
+4. **Send:** the action is built from its template (`{{ComputerID}}`, `{{Hostname}}`, `{{Reason}}`) and checked before sending: it must parse and be one `SingleAction` with one `Target` whose only child is that `<ComputerID>`. While the request is in flight, the send and Cancel buttons are disabled, the reason box is read-only, and Esc doesn't close the dialog, because the action would be created anyway. It's posted with the REST passthrough, `POST /api/sdk/passthrough/api/actions` as `application/xml`, which needs **Can use REST API**. The result shows the action ID, a link to `/framework/deployments/<id>`, and **Check status** (`GET api/action/<id>/status`).
 
 ## The wipe action
 
@@ -21,11 +21,12 @@ The template is [`actions/Wipe_MDM_device_from_WebUI.bes.mustache`](../../action
 - **Title:** `Wipe MDM device from WebUI Custom App: {{Hostname}} ({{ComputerID}}) - {{Reason}}`
 - **Relevance:** `computer name as lowercase = "{{Hostname}}" as lowercase`, so the action doesn't run if the ID now belongs to a renamed device. Whether `computer name` evaluates on MDM devices is **not confirmed yet**; if it errors there, the action is never relevant and nothing happens.
 - **Target:** `<ComputerID>{{ComputerID}}</ComputerID>` only.
+- **No end time:** the template has no `<Settings>`, so the action stays open until the device reports, however long that takes; only the name check stops it on a device that was renamed. What end time the server sets when `<Settings>` is missing is not confirmed.
 - **MIME fields:** `x-deployment-webui-app-source` = `mdm`, and `x-deployment-webui-app-reason` = the reason.
 
 **Escaping:** the name is used inside a relevance string, so `%` and `"` are sent as `%25` and `%22`, and it's XML-escaped like the reason. A name with `%` or `"` therefore shows encoded in the title too.
 
-**Which devices it applies to:** the template has commands for Windows, ChromeOS, Android, iOS/iPadOS and macOS, and they only work on devices managed through BigFix MDM. The app treats a device as MDM-managed when its `agent type` contains "MDM". **That value isn't confirmed yet**; the log lists the agent types it found on each load, so the first run on a server shows the real ones. The check is `notApplicable()` in [`actions.js`](src/static/js/actions.js).
+**Which devices it applies to:** the template has commands for Windows, ChromeOS, Android, iOS/iPadOS and macOS, and they only work on devices managed through BigFix MDM. The app treats a device as MDM-managed when its `agent type` contains "MDM". **That value isn't confirmed yet**; the log lists the agent types it found on each load, so the first run on a server shows the real ones. Devices with no computer name don't qualify either, because the action's name check could never match. The check is `notApplicable()` in [`actions.js`](src/static/js/actions.js).
 
 ## Adding an action
 
@@ -56,6 +57,8 @@ Then **Install extension from file** in Extensions Management with `output/destr
   - the dialog's details, cautions and focus; the reason rule (`a b c` refused, a ticket number accepted); Enter blocked
   - the posted XML for a name with `'`, `"` and `%` and a reason with `<&>"]]>`, which parsed, with the relevance text as intended
   - a rejected POST, which keeps the dialog open with the error and a Retry button
+  - while sending: typing in the reason box, a second click, Cancel and Esc can't send twice or close the dialog
+  - devices with no name are not applicable, and a multi-target template is rejected
   - a renamed device, which stops before the dialog
   - the action ID, its link, and the status read
   - the copied report
@@ -64,5 +67,6 @@ Then **Install extension from file** in Extensions Management with `output/destr
   - whether `computer name` evaluates on MDM devices
   - the `POST api/actions` response's `<ID>`
   - the status XML shape
+  - that WebUI serves the `.mustache` template from the package (if it doesn't, building the action fails and nothing is sent)
 
   The real wipe must not be used for that: test with a copy of the action that has an empty action script.
