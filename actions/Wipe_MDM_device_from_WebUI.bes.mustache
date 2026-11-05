@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<SingleAction>
-		<Title>Wipe MDM device from WebUI Custom App</Title>
-		<Relevance>true</Relevance>
+		<Title><![CDATA[Wipe MDM device from WebUI Custom App: {{Hostname}} ({{ComputerID}}) - {{Reason}}]]></Title>
+		<Relevance><![CDATA[computer name as lowercase = "{{Hostname}}" as lowercase]]></Relevance>
 		<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
 if {windows of operating system}
 	createfile until __END_OF_FILE__
@@ -48,6 +48,10 @@ endif
 		<MIMEFieldSingleAction>
 			<Name>x-deployment-webui-app-source</Name>
 			<Value>mdm</Value>
+		</MIMEFieldSingleAction>
+		<MIMEFieldSingleAction>
+			<Name>x-deployment-webui-app-reason</Name>
+			<Value><![CDATA[{{Reason}}]]></Value>
 		</MIMEFieldSingleAction>
 	</SingleAction>
 </BES>

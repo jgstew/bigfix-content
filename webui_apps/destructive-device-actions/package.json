@@ -1,0 +1,8 @@
+{
+  "name": "destructive-device-actions",
+  "displayName": "Destructive Device Actions",
+  "version": "0.1.0",
+  "description": "Send a destructive action, such as an MDM wipe, to one device picked from a searchable list, after a confirmation with a ticket number or reason",
+  "homepage": "./HOMEPAGE",
+  "private": true
+}

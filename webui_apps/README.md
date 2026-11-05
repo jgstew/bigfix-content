@@ -9,6 +9,7 @@ Examples in this folder. Each one builds into a `.webui` file:
 | [sdk-api-tester](sdk-api-tester/) | Plain HTML/JS. Calls all 26 SDK operations as examples and tests, with a copyable log and report. | none | Python 3 (`pack.py`) | about 18 KB |
 | [web-reports-renderer](web-reports-renderer/) | Plain HTML/JS "Web Reports Renderer". Pick a custom report stored in a BigFix site (scripts and CSS load from the same site; the list is cached in a shared dashboard variable), or upload one; its `<?Relevance ?>` and JavaScript `EvaluateRelevance` / `Relevance` / `AsyncEvaluateString` calls run through the SDK API, and its CDN libraries are served from local copies. | none | Python 3 (`fetch_libs.py`, `pack.py`) | about 1.3 MB (about 12 KB without the libraries) |
 | [console-dashboards](console-dashboards/) | Plain HTML/JS "Console Dashboards". Runs BigFix console dashboards (`.ojo` wizards) from sites (`bes wizards`) or a file, with the renderer's Web Reports layer plus the console's dashboard API (`ImportXML`, `EditFixlet`, `TakeFixletAction` with its own Take Action dialog, `StopAction`, the `API` REST object, the scratch folder, `linkpage:` and `TheDataStore`, …) mapped to the SDK and the REST passthrough. | none | Python 3 (`fetch_libs.py`, `pack.py`) | about 1.8 MB |
+| [destructive-device-actions](destructive-device-actions/) | Plain HTML/JS "Destructive Device Actions" for help desk staff. Sends one destructive action (first: an MDM wipe from [`actions/`](../actions/)) to exactly one device picked from a searchable list, after a confirmation with a required ticket number or reason. Mock-tested only. | none | Python 3 (`pack.py`) | about 25 KB |
 | [session-relevance-query-html](session-relevance-query-html/) | Plain HTML/JS "Relevance Query", with [bigfix-relevance-analyzer](https://github.com/jgstew/bigfix-relevance-analyzer) running as WebAssembly. Auto mode runs client relevance as a BigFix Query and session relevance through the SDK API. | none | Python 3 (`fetch_analyzer.py`, `pack.py`) | about 8.5 MB (about 10 KB without the analyzer) |
 | [session-relevance-query](session-relevance-query/) | React on the WebUI SDK template, with `BfApp` providing the standard WebUI nav bar | `bfcore-react` and Patronus | Template, Node, HCL network | about 2.2 MB |
 
@@ -175,7 +176,7 @@ It also sent `X-Frame-Options: DENY` and `X-Content-Type-Options: nosniff`.
 - **Don't block the page:** start loading after the page is usable, and keep a fallback path (here: plain session relevance) until the library is ready or if it fails.
 - **Keep big binaries out of git:** a fetch script downloads a pinned release (version plus SHA-256) into a git-ignored folder that the packager includes. See [`fetch_analyzer.py`](session-relevance-query-html/fetch_analyzer.py).
 
-For a minimal stand-in for `BfApp`, show the user name from `GET /me`, ping `GET /loggedin` every 30 seconds, and link to `/` and `/logout`. The example's [`pack.py`](session-relevance-query-html/pack.py) builds the zip with only the Python standard library.
+For a minimal stand-in for `BfApp`, show the user name from `GET /me`, ping `GET /loggedin` every 30 seconds, and link to `/` and `/logout`. Each plain app's `pack.py` builds the zip with only the Python standard library, through the shared [`shared/webui_pack.py`](shared/webui_pack.py).
 
 ### SDK endpoints
 
@@ -334,6 +335,13 @@ WebUI answers session relevance from **BES Explorer** when one is running, and *
 - A same-origin iframe reuses its parent's instance; the Web Reports Renderer's report frame does this.
 
 The React app ([session-relevance-query](session-relevance-query/)) can't load a plain script through the template build, so `sessionRelevanceApi.js` has a port of the same probe.
+
+**More shared helpers** for the plain HTML/JS apps. Each app's `pack.py` lists the ones it ships; the header comment of each file documents its API.
+- **[`shared/webui_pack.py`](shared/webui_pack.py)** is the packager. An app's `pack.py` only lists its shared files, any `extra_files` from elsewhere in the repo (Destructive Device Actions adds its action templates), and warnings for optional downloads.
+- **[`shared/webui-api.js`](shared/webui-api.js)** (`window.WebUIApi`) sends requests with the session cookies and `X-XSRF-TOKEN`, and never throws: `request`, `evaluate` (SDK, through `WebUIRelevance.prepare`), `query` (typed REST), `passthrough`, `startSession` (`/me` and the `/loggedin` keep-alive), and escaping for HTML, XML and relevance strings.
+- **[`shared/webui-log.js`](shared/webui-log.js)** (`window.WebUILog.create`) is the collapsed Log: timestamped lines, redaction, **Copy report** and **Copy log** with a fallback when the clipboard is blocked, plus an HTTP line for every `WebUIApi` request.
+
+So far only [destructive-device-actions](destructive-device-actions/) uses `webui-api.js` and `webui-log.js`. The older apps still have their own copies of the same code.
 
 **[`shared/wr/`](shared/wr/)** holds the Web Reports layer that [web-reports-renderer](web-reports-renderer/) and [console-dashboards](console-dashboards/) both load into their iframes: `relevance.js` (typed REST evaluation, `prepare()`), `shim.js` (Web Reports' JavaScript API) and `companions.js` (a site's relative files). Each app's `pack.py` copies them in as `static/js/<name>`. `prepare()` calls the host page's `options.rewrite(expr)` first when it has one; Console Dashboards uses that for `… of current wizard`.
 
