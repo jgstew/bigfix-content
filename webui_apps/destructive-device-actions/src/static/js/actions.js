@@ -1,7 +1,9 @@
 // Destructive Device Actions - the actions this app can send, and how one is built from its template.
 // Each action targets exactly one computer ID. Templates are Mustache-style files from the repo's actions/ folder
 // (pack.py copies them to static/templates/); only {{Name}} placeholders are supported, and every placeholder must
-// get a value. Values are escaped by build() for where they appear (see PLACEHOLDERS).
+// get a value. PLACEHOLDERS gives each value, and build() escapes it for where it appears: inside a CDATA section
+// (the template wraps fields that hold free text in one) "]]>" is split across two sections, elsewhere it is
+// XML-escaped.
 'use strict'
 window.DDA = window.DDA || {}
 ;(function (DDA) {
@@ -33,17 +35,24 @@ window.DDA = window.DDA || {}
     }
   ]
 
-  // How each placeholder's value is escaped. Hostname appears inside a relevance string literal (in <Relevance>) and
-  // in the title, so it gets relevance-string escaping (% and " encoded) and then XML escaping everywhere; a name
-  // with % or " shows encoded in the title, which only happens for names that hostnames can't have.
+  // Each placeholder's value, before the XML escaping that build() adds. Hostname appears inside a relevance string
+  // literal (in <Relevance>) and in the title, so it gets relevance-string escaping (% and " encoded) everywhere; a
+  // name with % or " shows encoded in the title, which only happens for names that hostnames can't have.
   const PLACEHOLDERS = {
     ComputerID: (device) => {
       if (!/^\d+$/.test(device.id)) throw new Error('Computer ID "' + device.id + '" is not a number')
       return device.id
     },
-    Hostname: (device) => api.escapeXml(api.relevanceString(device.name).slice(1, -1)),
-    Reason: (device, reason) => api.escapeXml(reason)
+    Hostname: (device) => api.relevanceString(device.name).slice(1, -1),
+    Reason: (device, reason) => reason
   }
+
+  // Whether position `at` of the template is inside a <![CDATA[ ... ]]> section
+  function inCdata(template, at) {
+    const before = template.slice(0, at)
+    return before.lastIndexOf('<![CDATA[') > before.lastIndexOf(']]>')
+  }
+  const cdataSafe = (s) => String(s).split(']]>').join(']]]]><![CDATA[>')
 
   const templates = {}
   async function loadTemplate(action) {
@@ -72,9 +81,10 @@ window.DDA = window.DDA || {}
     if (!DDA.reasonOk(reason)) throw new Error('A ticket number or reason of at least ' + DDA.MIN_REASON_CHARS + ' characters is required')
     const template = await loadTemplate(action)
     const cleaned = DDA.cleanReason(reason)
-    const xml = template.replace(/\{\{\s*(\w+)\s*\}\}/g, (match, name) => {
+    const xml = template.replace(/\{\{\s*(\w+)\s*\}\}/g, (match, name, at) => {
       if (!PLACEHOLDERS[name]) throw new Error('The template ' + action.template + ' has a placeholder {{' + name + '}} this app has no value for')
-      return PLACEHOLDERS[name](device, cleaned)
+      const value = PLACEHOLDERS[name](device, cleaned)
+      return inCdata(template, at) ? cdataSafe(value) : api.escapeXml(value)
     })
     const doc = new DOMParser().parseFromString(xml, 'application/xml')
     if (doc.getElementsByTagName('parsererror').length) throw new Error('The action XML does not parse')

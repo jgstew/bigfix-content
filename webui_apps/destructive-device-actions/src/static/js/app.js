@@ -87,7 +87,8 @@
       .map((d) => ({ device: d, why: action.notApplicable(d) }))
     const shown = matches
       .filter((m) => showNa || !m.why)
-      .sort((a, b) => a.device.name.localeCompare(b.device.name, undefined, { sensitivity: 'base' }) || b.device.lastReportMs - a.device.lastReportMs)
+      // newest report first (never reported: last), then by name
+      .sort((a, b) => b.device.lastReportMs - a.device.lastReportMs || a.device.name.localeCompare(b.device.name, undefined, { sensitivity: 'base' }))
     const applicable = matches.filter((m) => !m.why).length
 
     const body = $('device-rows')
