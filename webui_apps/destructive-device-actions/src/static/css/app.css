@@ -1,0 +1,300 @@
+:root {
+  --dda-accent: #0f62fe;
+  --dda-border: #c6c6c6;
+  --dda-muted: #6f6f6f;
+  --dda-header-bg: #161616;
+  --dda-header-fg: #f4f4f4;
+  --dda-surface: #f4f4f4;
+  --dda-danger: #da1e28;
+  --dda-danger-hover: #b81921;
+  --dda-warn-bg: #fcf4d6;
+  --dda-ok-bg: #defbe6;
+  --dda-error-bg: #fff1f1;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #fff;
+  color: #161616;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 0.875rem;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ---- shell header (same as session-relevance-query-html; webui-frame.js hides it when it draws WebUI's bar) ---- */
+
+.shell-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0 1rem;
+  height: 3rem;
+  background: var(--dda-header-bg);
+  color: var(--dda-header-fg);
+}
+
+.shell-header a {
+  color: var(--dda-header-fg);
+  text-decoration: none;
+}
+
+.shell-header a:hover,
+.shell-header a:focus-visible {
+  text-decoration: underline;
+}
+
+.shell-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.shell-user {
+  margin-left: auto;
+  opacity: 0.8;
+}
+
+/* ---- layout ---- */
+
+.dda {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 1rem 3rem;
+}
+
+.dda-intro {
+  margin: 0;
+  max-width: 60rem;
+}
+
+.dda-toolbar,
+.dda-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+.dda-toolbar label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.dda-search input {
+  width: 18rem;
+  max-width: 60vw;
+}
+
+.dda input[type='search'],
+.dda select,
+.dda-dialog input[type='text'] {
+  font: inherit;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--dda-border);
+  border-radius: 2px;
+}
+
+.dda-inline {
+  white-space: nowrap;
+}
+
+.dda-status,
+.dda-muted {
+  color: var(--dda-muted);
+}
+
+.dda-button {
+  font: inherit;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid var(--dda-border);
+  border-radius: 2px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.dda-button:hover:not(:disabled) {
+  background: var(--dda-surface);
+}
+
+.dda-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.dda-button-danger {
+  background: var(--dda-danger);
+  border-color: var(--dda-danger);
+  color: #fff;
+}
+
+.dda-button-danger:hover:not(:disabled) {
+  background: var(--dda-danger-hover);
+}
+
+/* ---- device table ---- */
+
+.dda-devices {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.dda-devices th,
+.dda-devices td {
+  text-align: left;
+  padding: 0.35rem 0.6rem;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle;
+}
+
+.dda-devices th {
+  background: var(--dda-surface);
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+
+.dda-devices tr.dda-na td {
+  color: var(--dda-muted);
+}
+
+.dda-stale {
+  color: #8e6a00;
+}
+
+.dda-badge {
+  display: inline-block;
+  padding: 0 0.4rem;
+  border-radius: 0.6rem;
+  background: var(--dda-warn-bg);
+  color: #5c4400;
+  font-size: 0.75rem;
+}
+
+/* ---- result ---- */
+
+.dda-result {
+  padding: 0.75rem 1rem;
+  border-left: 4px solid var(--dda-accent);
+  background: var(--dda-surface);
+}
+
+.dda-result p {
+  margin: 0.25rem 0;
+}
+
+.dda-result-sent {
+  border-color: #198038;
+  background: var(--dda-ok-bg);
+}
+
+.dda-result-error {
+  border-color: var(--dda-danger);
+  background: var(--dda-error-bg);
+}
+
+/* ---- confirmation dialog ---- */
+
+.dda-dialog {
+  width: min(36rem, calc(100vw - 2rem));
+  border: 1px solid var(--dda-border);
+  border-top: 4px solid var(--dda-danger);
+  padding: 1rem 1.25rem;
+}
+
+.dda-dialog::backdrop {
+  background: rgba(22, 22, 22, 0.5);
+}
+
+.dda-dialog h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+}
+
+.dda-danger {
+  color: var(--dda-danger);
+  font-weight: 600;
+}
+
+.dda-caution {
+  padding: 0.5rem 0.75rem;
+  background: var(--dda-warn-bg);
+}
+
+.dda-facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+  margin: 0.75rem 0;
+}
+
+.dda-facts dt {
+  color: var(--dda-muted);
+}
+
+.dda-facts dd {
+  margin: 0;
+  word-break: break-word;
+}
+
+.dda-reason {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-weight: 600;
+}
+
+.dda-reason + .dda-muted {
+  margin-top: 0.25rem;
+}
+
+.dda-error-text {
+  color: var(--dda-danger);
+}
+
+.dda-error {
+  padding: 0.5rem 0.75rem;
+  background: var(--dda-error-bg);
+  color: var(--dda-danger);
+}
+
+.dda-xml pre {
+  max-height: 14rem;
+  overflow: auto;
+  padding: 0.5rem;
+  background: var(--dda-surface);
+  font-size: 0.75rem;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.dda-dialog-buttons {
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+/* ---- log ---- */
+
+.dda-log summary {
+  cursor: pointer;
+  color: var(--dda-muted);
+}
+
+.dda-log .dda-row {
+  margin: 0.5rem 0;
+}
+
+.dda-log-text {
+  width: 100%;
+  height: 16rem;
+  font-family: monospace;
+  font-size: 0.75rem;
+}
