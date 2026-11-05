@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<SingleAction>
+		<Title>Wipe MDM device from WebUI Custom App</Title>
+		<Relevance>true</Relevance>
+		<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
+if {windows of operating system}
+	createfile until __END_OF_FILE__
+<SyncML xmlns="SYNCML:SYNCML1.2">
+  <SyncBody>
+    <Exec>
+      <CmdID>1</CmdID>
+      <Item>
+        <Target>
+          <LocURI>./Vendor/MSFT/RemoteWipe/doWipe</LocURI>
+        </Target>
+      </Item>
+    </Exec>
+    <Final />
+  </SyncBody>
+</SyncML>
+__END_OF_FILE__
+	install profile __createfile
+endif
+
+if {(it starts with "ChromeOS") of name of operating system}
+	remove profile
+endif
+
+if {(it starts with "Android") of name of operating system}
+	erase device WIPE_DATA_FLAG_UNSPECIFIED ""
+endif
+
+if {(it starts with "iOS" or it starts with "iPadOS") of name of operating system}
+	erase device
+endif
+
+if {mac of operating system}
+	erase device
+endif
+
+    ]]></ActionScript>
+		<SuccessCriteria Option="RunToCompletion"></SuccessCriteria>
+		<IsUrgent>true</IsUrgent>
+		<Target>
+            <ComputerID>{{ComputerID}}</ComputerID>
+        </Target>
+		<MIMEFieldSingleAction>
+			<Name>x-deployment-webui-app-source</Name>
+			<Value>mdm</Value>
+		</MIMEFieldSingleAction>
+	</SingleAction>
+</BES>
