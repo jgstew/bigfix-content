@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Wipe Computer - MDM_RemoteWipe - Windows</Title>
-		<Description><![CDATA[WARNING! This will wipe a system!<BR><BR>This should work with Windows 10, version 1511 (OS Build 10.0.10586) from November 2015 or later.]]></Description>
+		<Title>Wipe Computer: Erase Everything (Lost, Stolen or Decommission) - MDM_RemoteWipe - Windows</Title>
+		<Description><![CDATA[<P><B>Erases everything.</B> Use for a lost or stolen device, or to decommission one. All user accounts, user data, apps and settings are removed; nothing is kept, and the device restarts into the out-of-box setup (OOBE).</P>
+<P>Uses the RemoteWipe CSP through the MDM Bridge WMI provider (root/cimv2/mdm/dmmap). It calls <B>doWipeProtectedMethod</B> first, which fully cleans the internal drive and keeps retrying until the reset is done, even if the device is power cycled. On some device configurations it can leave the device unable to boot. If that call fails (for example on Windows 10 before version 1703), it falls back to <B>doWipeMethod</B> (like <I>Reset this PC &gt; Remove everything</I>), which can be stopped by power cycling the device.</P>
+<P>Related: <I>MDM: Wipe Computer: Erase Users and Data, Keep Provisioning (Repurpose) - Windows</I> keeps provisioning packages; <I>MDM: Reset Windows: Keep User Files, Remove Apps (Repair) - Windows</I> keeps user accounts and files.</P>
+<P>WARNING! This will wipe the system and cannot be undone. Target carefully.</P>
+<P>Requires Windows 10, version 1703 or later for doWipeProtectedMethod (1511 or later for the doWipeMethod fallback), Pro, Enterprise or Education edition (the RemoteWipe CSP is not available on Home).</P>]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
 		<Relevance><![CDATA[computer name = "WIN-ComputerNameToWipe" /* <-- Computer you want to wipe */]]></Relevance>
@@ -16,7 +20,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 23 Jul 2026 00:00:54 +0000</Value>
+			<Value>Fri, 06 Nov 2026 15:05:55 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">

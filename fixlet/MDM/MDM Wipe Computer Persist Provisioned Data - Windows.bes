@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>MDM: Wipe Computer (Persist Provisioned Data) - Windows</Title>
-		<Description><![CDATA[<P>Backs up provisioning data to a persistent location, wipes the device, then restores that provisioning data when the device resumes. Uses the RemoteWipe CSP through the MDM Bridge WMI provider (root/cimv2/mdm/dmmap).</P>
-<P>This calls the <B>doWipePersistProvisionedDataMethod</B> on the <B>MDM_RemoteWipe</B> class.</P>
-<P>WARNING! This will wipe the system! User data is removed; only provisioning packages are preserved and re-applied. Target carefully.</P>
-<P>This should work with Windows 10, version 1511 or later (doWipePersistProvisionedDataMethod).</P>]]></Description>
+		<Title>MDM: Wipe Computer: Erase Users and Data, Keep Provisioning (Repurpose) - Windows</Title>
+		<Description><![CDATA[<P><B>Erases users and their data, keeps the organization's provisioning.</B> Use to repurpose a device for a new user. All user accounts, user data, apps and settings are removed. Provisioning packages (from %SystemDrive%\ProgramData\Microsoft\Provisioning, for example Wi-Fi, certificates or enrollment settings) are backed up first and applied again when the device restarts.</P>
+<P>Uses the RemoteWipe CSP through the MDM Bridge WMI provider (root/cimv2/mdm/dmmap): it calls <B>doWipePersistProvisionedDataMethod</B> on the <B>MDM_RemoteWipe</B> class. Without provisioning packages on the device, this is the same as a full wipe.</P>
+<P>Related: <I>Wipe Computer: Erase Everything (Lost, Stolen or Decommission) - MDM_RemoteWipe - Windows</I> keeps nothing; <I>MDM: Reset Windows: Keep User Files, Remove Apps (Repair) - Windows</I> keeps user accounts and files.</P>
+<P>WARNING! This will wipe the system and cannot be undone. Target carefully.</P>
+<P>Requires Windows 10, version 1511 or later, Pro, Enterprise or Education edition (the RemoteWipe CSP is not available on Home).</P>]]></Description>
 		<Relevance>windows of operating system</Relevance>
 		<Relevance>exists wmi "root/cimv2/mdm/dmmap"</Relevance>
 		<Relevance><![CDATA[computer name = "WIN-ComputerNameToWipe" /* <-- Computer you want to wipe */]]></Relevance>
@@ -19,7 +20,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 23 Jul 2026 03:15:00 +0000</Value>
+			<Value>Fri, 06 Nov 2026 15:05:55 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">

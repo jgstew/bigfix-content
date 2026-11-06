@@ -28,8 +28,9 @@ All tasks require `exists wmi "root/cimv2/mdm/dmmap"` (present on Windows 10 / 1
 | File | CSP class / method | Notes |
 | --- | --- | --- |
 | `MDM Reboot Device Now - Windows.bes` | `MDM_Reboot` - `RebootNowMethod` | Immediate reboot. Disruptive. |
-| `MDM Wipe Computer Persist User Data - Windows.bes` | `MDM_RemoteWipe` - `doWipeMethod` (persist user data) | **Destructive.** Uses a targeting guard. |
-| `MDM Wipe Computer Persist Provisioned Data - Windows.bes` | `MDM_RemoteWipe` - `doWipePersistProvisionedDataMethod` | **Destructive.** Uses a targeting guard. |
+| `MDM Wipe Computer Persist User Data - Windows.bes` | `MDM_RemoteWipe` - `doWipePersistUserDataMethod` | **Repair reset.** Keeps user accounts and files; removes apps and settings ("Reset this PC > Keep my files"). Not for lost or stolen devices. Windows 10 1709+. Uses a targeting guard. |
+| `MDM Wipe Computer Persist Provisioned Data - Windows.bes` | `MDM_RemoteWipe` - `doWipePersistProvisionedDataMethod` | **Destructive.** Erases users and data; keeps and reapplies provisioning packages (repurpose a device). Windows 10 1511+. Uses a targeting guard. |
+| [`../Wipe Computer - MDM_RemoteWipe - Windows.bes`](../Wipe%20Computer%20-%20MDM_RemoteWipe%20-%20Windows.bes) | `MDM_RemoteWipe` - `doWipeProtectedMethod`, falling back to `doWipeMethod` | **Destructive.** Erases everything (lost, stolen or decommissioned device). Windows 10 1703+ (1511+ for the fallback). Uses a targeting guard. |
 
 ## Windows Update
 
