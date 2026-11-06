@@ -20,7 +20,15 @@ SHARED_FILES = ["webui-relevance.js", "webui-frame.js", "webui-api.js", "webui-l
 
 # action templates, from the repo's actions/ folder so there is one copy of each (actions.js lists them)
 ACTIONS_DIR = HERE.parent.parent / "actions"
-EXTRA_FILES = [(ACTIONS_DIR / name, f"static/templates/{name}") for name in ["Wipe_MDM_device_from_WebUI.bes.mustache"]]
+TEMPLATES = [
+    "Wipe_MDM_device_from_WebUI.bes.mustache",
+    # built from the Windows fixlets by make_templates.py
+    "Wipe_Windows_erase_everything_from_WebUI.bes.mustache",
+    "Wipe_Windows_keep_provisioning_from_WebUI.bes.mustache",
+    "Reset_Windows_keep_user_files_from_WebUI.bes.mustache",
+    "BitLocker_force_recovery_from_WebUI.bes.mustache",
+]
+EXTRA_FILES = [(ACTIONS_DIR / name, f"static/templates/{name}") for name in TEMPLATES]
 
 if __name__ == "__main__":
     webui_pack.main(HERE, SHARED_FILES, extra_files=EXTRA_FILES)
