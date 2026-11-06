@@ -7,7 +7,7 @@
 //      (POST api/actions), and show its ID, a link to it in WebUI, and its status on request
 'use strict'
 ;(function () {
-  const VERSION = '0.1.0'
+  const VERSION = '0.2.0'
   const MAX_ROWS = 200
   const STALE_DAYS = 7
   const DAY_MS = 24 * 60 * 60 * 1000
@@ -146,6 +146,9 @@
     facts.textContent = ''
     ;[
       ['Action', action.label],
+      ['Removes', action.removes],
+      ['Keeps', action.keeps],
+      ['Runs through', action.runs],
       ['Computer name', device.name],
       ['Computer ID', device.id],
       ['Last report', lastReportText(device)],
