@@ -14,7 +14,7 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Wed, 03 Oct 2018 01:26:28 +0000</Value>
+			<Value>Wed, 11 Nov 2026 00:00:00 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
@@ -94,6 +94,24 @@ if { not exists settings "_BESClient_Inspector_ActiveDirectory_Cache_MaxUsers" o
 endif
 if { not exists settings "_BESClient_Inspector_ActiveDirectory_UserRefresh_Seconds" of client }
     setting "_BESClient_Inspector_ActiveDirectory_UserRefresh_Seconds"="129600" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_Download_FastHashVerify" of client }
+    setting "_BESClient_Download_FastHashVerify"="1" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_Resource_InterruptSeconds" of client }
+    setting "_BESClient_Resource_InterruptSeconds"="60" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_Download_MinimumDiskFreeMB" of client }
+    setting "_BESClient_Download_MinimumDiskFreeMB"="2000" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_Report_MinimumInterval" of client }
+    setting "_BESClient_Report_MinimumInterval"="60" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_Resource_SleepIdle" of client }
+    setting "_BESClient_Resource_SleepIdle"="500" on "{parameter "action issue date" of action}" for client
+endif
+if { not exists settings "_BESClient_Resource_WorkIdle" of client }
+    setting "_BESClient_Resource_WorkIdle"="20" on "{parameter "action issue date" of action}" for client
 endif
 
 //end: set recommended client settings
