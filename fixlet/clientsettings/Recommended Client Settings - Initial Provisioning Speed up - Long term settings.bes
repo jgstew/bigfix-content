@@ -33,7 +33,13 @@ if {not exists settings "_BESClient_Download_RetryMinutes" of client}
     setting "_BESClient_Download_RetryMinutes"="1" on "{parameter "action issue date" of action}" for client
 endif
 if {not exists settings "_BESClient_Download_DownloadsCacheLimitMB" of client}
-    setting "_BESClient_Download_DownloadsCacheLimitMB"="8000" on "{parameter "action issue date" of action}" for client
+    setting "_BESClient_Download_DownloadsCacheLimitMB"="5000" on "{parameter "action issue date" of action}" for client
+endif
+if {not exists settings "_BESClient_Download_NormalStageDiskLimitMB" of client}
+    setting "_BESClient_Download_NormalStageDiskLimitMB"="3000" on "{parameter "action issue date" of action}" for client
+endif
+if {not exists settings "_BESClient_Download_PreCacheStageDiskLimitMB" of client}
+    setting "_BESClient_Download_PreCacheStageDiskLimitMB"="2000" on "{parameter "action issue date" of action}" for client
 endif
 if {not exists settings "_BESClient_Comm_CommandPollEnable" of client}
     setting "_BESClient_Comm_CommandPollEnable"="1" on "{parameter "action issue date" of action}" for client
@@ -42,13 +48,13 @@ if {not exists settings "_BESClient_Comm_CommandPollIntervalSeconds" of client}
     setting "_BESClient_Comm_CommandPollIntervalSeconds"="3600" on "{parameter "action issue date" of action}" for client
 endif
 if { not exists settings "_BESClient_Log_Days" of client }
-    setting "_BESClient_Log_Days"="30" on "{parameter "action issue date" of action}" for client
+    setting "_BESClient_Log_Days"="35" on "{parameter "action issue date" of action}" for client
 endif
 if { not exists settings "_BESClient_Log_MaxSize" of client }
     setting "_BESClient_Log_MaxSize"="1536000" on "{parameter "action issue date" of action}" for client
 endif
 if {not exists settings "_BESClient_Download_UtilitiesCacheLimitMB" whose( (it >= 200) of (it as string as integer) of values of it ) of client}
-    setting "_BESClient_Download_UtilitiesCacheLimitMB"="200" on "{parameter "action issue date" of action}" for client
+    setting "_BESClient_Download_UtilitiesCacheLimitMB"="500" on "{parameter "action issue date" of action}" for client
 endif
 if { not exists settings "_BESClient_Comm_WakeOnLanForwardingEnable" of client }
     setting "_BESClient_Comm_WakeOnLanForwardingEnable"="1" on "{parameter "action issue date" of action}" for client
