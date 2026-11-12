@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Task>
-		<Title>Scan for PHP and Node.js Installs with YARA-X - macOS</Title>
-		<Description><![CDATA[<P>Scans this computer for PHP installs, both package-managed and one-off (XAMPP, MAMP, Laragon, zips unpacked to a folder, static builds such as FrankenPHP), and for Node.js, both standalone (node, distro libnode) and embedded in other software (Electron apps, single-executable applications, vercel/pkg builds), and records the exact version of each. It uses <A href="https://github.com/VirusTotal/yara-x">YARA-X</A> with the rules from <A href="https://github.com/jgstew/tools/tree/master/YARA">jgstew/tools YARA</A>, PHP and Node.js in one pass; the version is read from strings compiled into the binaries, so nothing is run.</P><P>Results: one line per product found in a file, &quot;path&lt;TAB&gt;product&lt;TAB&gt;version&quot;, where product is php, node or electron (an Electron framework gets a node and an electron line; &quot;unknown&quot; for files such as PHP extensions or Node addons that carry no version), in __BESData/__Global/Logs/yara_results_runtimes.text. Activate the analysis &quot;PHP and Node.js Installs from YARA-X Scan - Universal&quot; to report them. The task becomes relevant again when the results are more than a day old.</P><P>Runs as root. The BigFix agent needs Full Disk Access (MDM PPPC profile) to read protected folders; without it they are skipped. The read-only system volume, cloud-drive folders, files of 512 MB or more and non-executable file types are skipped.</P><P>The scan runs in the background (started with run, so the agent stays free for other actions) from __BESData/__Global/yara_runtime_scan and reads the whole disk, which can take 10-30 minutes or more. The action completes when the scan starts; the results file appears when it finishes, and its console output goes to __BESData/__Global/Logs/yara_scan_runtimes.log. While a scan is running the task is not relevant, so a second one is not started.</P>]]></Description>
-		<Relevance><![CDATA[mac of operating system]]></Relevance>
-		<Relevance><![CDATA[version of operating system >= "10.12"]]></Relevance>
+		<Title>Scan for PHP, Node.js and Apache Installs with YARA-X - Linux</Title>
+		<Description><![CDATA[<P>Scans this computer for PHP installs, both package-managed and one-off (XAMPP, MAMP, Laragon, zips unpacked to a folder, static builds such as FrankenPHP), and for Node.js, both standalone (node, distro libnode) and embedded in other software (Electron apps, single-executable applications, vercel/pkg builds), and for Apache HTTP Server (httpd) and its mod_http2 module, and records the version of each. It uses <A href="https://github.com/VirusTotal/yara-x">YARA-X</A> with the rules from <A href="https://github.com/jgstew/tools/tree/master/YARA">jgstew/tools YARA</A>, all of them in one pass; the version is read from strings compiled into the binaries, so nothing is run.</P><P>Results: one line per product found in a file, &quot;path&lt;TAB&gt;product&lt;TAB&gt;version&quot;, where product is php, node, electron, apache or mod_http2 (an Electron framework gets a node and an electron line; the mod_http2 version is a candidate read from a bare version string; &quot;unknown&quot; for files such as PHP extensions or Node addons that carry no version), in __BESData/__Global/Logs/yara_results_runtimes.text. Activate the analysis &quot;PHP, Node.js and Apache Installs from YARA-X Scan - Universal&quot; to report them. The task becomes relevant again when the results are more than a day old.</P><P>Runs as root and scans every local disk filesystem (separate /home, /var, /opt, tmpfs /tmp, snaps); network shares, FUSE mounts, container storage, snapshots, files of 512 MB or more and non-executable file types are skipped.</P><P>The scan runs in the background (started with run, so the agent stays free for other actions) from __BESData/__Global/yara_runtime_scan and reads the whole disk, which can take 10-30 minutes or more. The action completes when the scan starts; the results file appears when it finishes, and its console output goes to __BESData/__Global/Logs/yara_scan_runtimes.log. While a scan is running the task is not relevant, so a second one is not started.</P>]]></Description>
+		<Relevance><![CDATA[name of operating system as lowercase starts with "linux"]]></Relevance>
+		<Relevance><![CDATA[exists (architecture of operating system) whose(it = "x86_64" OR it = "aarch64")]]></Relevance>
+		<Relevance><![CDATA[exists file "/bin/bash"]]></Relevance>
 		<Relevance><![CDATA[not in proxy agent context]]></Relevance>
 		<Relevance><![CDATA[not exists files whose(name of it as lowercase starts with "yara_results_runtimes.text" AND (now - modification time of it) < 1*day ) of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
 		<Relevance><![CDATA[not exists files whose(name of it = "scan.running" AND (now - modification time of it) < 12*hour) of folders "yara_runtime_scan" of folders "__Global" of data folders of client]]></Relevance>
 		<Category></Category>
-		<DownloadSize>9476144</DownloadSize>
+		<DownloadSize>10347394</DownloadSize>
 		<Source>Internal</Source>
 		<SourceID>jgstew</SourceID>
 		<SourceReleaseDate>2026-10-25</SourceReleaseDate>
@@ -18,27 +19,27 @@
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Mon, 26 Oct 2026 17:19:40 +0000</Value>
+			<Value>Thu, 12 Nov 2026 22:06:36 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
 			<Description>
 				<PreLink>Click </PreLink>
 				<Link>here</Link>
-				<PostLink> to scan for PHP and Node.js installs.</PostLink>
+				<PostLink> to scan for PHP, Node.js and Apache installs.</PostLink>
 			</Description>
 			<ActionScript MIMEType="application/x-Fixlet-Windows-Shell"><![CDATA[
-// Scan for PHP and Node.js installs and their versions with YARA-X - macOS
-// Generated by YARA/make_bigfix_content.py from bash/yara_x_scan_macos.sh in
+// Scan for PHP, Node.js and Apache installs and their versions with YARA-X - Linux
+// Generated by YARA/make_bigfix_content.py from bash/yara_x_scan_linux.sh in
 // https://github.com/jgstew/tools - change the script there and regenerate.
 
 // yr (YARA-X CLI) release archive for this OS/CPU; the script still checks its SHA256
 begin prefetch block
-	if {architecture of operating system = "arm64"}
-		add prefetch item name=yara-x-v1.22.0-aarch64-apple-darwin.tar.gz sha1=16b30fd7d7613bd0172bc197d785f1143c34f2b9 size=8421133 url=https://github.com/VirusTotal/yara-x/releases/download/v1.22.0/yara-x-v1.22.0-aarch64-apple-darwin.tar.gz sha256=79d596da5bf02205de63a1d7844a964daebc7293fa36fcb7da46c3e3c7567229
+	if {architecture of operating system = "aarch64"}
+		add prefetch item name=yara-x-v1.22.0-aarch64-unknown-linux-gnu.tar.gz sha1=fde88001e579387275f731387963dd220f7a6fbd size=9252173 url=https://github.com/VirusTotal/yara-x/releases/download/v1.22.0/yara-x-v1.22.0-aarch64-unknown-linux-gnu.tar.gz sha256=b1b90f0686ae3e9f607c07b743fd96d6283d9ea5e2fd764919b8505de8b63d4e
 	endif
-	if {architecture of operating system != "arm64"}
-		add prefetch item name=yara-x-v1.22.0-x86_64-apple-darwin.tar.gz sha1=560ace0fca8543195a71d52545bef248e92854e4 size=9476144 url=https://github.com/VirusTotal/yara-x/releases/download/v1.22.0/yara-x-v1.22.0-x86_64-apple-darwin.tar.gz sha256=d059da4b91c7d7b43f6f50174a7739e3362b51f349f2ba8b33d46e3334bb3300
+	if {architecture of operating system = "x86_64"}
+		add prefetch item name=yara-x-v1.22.0-x86_64-unknown-linux-gnu.tar.gz sha1=f6e1f286242753e0e621c43da7f0c753c8ffc1f4 size=10347394 url=https://github.com/VirusTotal/yara-x/releases/download/v1.22.0/yara-x-v1.22.0-x86_64-unknown-linux-gnu.tar.gz sha256=7f470770b2c1a0d97f02298fc194978d999074d147d003d33dd62775761439db
 	endif
 end prefetch block
 
@@ -57,32 +58,46 @@ copy "__Download/{name of file whose(name of it starts with "yara-x-v") of folde
 delete __createfile
 createfile until _END_OF_SCRIPT_
 #!/usr/bin/env bash
-#### Usage: ./yara_x_scan_macos.sh [-t TARGET_PATH] [-o OUTPUT_DIR] [-f text|json|ndjson] [-k] [-a YR_ARCHIVE] [-m MAX_MB] [-T THREADS] [-x DIR]... [-A]
+#### Usage: ./yara_x_scan_linux.sh [-t TARGET_PATH] [-o OUTPUT_DIR] [-f text|json|ndjson] [-k] [-a YR_ARCHIVE] [-m MAX_MB] [-T THREADS] [-x DIR]... [-A]
 #
-# Self-contained YARA-X scan for macOS:
+# Self-contained YARA-X scan for Linux (Linux counterpart of yara_x_scan_macos.sh):
 #   1. downloads the YARA-X CLI (yr) release for this CPU architecture
 #   2. verifies the SHA256 of the download against a pinned value
 #   3. unpacks it into a temporary folder
 #   4. scans TARGET_PATH (recursively) with the YARA rule embedded below,
-#      staying on TARGET_PATH's volume: other mounts (DMGs, network shares,
-#      external disks, autofs, Time Machine snapshots) are skipped
+#      including every local disk filesystem mounted below it (separate
+#      /home, /var, /opt, btrfs subvolumes, snaps, tmpfs /tmp); network shares,
+#      FUSE mounts (rclone, sshfs), WSL Windows drives and system-only
+#      filesystems (/proc, /sys, /dev, /run) are skipped
 #   5. writes results + a log to OUTPUT_DIR; for text format:
 #        yara_results_<host>_<time>.raw.text  full yr output (rules, meta, strings)
 #        yara_results_<host>_<time>.text      "path<TAB>product<TAB>version",
 #                                             one line per product in a file
 #
-#        product is php, node or electron; an Electron framework gets a node
-#        and an electron line. Files matched with no version string, e.g.
-#        Linux PHP extensions or Node addons, are listed with version
-#        "unknown". Files whose paths contain control
-#        characters (newline, tab, ...) are scanned as copies and shown as
-#        bash $'...' quoted paths (e.g. $'/opt/new\nline/php').
+#        product is php, node, electron, apache or mod_http2; an Electron
+#        framework gets a node and an electron line. Files matched with no
+#        version string, e.g. Linux PHP extensions or Node addons, are
+#        listed with version "unknown". Files whose names aren't valid
+#        UTF-8, or whose paths contain control characters (newline, tab, ...),
+#        are scanned as copies and shown as bash $'...' quoted paths (e.g.
+#        $'/opt/app\351/php', $'/opt/new\nline/php').
 #
-# Run with sudo (and give the terminal / agent Full Disk Access) for a full
-# scan; otherwise protected files are logged as unreadable and skipped.
+# This script is not the source of truth for its embedded YARA rules or its
+# versions.awk filter: YARA/sync_rules.py copies them in from the rule files
+# under YARA/ (php/, node/, apache/, each with the header check from
+# YARA/is_executable.yar) and YARA/versions.awk. Edit those, then run
+#   python3 YARA/sync_rules.py
+# (CI fails if a copy here is out of date). The rest of the script is edited
+# here. YARA/make_bigfix_content.py embeds the whole script in its BigFix
+# task, so regenerate it after any change.
+#
+# Run with sudo for a full scan; otherwise unreadable files are logged and skipped.
+# Needs bash, coreutils, find, grep, sed, awk, tar + gzip, and curl or wget.
+# yr is statically linked, so any glibc or musl distro works (kernel 3.2+ on
+# x86_64, 3.7+ on aarch64).
 #
 # Options:
-#   -t TARGET_PATH  file or folder to scan            (default: / = whole local boot drive)
+#   -t TARGET_PATH  file or folder to scan            (default: / = all local disks)
 #   -o OUTPUT_DIR   folder to write results into      (default: ./yara_results)
 #   -f FORMAT       yr output format: text|json|ndjson (default: text)
 #   -k              keep the downloaded yr archive in OUTPUT_DIR, to reuse
@@ -94,35 +109,35 @@ createfile until _END_OF_SCRIPT_
 #                   (default: 512, or 0 with -A)
 #   -T THREADS      yr scan threads                   (default: 1)
 #   -x DIR          also skip this folder; repeat for more (a find -path
-#                   pattern such as '*/node_modules' works too)
+#                   pattern such as '*/node_modules' works too, but a
+#                   filesystem mounted below a matching folder is still
+#                   scanned: name its mount point with its own -x)
 #   -A              no default skips: scan everything listed below as skipped
-#                   by default, except empty files and cloud files; -x still
-#                   applies
+#                   by default (except empty files); -x still applies
 #   -h              show this help
 #
-# Skipped by default (none of these can hold a likely PHP or Node.js install;
-# each skip is reported while running, files over the size cap are listed in
-# the log). To scan just one of these folders, target it (e.g. -t /usr/bin)
-# instead of using -A:
+# Skipped by default (none of these can hold a likely host PHP, Node.js or
+# Apache install; each skip is reported while running, files over the size cap
+# and skipped mounts are listed in the log). To scan just one of these folders,
+# target it (e.g. -t /var/lib/docker) instead of using -A:
 #   - files of 512 MB or more: PHP builds are ~20 MB, the largest known
 #     (FrankenPHP, static PHP in Go) ~180 MB, node 8.x-25.x 33-127 MB,
-#     Electron frameworks 125-350 MB; this cuts VM disks, Docker.raw, model
-#     weights, media
-#   - on macOS 12+ (no bundled PHP): /System, /bin, /sbin, /usr except
-#     /usr/local, /Library/Apple - the read-only sealed system volume
-#   - images, media, archives, documents, fonts, web/source/text files, C
-#     headers, Xcode/SDK data (.swiftmodule, .tbd, ...), logs and databases:
-#     the rules only match executables (by header); files with no extension,
-#     .dylib, .so, .dll, .exe, .a, .o are kept
+#     Electron frameworks 125-350 MB; this cuts VM disks, model weights, media
+#   - images, media, archives, packages, documents, fonts, web/source/text
+#     files, C headers, logs and databases: the rules only match executables
+#     (by header); files with no extension, .so, .dll, .exe, .o are kept
 #   - empty files
-#   - ~/Library/CloudStorage, ~/Library/Mobile Documents (iCloud), and
-#     online-only (dataless) files anywhere, e.g. iCloud "Desktop & Documents":
-#     reading them would download them
+#   - container storage: /var/lib/docker, /var/lib/containers,
+#     /var/lib/containerd, /var/lib/rancher, /var/lib/lxc, /var/lib/lxd,
+#     /var/snap/lxd, ~/.local/share/containers - PHP, Node or Apache inside
+#     images isn't a host install and repeats once per image layer
+#   - snapshots: /.snapshots (snapper), /timeshift - full copies of the system
+#     that would repeat every distro PHP, Node and Apache
 # A skip whose folder contains TARGET_PATH is turned off automatically, and
 # none apply when TARGET_PATH is a single file.
 #
-# find and yr run at low priority (nice 10) and yr uses 1 thread (-T 2 for faster scans), so a
-# full scan doesn't take over the machine.
+# find and yr run at low priority (nice 10, and ionice best-effort 7 where
+# available) and yr uses 1 thread (-T 2 for faster scans), so a full scan doesn't take over the machine.
 #
 # Exit codes: 0 = scan ran, no matches; 1 = scan ran, matches found;
 #             2 = usage error; 3 = download/verify/unpack error; 4 = scan error
@@ -133,15 +148,15 @@ createfile until _END_OF_SCRIPT_
 
 set -euo pipefail
 
-# Treat file names as bytes: in a UTF-8 locale find's [[:cntrl:]] also matches
-# U+0080-U+009F, which bash 3.2's printf %q then splits into invalid UTF-8 that
-# makes awk fail. In the C locale those names are ordinary valid UTF-8 for yr.
+# Linux file names are raw bytes and need not be valid UTF-8. In a UTF-8 locale
+# GNU grep calls such a file list "binary" and silently drops those lines, so a
+# PHP at e.g. a Latin-1 path would never be scanned. The C locale keeps every byte.
 export LC_ALL=C
 
 YARAX_VERSION="1.22.0"
 YARAX_BASE_URL="https://github.com/VirusTotal/yara-x/releases/download/v${{YARAX_VERSION}"
-SHA256_AARCH64="79d596da5bf02205de63a1d7844a964daebc7293fa36fcb7da46c3e3c7567229"
-SHA256_X86_64="d059da4b91c7d7b43f6f50174a7739e3362b51f349f2ba8b33d46e3334bb3300"
+SHA256_AARCH64="b1b90f0686ae3e9f607c07b743fd96d6283d9ea5e2fd764919b8505de8b63d4e"
+SHA256_X86_64="7f470770b2c1a0d97f02298fc194978d999074d147d003d33dd62775761439db"
 
 TARGET_PATH="/"
 OUTPUT_DIR="$PWD/yara_results"
@@ -154,13 +169,16 @@ THREADS=1
 EXCLUDE_DIRS=()
 NO_SKIPS=0
 
-# Extensions of files that can't start with an executable header. Compared
-# case-insensitively with the text after the last "." of the file name. The second
-# line was measured on a Mac (no executables among them): Xcode/SDK, unified
-# logs, Chromium/app resources and SQLite/LMDB side files, ~half of the files
-# left after the first line. Not .a: macOS static libraries can be universal binaries.
-NONBINARY_EXTS='jpg jpeg png gif heic tif tiff bmp webp ico icns svg svgz mov mp4 m4v avi mkv mp3 m4a aac wav aiff caf flac pdf zip gz tgz xz bz2 zst 7z rar dmg pkg xip iso jar whl docx xlsx pptx doc xls ppt pages numbers key txt md rst json js mjs cjs ts tsx jsx map css scss html htm xml plist strings nib car py pyc rb php java class go rs c cc cpp h hpp m swift yml yaml toml ini csv tsv log sqlite db sqlite-wal sqlite-shm ttf otf woff woff2 mo po lock sum'  # codespell:ignore caf
-NONBINARY_EXTS="$NONBINARY_EXTS swiftmodule swiftdoc swiftinterface swiftsourceinfo tbd modulemap apinotes pcm metallib tracev3 bnnsir pak fxf data bom db-wal db-shm mdb"
+# Extensions of files that can't start with an executable header, matched
+# case-insensitively against the path end. The last line is Linux-only:
+# packages, static libraries (ar archives here), git packs, journald, disk images,
+# BigFix Fixlet files (.fxf, under the client's __BESData).
+NONBINARY_EXT_RE='\.(jpg|jpeg|png|gif|heic|tif|tiff|bmp|webp|ico|icns|svg|svgz|mov|mp4|m4v|avi|mkv|mp3|m4a|aac|wav|aiff|caf|flac|pdf|zip|gz|tgz|xz|bz2|zst|7z|rar|dmg|pkg|xip|iso|jar|whl|docx|xlsx|pptx|doc|xls|ppt|pages|numbers|key|txt|md|rst|json|js|mjs|cjs|ts|tsx|jsx|map|css|scss|html|htm|xml|plist|strings|nib|car|py|pyc|rb|php|java|class|go|rs|c|cc|cpp|h|hpp|m|swift|yml|yaml|toml|ini|csv|tsv|log|sqlite|db|sqlite-wal|sqlite-shm|ttf|otf|woff|woff2|mo|po|lock|sum|'  # codespell:ignore caf
+NONBINARY_EXT_RE+='deb|rpm|apk|tar|a|pack|idx|journal|wal|db-wal|db-shm|qcow2|img|vdi|vmdk|fxf)$'
+
+CONTAINER_DIRS=( /var/lib/docker /var/lib/containers /var/lib/containerd /var/lib/rancher
+                 /var/lib/lxc /var/lib/lxd /var/snap/lxd )
+SNAPSHOT_DIRS=( /.snapshots /timeshift )
 
 usage() {{
   awk 'NR > 1 && /^# Release:/ {{ exit } NR > 1 {{ sub(/^# ?/, ""); print }' "$0"
@@ -196,10 +214,9 @@ esac
 if [ "$MAX_MB_SET" -eq 0 ]; then
   [ "$NO_SKIPS" -eq 1 ] && MAX_MB=0 || MAX_MB=512
 fi
-SKIP_SEALED=$((1 - NO_SKIPS))
 SKIP_NONBINARY=$((1 - NO_SKIPS))
-# Not turned off by -A: reading online-only files would download them
-SKIP_CLOUD=1
+SKIP_CONTAINERS=$((1 - NO_SKIPS))
+SKIP_SNAPSHOTS=$((1 - NO_SKIPS))
 
 case "$MAX_MB" in
   ''|*[!0-9]*) echo "Invalid -m '$MAX_MB' (whole number of MB, 0 = no limit)." >&2; exit 2 ;;
@@ -209,8 +226,19 @@ case "$THREADS" in
   ''|*[!0-9]*|0) echo "Invalid -T '$THREADS' (number of threads, 1 or more)." >&2; exit 2 ;;
 esac
 
-if [ "$(uname -s)" != "Darwin" ]; then
-  echo "This script is for macOS only." >&2
+if [ "$(uname -s)" != "Linux" ]; then
+  echo "This script is for Linux only (use yara_x_scan_macos.sh on macOS)." >&2
+  exit 2
+fi
+
+# Minimal images (e.g. rockylinux:8) lack find; without this check a scan would
+# list nothing and report "No matches"
+MISSING=""
+for c in find grep sed awk tar gzip sort wc mktemp; do
+  command -v "$c" >/dev/null 2>&1 || MISSING="$MISSING $c"
+done
+if [ -n "$MISSING" ]; then
+  echo "Missing required command(s):$MISSING (e.g. install findutils)" >&2
   exit 2
 fi
 
@@ -219,29 +247,33 @@ if [ ! -e "$TARGET_PATH" ]; then
   exit 2
 fi
 
-# uname -m reports arm64 on Apple Silicon, but the release asset is named aarch64
 case "$(uname -m)" in
-  arm64|aarch64) ARCH="aarch64"; EXPECTED_SHA256="$SHA256_AARCH64" ;;
-  x86_64)        ARCH="x86_64";  EXPECTED_SHA256="$SHA256_X86_64" ;;
+  aarch64|arm64) ARCH="aarch64"; EXPECTED_SHA256="$SHA256_AARCH64" ;;
+  x86_64|amd64)  ARCH="x86_64";  EXPECTED_SHA256="$SHA256_X86_64" ;;
   *) echo "Unsupported architecture: $(uname -m)" >&2; exit 2 ;;
 esac
 
-ASSET_NAME="yara-x-v${{YARAX_VERSION}-${{ARCH}-apple-darwin.tar.gz"
+ASSET_NAME="yara-x-v${{YARAX_VERSION}-${{ARCH}-unknown-linux-gnu.tar.gz"
 ASSET_URL="${{YARAX_BASE_URL}/${{ASSET_NAME}"
 
-if ! WORK_DIR="$(mktemp -d -t yara_x_scan)"; then
-  echo "Cannot create a temporary folder" >&2
+# GNU and BusyBox mktemp treat -t differently, so give a full template
+if ! WORK_DIR="$(mktemp -d "${{TMPDIR:-/tmp}/yara_x_scan.XXXXXX")"; then
+  echo "Cannot create a temporary folder in ${{TMPDIR:-/tmp}" >&2
   exit 3
 fi
 cleanup() {{ rm -rf "$WORK_DIR"; }
 trap cleanup EXIT
+
+# minimal images have no hostname command
+HOST="$(hostname -s 2>/dev/null || uname -n)"
+HOST="${{HOST%%.*}"
 
 if ! mkdir -p "$OUTPUT_DIR"; then
   echo "Cannot create output folder: $OUTPUT_DIR" >&2
   exit 2
 fi
 TIMESTAMP="$(date '+%Y%m%d_%H%M%S')"
-RESULT_BASE="${{OUTPUT_DIR}/yara_results_$(hostname -s)_${{TIMESTAMP}"
+RESULT_BASE="${{OUTPUT_DIR}/yara_results_${{HOST}_${{TIMESTAMP}"
 SUMMARY_FILE=""
 if [ "$OUTPUT_FORMAT" = "text" ]; then
   RESULT_FILE="${{RESULT_BASE}.raw.text"
@@ -249,9 +281,10 @@ if [ "$OUTPUT_FORMAT" = "text" ]; then
 else
   RESULT_FILE="${{RESULT_BASE}.${{OUTPUT_FORMAT}"
 fi
-LOG_FILE="${{OUTPUT_DIR}/yara_scan_$(hostname -s)_${{TIMESTAMP}.log"
+LOG_FILE="${{OUTPUT_DIR}/yara_scan_${{HOST}_${{TIMESTAMP}.log"
 
 # ---- download -------------------------------------------------------------
+DOWNLOAD_RC=0
 if [ -n "$YR_ARCHIVE" ]; then
   [ -d "$YR_ARCHIVE" ] && YR_ARCHIVE="${{YR_ARCHIVE%/}/${{ASSET_NAME}"
   if [ ! -f "$YR_ARCHIVE" ]; then
@@ -259,22 +292,30 @@ if [ -n "$YR_ARCHIVE" ]; then
     exit 3
   fi
   log "Using local archive $YR_ARCHIVE"
-  if ! cp "$YR_ARCHIVE" "${{WORK_DIR}/${{ASSET_NAME}"; then
-    log "ERROR: cannot read $YR_ARCHIVE"
-    exit 3
-  fi
-else
+  cp "$YR_ARCHIVE" "${{WORK_DIR}/${{ASSET_NAME}" || DOWNLOAD_RC=$?
+elif command -v curl >/dev/null 2>&1; then
   log "Downloading $ASSET_URL"
-  if ! curl --fail --silent --show-error --location \
-       --retry 3 --retry-delay 2 --connect-timeout 30 \
-       --output "${{WORK_DIR}/${{ASSET_NAME}" "$ASSET_URL"; then
-    log "ERROR: download failed"
-    exit 3
-  fi
+  curl --fail --silent --show-error --location \
+    --retry 3 --retry-delay 2 --connect-timeout 30 \
+    --output "${{WORK_DIR}/${{ASSET_NAME}" "$ASSET_URL" || DOWNLOAD_RC=$?
+elif command -v wget >/dev/null 2>&1; then
+  log "Downloading $ASSET_URL"
+  wget -q -T 30 -t 3 -O "${{WORK_DIR}/${{ASSET_NAME}" "$ASSET_URL" || DOWNLOAD_RC=$?
+else
+  log "ERROR: need curl or wget to download yr"
+  exit 3
+fi
+if [ "$DOWNLOAD_RC" -ne 0 ]; then
+  log "ERROR: download failed"
+  exit 3
 fi
 
 # ---- verify ---------------------------------------------------------------
-ACTUAL_SHA256="$(shasum -a 256 "${{WORK_DIR}/${{ASSET_NAME}" | awk '{{print $1}')"
+if command -v sha256sum >/dev/null 2>&1; then
+  ACTUAL_SHA256="$(sha256sum "${{WORK_DIR}/${{ASSET_NAME}" | awk '{{print $1}')"
+else
+  ACTUAL_SHA256="$(shasum -a 256 "${{WORK_DIR}/${{ASSET_NAME}" | awk '{{print $1}')"
+fi
 if [ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ]; then
   log "ERROR: SHA256 mismatch for $ASSET_NAME"
   log "  expected: $EXPECTED_SHA256"
@@ -305,15 +346,20 @@ if [ ! -x "$YR" ]; then
   log "ERROR: yr binary not found in archive"
   exit 3
 fi
-# curl does not set the quarantine flag, but strip it defensively so Gatekeeper won't block yr
-xattr -d com.apple.quarantine "$YR" 2>/dev/null || true
-log "Unpacked $("$YR" --version)"
+# yr is static, so this only fails on a very old kernel or a noexec TMPDIR
+if ! YR_VERSION="$("$YR" --version 2>&1)"; then
+  log "ERROR: yr does not run here: $YR_VERSION"
+  log "  (noexec ${{TMPDIR:-/tmp}? set TMPDIR to an exec-able folder)"
+  exit 3
+fi
+log "Unpacked $YR_VERSION"
 
 # ---- embedded YARA rule ---------------------------------------------------
-# PHP and Node.js install detection + version, in one rule file so both are
-# found in one scan. Copied from YARA/php/php_detect.yar and
-# YARA/node/node_detect.yar by YARA/sync_rules.py - edit there, not here. The
-# version is in the printed strings ($ver, $pv, $rel, $electron).
+# PHP, Node.js and Apache install detection + version, in one rule file so all
+# are found in one scan. Copied from YARA/php/php_detect.yar,
+# YARA/node/node_detect.yar and YARA/apache/apache_detect.yar by
+# YARA/sync_rules.py - edit there, not here. The version is in the printed
+# strings ($ver, $pv, $rel, $electron, $_module_ver).
 RULE_FILE="${{WORK_DIR}/embedded_rule.yar"
 cat > "$RULE_FILE" <<'YARA_RULE'
 /*
@@ -558,31 +604,133 @@ rule Node_Binary_Broad
     // false positive, reported as "node unknown"
     Node_Detect_IsExecutable and any of them
 }
+
+/*
+  Apache HTTP Server (httpd) + mod_http2 detection + version, all OSes (Linux
+  ELF, Windows PE, macOS Mach-O).
+
+  Signatures based on jeffschafer's Apache mod_http2 scanner. Run with
+  `yara -s` (or `yr scan -s`) to print the matched version text.
+
+  Rules:
+    Apache_HTTPD_Version - the file holding the httpd core: httpd on Linux and
+                           macOS, libhttpd.dll on Windows (httpd.exe is a small
+                           launcher); $ver holds the exact version (Apache/2.4.67)
+    Apache_HTTP2_Module  - mod_http2 (mod_http2.so, or httpd with it built in);
+                           $_module_ver is a candidate module version only
+
+  No modules are imported so the rules also work in embedded YARA engines
+  (osquery, EDRs) that are built without the pe/elf/macho modules.
+*/
+
+// Condition copied from is_executable.yar by sync_rules.py - edit it there
+private rule Apache_Detect_IsExecutable
+{{
+  condition:
+    // ELF executable (2) or shared object (3, also PIE executables); e_type is
+    // in the byte order given by EI_DATA (1 = little, 2 = big endian)
+    (uint32(0) == 0x464C457F and
+      ((uint8(5) == 1 and (uint16(16) == 2 or uint16(16) == 3)) or
+       (uint8(5) == 2 and (uint16be(16) == 2 or uint16be(16) == 3))))
+    // PE: MZ header whose e_lfanew (0x3C) points at "PE\0\0"
+    or (uint16(0) == 0x5A4D and uint32(uint32(0x3C)) == 0x00004550)
+    // Mach-O 32/64 execute (2), dylib (6) or bundle (8, e.g. PHP extensions)
+    or ((uint32(0) == 0xFEEDFACE or uint32(0) == 0xFEEDFACF) and
+        (uint32(12) == 2 or uint32(12) == 6 or uint32(12) == 8))
+    // same, byte-swapped (big-endian) Mach-O
+    or ((uint32(0) == 0xCEFAEDFE or uint32(0) == 0xCFFAEDFE) and
+        (uint32be(12) == 2 or uint32be(12) == 6 or uint32be(12) == 8))
+    // Mach-O universal (CAFEBABE) with 1-19 architectures whose first slice
+    // passes the thin Mach-O check above, so universal static libraries (.a),
+    // object files and dSYMs are rejected. Java .class files also start with
+    // CAFEBABE, but bytes 4-7 hold their class version (major >= 45), not an
+    // architecture count. The header is big-endian; the first slice's offset
+    // is at 16 (fat_arch.offset).
+    or (uint32(0) == 0xBEBAFECA and uint32be(4) > 0 and uint32be(4) < 20 and
+        (((uint32(uint32be(16)) == 0xFEEDFACE or uint32(uint32be(16)) == 0xFEEDFACF) and
+          (uint32(uint32be(16) + 12) == 2 or uint32(uint32be(16) + 12) == 6 or
+           uint32(uint32be(16) + 12) == 8)) or
+         ((uint32(uint32be(16)) == 0xCEFAEDFE or uint32(uint32be(16)) == 0xCFFAEDFE) and
+          (uint32be(uint32be(16) + 12) == 2 or uint32be(uint32be(16) + 12) == 6 or
+           uint32be(uint32be(16) + 12) == 8))))
+    // same for the rare 64-bit universal header (CAFEBABF): fat_arch_64.offset
+    // is 8 bytes at 16; slices sit well below 4 GB, so its low half (20) is used
+    or (uint32(0) == 0xBFBAFECA and uint32be(4) > 0 and uint32be(4) < 20 and
+        (((uint32(uint32be(20)) == 0xFEEDFACE or uint32(uint32be(20)) == 0xFEEDFACF) and
+          (uint32(uint32be(20) + 12) == 2 or uint32(uint32be(20) + 12) == 6 or
+           uint32(uint32be(20) + 12) == 8)) or
+         ((uint32(uint32be(20)) == 0xCEFAEDFE or uint32(uint32be(20)) == 0xCFFAEDFE) and
+          (uint32be(uint32be(20) + 12) == 2 or uint32be(uint32be(20) + 12) == 6 or
+           uint32be(uint32be(20) + 12) == 8))))
+}
+
+rule Apache_HTTPD_Version
+{{
+  meta:
+    description = "Apache httpd core (httpd, libhttpd.dll); $ver = server version"
+    confidence = "high"
+  strings:
+    // AP_SERVER_BASEVERSION ("Apache" "/" AP_SERVER_BASEREVISION), one literal
+    // in the core. Also in other software (user agent lists, proxies), so it
+    // only counts together with a $core marker. Modules built against httpd
+    // (mod_ssl, mod_proxy) have it too.
+    $ver = /Apache\/2\.[0-9]{{1,2}\.[0-9]{{1,3}/
+    // Only in the core: the directive name from its command table, and its
+    // error message when the host name can't be resolved (AH00558 in 2.4).
+    // The directive name as a whole C string: mod_security2 has "ServerTokens"
+    // in a message, and "ModSecurity for Apache/2.9.7" matches $ver
+    $core1 = "\x00ServerTokens\x00"
+    $core2 = "Could not reliably determine the server's fully qualified domain name"
+  condition:
+    Apache_Detect_IsExecutable and $ver and any of ($core*)
+}
+
+rule Apache_HTTP2_Module
+{{
+  meta:
+    description = "Apache mod_http2; $_module_ver = candidate module version"
+    confidence = "high"
+  strings:
+    // Not "http2_module": it is also inside mod_proxy_http2's proxy_http2_module
+    $module_identity = "mod_http2_init_counter"
+    $module_log = "mod_http2 (v%s, feats="
+    // MOD_HTTP2_VERSION as a bare C string, reported as the mod_http2 version.
+    // Candidate evidence only: any bare "2.x.y" string matches, and the same
+    // mod_http2 version ships with several httpd releases. Optional - the
+    // leading "_" lets it go unused in the condition while `-s` still prints it.
+    // A suffix only after "-": RHEL's separate mod_http2 package has "2.0.26-git"
+    $_module_ver = /\x002\.[0-9]\.[0-9]{{1,3}(-[0-9A-Za-z.]{{1,20})?\x00/
+  condition:
+    Apache_Detect_IsExecutable and
+    ($module_identity or $module_log)
+}
 YARA_RULE
 
 # ---- embedded version extractor (text format) -----------------------------
 # Copied from YARA/versions.awk by YARA/sync_rules.py - edit there.
 VERSIONS_AWK="${{WORK_DIR}/versions.awk"
 cat > "$VERSIONS_AWK" <<'AWK_SCRIPT'
-# Turn `yara -s` / `yr scan -s` output of php/php_detect.yar and
-# node/node_detect.yar into "path<TAB>product<TAB>version", one line per
-# product found in a file (product: php, node or electron):
-#   yr scan -s -r php/php_detect.yar node/node_detect.yar /opt 2>/dev/null | awk -f versions.awk | sort -u
+# Turn `yara -s` / `yr scan -s` output of php/php_detect.yar,
+# node/node_detect.yar and apache/apache_detect.yar into
+# "path<TAB>product<TAB>version", one line per product found in a file
+# (product: php, node, electron, apache or mod_http2):
+#   yr scan -s -r php/php_detect.yar node/node_detect.yar apache/apache_detect.yar /opt 2>/dev/null | awk -f versions.awk | sort -u
 # Handles paths with spaces and the UTF-16 ProductVersion match ($pv), which
 # yara prints with escaped NULs (8\x00.\x002\x00...). Matched files with no
 # version string (e.g. Linux PHP extensions, Node addons) get "unknown".
 # Versions: php from $ver / $pv; node from $ver (node.js/v...), or from $rel
 # (the release URL) when no $ver matched; electron from $electron, so an
-# Electron framework gets a node and an electron line.
+# Electron framework gets a node and an electron line; apache from $ver
+# (Apache/...); mod_http2 from $_module_ver (a candidate, see apache_detect.yar).
 
 # rule line: "<RULE> <path>", or with yr --print-meta "<RULE> [meta...] <path>"
-/^(PHP|Node)_/ {{
-  prod = /^PHP_/ ? "php" : "node"
+/^(PHP|Node|Apache)_/ {{
+  prod = /^PHP_/ ? "php" : /^Node_/ ? "node" : /^Apache_HTTP2_/ ? "mod_http2" : "apache"
   file = $0; sub(/^[^ ]+ /, "", file); sub(/^\[[^]]*\] /, "", file); seen[file SUBSEP prod] = 1; next
 }
 
 # string line: "0xOFFSET:$id: <matched text>"
-/:\$(ver|pv|rel|electron): / {{
+/:\$(ver|pv|rel|electron|_module_ver): / {{
   v = $0; gsub(/\\x00/, "", v)
   id = v; sub(/: .*/, "", id); sub(/.*\$/, "", id)
   sub(/^[^ ]+ /, "", v)
@@ -606,18 +754,15 @@ END {{
 AWK_SCRIPT
 
 # ---- build list of files to scan ------------------------------------------
-# yr has no "stay on one filesystem" option, so find builds the file list:
-#  -xdev       don't cross into other mounts (DMGs, network shares, external
-#              disks, autofs). The APFS Data volume is firmlinked into / with
-#              the same device id, so /Users, /Applications etc. are included.
-#  -type f     regular files only; symlinks are not followed
-#  prunes      /System/Volumes (Data would be scanned twice via its firmlinks,
-#              the rest are separate system volumes), /dev, and this script's
-#              own output/work folders (old results contain matched strings),
-#              plus the default skips described in the header
-# Paths are resolved with pwd -P because /var, /tmp are symlinks to /private.
+# yr has no "stay on one filesystem" option, so find builds the file list.
+# Unlike macOS, Linux often spreads one system over several filesystems, so
+# find gets one start point per local disk filesystem below TARGET_PATH and
+# -xdev keeps each walk on its own filesystem (no network/FUSE/pseudo mounts,
+# no double walks). /proc, /sys, /dev, /run, this script's own output/work
+# folders (old results contain matched strings) and the default skips from the
+# header are pruned. Paths are resolved with pwd -P (no symlinked prefixes).
 if [ "$(id -u)" -ne 0 ]; then
-  log "WARNING: not running as root - protected files will be skipped (see log)"
+  log "WARNING: not running as root - unreadable files will be skipped (see log)"
 fi
 # A failed cd would make set -e exit 1, which means "matches found"
 OUTPUT_DIR_REAL="$(cd "$OUTPUT_DIR" && pwd -P)" || {{ log "ERROR: cannot enter $OUTPUT_DIR"; exit 2; }
@@ -630,66 +775,112 @@ else
 fi
 TARGET_PATH="$TARGET_REAL"
 
-# path_within PATH DIR: PATH is DIR or somewhere below it
-path_within() {{ case "$1/" in "$2"/*) return 0 ;; esac; return 1; }
+# path_within PATH DIR: PATH is DIR or somewhere below it ("/" contains everything)
+path_within() {{ [ "$2" = / ] && return 0; case "$1/" in "$2"/*) return 0 ;; esac; return 1; }
 
 # An explicitly named file is always scanned
 NONEMPTY=( -size +0c )
 if [ -f "$TARGET_PATH" ]; then
-  MAX_MB=0; SKIP_SEALED=0; SKIP_NONBINARY=0; SKIP_CLOUD=0; NONEMPTY=()
+  MAX_MB=0; SKIP_NONBINARY=0; SKIP_CONTAINERS=0; SKIP_SNAPSHOTS=0; NONEMPTY=()
 fi
 
-if [ "$SKIP_SEALED" -eq 1 ]; then
-  MACOS_MAJOR="$(sw_vers -productVersion | cut -d. -f1)"
-  if [ "$MACOS_MAJOR" -lt 12 ]; then
-    log "macOS $MACOS_MAJOR may have bundled PHP in /usr/bin - scanning system paths"
-    SKIP_SEALED=0
-  fi
-  for d in /System /bin /sbin /Library/Apple /usr; do
-    if path_within "$TARGET_PATH" "$d" && ! path_within "$TARGET_PATH" /usr/local; then
-      SKIP_SEALED=0
-    fi
+if [ "$SKIP_CONTAINERS" -eq 1 ]; then
+  for d in "${{CONTAINER_DIRS[@]}"; do
+    path_within "$TARGET_PATH" "$d" && SKIP_CONTAINERS=0
+  done
+  case "$TARGET_PATH/" in */.local/share/containers/*) SKIP_CONTAINERS=0 ;; esac
+fi
+if [ "$SKIP_SNAPSHOTS" -eq 1 ]; then
+  for d in "${{SNAPSHOT_DIRS[@]}"; do
+    path_within "$TARGET_PATH" "$d" && SKIP_SNAPSHOTS=0
   done
 fi
-if [ "$SKIP_CLOUD" -eq 1 ]; then
-  case "$TARGET_PATH/" in
-    */Library/CloudStorage/*|*/Library/Mobile\ Documents/*) SKIP_CLOUD=0 ;;
-  esac
-fi
 
-PRUNE=( -path /System/Volumes -o -path /dev -o -path "$OUTPUT_DIR_REAL" -o -path "$WORK_DIR_REAL" )
-if [ "$SKIP_SEALED" -eq 1 ]; then
-  # find's -path * also matches "/", hence both /usr/local exclusions
-  PRUNE+=( -o -path /System -o -path /bin -o -path /sbin -o -path /Library/Apple
-           -o \( -path '/usr/*' ! -path /usr/local ! -path '/usr/local/*' \) )
-  log "Skipping sealed system paths (target one with -t, or -A, to include)"
+PRUNE_DIRS=( /proc /sys /dev /run "$OUTPUT_DIR_REAL" "$WORK_DIR_REAL" )
+PRUNE=( -path /proc -o -path /sys -o -path /dev -o -path /run
+        -o -path "$OUTPUT_DIR_REAL" -o -path "$WORK_DIR_REAL" )
+if [ "$SKIP_CONTAINERS" -eq 1 ]; then
+  PRUNE_DIRS+=( "${{CONTAINER_DIRS[@]}" )
+  for d in "${{CONTAINER_DIRS[@]}"; do PRUNE+=( -o -path "$d" ); done
+  PRUNE+=( -o -path '*/.local/share/containers' )
+  log "Skipping container storage (target one with -t, or -A, to include)"
+fi
+if [ "$SKIP_SNAPSHOTS" -eq 1 ]; then
+  PRUNE_DIRS+=( "${{SNAPSHOT_DIRS[@]}" )
+  for d in "${{SNAPSHOT_DIRS[@]}"; do PRUNE+=( -o -path "$d" ); done
+  log "Skipping filesystem snapshots (target one with -t, or -A, to include)"
 fi
 # -x: find prints resolved paths, so an existing folder is resolved like
-# TARGET_PATH (/tmp -> /private/tmp). A skip that is or contains TARGET_PATH
-# would prune the whole walk, so like the other skips it is turned off.
-# ${{a[@]+"${{a[@]}"}: bash 3.2 (macOS) calls an empty array unbound under set -u
+# TARGET_PATH. A skip that is or contains TARGET_PATH would prune the whole
+# walk, so like the other skips it is turned off. PRUNE_DIRS also keeps
+# filesystems mounted below an excluded folder out (literal folders only).
+# ${{a[@]+"${{a[@]}"}: bash before 4.4 calls an empty array unbound under set -u
 for d in ${{EXCLUDE_DIRS[@]+"${{EXCLUDE_DIRS[@]}"}; do
   if [ -d "$d" ]; then d="$(cd "$d" && pwd -P)"; fi
   # $d unquoted on purpose: it may be a pattern such as */node_modules
   # shellcheck disable=SC2254
   case "$TARGET_PATH/" in ${{d%/}/*) log "Not skipping $d (-x): it contains $TARGET_PATH"; continue ;; esac
+  PRUNE_DIRS+=( "$d" )
   PRUNE+=( -o -path "$d" )
   log "Skipping $d (-x)"
 done
-DATALESS=()
-if [ "$SKIP_CLOUD" -eq 1 ]; then
-  PRUNE+=( -o -path '*/Library/CloudStorage' -o -path '*/Library/Mobile Documents' )
-  # iCloud "Desktop & Documents" leaves online-only files outside those folders.
-  # An unknown flag name is a fatal find error, so probe it first (older macOS).
-  if find / -maxdepth 0 -flags +dataless >/dev/null 2>&1; then
-    DATALESS=( ! -flags +dataless )
-  fi
-  log "Skipping cloud-drive folders and online-only files (target one with -t to include)"
+
+# Low priority for the walk and the scan; ionice is optional (util-linux)
+LOW_PRIORITY=( nice -n 10 )
+if command -v ionice >/dev/null 2>&1 && ionice -c 2 -n 7 true >/dev/null 2>&1; then
+  LOW_PRIORITY+=( ionice -c 2 -n 7 )
 fi
-# Files at/over the cap are printed with a SKIPPED_SIZE tag, split out below
+
+# Start points: TARGET_PATH, plus each local disk filesystem mounted below it.
+# /proc/self/mountinfo: "id parent major:minor root mountpoint opts [optional...] - fstype source superopts";
+# root/mountpoint escape space, tab, newline, backslash as octal (\040 ...).
+ROOTS=( "$TARGET_PATH" )
+if [ -d "$TARGET_PATH" ] && [ -r /proc/self/mountinfo ]; then
+  MOUNTS_SKIPPED=0
+  SEEN_MOUNTS=" "
+  while IFS="$(printf '\t')" read -r fstype dev mroot mpoint; do
+    [ "$mpoint" = "$TARGET_PATH" ] && continue
+    path_within "$mpoint" "$TARGET_PATH" || continue
+    [ -d "$mpoint" ] || continue  # single-file bind mounts, e.g. /etc/hosts in containers
+    pruned=0
+    for d in "${{PRUNE_DIRS[@]}"; do path_within "$mpoint" "$d" && pruned=1; done
+    [ "$pruned" -eq 1 ] && continue
+    case "$fstype" in
+      ext2|ext3|ext4|xfs|btrfs|zfs|f2fs|jfs|reiserfs|bcachefs|vfat|exfat|ntfs|ntfs3) ok=1 ;;
+      tmpfs)    case "$mpoint" in /tmp|/var/tmp) ok=1 ;; *) ok=0 ;; esac ;;
+      squashfs) case "$mpoint" in /snap/*) ok=1 ;; *) ok=0 ;; esac ;;
+      *) ok=0 ;;
+    esac
+    if [ "$ok" -eq 0 ]; then
+      # pseudo/system filesystems are expected; log the rest (network, FUSE, ...)
+      case "$fstype" in
+        proc|sysfs|devtmpfs|devpts|tmpfs|ramfs|cgroup|cgroup2|securityfs|debugfs|tracefs|pstore|bpf|mqueue|hugetlbfs|configfs|fusectl|autofs|binfmt_misc|rpc_pipefs|nsfs|efivarfs|selinuxfs|overlay|squashfs) ;;
+        *) echo "skipped mount ($fstype): $mpoint" >>"$LOG_FILE"; MOUNTS_SKIPPED=$((MOUNTS_SKIPPED + 1)) ;;
+      esac
+      continue
+    fi
+    # bind mounts repeat a filesystem (same device + root): walk it once
+    case "$SEEN_MOUNTS" in *" $dev:$mroot "*) continue ;; esac
+    SEEN_MOUNTS="$SEEN_MOUNTS$dev:$mroot "
+    ROOTS+=( "$mpoint" )
+  done < <(awk '
+    function unesc(s) {{ gsub(/\\040/, " ", s); gsub(/\\011/, "\t", s); gsub(/\\012/, "\n", s); gsub(/\\134/, "\\", s); return s }
+    {{ for (i = 7; i <= NF; i++) if ($i == "-") break
+      printf "%s\t%s\t%s\t%s\n", $(i + 1), $3, unesc($4), unesc($5) }' /proc/self/mountinfo)
+  if [ "${{#ROOTS[@]}" -gt 1 ]; then
+    log "Also scanning $(( ${{#ROOTS[@]} - 1 )) local filesystem(s) mounted below $TARGET_PATH: ${{ROOTS[*]:1}"
+  fi
+  if [ "$MOUNTS_SKIPPED" -gt 0 ]; then
+    log "Skipped $MOUNTS_SKIPPED network/FUSE/other mount(s) (listed in $LOG_FILE)"
+  fi
+fi
+
+# Files at/over the cap are printed with a SKIPPED_SIZE tag, split out below.
+# "{{} \;" not "{{} +": BusyBox find silently drops "+" inside -o; only big files
+# reach this, so one printf per file is cheap.
 SIZE_TEST=( -print )
 if [ "$MAX_MB" -gt 0 ]; then
-  SIZE_TEST=( \( -size -"$((MAX_MB * 1048576))"c -print -o -exec printf 'SKIPPED_SIZE\t%s\n' {{} + \) )
+  SIZE_TEST=( \( -size -"$((MAX_MB * 1048576))"c -print -o -exec printf 'SKIPPED_SIZE\t%s\n' {{} \; \) )
   log "Skipping files of ${{MAX_MB} MB or more (use -m 0 to include)"
 fi
 
@@ -699,11 +890,11 @@ FIND_LIST="${{WORK_DIR}/find_list.txt"
 # per-line lists, so such paths go NUL-separated to their own list, copied below
 CTRL_LIST="${{WORK_DIR}/ctrl_list.bin"
 : >"$CTRL_LIST"
-log "Listing files under $TARGET_PATH (skipping other mounts)"
-# shellcheck disable=SC2016  # $0/$@ are for the inner sh
-nice -n 10 find "$TARGET_PATH" -xdev \( "${{PRUNE[@]}" \) -prune \
-  -o -type f ${{NONEMPTY[@]+"${{NONEMPTY[@]}"} ${{DATALESS[@]+"${{DATALESS[@]}"} \
-  \( -path '*[[:cntrl:]]*' -exec sh -c 'printf "%s\0" "$@" >>"$0" || true' "$CTRL_LIST" {{} + \
+log "Listing files under $TARGET_PATH"
+# shellcheck disable=SC2016  # $0/$1 are for the inner sh
+"${{LOW_PRIORITY[@]}" find "${{ROOTS[@]}" -xdev \( "${{PRUNE[@]}" \) -prune \
+  -o -type f ${{NONEMPTY[@]+"${{NONEMPTY[@]}"} \
+  \( -path '*[[:cntrl:]]*' -exec sh -c 'printf "%s\0" "$1" >>"$0" || true' "$CTRL_LIST" {{} \; \
      -o "${{SIZE_TEST[@]}" \) >"$FIND_LIST" 2>>"$LOG_FILE" || true  # non-zero on permission errors
 
 TAB=$'\t'
@@ -713,59 +904,73 @@ if [ "$SIZE_SKIPPED" -gt 0 ]; then
   log "Skipped $SIZE_SKIPPED file(s) of ${{MAX_MB} MB or more (listed in $LOG_FILE)"
 fi
 if [ "$SKIP_NONBINARY" -eq 1 ]; then
-  # Extension lookup in awk, ~3x faster than macOS grep -Eiv with a 100-way
-  # alternation (20 s vs 64 s for 4.1M paths) and the same result
-  awk -v exts="$NONBINARY_EXTS" '
-    BEGIN {{ n = split(exts, a, " "); for (i = 1; i <= n; i++) skip[a[i]] = 1 }
-    /^SKIPPED_SIZE\t/ {{ next }
-    {{ f = $0; sub(/.*\//, "", f)
-      if (match(f, /\.[^.]*$/) && (tolower(substr(f, RSTART + 1)) in skip)) next
-      print }' "$FIND_LIST" >"$SCAN_LIST"
+  grep -v "^SKIPPED_SIZE${{TAB}" "$FIND_LIST" | grep -Eiv "$NONBINARY_EXT_RE" >"$SCAN_LIST" || true
   NONBINARY_SKIPPED=$(( $(wc -l <"$FIND_LIST") - SIZE_SKIPPED - $(wc -l <"$SCAN_LIST") ))
   log "Skipped $NONBINARY_SKIPPED non-executable file type(s) (use -A to include)"
 else
   grep -v "^SKIPPED_SIZE${{TAB}" "$FIND_LIST" >"$SCAN_LIST" || true
 fi
 
-# Control-character paths are scanned as ASCII-named copies in the work folder
-# (a symlink loses the path in json output, a hard link would change the file's
-# ctime), and their results show the bash $'...' quoted real path. They skipped
-# the size cap and extension filter in find (a folder name with a tab sends
-# every file below it here), so both are applied now.
+# yr --scan-list aborts at the first path that isn't valid UTF-8 ("stream did not
+# contain valid UTF-8") and still exits 0, so one odd file name would silently
+# empty the whole scan. Such files, and those with control characters in their
+# paths, are scanned as ASCII-named copies in the work folder (a symlink loses
+# the path in json output, a hard link would change the file's ctime), and their
+# results show the bash $'...' quoted real path.
+UTF8_SPLIT_AWK="${{WORK_DIR}/utf8_split.awk"
+cat > "$UTF8_SPLIT_AWK" <<'AWK_SCRIPT'
+# needs LC_ALL=C so awk sees bytes; valid lines to stdout, others to file "bad"
+BEGIN {{
+  t  = "[\200-\277]"
+  u8 = "^([\001-\177]|[\302-\337]" t "|\340[\240-\277]" t "|[\341-\354\356\357]" t t "|\355[\200-\237]" t "|\360[\220-\277]" t t "|[\361-\363]" t t t "|\364[\200-\217]" t t ")*$"
+}
+{{ if ($0 ~ u8) print; else print > bad }
+AWK_SCRIPT
+NONUTF8_LIST="${{WORK_DIR}/nonutf8_list.txt"
 COPY_MAP="${{WORK_DIR}/copy_map.txt"
-: >"$COPY_MAP"
+: >"$NONUTF8_LIST"; : >"$COPY_MAP"
+# Pure-ASCII paths (nearly all) are valid as-is; only the rest go through awk
+HIGH_BYTE=$'[\x80-\xff]'
+grep -v "$HIGH_BYTE" "$SCAN_LIST" >"${{SCAN_LIST}.utf8" || true
+grep "$HIGH_BYTE" "$SCAN_LIST" | awk -v bad="$NONUTF8_LIST" -f "$UTF8_SPLIT_AWK" >>"${{SCAN_LIST}.utf8" || true
+mv "${{SCAN_LIST}.utf8" "$SCAN_LIST"
 COPIES=0
+scan_as_copy() {{
+  COPIES=$((COPIES + 1))
+  local copy="${{WORK_DIR_REAL}/copies/${{COPIES}_"  # trailing _ so .../1_ never matches inside .../10_
+  mkdir -p "${{WORK_DIR_REAL}/copies"
+  # A reflink clone (btrfs, XFS) takes no extra space; BusyBox cp has no
+  # --reflink, so fall back to a plain copy
+  if ! {{ cp --reflink=auto "$1" "$copy" 2>/dev/null || cp "$1" "$copy" 2>>"$LOG_FILE"; }; then
+    echo "unreadable (unusual name): $(printf '%q' "$1")" >>"$LOG_FILE"
+    return 0
+  fi
+  echo "$copy" >>"$SCAN_LIST"
+  printf '%s\t%q\n' "$copy" "$1" >>"$COPY_MAP"
+}
+while IFS= read -r p; do scan_as_copy "$p"; done <"$NONUTF8_LIST"
+# Control-character paths skipped the size cap and extension filter in find
+# (a folder name with a tab sends every file below it here), so apply both now
 CTRL_SKIPPED=0
-NONBINARY_RE="\\.(${{NONBINARY_EXTS// /|})\$"  # same test as the awk filter above
 shopt -s nocasematch
 while IFS= read -r -d '' p; do
-  if [ "$SKIP_NONBINARY" -eq 1 ] && [[ ${{p##*/} =~ $NONBINARY_RE ]]; then
+  if [ "$SKIP_NONBINARY" -eq 1 ] && [[ ${{p##*/} =~ $NONBINARY_EXT_RE ]]; then
     CTRL_SKIPPED=$((CTRL_SKIPPED + 1))
     continue
   fi
-  if [ "$MAX_MB" -gt 0 ] && [ "$(stat -f %z "$p" 2>/dev/null || echo 0)" -ge "$((MAX_MB * 1048576))" ]; then
+  if [ "$MAX_MB" -gt 0 ] && [ "$(stat -c %s "$p" 2>/dev/null || echo 0)" -ge "$((MAX_MB * 1048576))" ]; then
     echo "skipped (>= ${{MAX_MB} MB): $(printf '%q' "$p")" >>"$LOG_FILE"
     CTRL_SKIPPED=$((CTRL_SKIPPED + 1))
     continue
   fi
-  COPIES=$((COPIES + 1))
-  copy="${{WORK_DIR_REAL}/copies/${{COPIES}_"  # trailing _ so .../1_ never matches inside .../10_
-  mkdir -p "${{WORK_DIR_REAL}/copies"
-  # An APFS clone (cp -c) takes no extra space; across volumes it fails, so
-  # fall back to a plain copy
-  if ! {{ cp -c "$p" "$copy" 2>/dev/null || cp "$p" "$copy" 2>>"$LOG_FILE"; }; then
-    echo "unreadable (unusual name): $(printf '%q' "$p")" >>"$LOG_FILE"
-    continue
-  fi
-  echo "$copy" >>"$SCAN_LIST"
-  printf '%s\t%q\n' "$copy" "$p" >>"$COPY_MAP"
+  scan_as_copy "$p"
 done <"$CTRL_LIST"
 shopt -u nocasematch
 if [ "$CTRL_SKIPPED" -gt 0 ]; then
   log "Skipped $CTRL_SKIPPED more file(s) with control characters in their paths (non-executable type or over the size cap)"
 fi
 if [ "$COPIES" -gt 0 ]; then
-  log "$COPIES file(s) with control characters in their paths are scanned as copies; results show them as \$'...' paths"
+  log "$COPIES file(s) with unusual names (control characters, not UTF-8) are scanned as copies; results show them as \$'...' paths"
 fi
 log "Found $(wc -l <"$SCAN_LIST" | tr -d ' ') file(s) to scan"
 
@@ -773,7 +978,7 @@ log "Found $(wc -l <"$SCAN_LIST" | tr -d ' ') file(s) to scan"
 log "Scanning with $THREADS thread(s) at low priority..."
 log "Results: $RESULT_FILE"
 SCAN_RC=0
-nice -n 10 "$YR" scan --scan-list --print-meta --print-strings --threads "$THREADS" \
+"${{LOW_PRIORITY[@]}" "$YR" scan --scan-list --print-meta --print-strings --threads "$THREADS" \
   --output-format "$OUTPUT_FORMAT" \
   "$RULE_FILE" "$SCAN_LIST" >"$RESULT_FILE" 2>>"$LOG_FILE" || SCAN_RC=$?
 
@@ -781,6 +986,11 @@ nice -n 10 "$YR" scan --scan-list --print-meta --print-strings --threads "$THREA
 # scans the rest and exits 0, so non-zero means the scan itself failed
 if [ "$SCAN_RC" -ne 0 ]; then
   log "ERROR: yr exited with code $SCAN_RC (see $LOG_FILE)"
+  exit 4
+fi
+# safety net for the yr scan-list abort above (it exits 0)
+if grep -q 'did not contain valid UTF-8' "$LOG_FILE" 2>/dev/null; then
+  log "ERROR: yr stopped reading the file list (non-UTF-8 path); results are incomplete (see $LOG_FILE)"
   exit 4
 fi
 
@@ -823,7 +1033,7 @@ fi
 log "No matches."
 exit 0
 _END_OF_SCRIPT_
-copy __createfile "{parameter "temp_folder"}/yara_x_scan_macos.sh"
+copy __createfile "{parameter "temp_folder"}/yara_x_scan_linux.sh"
 
 // The wrapper that runs it and copies the results to the destination folder
 delete __createfile
@@ -835,9 +1045,9 @@ createfile until _END_OF_SCRIPT_
 T="{parameter "temp_folder"}"
 D="{parameter "destination_folder"}"
 touch "$T/scan.running"
-/bin/bash "$T/yara_x_scan_macos.sh" -a "$T" -o "$T/results" >"$T/scan_console.log" 2>&1
+/bin/bash "$T/yara_x_scan_linux.sh" -a "$T" -o "$T/results" >"$T/scan_console.log" 2>&1
 rc=$?
-echo "scan exit code: $rc (0 = no PHP or Node.js found, 1 = found, 2-4 = error)" >>"$T/scan_console.log"
+echo "scan exit code: $rc (0 = no PHP, Node.js or Apache found, 1 = found, 2-4 = error)" >>"$T/scan_console.log"
 mkdir -p "$D"
 # Only a finished scan replaces the results; written under a temp name first so
 # the analysis never reads a partial file
