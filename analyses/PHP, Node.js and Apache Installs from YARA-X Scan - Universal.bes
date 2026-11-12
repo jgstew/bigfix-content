@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
 	<Analysis>
-		<Title>PHP and Node.js Installs from YARA-X Scan - Universal</Title>
-		<Description><![CDATA[<P>Reports the results of the &quot;Scan for PHP and Node.js Installs with YARA-X&quot; tasks (macOS, Linux, Windows), every hour: the distinct PHP, Node.js and Electron versions found, how many PHP and Node.js files were found (Node.js files include native addons, which have no version), and when the scan ran. Each computer's full list (&quot;path&lt;TAB&gt;product&lt;TAB&gt;version&quot; per product found in a file) is in __BESData/__Global/Logs/yara_results_runtimes.text. A computer that was scanned and has neither reports 0 files.</P>]]></Description>
+		<Title>PHP, Node.js and Apache Installs from YARA-X Scan - Universal</Title>
+		<Description><![CDATA[<P>Reports the results of the &quot;Scan for PHP, Node.js and Apache Installs with YARA-X&quot; tasks (macOS, Linux, Windows), every hour: the distinct PHP, Node.js, Electron, Apache and mod_http2 versions found, how many PHP, Node.js and Apache files were found (Node.js files include native addons, which have no version), and when the scan ran. Each computer's full list (&quot;path&lt;TAB&gt;product&lt;TAB&gt;version&quot; per product found in a file) is in __BESData/__Global/Logs/yara_results_runtimes.text. A computer that was scanned and has none of them reports 0 files.</P>]]></Description>
 		<Relevance><![CDATA[exists files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
 		<Source>Internal</Source>
 		<SourceID>jgstew</SourceID>
 		<SourceReleaseDate>2026-10-25</SourceReleaseDate>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Mon, 26 Oct 2026 17:19:40 +0000</Value>
+			<Value>Thu, 12 Nov 2026 22:06:36 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<Property Name="PHP Versions Found" ID="1" EvaluationPeriod="PT1H"><![CDATA[unique values of following texts of firsts "%09php%09" of lines of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>
@@ -18,5 +18,8 @@
 		<Property Name="Node.js Versions Found" ID="4" EvaluationPeriod="PT1H"><![CDATA[unique values of following texts of firsts "%09node%09" of lines of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>
 		<Property Name="Node.js Files Found" ID="5" EvaluationPeriod="PT1H"><![CDATA[(number of unique values of preceding texts of firsts "%09node%09" of lines of it) of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>
 		<Property Name="Electron Versions Found" ID="6" EvaluationPeriod="PT1H"><![CDATA[unique values of following texts of firsts "%09electron%09" of lines of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>
+		<Property Name="Apache Versions Found" ID="7" EvaluationPeriod="PT1H"><![CDATA[unique values of following texts of firsts "%09apache%09" of lines of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>
+		<Property Name="Apache Files Found" ID="8" EvaluationPeriod="PT1H"><![CDATA[(number of unique values of preceding texts of firsts "%09apache%09" of lines of it) of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>
+		<Property Name="mod_http2 Versions Found" ID="9" EvaluationPeriod="PT1H"><![CDATA[unique values of following texts of firsts "%09mod_http2%09" of lines of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>
 	</Analysis>
 </BES>
