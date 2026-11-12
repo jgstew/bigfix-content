@@ -1,0 +1,51 @@
+---
+name: pre-commit
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# read-only: pre-commit only checks, it never pushes fixes
+permissions:
+  contents: read
+
+concurrency:
+  group: pre-commit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # required to grab the history of the PR for pre-commit
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+
+      # pull requests and pushes: only the files changed in that range. The
+      # manual stage adds fix-files-to-ascii and the check-useless-excludes /
+      # check-hooks-apply meta hooks (see .pre-commit-config.yaml).
+      - name: pre-commit on changed files
+        if: github.event_name == 'pull_request' || github.event_name == 'push'
+        uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
+        with:
+          extra_args: >-
+            --color=always
+            --from-ref ${{ github.event.pull_request.base.sha || github.event.before }}
+            --to-ref ${{ github.event.pull_request.head.sha || github.sha }}
+            --hook-stage manual
+
+      # manual dispatch: every hook against the full tree
+      - name: pre-commit on all files (manual dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
+        with:
+          extra_args: --color=always --all-files --hook-stage manual
