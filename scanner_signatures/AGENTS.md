@@ -280,7 +280,9 @@ Before creating new containers, check `docker ps -a`: containers from earlier ru
 
 Usage, from the repo root: `python3 scanner_signatures/scanner_test.py CONTAINER CIT_DIR SIGNATURE.xml [SIGNATURE.xml ...]`.
 It prints one JSON object (label -> matched instances with their exported variables) and exits 1
-if a signature body fails the scanner's own schema.
+if a signature body fails the scanner's own schema, or if `wscansw` writes no `sw.xml` (it deletes
+the previous run's output first). The code it shares with `win_scanner_test.py` (signature
+collection, the `FSScan` element, result parsing) is in [`signature_harness.py`](signature_harness.py).
 
 Example (container `php-debian`, with the scanner installed at `/opt/cit`):
 
@@ -364,12 +366,20 @@ to avoid quoting problems. The encoded command must fit cmd's 8191-character lin
 
 **Install (verified).** The script is [`install_cit.ps1`](install_cit.ps1) in this folder: the same
 steps as HCL's task, which extracts the bundle flat (`7za e`) and only adds its redistributable DLLs
-when `api-ms-win-crt*` is missing from System32. It installs into `$T = 'C:\bfi_sig_test'`
-(edit that line for another test folder) and prints `wcitinst exit code: 0`; the log
-`$T\installer\installCITlog.txt` ends with `Done.`. At about 1.8 KB it fits in one `-EncodedCommand`:
+when `api-ms-win-crt*` is missing from System32. It installs into `-T` (default `C:\bfi_sig_test`),
+prints `wcitinst exit code: 0`, and throws if the exit code isn't 0. Check the exit code, not the
+log `$T\installer\installCITlog.txt`: it ends with `Done.` even after a failed install (verified:
+`RC: 11`, exit code 1, with `$T\cit` blocked by a file; the Linux `install.log` does the same). At about 2 KB it fits in one `-EncodedCommand`:
 
 ```bash
 ssh <user>@<windows-host> "powershell -NoProfile -NonInteractive -EncodedCommand $(iconv -t UTF-16LE scanner_signatures/install_cit.ps1 | base64 | tr -d '\n')"
+```
+
+For another test folder, wrap the script in a script block and pass `-T` (use `printf`, not
+`echo`: zsh's `echo` turns the `\b` of `C:\bfi...` into a backspace):
+
+```bash
+ssh <user>@<windows-host> "powershell -NoProfile -NonInteractive -EncodedCommand $({ printf '%s\n' '& {'; cat scanner_signatures/install_cit.ps1; printf '%s\n' "} -T 'C:\bfi_sig_test_other'"; } | iconv -t UTF-16LE | base64 | tr -d '\n')"
 ```
 
 - `BFI-PRIVATE` installs a private copy. On a host that already had a system CIT 9.2.23
@@ -412,7 +422,8 @@ about 45 seconds. "path too long" messages for very deep folders are just skippe
 Mac/Linux side, the same way as `scanner_test.py`: shipped and diag copies, level-3 validation, a
 config with the plugin's excludes copied into `FSScan`, `scp` both files to the test folder, run,
 copy `sw.xml` back. `TESTDIR` is the Windows test folder holding the CIT install in `TESTDIR\cit`;
-`XSS_DIR` is a local copy of the scanner's `config/xss` folder:
+`XSS_DIR` is a local copy of the scanner's `config/xss` folder. Like `scanner_test.py`, it exits 1
+if `wscansw` writes no `sw.xml`:
 
 ```bash
 WINHOST=<user>@<windows-host> python3 scanner_signatures/win_scanner_test.py 'C:\bfi_sig_test' <local copy of CIT config/xss> scanner_signatures/software_PHP_*.xml
