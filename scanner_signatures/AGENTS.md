@@ -104,7 +104,7 @@ Shape of a body:
 | `StringCrop` | `startString`, `endString`, `inputString` are required, plus `seekFrom="left"` or `"right"`. Returns the text between the first `startString` and the next `endString`. `startString=""` crops from the beginning: `StringCrop endString="-" startString=""` on `8.2.35-1~deb12u1` gives `8.2.35`. Wrap it in `<VectorToScalar>` when the result is used as a scalar (the majority pattern). |
 | `StringCrop`: separator not found | A `startString` that isn't there crops from the beginning; an `endString` that isn't there (or `""`) runs to the end. So `start=":" end=""` on `18.20.4+dfsg` returns it unchanged, and chained crops (`:`, `-`, `+`, `~`) are safe when a separator is absent. On a multi-line file, a missing `startString` returns the first line, so check with `Contains` first. |
 | `StringCrop seekFrom="right"` | `startString="" endString="."` returns the text before the **last** `.`: `22.23.4.0` gives `22.23.4`, but `22.23.4` gives `22.23`. Use it only when the part count is known (`WinFileInfo` is always 4). `endString="include/node/"` on `/opt/node/include/node/` gives `/opt/node/`. With a non-empty `startString`, the crop starts at its **last** occurrence: `startString="rotli-" endString=".dist-info"` on `/srv/brotli-app/venv/.../Brotli-1.1.0.dist-info/` gives `1.1.0`, where `seekFrom="left"` gives `app/venv/.../Brotli-1.1.0`. |
-| Cropping a version out of a path | A folder higher up the path can contain the same marker (`/srv/brotli-app/`), so crop with `seekFrom="right"`. Also skip results that still contain `/` or `\`: a `Vector filter` like `*/brotli-*-info/` also matches **every** `*-info` folder under such a parent (`pip-…`, `setuptools-…`). |
+| Cropping a version out of a path | A folder higher up the path can contain the same marker (`/srv/brotli-app/`), so crop with `seekFrom="right"`. Also skip results that still contain `/` or `\`: a `Vector filter` like `*/brotli-*-info/` also matches **every** `*-info` folder under such a parent (`pip-...`, `setuptools-...`). |
 | `Contains inputString=... searchedString=... position="contains\|start\|end"` | Boolean. Takes **attributes**, not child elements. Several of them (or `Compare`s) can be combined in an `<Or>`/`<And>` inside one `Variable`. |
 | `ValueOf value="$(a).$(b).$(c)"` | Joins variables (there's also `Concat`). |
 | `Vector` with several children | Union: `<Vector><DpkgProductList filter="nodejs"/><DpkgProductList filter="libnode*"/></Vector>` iterates both. |
@@ -516,16 +516,16 @@ line counts as affected:
 
 **Electron's embedded Node version isn't readable** without the YARA scan. The Electron version
 is, and `https://releases.electronjs.org/releases.json` maps it to Node (its `node` field):
-44.7.0 → 24.21.0, 43.7.7 → 24.21.0, 39.8.8 → 22.22.1, 19.1.8 → 16.14.2 (checked October 2026).
+44.7.0 -> 24.21.0, 43.7.7 -> 24.21.0, 39.8.8 -> 22.22.1, 19.1.8 -> 16.14.2 (checked October 2026).
 
 ### 8.2 Detection methods
 
 | # | Node.js | Evidence | `DETAILED_VER` | `INSTALL_PATH` |
 |---|---|---|---|---|
-| 1 | Windows `node.exe` (zip, MSI, any copy in the scan scope) | `FindFilePathEx name="node.exe"` + `WinFileInfo field="version"` | `22.23.3.0` cropped right at `.` → `22.23.3` | folder of `node.exe` |
+| 1 | Windows `node.exe` (zip, MSI, any copy in the scan scope) | `FindFilePathEx name="node.exe"` + `WinFileInfo field="version"` | `22.23.3.0` cropped right at `.` -> `22.23.3` | folder of `node.exe` |
 | 2 | Windows MSI from nodejs.org (also winget and Chocolatey, which run it *(not verified)*) | `MsiProductList` (all), keep `name` = `Node.js`; `MsiProductInfo field="version"` | `22.23.3` | `HKLM\SOFTWARE\Node.js` `InstallPath` (the MSI's `installDir` is empty) |
 | 3 | Linux/macOS official layouts: tarball, nvm, `/usr/local` (Docker `node` images, `n`), Homebrew Cellar, NodeSource `.deb`. Also expected, as they unpack the same tarball: fnm, Volta, asdf, the macOS `.pkg` *(not tested)* | `FindFilePathEx name="node_version.h"` in `*/include/node/`, require `../../bin/node`, read it (4 KB) | `NODE_MAJOR_VERSION`.`MINOR`.`PATCH` | `<root>/bin/` |
-| 4 | Debian/Ubuntu, NodeSource `.deb` | `DpkgProductList` `nodejs` + `libnode*`, skip `*-dev` | dpkg version minus epoch, `-…`, `+…`, `~…` | `/usr/` |
+| 4 | Debian/Ubuntu, NodeSource `.deb` | `DpkgProductList` `nodejs` + `libnode*`, skip `*-dev` | dpkg version minus epoch, `-...`, `+...`, `~...` | `/usr/` |
 | 5 | RHEL/Rocky/Alma (appstream and modules), Fedora, NodeSource `.rpm`, `nodejs<NN>` names | `RpmProductList filter="nodejs*"`, skip names ending `-devel`, `-docs`, `-full-i18n`, `-packaging`, `-debuginfo`, `-debugsource` | `displayVersion`, cropped the same way | `RpmProductInfo installDir` |
 
 | # | Electron | Evidence | `DETAILED_VER` | `INSTALL_PATH` |
@@ -571,11 +571,11 @@ marked false show only in the diag copy. The inventory file reports every row wi
 
 | Container (packages) | Matches | CVE |
 |---|---|---|
-| Debian 12 + `nodejs` `18.20.4+dfsg-1~deb12u3`, `libnode108`, `libnode-dev` | #4: 2 × `18.20.4` (`nodejs`, `libnode108`; `-dev` skipped), #3: 1 × 18.20.4 (above) | true |
-| Ubuntu 24.04 + `nodejs` `18.19.1+dfsg-6ubuntu5` (`libnode109`) | #4: 2 × `18.19.1` | true |
+| Debian 12 + `nodejs` `18.20.4+dfsg-1~deb12u3`, `libnode108`, `libnode-dev` | #4: 2 * `18.20.4` (`nodejs`, `libnode108`; `-dev` skipped), #3: 1 * 18.20.4 (above) | true |
+| Ubuntu 24.04 + `nodejs` `18.19.1+dfsg-6ubuntu5` (`libnode109`) | #4: 2 * `18.19.1` | true |
 | Debian 12 + NodeSource 22.x `nodejs` `22.23.4-1nodesource1` | #4: `22.23.4`, #3: `22.23.4` (`/usr/include/node`) | false |
-| Rocky 9 + `nodejs` `1:16.20.2-8.el9_4` (`nodejs-libs`, `nodejs-docs`, `nodejs-full-i18n`) | #5: 2 × `16.20.2` (`nodejs`, `nodejs-libs`) | true |
-| Rocky 9 + module `nodejs:22` `1:22.23.2-2.module+el9.8.0+...` | #5: 2 × `22.23.2` | true (see backports, 8.1) |
+| Rocky 9 + `nodejs` `1:16.20.2-8.el9_4` (`nodejs-libs`, `nodejs-docs`, `nodejs-full-i18n`) | #5: 2 * `16.20.2` (`nodejs`, `nodejs-libs`) | true |
+| Rocky 9 + module `nodejs:22` `1:22.23.2-2.module+el9.8.0+...` | #5: 2 * `22.23.2` | true (see backports, 8.1) |
 | Rocky 9 + NodeSource 24.x `nodejs` `24.22.1-1nodesource` | #5: `24.22.1` | false |
 
 **Electron**, in the Debian container:
@@ -731,24 +731,24 @@ including the skipped ones, with `IS_INSTALLED=true`.
 | Host / fixture | CVE |
 |---|---|
 | `debian:12` unpatched `libbrotli1` `1.0.9-2+b6` | 1.0.9 / true |
-| `debian:12` unpatched `brotli` + `python3-brotli` `1.0.9-2+b6` only (no `libbrotli1`) | 1.0.9 / true (×2) |
-| `debian:12` patched `1.0.9-2+deb12u1`; venvs `Brotli-1.1.0`, `brotli-1.2.0`, `brotlicffi`; a copy of the `Brotli-1.1.0` venv under `/srv/brotli-app/` | package skipped; pip 1.1.0 ×3, 1.2.0; `brotlicffi` and the other packages ignored |
+| `debian:12` unpatched `brotli` + `python3-brotli` `1.0.9-2+b6` only (no `libbrotli1`) | 1.0.9 / true (*2) |
+| `debian:12` patched `1.0.9-2+deb12u1`; venvs `Brotli-1.1.0`, `brotli-1.2.0`, `brotlicffi`; a copy of the `Brotli-1.1.0` venv under `/srv/brotli-app/` | package skipped; pip 1.1.0 *3, 1.2.0; `brotlicffi` and the other packages ignored |
 | `debian:12` dummy packages `1.0.3-1ubuntu1~16.04.2+esm1`, `1.2.0-4.1`, `1.0.7-6ubuntu0.1+esm1` and a `1.0.7-6ubuntu0.1` control | fixed builds skipped; control 1.0.7 / true |
 | `debian:13` unpatched `1.1.0-2+b7` (amd64 + i386) / patched `+deb13u1` | 1.1.0 / true (one instance) / skipped |
 | `debian:sid` `1.2.0-4.1` (real packages) | skipped |
 | `ubuntu:24.04` patched `1.1.0-2ubuntu0.1` / unpatched `1.1.0-2build2`, `python3-brotli` only | skipped / 1.1.0 / true |
 | `ubuntu:22.04` patched `1.0.9-2ubuntu0.1` | skipped |
 | `rockylinux:9` `libbrotli` `1.0.9-10.el9_8` (also with `brotli`, `python3-brotli`, `brotli-devel`) + pip `Brotli-1.1.0` in `/usr/local/lib64` | 1.0.9 / true, pip 1.1.0 / true; distro `Brotli-1.0.9-py3.9.egg-info` ignored |
-| `rockylinux:9` unpatched `python3-brotli` `1.0.9-10.el9_8` only (no `libbrotli`), planted `/usr/lib64/…/Brotli-1.0.8.dist-info` (`INSTALLER` `rpm`), `/usr/lib/…/brotli-1.1.0.dist-info` (`uv`), `/usr/lib64/…/brotli-app/x/setuptools-69.0.dist-info` (`pip`) | #2 1.0.9 / true; #5 1.1.0 / true only. Upgraded to `el9_8.1`: #2 skipped |
+| `rockylinux:9` unpatched `python3-brotli` `1.0.9-10.el9_8` only (no `libbrotli`), planted `/usr/lib64/.../Brotli-1.0.8.dist-info` (`INSTALLER` `rpm`), `/usr/lib/.../brotli-1.1.0.dist-info` (`uv`), `/usr/lib64/.../brotli-app/x/setuptools-69.0.dist-info` (`pip`) | #2 1.0.9 / true; #5 1.1.0 / true only. Upgraded to `el9_8.1`: #2 skipped |
 | `rockylinux:9` patched `1.0.9-10.el9_8.1` / `rockylinux:8` patched `1.0.6-5.el8_10` | skipped / skipped |
-| `fedora:42` `1.2.0-1.fc42` (`libbrotli`, `brotli`, `python3-brotli`) | 1.2.0 / true (×3; no fixed build listed); the `rpm` dist-info isn't reported by #5 |
-| `amazonlinux:2023` unpatched `1.1.0-1.amzn2023.0.1` (`libbrotli`, `brotli`, `python3-brotli`) | 1.1.0 / true (×3) |
+| `fedora:42` `1.2.0-1.fc42` (`libbrotli`, `brotli`, `python3-brotli`) | 1.2.0 / true (*3; no fixed build listed); the `rpm` dist-info isn't reported by #5 |
+| `amazonlinux:2023` unpatched `1.1.0-1.amzn2023.0.1` (`libbrotli`, `brotli`, `python3-brotli`) | 1.1.0 / true (*3) |
 | `opensuse/leap:15` `libbrotlidec1` only, unpatched `1.0.7-150200.3.5.1`, plus a planted `/usr/local/lib/python3.6/site-packages/Brotli-1.0.7-py3.6.egg-info` | 1.0.7 / true (RPM), 1.0.7 / true (pip) |
 | `opensuse/leap:15` patched `libbrotlidec1` `1.0.7-150200.3.8.1` (dummy RPM) | skipped |
 | `opensuse/leap:15` `python3-Brotli` `1.0.7-1.6` with `libbrotlidec1` removed, + root `pip3 install Brotli==1.0.9` (`/usr/lib64/python3.6/site-packages/Brotli-1.0.9.dist-info`) | #2 1.0.7 / true, #5 1.0.9 / true (the PR's earlier `d08aea55` files: nothing) |
-| `archlinux` `brotli-1.2.1-1` + planted `brotli-1.1.0-3`, `lib32-brotli-…`, `python-brotli-…` | 1.1.0 / true only |
+| `archlinux` `brotli-1.2.1-1` + planted `brotli-1.1.0-3`, `lib32-brotli-...`, `python-brotli-...` | 1.1.0 / true only |
 | `archlinux` `brotli-1.2.1-1` + root `pip install --break-system-packages Brotli==1.2.0` (`/usr/lib/python3.14/site-packages/brotli-1.2.0.dist-info`) / pacman `python-brotli` `1.2.1-1` instead | #5 1.2.0 / true / nothing (no `INSTALLER`) |
-| Windows: pip `Brotli-1.1.0`, `brotli-1.2.0` in `C:\bfi_sig_test_brotli\py\Lib\site-packages`, a copy under `…\brotli-app\Lib\site-packages`, and a planted `pip-24.0.dist-info` there | 1.1.0 ×3, 1.2.0 ×2; `pip` ignored |
+| Windows: pip `Brotli-1.1.0`, `brotli-1.2.0` in `C:\bfi_sig_test_brotli\py\Lib\site-packages`, a copy under `...\brotli-app\Lib\site-packages`, and a planted `pip-24.0.dist-info` there | 1.1.0 *3, 1.2.0 *2; `pip` ignored |
 
 Notes on the fixtures:
 
