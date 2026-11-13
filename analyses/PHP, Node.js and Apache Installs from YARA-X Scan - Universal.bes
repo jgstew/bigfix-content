@@ -6,10 +6,10 @@
 		<Relevance><![CDATA[exists files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Relevance>
 		<Source>Internal</Source>
 		<SourceID>jgstew</SourceID>
-		<SourceReleaseDate>2026-10-25</SourceReleaseDate>
+		<SourceReleaseDate>2026-11-13</SourceReleaseDate>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 12 Nov 2026 22:06:36 +0000</Value>
+			<Value>Fri, 13 Nov 2026 00:50:52 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<Property Name="PHP Versions Found" ID="1" EvaluationPeriod="PT1H"><![CDATA[unique values of following texts of firsts "%09php%09" of lines of files whose(name of it as lowercase starts with "yara_results_runtimes.text") of folders "Logs" of folders "__Global" of data folders of client]]></Property>

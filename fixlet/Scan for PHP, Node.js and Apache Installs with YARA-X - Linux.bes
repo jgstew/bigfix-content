@@ -13,13 +13,13 @@
 		<DownloadSize>10347394</DownloadSize>
 		<Source>Internal</Source>
 		<SourceID>jgstew</SourceID>
-		<SourceReleaseDate>2026-10-25</SourceReleaseDate>
+		<SourceReleaseDate>2026-11-13</SourceReleaseDate>
 		<SourceSeverity></SourceSeverity>
 		<CVENames></CVENames>
 		<SANSID></SANSID>
 		<MIMEField>
 			<Name>x-fixlet-modification-time</Name>
-			<Value>Thu, 12 Nov 2026 22:06:36 +0000</Value>
+			<Value>Fri, 13 Nov 2026 00:50:52 +0000</Value>
 		</MIMEField>
 		<Domain>BESC</Domain>
 		<DefaultAction ID="Action1">
