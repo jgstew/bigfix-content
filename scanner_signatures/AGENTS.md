@@ -9,7 +9,7 @@ Inventory as custom catalog content. The same format is used in
 Everything below was verified with the CIT scanner **11.0.44.0**
 (`linux-x86_64_11.0.44.0.tgz`) on Debian 12, Ubuntu 24.04 and Rocky Linux 9
 (amd64 containers), and with `w64-ix86_11.0.44.0.zip` on Windows Server 2022
-(section 5.6), in October 2026. The Brotli files (section 9) were also run on
+(section 5.6), in October and November 2026. The Brotli files (section 9) were also run on
 Debian 13 and unstable, Ubuntu 22.04, Rocky Linux 8, Fedora 42, Amazon Linux 2023,
 openSUSE Leap 15 and Arch. Facts marked *(not verified)* weren't.
 
@@ -50,7 +50,7 @@ A signature file has two layers.
 Rules from the outer schema (`SoftwareIdentityCatalog.xsd`, see section 3):
 
 - `Software@name`, `@vendor`: 1-250 characters, required. `@version`: required, and must match `([0-9]{1,18}\..*)|\*`. `0.AFFECTED`, `0.SAFE` and `0.any_version` are the usual pseudo-versions for vulnerability signatures.
-- `uniqueId` (on `Software` and `Signature`): exactly 36 characters, lowercase `[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}`. New signatures get a new `uuid.uuid4()`. Time-based (version 1) IDs, like the ones BigFix Inventory exports and most of the PHP file's, are also valid. Never reuse another signature's ID.
+- `uniqueId` (on `Software` and `Signature`): exactly 36 characters, lowercase `[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}`. New signatures get a new `uuid.uuid4()`. Time-based (version 1) IDs, like the ones BigFix Inventory exports and most of the PHP file's, are also valid, but they embed the generating machine's MAC address, so don't create new ones. Never reuse another signature's ID.
 - `created` / `modified`: `xs:dateTime`, e.g. `2026-10-26T23:53:39Z`. Update `modified` whenever a signature's body changes.
 - A `Signature` holds **either** a basic `<AND><OR><File .../></OR></AND>` (or `PackageFilter`) rule **or** one `<ExtendedSignature>`. All signatures here are extended.
 - The outer schema types `ExtendedSignature` as "anything": **it doesn't check the CDATA at all.**
@@ -90,7 +90,7 @@ Shape of a body:
 
 | Construct | Behavior |
 |---|---|
-| `FindFilePathEx name="..."` / `names="a,b"` | Searches the **file index built by `wscanfs`**, not the disk. A file whose name isn't in the scan config's `FileMask` list is never found. Wildcards work (`php*`). With `appendFileName="false"` it returns the folder (`/usr/bin/`); with `"true"` the full path (`/usr/bin/php8.2`). |
+| `FindFilePathEx name="..."` / `names="a,b"` | Searches the **file index built by `wscanfs`**, not the disk. A file whose name isn't in the scan config's `FileMask` list is never found. Wildcards work (`php*`). With `appendFileName="false"` (the default) it returns the folder (`/usr/bin/`); with `"true"` the full path (`/usr/bin/php8.2`). |
 | `FindFilePathEx` and symlinks | **Symlinks are skipped.** `name="php"` never finds Debian/Ubuntu `/usr/bin/php`, which is a symlink to `/etc/alternatives/php`. On RHEL it's a real file and is found. |
 | `FindFilePathEx` on Windows | Works, **if the `FSScan` scope matches the `wscansw` `FSScanner` plugin's `excludeDirectory` attributes** in the same config. The sample `config.xml` has `excludeDirectory="C:\dir_to_exclude"`; an `FSScan` without that `ExcludeDirectory` makes every file query return nothing (section 5.6). |
 | `FindFilePath name=... rootPath=...` | Also queries the `wscanfs` index (a name missing from `FileMask` isn't found), limited to `rootPath`. |
@@ -101,6 +101,7 @@ Shape of a body:
 | `Vector filter="..."` | The pattern must match the **whole** string. `*/usr/bin/` matches the folder returned with `appendFileName="false"`. To filter full paths (`appendFileName="true"`), use `*/usr/bin/*`. |
 | `FileExists`, `ReadFile`, `FileInfoCompare` | Read the disk directly. No index or `FileMask` needed. |
 | `ReadFile` | Always guard it with `FileExists` and `FileInfoCompare field="size" relation="le" value="5120000"` (repo convention: 512 KB-5 MB). |
+| `ReadFile` on CRLF files | The `\r` is kept. A crop that ends at `&#10;` returns `4.2.2\r`, `Compare` fails and the instance is **dropped silently** in the shipped file. Any file a user can edit or upload can have CRLF endings (git `autocrlf`, ASCII-mode FTP), on Linux too. Crop at `&#13;` as well (section 3). |
 | `StringCrop` | `startString`, `endString`, `inputString` are required, plus `seekFrom="left"` or `"right"`. Returns the text between the first `startString` and the next `endString`. `startString=""` crops from the beginning: `StringCrop endString="-" startString=""` on `8.2.35-1~deb12u1` gives `8.2.35`. Wrap it in `<VectorToScalar>` when the result is used as a scalar (the majority pattern). |
 | `StringCrop`: separator not found | A `startString` that isn't there crops from the beginning; an `endString` that isn't there (or `""`) runs to the end. So `start=":" end=""` on `18.20.4+dfsg` returns it unchanged, and chained crops (`:`, `-`, `+`, `~`) are safe when a separator is absent. On a multi-line file, a missing `startString` returns the first line, so check with `Contains` first. |
 | `StringCrop seekFrom="right"` | `startString="" endString="."` returns the text before the **last** `.`: `22.23.4.0` gives `22.23.4`, but `22.23.4` gives `22.23`. Use it only when the part count is known (`WinFileInfo` is always 4). `endString="include/node/"` on `/opt/node/include/node/` gives `/opt/node/`. With a non-empty `startString`, the crop starts at its **last** occurrence: `startString="rotli-" endString=".dist-info"` on `/srv/brotli-app/venv/.../Brotli-1.1.0.dist-info/` gives `1.1.0`, where `seekFrom="left"` gives `app/venv/.../Brotli-1.1.0`. |
@@ -134,9 +135,11 @@ When in doubt, write a probe signature that exports intermediate values
 4. **Skip metapackages and non-matching names explicitly.** Debian's `php-common` is version `2:93`; skip it with `Compare relation="ne" type="string"`.
 5. **Remember distro backports.** A version comparison flags Debian/Ubuntu/RHEL builds whose security fixes were backported into an old version number (e.g. RHEL 9 PHP `8.0.30`, Ubuntu `8.3.6`). Say so in the PR or description. A signature can't tell.
 6. **One `Software` can be reported by several signatures on one machine** (e.g. RHEL: the `NEWS` signature and the RPM signature both report PHP). Decide whether that's acceptable.
-7. **Validate and test** (sections 4 and 5) before publishing.
+7. **Skip an empty `DETAILED_VER`**, in inventory (`0.any_version`) files too. Otherwise an unparsed value is reported as an install: CommunityContent#56's first version reported `<?php`.
+8. **Test old releases and odd formatting, not only the current release.** File formats change between releases: Enable Media Replace <= 3.4.0 has `Version: 3.3.0` without the ` * ` prefix that later releases use. For a text file, also test a CRLF copy and one with spaces instead of TABs.
+9. **Validate and test** (sections 4 and 5) before publishing.
 
-Templates (from the PHP file; `<IS_INSTALLED block>` is the shared version-range test):
+Templates (the first two from the PHP file; `<IS_INSTALLED block>` is the shared version-range test):
 
 ```xml
 <!-- Debian/Ubuntu: dpkg package version -->
@@ -154,6 +157,25 @@ Templates (from the PHP file; `<IS_INSTALLED block>` is the shared version-range
 <Variable export="true" name="INSTALL_PATH"><RpmProductInfo code="$(PKG)" field="installDir"/></Variable>
 <IS_INSTALLED block></Instance></MultipleInstance>
 ```
+
+A `Version: X.Y.Z` line in a text header (e.g. a WordPress plugin's main `.php` file). The
+crops take the first `Version:` line, remove a trailing CR, then keep what's after the last space
+and after the last TAB. They handle ` * Version: `, a plain `Version: `, TABs and CRLF.
+Verified on Linux and Windows with the CommunityContent#56 fixtures:
+
+```xml
+<MultipleInstance><Iterator export="true" name="INSTALL_PATH"><FindFilePathEx names="plugin.php"/></Iterator><Instance>
+<Variable export="false" name="size"><FileInfoCompare absolutePath="$(INSTALL_PATH)plugin.php" field="size" relation="le" value="512000"/></Variable><Condition withVariable="size"><Action do="SKIP" onValue="false"/></Condition>
+<Variable export="false" name="file_read"><ReadFile path="$(INSTALL_PATH)plugin.php"/></Variable>
+<Variable export="false" name="version_line"><StringCrop endString="&#10;" inputString="$(file_read)" seekFrom="left" startString="Version:"/></Variable>
+<Variable export="false" name="version_no_cr"><StringCrop endString="&#13;" inputString="$(version_line)" seekFrom="left" startString=""/></Variable>
+<Variable export="false" name="version_no_space"><StringCrop endString="" inputString="$(version_no_cr)" seekFrom="right" startString=" "/></Variable>
+<Variable export="true" name="DETAILED_VER"><StringCrop endString="" inputString="$(version_no_space)" seekFrom="right" startString="&#9;"/></Variable><Condition withVariable="DETAILED_VER"><Action do="SKIP" onValue=""/></Condition>
+<IS_INSTALLED block></Instance></MultipleInstance>
+```
+
+If the file has no `Version:` line at all, `version_line` is the file's first line (section 2,
+`StringCrop`), so require the marker with `Contains` first when that's possible.
 
 ## 4. Validation (four levels; run all of them)
 
@@ -209,8 +231,10 @@ The only level that proves the signature finds the software and extracts the rig
 
 ### Repo hooks that also run
 
-The `bigfix-content` pre-commit config runs `check-xml`, `trailing-whitespace`
-and `end-of-file-fixer` on these files. `.github/workflows/xmlvalidate.yaml`
+The `bigfix-content` pre-commit config runs `check-xml`, `trailing-whitespace`,
+`end-of-file-fixer` and `codespell` on these files. `.github/workflows/pre-commit.yaml`
+runs the same hooks on every PR with `--hook-stage manual`, which adds `fix-files-to-ascii`:
+**non-ASCII characters (including in this file) fail CI**. `.github/workflows/xmlvalidate.yaml`
 checks XML syntax. None of them check signature content.
 
 ## 5. Running and testing signatures
@@ -241,15 +265,13 @@ works. That's how the Ubuntu and Rocky tests below were run.
 `scanner_test.py` runs on the host (needs Python 3.9+, `docker`, `xmllint`) against a
 running container that has the scanner and the software under test.
 
-The harness scripts are checked in next to this file: [`scanner_test.py`](scanner_test.py),
-[`win_scanner_test.py`](win_scanner_test.py) (section 5.6), [`install_cit.sh`](install_cit.sh)
-(section 5.1) and [`install_cit.ps1`](install_cit.ps1) (section 5.6). Run them from the repo root.
-
 Before creating new containers, check `docker ps -a`: containers from earlier runs (e.g.
 `php-debian`) may still be running with the scanner at `/opt/cit`, and can be reused as they are.
 
 1. It wraps every signature twice: **shipped** (as written) and **diag** (with the
    `IS_INSTALLED` skip removed, so the extracted version shows even when it isn't affected).
+   It removes the exact string `<Condition withVariable="IS_INSTALLED"><Action do="SKIP" onValue="false"/></Condition>`
+   and warns on stderr when a signature doesn't contain it (its diag copy is then the same as shipped).
 2. It validates them against the scanner's XSS schema (level 3).
 3. It writes a Linux `FSScan` config. The bundled `bin/config.xml` is a Windows sample.
    The new config includes `/` (minus `/proc`, `/sys`, `/dev`, `/run`), with `FileMask`s
@@ -273,18 +295,17 @@ python3 scanner_signatures/scanner_test.py php-debian /opt/cit scanner_signature
 
 `#n` is the signature's position in the file. A dash means no match.
 
-| Container (PHP) | #1 Windows `php.exe` | #2 Linux NEWS | #3 source tree | #4 dpkg | #5 RPM | #6 Windows `php-cgi.exe` |
-|---|---|---|---|---|---|---|
-| Debian 12 `debian:12` + `php-cli` (8.2.35, **fixed**) | - | - | - | shipped -, **diag 8.2.35 / false** | - | - |
-| Ubuntu 24.04 `ubuntu:24.04` + `php-cli` (8.3.6) | - | - | - | **8.3.6 / true** | - | *(not run)* |
-| Rocky 9 `rockylinux:9` + `php-cli` (8.0.30) | - | **8.0.30 / true** | - | - | **8.0.30 / true** | *(not run)* |
-| Debian 12 + a planted `/srv/build/php-src/main/php.h` and `../NEWS` with `21 Nov 2025, PHP 8.3.28` | - | - | **8.3.28 / true** | as above | - | *(not run)* |
+| Container (PHP) | #2 Linux NEWS | #3 source tree | #4 dpkg | #5 RPM |
+|---|---|---|---|---|
+| Debian 12 `debian:12` + `php-cli` (8.2.35, **fixed**) | - | - | shipped -, **diag 8.2.35 / false** | - |
+| Ubuntu 24.04 `ubuntu:24.04` + `php-cli` (8.3.6) | - | - | **8.3.6 / true** | - |
+| Rocky 9 `rockylinux:9` + `php-cli` (8.0.30) | **8.0.30 / true** | - | - | **8.0.30 / true** |
+| Debian 12 + a planted `/srv/build/php-src/main/php.h` and `../NEWS` with `21 Nov 2025, PHP 8.3.28` | - | **8.3.28 / true** | as above | - |
 
-#6 was added after the other rows were recorded. It was only re-run on the first Debian 12 row
-(2026-11-02, no match). It uses `WinFileInfo`, which is Windows-only, so no Linux match is expected.
+The Windows signatures #1 (`php.exe`) and #6 (`php-cgi.exe`) never match on Linux (`WinFileInfo`
+is Windows-only; #6 was checked on the first Debian row). Their results are in section 5.6.
 
 Expected warnings: `RpmProductList` failed (Debian/Ubuntu) and `DpkgProductList` failed (Rocky).
-Signatures #1 and #6 (Windows) are covered in section 5.6, where they match with the corrected scan config.
 
 **Duplicates (expected).** One PHP install can be reported more than once, always with the same version:
 - Windows: the official zip ships `php.exe` and `php-cgi.exe` in the same folder, so #1 and #6
@@ -366,10 +387,7 @@ and **every `FindFilePathEx` returns nothing**. So the `FSScan` element must be:
   <FileMask value="php.exe"/><!-- one per FindFilePathEx name --><Age value="0"/><Timeout value="1800"/><OutputData value="BASIC"/></FSScan>
 ```
 
-That was the cause of the earlier "unresolved `FindFilePathEx` problem". Before the fix, these
-didn't help: running `wscansw` before `wscanfs`, `Age` 0 or 60, or a `-reset` before each run.
-`FindFilePath rootPath="C:\some\folder\"` did work without the fix; `rootPath="C:\"` didn't. A
-real BigFix Inventory deployment writes its own scan config, so this is most likely a test-setup
+A real BigFix Inventory deployment writes its own scan config, so this is most likely a test-setup
 issue, not a signature issue *(inferred, not verified on a real deployment)*. The `bf-scanner`
 service wasn't needed for these tests.
 
@@ -386,12 +404,15 @@ copy `sw.xml` back. `TESTDIR` is the Windows test folder holding the CIT install
 `XSS_DIR` is a local copy of the scanner's `config/xss` folder:
 
 ```bash
-WINHOST=<user>@<windows-host> python3 scanner_signatures/win_scanner_test.py 'C:\bfi_sig_test_node' <local copy of CIT config/xss> scanner_signatures/*.xml
+WINHOST=<user>@<windows-host> python3 scanner_signatures/win_scanner_test.py 'C:\bfi_sig_test' <local copy of CIT config/xss> scanner_signatures/software_PHP_*.xml
 ```
 
 - **`WINHOST`:** if you use [bigfix-remote-client-relevance](https://github.com/jgstew/bigfix-remote-client-relevance),
   its inventory (`~/.bigfix/remote_clients.toml`) lists the SSH test hosts. Use the one with
   `transport = "ssh"` and `platform = "windows"`. The PHP fixture and a CIT install are in `C:\bfi_sig_test`.
+  A macOS host in that inventory can't run signatures (section 5.7).
+- **A new test folder:** copying an existing `cit\` folder into it works, so a reinstall isn't
+  needed (verified: `C:\bfi_sig_test\cit` copied to `C:\bfi_sig_test_wp\cit`).
 - **`XSS_DIR`:** the Linux bundle's schema works for Windows signatures too (verified, level 3).
   Copy it out of any Linux test container: `docker cp php-debian:/opt/cit/config/xss <scratch>/xss`.
 
@@ -401,8 +422,6 @@ WINHOST=<user>@<windows-host> python3 scanner_signatures/win_scanner_test.py 'C:
 |---|---|
 | Signature #1 as shipped and diag, with the fixed config | **`C:\bfi_sig_test\php\` `8.3.35.0` / true**, plus other `php.exe` copies already on the host (8.3.35 / true, 8.3.36 / false in diag). `php_cgi_only\` isn't found (it has no `php.exe`) |
 | Signature #6 as shipped and diag (2026-11-02) | **`C:\bfi_sig_test\php\` and `C:\bfi_sig_test\php_cgi_only\`, both `8.3.35.0` / true**, plus other `php-cgi.exe` copies already on the host (8.3.35 / true, 8.3.36 / false in diag) |
-| Before the config fix | No match (`FindFilePathEx` returned nothing). With its iterator replaced by a fixed path the result was the same `8.3.35.0` / true |
-
 Node.js and Electron results on Windows are in section 8.4, and Brotli results in section 9.4.
 
 ### 5.7 macOS: no signature engine (verified)
@@ -454,8 +473,9 @@ Everything above runs unattended on a GitHub `ubuntu-latest` (x86_64) runner. Su
 ## 7. Publishing to CommunityContent
 
 CommunityContent keeps signatures as top-level `Signatures/*.xml`. Its PR workflow validates
-them against `signature.xsd` (level 1 only). Run levels 2-4 here first, and keep the two copies
-identical. As of 2026-11-13, every file here is identical to CommunityContent `main`:
+them against `signature.xsd` (level 1 only). That job installs `libxml2-utils` with `apt` and can
+fail on a DNS error before validating anything (seen on CommunityContent#56): read the log, and
+re-run it if that's the cause. Run levels 2-4 here first, and keep the two copies identical. As of 2026-11-13, every file here is identical to CommunityContent `main`:
 
 - PHP: includes signature #6 (`php-cgi.exe`), from
   [bigfix/CommunityContent#52](https://github.com/bigfix/CommunityContent/pull/52) (merged 2026-11-02).
@@ -471,10 +491,15 @@ Changes also arrive the other way, as PRs to CommunityContent. To review one:
    `git show pr<n>:Signatures/<file> > <scratch>/<file>`.
 2. Run levels 1-3 (section 4) on that copy, then level 4 with `scanner_test.py` and, for
    Windows signatures, `win_scanner_test.py`. Add a fixture for each new detection case, as
-   with `php_cgi_only` above.
+   with `php_cgi_only` above, plus the old-release and formatting cases from section 3.
+   Use real releases from the vendor's archive: for WordPress plugins,
+   `https://downloads.wordpress.org/plugin/<slug>.<version>.zip` (`api.wordpress.org` returned 403
+   from the test machine). Test both sides of each version threshold.
 3. Check the conventions in section 3: an identical `IS_INSTALLED` block across all signatures,
-   new unique IDs, `modified` updated, and duplicates with existing signatures noted.
-4. After the merge, copy the file here and update this file's tables and expected results.
+   new `uuid4` IDs, `modified` updated, an empty `DETAILED_VER` skipped, a newline at the end of
+   each file, and duplicates with existing signatures noted.
+4. After the merge, if this folder keeps that file, copy it here and update this file's tables
+   and expected results.
 
 ## 8. Node.js and Electron
 

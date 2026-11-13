@@ -37,6 +37,8 @@ def main():
         text = Path(f).read_text(encoding="utf-8")
         for n, body in enumerate(re.findall(r"<!\[CDATA\[(.*?)\]\]>", text, re.S), 1):
             masks.update(re.findall(r'<FindFilePathEx[^>]*\bnames?="([^"]+)"', body))
+            if IS_INSTALLED_SKIP not in body:
+                print(f"warning: {Path(f).name}#{n} has no IS_INSTALLED skip; diag = shipped", file=sys.stderr)
             for kind, b in (("shipped", body), ("diag", body.replace(IS_INSTALLED_SKIP, ""))):
                 sigs.append((f"{kind}:{Path(f).name}#{n}", uuid.uuid4().hex, b))
     masks = sorted({m for v in masks for m in re.split(r"[,;]", v) if m})
