@@ -242,8 +242,8 @@ works. That's how the Ubuntu and Rocky tests below were run.
 running container that has the scanner and the software under test.
 
 The harness scripts are checked in next to this file: [`scanner_test.py`](scanner_test.py),
-[`win_scanner_test.py`](win_scanner_test.py) (section 5.6) and [`install_cit.sh`](install_cit.sh)
-(section 5.1). Run them from the repo root.
+[`win_scanner_test.py`](win_scanner_test.py) (section 5.6), [`install_cit.sh`](install_cit.sh)
+(section 5.1) and [`install_cit.ps1`](install_cit.ps1) (section 5.6). Run them from the repo root.
 
 Before creating new containers, check `docker ps -a`: containers from earlier runs (e.g.
 `php-debian`) may still be running with the scanner at `/opt/cit`, and can be reused as they are.
@@ -330,33 +330,14 @@ scripts as `powershell -NoProfile -NonInteractive -EncodedCommand <base64 of the
 to avoid quoting problems. The encoded command must fit cmd's 8191-character line limit (about a
 3 KB script); split longer scripts into parts. All paths stay under one test folder.
 
-**Install (verified).** These are the same steps as HCL's task. Its `7za e` extracts the bundle
-flat, and its redistributable DLLs are only needed when `api-ms-win-crt*` is missing from System32.
+**Install (verified).** The script is [`install_cit.ps1`](install_cit.ps1) in this folder: the same
+steps as HCL's task, which extracts the bundle flat (`7za e`) and only adds its redistributable DLLs
+when `api-ms-win-crt*` is missing from System32. It installs into `$T = 'C:\bfi_sig_test'`
+(edit that line for another test folder) and prints `wcitinst exit code: 0`; the log
+`$T\installer\installCITlog.txt` ends with `Done.`. At about 1.8 KB it fits in one `-EncodedCommand`:
 
-```powershell
-$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue'
-[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-$T = 'C:\bfi_sig_test'
-New-Item -ItemType Directory -Force -Path "$T\installer", "$T\download" | Out-Null
-Add-Type -AssemblyName System.IO.Compression.FileSystem
-function Get-Verified($url, $sha256) {
-    $f = Join-Path "$T\download" ([IO.Path]::GetFileName($url))
-    Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $f
-    if ((Get-FileHash $f -Algorithm SHA256).Hash.ToLower() -ne $sha256) { throw "SHA256 mismatch: $url" }
-    $f
-}
-function Expand-Flat($zip, $dest) {   # like '7za e': no folders
-    $a = [IO.Compression.ZipFile]::OpenRead($zip)
-    foreach ($e in $a.Entries) { if ($e.Name) { [IO.Compression.ZipFileExtensions]::ExtractToFile($e, (Join-Path $dest $e.Name), $true) } }
-    $a.Dispose()
-}
-Expand-Flat (Get-Verified 'https://software.bigfix.com/download/tema/scanner/11.0.44.0-20260915-1200/w64-ix86_11.0.44.0.zip' 'fcf79e161867103d5223a26ed13f012a031528a28bf24de7e05277c57cc8254c') "$T\installer"
-$p = Start-Process -FilePath "$T\installer\wcitinst.exe" -Wait -PassThru -NoNewWindow -RedirectStandardOutput "$T\installer\installCITlog.txt" `
-    -ArgumentList @('i', 'BFI-PRIVATE', '-s', "`"$T\installer\CIT_win64.spb`"", '-d', "`"$T\cit`"", '-c', "`"$T\cit\logs`"", '-p')
-"wcitinst exit code: $($p.ExitCode)"   # 0, log ends with "Done."
-if (-not (Get-ChildItem "$env:WINDIR\System32" -Filter 'api-ms-win-crt*' -ErrorAction SilentlyContinue)) {
-    Expand-Flat (Get-Verified 'https://software.bigfix.com/download/tema/scanner/api-ms-win_redist_dlls_x64.zip' '1dff7809092e300b023eb61646fa5e428bd4c2479e6363aae872ede8264ff581') "$T\cit\bin"
-}
+```bash
+ssh <user>@<windows-host> "powershell -NoProfile -NonInteractive -EncodedCommand $(iconv -t UTF-16LE scanner_signatures/install_cit.ps1 | base64 | tr -d '\n')"
 ```
 
 - `BFI-PRIVATE` installs a private copy. On a host that already had a system CIT 9.2.23
