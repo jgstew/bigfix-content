@@ -20,7 +20,7 @@ files in a Linux container. They only matter if a macOS endpoint runs CIT.
 
 | File | What it detects |
 |---|---|
-| `software_PHP_all_Affected_by_CVE-2026-109618_and_CVE-2026-109619-0.AFFECTED.xml` | PHP affected by CVE-2026-109618 / CVE-2026-109619: 5 signatures (Windows `php.exe`, Linux `NEWS`, PHP source tree, Debian/Ubuntu dpkg, RPM) |
+| `software_PHP_all_Affected_by_CVE-2026-109618_and_CVE-2026-109619-0.AFFECTED.xml` | PHP affected by CVE-2026-109618 / CVE-2026-109619: 6 signatures (Windows `php.exe`, Linux `NEWS`, PHP source tree, Debian/Ubuntu dpkg, RPM, Windows `php-cgi.exe`). Sections 5.3 and 5.6. |
 | `software_Node.js_all_Affected_by_CVE-2026-111497-0.AFFECTED.xml` | Node.js affected by CVE-2026-111497 (Brotli): 5 signatures (Windows `node.exe`, Windows MSI, `include/node/node_version.h` layouts, dpkg, RPM). Section 8. |
 | `software_Node.js_ANY-0.any_version.xml` | Every Node.js found, with its version: the same 5 signatures, no version filter. Section 8. |
 | `software_Electron_ANY-0.any_version.xml` | Electron (embeds Node.js), with the Electron version: 2 signatures (macOS framework `Info.plist`, unpacked Electron distribution). Section 8. |
@@ -50,7 +50,7 @@ A signature file has two layers.
 Rules from the outer schema (`SoftwareIdentityCatalog.xsd`, see section 3):
 
 - `Software@name`, `@vendor`: 1-250 characters, required. `@version`: required, and must match `([0-9]{1,18}\..*)|\*`. `0.AFFECTED`, `0.SAFE` and `0.any_version` are the usual pseudo-versions for vulnerability signatures.
-- `uniqueId` (on `Software` and `Signature`): exactly 36 characters, lowercase `[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}`. New signatures get a new `uuid.uuid4()`. Never reuse another signature's ID.
+- `uniqueId` (on `Software` and `Signature`): exactly 36 characters, lowercase `[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}`. New signatures get a new `uuid.uuid4()`. Time-based (version 1) IDs, like the ones BigFix Inventory exports and most of the PHP file's, are also valid. Never reuse another signature's ID.
 - `created` / `modified`: `xs:dateTime`, e.g. `2026-10-26T23:53:39Z`. Update `modified` whenever a signature's body changes.
 - A `Signature` holds **either** a basic `<AND><OR><File .../></OR></AND>` (or `PackageFilter`) rule **or** one `<ExtendedSignature>`. All signatures here are extended.
 - The outer schema types `ExtendedSignature` as "anything": **it doesn't check the CDATA at all.**
@@ -226,25 +226,8 @@ containers. An `aarch64` bundle exists too
 (`linux-aarch64_11.0.44.0.tgz`, SHA256 `366df5cf2d15c757bcb20efc0b4adeeb4b3c241996afd64b65d8e232c1f57a76`) *(not tested)*.
 Needs `curl`, `gzip`, `tar` and `sha256sum`.
 
-```sh
-#!/bin/sh
-# Install the BigFix Inventory CIT scanner (wscanfs/wscansw) without a BigFix client.
-# Same bundle and wcitinst command as HCL's "Install or Upgrade Scanner (11.0.44.0)" task.
-set -eu
-CIT_DIR=${CIT_DIR:-/opt/cit}
-URL=https://software.bigfix.com/download/tema/scanner/11.0.44.0-20260915-1200/linux-x86_64_11.0.44.0.tgz
-SHA256=6bb1a635d24c9b3bf45e2ce7bdeee68c7ae8d72d4caeae79026594d5cddfb131
-work=$(mktemp -d)
-cd "$work"
-curl -fsSL -o citbundle.tgz "$URL"
-echo "$SHA256  citbundle.tgz" | sha256sum -c -
-gzip -dc citbundle.tgz | tar -xf -
-chmod 500 wcitinst
-mkdir -p "$CIT_DIR"
-./wcitinst i BFI-PRIVATE -s "$work/CIT_linuxX64.spb" -d "$CIT_DIR" -c "$CIT_DIR/logs" -p > "$CIT_DIR/install.log" 2>&1
-tail -1 "$CIT_DIR/install.log"
-ls "$CIT_DIR/bin/wscanfs" "$CIT_DIR/bin/wscansw" "$CIT_DIR/config/xss/signatures.xsd"
-```
+The script is [`install_cit.sh`](install_cit.sh) in this folder. Run it inside the Linux machine or
+container that will be scanned (`CIT_DIR` defaults to `/opt/cit`). Section 5.2 has an example.
 
 Run a scanner with `LANG=C.UTF-8 LD_LIBRARY_PATH=$CIT_DIR/bin $CIT_DIR/bin/<wscanfs|wscansw> ...`
 (this is what HCL's `runscanner.sh` does). `wscansw -?` and `wscanfs -?` print usage.
@@ -258,6 +241,13 @@ works. That's how the Ubuntu and Rocky tests below were run.
 `scanner_test.py` runs on the host (needs Python 3.9+, `docker`, `xmllint`) against a
 running container that has the scanner and the software under test.
 
+The harness scripts are checked in next to this file: [`scanner_test.py`](scanner_test.py),
+[`win_scanner_test.py`](win_scanner_test.py) (section 5.6) and [`install_cit.sh`](install_cit.sh)
+(section 5.1). Run them from the repo root.
+
+Before creating new containers, check `docker ps -a`: containers from earlier runs (e.g.
+`php-debian`) may still be running with the scanner at `/opt/cit`, and can be reused as they are.
+
 1. It wraps every signature twice: **shipped** (as written) and **diag** (with the
    `IS_INSTALLED` skip removed, so the extracted version shows even when it isn't affected).
 2. It validates them against the scanner's XSS schema (level 3).
@@ -266,118 +256,44 @@ running container that has the scanner and the software under test.
    taken from the signatures' own `FindFilePathEx` names.
 4. It runs `wscanfs -reset`, `wscanfs`, then `wscansw`, and prints JSON results per signature.
 
-```python
-#!/usr/bin/env python3
-"""Run BigFix Inventory scanner signatures through the real CIT scanner in a container.
-
-    python3 scanner_test.py CONTAINER CIT_DIR SIGNATURE.xml [SIGNATURE.xml ...]
-
-For each <Signature> in each SoftwareIdentityCatalog file it scans with:
-  shipped  the ExtendedSignature exactly as written
-  diag     the same with the IS_INSTALLED skip removed, so the version it
-           extracts is reported even when that version isn't affected
-Prints one JSON object: label -> list of matched instances (exported variables).
-Exit 1 if a signature body fails the scanner's own schema (CIT_DIR/config/xss).
-"""
-
-import json
-import re
-import subprocess
-import sys
-import tempfile
-import uuid
-from pathlib import Path
-
-NS = "http://www.ibm.com/Tivoli/Signatures"
-IS_INSTALLED_SKIP = '<Condition withVariable="IS_INSTALLED"><Action do="SKIP" onValue="false"/></Condition>'
-EXCLUDES = ["/proc", "/sys", "/dev", "/run"]
-
-
-def sh(container, script, check=True):
-    return subprocess.run(["docker", "exec", container, "sh", "-c", script], check=check, capture_output=True, text=True)
-
-
-def cit(container, cit_dir, args):
-    env = f"LANG=C.UTF-8 LD_LIBRARY_PATH={cit_dir}/bin"
-    return sh(container, f"cd /tmp && {env} {cit_dir}/bin/{args} >/dev/null 2>&1; echo $?").stdout.strip()
-
-
-def main():
-    container, cit_dir, files = sys.argv[1], sys.argv[2], sys.argv[3:]
-    sigs, masks = [], set()
-    for f in files:
-        text = Path(f).read_text(encoding="utf-8")
-        for n, body in enumerate(re.findall(r"<!\[CDATA\[(.*?)\]\]>", text, re.S), 1):
-            masks.update(re.findall(r'<FindFilePathEx[^>]*\bnames?="([^"]+)"', body))
-            for kind, b in (("shipped", body), ("diag", body.replace(IS_INSTALLED_SKIP, ""))):
-                sigs.append((f"{kind}:{Path(f).name}#{n}", uuid.uuid4().hex, b))
-    masks = sorted({m for v in masks for m in re.split(r"[,;]", v) if m})
-    doc = f'<?xml version="1.0" encoding="UTF-8"?>\n<Signatures xmlns="{NS}" version="1.0">\n' + "\n".join(
-        f'<Signature guid="{g}"><Metadata><AnyMetadataTag>{label}</AnyMetadataTag></Metadata>'
-        f'<Platforms><Platform type="LINUX"/></Platforms>{b}</Signature>' for label, g, b in sigs) + "\n</Signatures>\n"
-
-    with tempfile.TemporaryDirectory() as tmp:
-        tmp = Path(tmp)
-        (tmp / "test_sigs.xml").write_text(doc, encoding="utf-8")
-        # 1. the scanner's own signature-language schema (CIT_DIR/config/xss)
-        subprocess.run(["docker", "cp", f"{container}:{cit_dir}/config/xss", str(tmp / "xss")], check=True)
-        v = subprocess.run(["xmllint", "--nonet", "--noout", "--schema", str(tmp / "xss" / "signatures.xsd"), str(tmp / "test_sigs.xml")],
-                           capture_output=True, text=True)
-        if v.returncode:
-            print(v.stderr, file=sys.stderr)
-            return 1
-        # 2. a Linux FSScan config: the shipped config.xml is a Windows sample
-        subprocess.run(["docker", "cp", f"{container}:{cit_dir}/bin/config.xml", str(tmp / "config.xml")], check=True)
-        fsscan = ('<FSScan version="1.0" priority="normal">' + '<IncludeDirectory value="/"/>'
-                  + "".join(f'<ExcludeDirectory value="{d}"/>' for d in EXCLUDES)
-                  + "".join(f'<FileMask value="{m}"/>' for m in masks)
-                  + '<Age value="0"/><Timeout value="1800"/><OutputData value="BASIC"/></FSScan>')
-        config = re.sub(r"<FSScan .*?</FSScan>", fsscan, (tmp / "config.xml").read_text(), count=1, flags=re.S)
-        (tmp / "linux_config.xml").write_text(config)
-        for name in ("test_sigs.xml", "linux_config.xml"):
-            subprocess.run(["docker", "cp", str(tmp / name), f"{container}:/tmp/{name}"], check=True)
-        # 3. index the files the signatures look for, then evaluate the signatures
-        cit(container, cit_dir, "wscanfs -c /tmp/linux_config.xml -reset")
-        cit(container, cit_dir, "wscanfs -c /tmp/linux_config.xml -o /tmp/fs.xml")
-        rc = cit(container, cit_dir, "wscansw -i /tmp/test_sigs.xml -c /tmp/linux_config.xml -o /tmp/sw.xml -e /tmp/sw_warn.xml")
-        out = sh(container, "cat /tmp/sw.xml").stdout
-        warn = sh(container, "cat /tmp/sw_warn.xml", check=False).stdout
-
-    by_guid = {g: label for label, g, _ in sigs}
-    result = {label: [] for label, _, _ in sigs}
-    for g, body in re.findall(r'<MatchedSignature guid="(\w+)">(.*?)</MatchedSignature>', out, re.S):
-        result[by_guid[g]].append(dict(re.findall(r'<Variable name="(\w+)" value="([^"]*)"', body)))
-    print(json.dumps({"wscansw_rc": rc, "file_masks": masks, "warnings": sorted(set(re.findall(r"<Info>([^<]*)", warn))),
-                      "results": result}, indent=1))
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
-```
+Usage, from the repo root: `python3 scanner_signatures/scanner_test.py CONTAINER CIT_DIR SIGNATURE.xml [SIGNATURE.xml ...]`.
+It prints one JSON object (label -> matched instances with their exported variables) and exits 1
+if a signature body fails the scanner's own schema.
 
 Example (container `php-debian`, with the scanner installed at `/opt/cit`):
 
 ```bash
 docker run -d --platform linux/amd64 --name php-debian debian:12 sleep infinity
-docker cp install_cit.sh php-debian:/tmp/
+docker cp scanner_signatures/install_cit.sh php-debian:/tmp/
 docker exec php-debian sh -c 'apt-get update -qq && apt-get install -y -qq --no-install-recommends curl ca-certificates php-cli && sh /tmp/install_cit.sh'
-python3 scanner_test.py php-debian /opt/cit scanner_signatures/software_PHP_*.xml
+python3 scanner_signatures/scanner_test.py php-debian /opt/cit scanner_signatures/software_PHP_*.xml
 ```
 
 ### 5.3 Expected results for the PHP file (verified)
 
 `#n` is the signature's position in the file. A dash means no match.
 
-| Container (PHP) | #1 Windows | #2 Linux NEWS | #3 source tree | #4 dpkg | #5 RPM |
-|---|---|---|---|---|---|
-| Debian 12 `debian:12` + `php-cli` (8.2.35, **fixed**) | - | - | - | shipped -, **diag 8.2.35 / false** | - |
-| Ubuntu 24.04 `ubuntu:24.04` + `php-cli` (8.3.6) | - | - | - | **8.3.6 / true** | - |
-| Rocky 9 `rockylinux:9` + `php-cli` (8.0.30) | - | **8.0.30 / true** | - | - | **8.0.30 / true** |
-| Debian 12 + a planted `/srv/build/php-src/main/php.h` and `../NEWS` with `21 Nov 2025, PHP 8.3.28` | - | - | **8.3.28 / true** | as above | - |
+| Container (PHP) | #1 Windows `php.exe` | #2 Linux NEWS | #3 source tree | #4 dpkg | #5 RPM | #6 Windows `php-cgi.exe` |
+|---|---|---|---|---|---|---|
+| Debian 12 `debian:12` + `php-cli` (8.2.35, **fixed**) | - | - | - | shipped -, **diag 8.2.35 / false** | - | - |
+| Ubuntu 24.04 `ubuntu:24.04` + `php-cli` (8.3.6) | - | - | - | **8.3.6 / true** | - | *(not run)* |
+| Rocky 9 `rockylinux:9` + `php-cli` (8.0.30) | - | **8.0.30 / true** | - | - | **8.0.30 / true** | *(not run)* |
+| Debian 12 + a planted `/srv/build/php-src/main/php.h` and `../NEWS` with `21 Nov 2025, PHP 8.3.28` | - | - | **8.3.28 / true** | as above | - | *(not run)* |
+
+#6 was added after the other rows were recorded. It was only re-run on the first Debian 12 row
+(2026-11-02, no match). It uses `WinFileInfo`, which is Windows-only, so no Linux match is expected.
 
 Expected warnings: `RpmProductList` failed (Debian/Ubuntu) and `DpkgProductList` failed (Rocky).
-Signature #1 (Windows) is covered in section 5.6, where it matches with the corrected scan config.
+Signatures #1 and #6 (Windows) are covered in section 5.6, where they match with the corrected scan config.
+
+**Duplicates (expected).** One PHP install can be reported more than once, always with the same version:
+- Windows: the official zip ships `php.exe` and `php-cgi.exe` in the same folder, so #1 and #6
+  both match with the same `INSTALL_PATH`. #6 exists for folders that have only `php-cgi.exe`
+  (standalone FastCGI / IIS handler deployments), which #1 misses.
+- RHEL/Rocky: `NEWS` (#2) and the RPM (#5).
+
+Whether BigFix Inventory merges these into one record on the server side wasn't checked
+*(not verified)*. The scanner output contains every match.
 
 ### 5.4 Probing scanner behavior
 
@@ -453,7 +369,9 @@ if (-not (Get-ChildItem "$env:WINDIR\System32" -Filter 'api-ms-win-crt*' -ErrorA
 **Test fixture (verified):** the official
 `https://windows.php.net/downloads/releases/archives/php-8.3.35-nts-Win32-vs16-x64.zip`
 (SHA256 `25a8e2ac9ff30f1d768d1447c09a600617fa6e6082729f6e95f008b59c91fe45`), expanded into
-`$T\php`. Its `php.exe` has `FileVersion 8.3.35`, which is in the affected range.
+`$T\php`. Its `php.exe` and `php-cgi.exe` have `FileVersion 8.3.35`, which is in the affected range.
+For signature #6's standalone case, copy only `php-cgi.exe` into a second folder:
+`New-Item -ItemType Directory -Force "$T\php_cgi_only"; Copy-Item "$T\php\php-cgi.exe" "$T\php_cgi_only\"`.
 
 **Scan config: the one setting that matters.** `wscansw` reads its file-search settings from the
 `FSScanner` plugin in the same `config.xml`. The sample has
@@ -480,120 +398,28 @@ service wasn't needed for these tests.
 to stderr, and `$T\cit\logs\traceCIT.log` accumulates across runs. The `wscanfs` walk of `C:\` took
 about 45 seconds. "path too long" messages for very deep folders are just skipped paths.
 
-**Harness.** `win_scanner_test.py` does all of this from the Mac/Linux side, the same way as
-`scanner_test.py`: shipped and diag copies, level-3 validation, a config with the plugin's
-excludes copied into `FSScan`, `scp` both files to the test folder, run, copy `sw.xml` back:
-
-```python
-#!/usr/bin/env python3
-"""Run BigFix Inventory scanner signatures through the real CIT scanner on a Windows host over SSH.
-
-    WINHOST=user@host python3 win_scanner_test.py TESTDIR XSS_DIR SIGNATURE.xml [SIGNATURE.xml ...]
-
-TESTDIR is the Windows test folder holding the CIT install in TESTDIR\\cit (e.g. C:\\bfi_sig_test_node).
-XSS_DIR is a local copy of the scanner's config/xss folder (for level-3 validation).
-Like scanner_test.py: every signature runs as "shipped" and "diag" (IS_INSTALLED skip removed).
-"""
-
-import base64
-import json
-import os
-import re
-import subprocess
-import sys
-import tempfile
-import uuid
-from pathlib import Path
-
-NS = "http://www.ibm.com/Tivoli/Signatures"
-IS_INSTALLED_SKIP = '<Condition withVariable="IS_INSTALLED"><Action do="SKIP" onValue="false"/></Condition>'
-HOST = os.environ["WINHOST"]
-
-
-def ps(script):
-    enc = base64.b64encode(script.encode("utf-16-le")).decode()
-    return subprocess.run(["ssh", "-o", "BatchMode=yes", HOST, f"powershell -NoProfile -NonInteractive -EncodedCommand {enc}"],
-                          capture_output=True, text=True, check=True).stdout
-
-
-def main():
-    testdir, xss, files = sys.argv[1], sys.argv[2], sys.argv[3:]
-    fwd = testdir.replace("\\", "/")
-    sigs, masks = [], set()
-    for f in files:
-        text = Path(f).read_text(encoding="utf-8")
-        for n, body in enumerate(re.findall(r"<!\[CDATA\[(.*?)\]\]>", text, re.S), 1):
-            masks.update(re.findall(r'<FindFilePathEx[^>]*\bnames?="([^"]+)"', body))
-            for kind, b in (("shipped", body), ("diag", body.replace(IS_INSTALLED_SKIP, ""))):
-                sigs.append((f"{kind}:{Path(f).name}#{n}", uuid.uuid4().hex, b))
-    masks = sorted({m for v in masks for m in re.split(r"[,;]", v) if m})
-    doc = f'<?xml version="1.0" encoding="UTF-8"?>\n<Signatures xmlns="{NS}" version="1.0">\n' + "\n".join(
-        f'<Signature guid="{g}"><Metadata><AnyMetadataTag>{label}</AnyMetadataTag></Metadata>'
-        f'<Platforms><Platform type="WINDOWS"/></Platforms>{b}</Signature>' for label, g, b in sigs) + "\n</Signatures>\n"
-
-    with tempfile.TemporaryDirectory() as tmp:
-        tmp = Path(tmp)
-        (tmp / "win_sigs.xml").write_text(doc, encoding="utf-8")
-        v = subprocess.run(["xmllint", "--nonet", "--noout", "--schema", str(Path(xss) / "signatures.xsd"), str(tmp / "win_sigs.xml")],
-                           capture_output=True, text=True)
-        if v.returncode:
-            print(v.stderr, file=sys.stderr)
-            return 1
-        subprocess.run(["scp", "-q", f"{HOST}:{fwd}/cit/bin/config.xml", str(tmp / "config.xml")], check=True)
-        # The FSScan scope must match wscansw's FSScanner plugin excludeDirectory attributes, or wscansw
-        # treats the cached C:\ tree as invalid and every file query returns nothing.
-        active = re.sub(r"<!--.*?-->", "", (tmp / "config.xml").read_text(), flags=re.S)
-        plugin = re.search(r'<Plugin name="FSScanner".*?</Plugin>', active, re.S).group(0)
-        excludes = re.findall(r'<Attribute name="excludeDirectory" value="([^"]*)"', plugin)
-        fsscan = ('<FSScan version="1.0" priority="normal"><IncludeDirectory value="C:\\"/>'
-                  + "".join(f'<ExcludeDirectory value="{d}"/>' for d in excludes)
-                  + "".join(f'<FileMask value="{m}"/>' for m in masks)
-                  + '<Age value="0"/><Timeout value="1800"/><OutputData value="BASIC"/></FSScan>')
-        config = re.sub(r"<FSScan .*?</FSScan>", lambda _: fsscan, (tmp / "config.xml").read_text(), count=1, flags=re.S)
-        (tmp / "win_config.xml").write_text(config)
-        for name in ("win_sigs.xml", "win_config.xml"):
-            subprocess.run(["scp", "-q", str(tmp / name), f"{HOST}:{fwd}/{name}"], check=True)
-        out = ps(rf"""
-$T = '{testdir}'; $B = "$T\cit\bin"
-function Run($exe, $a, $tag) {{
-  $p = Start-Process -FilePath "$B\$exe" -ArgumentList $a -WorkingDirectory $B -Wait -PassThru -NoNewWindow `
-       -RedirectStandardOutput "$T\$tag.out.txt" -RedirectStandardError "$T\$tag.err.txt"
-  "$tag rc=$($p.ExitCode)"
-}}
-Remove-Item "$T\sw.xml", "$T\sw_warn.xml" -ErrorAction SilentlyContinue
-Run 'wscanfs.exe' @('-c', "$T\win_config.xml", '-reset') 'fs_reset'
-Run 'wscanfs.exe' @('-c', "$T\win_config.xml", '-o', "$T\fs.xml") 'fs'
-Run 'wscansw.exe' @('-i', "$T\win_sigs.xml", '-c', "$T\win_config.xml", '-o', "$T\sw.xml", '-e', "$T\sw_warn.xml") 'sw'
-""")
-        for name in ("sw.xml", "sw_warn.xml", "fs.xml"):
-            subprocess.run(["scp", "-q", f"{HOST}:{fwd}/{name}", str(tmp / name)], check=False)
-        sw = (tmp / "sw.xml").read_text(errors="replace") if (tmp / "sw.xml").exists() else ""
-        warn = (tmp / "sw_warn.xml").read_text(errors="replace") if (tmp / "sw_warn.xml").exists() else ""
-        fs = (tmp / "fs.xml").read_text(errors="replace") if (tmp / "fs.xml").exists() else ""
-
-    by_guid = {g: label for label, g, _ in sigs}
-    result = {label: [] for label, _, _ in sigs}
-    for g, body in re.findall(r'<MatchedSignature guid="(\w+)">(.*?)</MatchedSignature>', sw, re.S):
-        result[by_guid[g]].append(dict(re.findall(r'<Variable name="(\w+)" value="([^"]*)"', body)))
-    print(json.dumps({"runs": [line for line in out.splitlines() if "rc=" in line], "file_masks": masks,
-                      "fs_xml_files_listed": len(re.findall(r"<BasicFileInfo ", fs)),
-                      "warnings": sorted(set(re.findall(r"<Info>([^<]*)", warn))), "results": result}, indent=1))
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
-```
+**Harness.** [`win_scanner_test.py`](win_scanner_test.py) (in this folder) does all of this from the
+Mac/Linux side, the same way as `scanner_test.py`: shipped and diag copies, level-3 validation, a
+config with the plugin's excludes copied into `FSScan`, `scp` both files to the test folder, run,
+copy `sw.xml` back. `TESTDIR` is the Windows test folder holding the CIT install in `TESTDIR\cit`;
+`XSS_DIR` is a local copy of the scanner's `config/xss` folder:
 
 ```bash
-WINHOST=<user>@<windows-host> python3 win_scanner_test.py 'C:\bfi_sig_test_node' <local copy of CIT config/xss> scanner_signatures/*.xml
+WINHOST=<user>@<windows-host> python3 scanner_signatures/win_scanner_test.py 'C:\bfi_sig_test_node' <local copy of CIT config/xss> scanner_signatures/*.xml
 ```
 
-**Results for the PHP file** (fixture: `$T\php`, above):
+- **`WINHOST`:** if you use [bigfix-remote-client-relevance](https://github.com/jgstew/bigfix-remote-client-relevance),
+  its inventory (`~/.bigfix/remote_clients.toml`) lists the SSH test hosts. Use the one with
+  `transport = "ssh"` and `platform = "windows"`. The PHP fixture and a CIT install are in `C:\bfi_sig_test`.
+- **`XSS_DIR`:** the Linux bundle's schema works for Windows signatures too (verified, level 3).
+  Copy it out of any Linux test container: `docker cp php-debian:/opt/cit/config/xss <scratch>/xss`.
+
+**Results for the PHP file** (fixture: `$T\php` and `$T\php_cgi_only`, above):
 
 | What | Result |
 |---|---|
-| Signature #1 as shipped and diag, with the fixed config | **`C:\bfi_sig_test\php\` `8.3.35.0` / true**, plus other `php.exe` copies already on the host (8.3.35 / true, 8.3.36 / false in diag) |
+| Signature #1 as shipped and diag, with the fixed config | **`C:\bfi_sig_test\php\` `8.3.35.0` / true**, plus other `php.exe` copies already on the host (8.3.35 / true, 8.3.36 / false in diag). `php_cgi_only\` isn't found (it has no `php.exe`) |
+| Signature #6 as shipped and diag (2026-11-02) | **`C:\bfi_sig_test\php\` and `C:\bfi_sig_test\php_cgi_only\`, both `8.3.35.0` / true**, plus other `php-cgi.exe` copies already on the host (8.3.35 / true, 8.3.36 / false in diag) |
 | Before the config fix | No match (`FindFilePathEx` returned nothing). With its iterator replaced by a fixed path the result was the same `8.3.35.0` / true |
 
 Node.js and Electron results on Windows are in section 8.4, and Brotli results in section 9.4.
@@ -648,14 +474,26 @@ Everything above runs unattended on a GitHub `ubuntu-latest` (x86_64) runner. Su
 
 CommunityContent keeps signatures as top-level `Signatures/*.xml`. Its PR workflow validates
 them against `signature.xsd` (level 1 only). Run levels 2-4 here first, and keep the two copies
-identical. As of 2026-10-29:
+identical. As of 2026-11-13, every file here is identical to CommunityContent `main`:
 
-- The PHP, Node.js and Electron files here are identical to CommunityContent `main`.
-- The Brotli files here are the ones in
-  [bigfix/CommunityContent#51](https://github.com/bigfix/CommunityContent/pull/51) (branch
-  `brotli-signature-fixes`), which updates the versions from
-  [bigfix/CommunityContent#48](https://github.com/bigfix/CommunityContent/pull/48) on `main`.
-  If #51 changes before it's merged, sync them again.
+- PHP: includes signature #6 (`php-cgi.exe`), from
+  [bigfix/CommunityContent#52](https://github.com/bigfix/CommunityContent/pull/52) (merged 2026-11-02).
+- Brotli: the versions from
+  [bigfix/CommunityContent#51](https://github.com/bigfix/CommunityContent/pull/51) (merged 2026-10-29).
+- Node.js and Electron: unchanged.
+
+### 7.1 Reviewing a CommunityContent PR
+
+Changes also arrive the other way, as PRs to CommunityContent. To review one:
+
+1. Fetch the PR's version of the file: `git fetch origin pull/<n>/head:pr<n>`, then
+   `git show pr<n>:Signatures/<file> > <scratch>/<file>`.
+2. Run levels 1-3 (section 4) on that copy, then level 4 with `scanner_test.py` and, for
+   Windows signatures, `win_scanner_test.py`. Add a fixture for each new detection case, as
+   with `php_cgi_only` above.
+3. Check the conventions in section 3: an identical `IS_INSTALLED` block across all signatures,
+   new unique IDs, `modified` updated, and duplicates with existing signatures noted.
+4. After the merge, copy the file here and update this file's tables and expected results.
 
 ## 8. Node.js and Electron
 
