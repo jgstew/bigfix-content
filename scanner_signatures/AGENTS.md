@@ -335,12 +335,23 @@ That's how the symlink, `Vector filter` and `RpmProductInfo version` behaviors i
 [bigfix-actionscript-runner](https://github.com/jgstew/bigfix-actionscript-runner) can run
 HCL's **Install or Upgrade Scanner (11.0.44.0)** `.bes` inside a container, with `qna` from the
 BigFix client package unpacked into `/opt/BESClient` (`dpkg -x` into a temp folder; never into `/`,
-which breaks Debian's `/lib` symlinks). It worked with these workarounds:
+which breaks Debian's `/lib` symlinks; [jgstew/bigfix-actionscript-runner#28](https://github.com/jgstew/bigfix-actionscript-runner/issues/28)
+would remove that step). With the runner checkout mounted read-only, give `uv` a writable
+environment: `UV_PROJECT_ENVIRONMENT=/opt/runner-venv uv run --frozen bigfix-actionscript-runner ...`.
+Options used:
 
 - `--no-preflight`: [jgstew/pre-commit-bigfix#54](https://github.com/jgstew/pre-commit-bigfix/issues/54) (false E302/E500 on indented `createfile` end markers).
-- Run a copy of the task with the other platforms' `citbundle.tgz`/`bzip2` prefetch lines removed: [jgstew/bigfix-actionscript-runner#8](https://github.com/jgstew/bigfix-actionscript-runner/issues/8) (all prefetches are downloaded, and same-name files overwrite each other).
-- `--sandbox /tmp/bfsandbox --set '(parameter "scannerdatasfolder" as string) & "/" & computer id as string & "changeCacheAndLogsFolder.log"=>/tmp/bfsandbox/tools/scanner/1234567changeCacheAndLogsFolder.log'`: `computer id` needs a running client.
+- `--sandbox /tmp/bfsandbox --set '(parameter "scannerdatasfolder" as string) & "/" & computer id as string & "changeCacheAndLogsFolder.log"=>/tmp/bfsandbox/tools/scanner/1234567changeCacheAndLogsFolder.log'`: `computer id` needs a running client ([jgstew/bigfix-actionscript-runner#29](https://github.com/jgstew/bigfix-actionscript-runner/issues/29) asks for a built-in value).
+- `--force` when the scanner is already installed: the task is then not relevant.
 - `--execute`. The scanner then lives in `/opt/BESClient/tools/scanner/internal`, and `runscanner.sh /opt/BESClient <scanner> <args>` runs it.
+
+The unmodified task works: the runner downloads every platform's top-level prefetches before
+line 1 (like a client's cache; 27 files, 162 MB for this task), but places only the ones in branches that run.
+On Debian 12 x86_64, only `linux-x86_64_11.0.44.0.tgz` and its `bzip2` reached `__Download`
+(checked by SHA1, 2026-11-13, runner `df8b850`). Before
+[jgstew/bigfix-actionscript-runner#8](https://github.com/jgstew/bigfix-actionscript-runner/issues/8)
+was fixed, same-name prefetches overwrote each other, and the other platforms' lines had to be
+removed from a copy of the task.
 
 Use this to test the task itself. For testing signatures, section 5.1 is simpler.
 
