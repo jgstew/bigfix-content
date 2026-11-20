@@ -54,6 +54,10 @@ Rules from the outer schema (`SoftwareIdentityCatalog.xsd`, see section 3):
 - `created` / `modified`: `xs:dateTime`, e.g. `2026-10-26T23:53:39Z`. Update `modified` whenever a signature's body changes.
 - A `Signature` holds **either** a basic `<AND><OR><File .../></OR></AND>` (or `PackageFilter`) rule **or** one `<ExtendedSignature>`. All signatures here are extended.
 - The outer schema types `ExtendedSignature` as "anything": **it doesn't check the CDATA at all.**
+- **BigFix Inventory rejects a signature longer than 3829 characters on import.** No schema or scanner check catches this; the level 2 script (section 4) does. Measured here as the CDATA body, everything between `<![CDATA[` and `]]>` *(how BFI counts, e.g. whether it includes surrounding whitespace, not verified)*. To shorten one, in order of preference:
+  - **Replace a list of exact-match `Compare`s with one delimited `Contains`.** `<Contains inputString="|1.0.6-5.el8_10|1.0.9-10.el9_8.1|" position="contains" searchedString="|$(pkg_ver)|"/>` is true only for a value equal to one entry (if no entry or value can contain `|`), and costs about 18 characters per entry instead of about 110. Brotli RPM signature #2 went from 4011 to 2863 characters this way (section 9), verified with the real scanner on the section 9.4 RPM fixtures.
+  - Drop indentation and newlines between elements, and use short names for `export="false"` variables (Brotli #2: `package_version` to `pkg_ver` etc., 2863 to 2793). Keep exported names (`INSTALL_PATH`, `DETAILED_VER`, `IS_INSTALLED`) as they are.
+  - Split the detection method into two signatures only as a last resort: each copy needs the whole `IS_INSTALLED` block, both have to be kept in sync, and a host that matches both is reported twice.
 
 ### Inner layer: the CDATA body (the XSS signature language)
 
@@ -193,15 +197,22 @@ XSD=$(uvx --from validate-bes-xml python -c "import validate_bes_xml, pathlib; p
 xmllint --nonet --noout --schema "$XSD" scanner_signatures/*.xml
 ```
 
-### Level 2: every CDATA body is well-formed XML
+### Level 2: every CDATA body is well-formed XML and within the import limit
 
 ```bash
 python3 - scanner_signatures/*.xml <<'EOF'
 import re, sys, xml.dom.minidom
+LIMIT = 3829  # BigFix Inventory import limit per signature (section 1)
+failed = False
 for f in sys.argv[1:]:
     for i, body in enumerate(re.findall(r"<!\[CDATA\[(.*?)\]\]>", open(f, encoding="utf-8").read(), re.S), 1):
         xml.dom.minidom.parseString(body)
-        print(f"{f}: signature {i} well-formed")
+        if len(body) > LIMIT:
+            failed = True
+            print(f"{f}: signature {i} is {len(body)} characters, over the {LIMIT} limit")
+        else:
+            print(f"{f}: signature {i} well-formed, {len(body)} characters")
+sys.exit(failed)
 EOF
 ```
 
@@ -708,8 +719,10 @@ CVE-2026-111497 is the same Brotli decoder flaw as section 8. Affected (`IS_INST
 `1.0.3`-`< 1.0.10`, `1.1.0`-`< 1.1.1`, `1.2.0`-`< 1.2.1`. These ranges match the Ubuntu and Debian
 trackers, and the upstream fixes are tagged v1.0.10, v1.1.1 and v1.2.1.
 
-Unlike the Node files, the CVE file **skips distro fixed builds** with an exact
-`Compare type="string"` on the full package version. Sources (October 2026):
+Unlike the Node files, the CVE file **skips distro fixed builds** by an exact match on the full
+package version: one `Compare type="string"` per build in the dpkg signature (#1), and one
+delimited `Contains` in the RPM signature (#2), which with 12 `Compare`s was over the import limit
+(section 1). Sources (October 2026):
 
 | Distro | Fixed builds skipped | Source |
 |---|---|---|
